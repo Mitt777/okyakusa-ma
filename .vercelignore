@@ -1,0 +1,6 @@
+*.md
+mockups/
+google-apps-script/
+source_texts/
+extract_sources.py
+.DS_Store

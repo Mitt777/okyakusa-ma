@@ -794,12 +794,26 @@
           <span>家族、スタッフ、知人のお店にLINEやメールで送れます。共有先の人も、ページ下部から無料診断を試せます。</span>
         </div>
         <div class="share-actions">
-          <a href="#">LINEで送る</a>
-          <a href="#">メールで送る</a>
-          <a class="primary" href="/mockups/okyakusama-top-v01.html">あなたのお店も試してみませんか？ 完全無料</a>
+          <a id="line-share" href="#">LINEで送る</a>
+          <a id="mail-share" href="#">メールで送る</a>
+          <a class="primary" href="/">あなたのお店も試してみませんか？ 完全無料</a>
         </div>
       </section>
     </article>
   </main>
+  <script>
+    const reportUrl = window.location.href;
+    const shareText = `お客様どっと混むで「森の入口カフェ」の見え方診断を見ました。\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\nあなたのお店も無料で試せます。\n${reportUrl}`;
+    const lineShare = document.querySelector("#line-share");
+    const mailShare = document.querySelector("#mail-share");
+
+    if (lineShare) {
+      lineShare.href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(shareText)}`;
+    }
+
+    if (mailShare) {
+      mailShare.href = `mailto:?subject=${encodeURIComponent("お店の見え方診断を共有します")}&body=${encodeURIComponent(shareText)}`;
+    }
+  </script>
 </body>
 </html>

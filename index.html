@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>お客様どっと混む トップ UI v0.1</title>
+  <title>お客様どっと混む | えらばれる店スコア診断</title>
   <style>
     :root {
       --ink: #17202c;
@@ -203,6 +203,83 @@
       font-weight: 850;
       cursor: default;
       white-space: nowrap;
+    }
+
+    .intake-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .intake-fields label {
+      display: grid;
+      gap: 5px;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .intake-fields input,
+    .intake-fields textarea {
+      width: 100%;
+      border: 1px solid #cfd7e3;
+      border-radius: 7px;
+      padding: 11px 12px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      background: #fff;
+      outline: 0;
+    }
+
+    .intake-fields textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .submit-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-submit {
+      border: 0;
+      border-radius: 6px;
+      padding: 12px 18px;
+      background: var(--green-dark);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .form-message {
+      margin-top: 10px;
+      min-height: 20px;
+      color: var(--rose);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .hp {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
     }
 
     .next-questions {
@@ -446,6 +523,15 @@
         width: 100%;
       }
 
+      .intake-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .submit-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
       .signal-list,
       .divider-section {
         grid-template-columns: 1fr;
@@ -483,7 +569,7 @@
         「本来来てほしいお客様に選ばれる状態」へ翻訳します。
       </p>
 
-      <div class="search-stage" aria-label="診断開始フォームのイメージ">
+      <div class="search-stage" aria-label="無料診断申込フォーム">
         <div class="step-line">
           <span>Step 1 / 5　まずは店舗名と地域だけで候補を特定します</span>
           <div class="progress" aria-label="入力進捗 20%"><span></span></div>
@@ -494,10 +580,59 @@
             <strong>診断したいお店を入力してください</strong>
             <span>例: 森の入口カフェ　那須町 / 黒磯 ランチ / 大田原 美容室</span>
           </div>
-          <div class="search-box">
-            <input value="" placeholder="店舗名・地域・業種を入力">
-            <button type="button">無料で診断する</button>
-          </div>
+          <form id="diagnosis-form" action="/api/diagnosis" method="post">
+            <div class="search-box">
+              <input name="store_query" value="" placeholder="店舗名・地域・業種を入力" required>
+              <button type="submit">無料で診断する</button>
+            </div>
+            <div class="intake-fields">
+              <label>
+                エリア・住所
+                <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市" required>
+              </label>
+              <label>
+                業種
+                <input name="category" placeholder="例: カフェ / ランチ / 美容室" required>
+              </label>
+              <label>
+                Google Maps URL
+                <input name="google_maps_url" type="url" placeholder="https://maps.google.com/...">
+              </label>
+              <label>
+                公式サイトURL
+                <input name="website_url" type="url" placeholder="https://example.com">
+              </label>
+              <label>
+                Instagram URL
+                <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
+              </label>
+              <label>
+                YouTube / TikTok / X URL
+                <input name="sns_url" type="url" placeholder="任意">
+              </label>
+              <label>
+                お名前
+                <input name="owner_name" placeholder="診断結果を受け取る方" required>
+              </label>
+              <label>
+                メールアドレス
+                <input name="email" type="email" placeholder="name@example.com" required>
+              </label>
+              <label class="field-wide">
+                来てほしいお客様・今困っていること
+                <textarea name="current_problem" placeholder="例: 観光客に見つけてほしい / Instagramは頑張っているが来店につながっているかわからない"></textarea>
+              </label>
+              <label class="hp">
+                入力しないでください
+                <input name="company" tabindex="-1" autocomplete="off">
+              </label>
+            </div>
+            <div class="submit-row">
+              <p>送信後、受付IDを発行します。診断結果は後日 `/r/xxxx` の短いURLで共有できます。</p>
+              <button type="submit" class="search-submit">無料診断を申し込む</button>
+            </div>
+            <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
+          </form>
           <div class="next-questions" aria-label="続く入力項目">
             <span>次に行うこと:</span>
             Google Maps候補を照合し、公式サイトやSNSがある場合だけSEO/GEO簡易判定へ進みます。
@@ -612,5 +747,42 @@
       MVPでは公開情報と店舗入力をもとに人間が確認します。外部レビュー本文や画像の大量転載、規約に反するスクレイピングは行いません。
     </p>
   </main>
+  <script>
+    const form = document.querySelector("#diagnosis-form");
+    const message = document.querySelector("#form-message");
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.textContent = "送信しています...";
+
+      const submitButtons = form.querySelectorAll("button[type='submit']");
+      submitButtons.forEach((button) => {
+        button.disabled = true;
+        button.style.opacity = ".72";
+      });
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "送信に失敗しました。");
+        }
+
+        const id = encodeURIComponent(result.request_id || "");
+        window.location.href = `/thanks/?id=${id}`;
+      } catch (error) {
+        message.textContent = error.message || "送信に失敗しました。時間をおいて再度お試しください。";
+        submitButtons.forEach((button) => {
+          button.disabled = false;
+          button.style.opacity = "1";
+        });
+      }
+    });
+  </script>
 </body>
 </html>
