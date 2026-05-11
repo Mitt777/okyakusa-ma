@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>テスト店舗カフェ 無料診断レポート | お客様どっと混む</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c2430;
+      --muted: #667085;
+      --line: #d8dee7;
+      --soft: #f6f8fb;
+      --paper: #ffffff;
+      --green: #1f8a70;
+      --green-soft: #e7f5ef;
+      --blue: #246bfe;
+      --blue-soft: #eaf1ff;
+      --rose: #c9415d;
+      --rose-soft: #fdecef;
+      --amber: #c77a12;
+      --amber-soft: #fff3dd;
+      --teal: #0f7f91;
+      --teal-soft: #e4f6f8;
+      --violet: #6651b8;
+      --violet-soft: #f0edff;
+      --shadow: 0 18px 50px rgba(28, 36, 48, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #edf1f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+    }
+
+    .page-shell {
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .report {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .brand {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: baseline;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #fff;
+      white-space: nowrap;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
+      gap: 28px;
+      padding: 30px 28px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .store-kicker {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .diagnosis-line {
+      max-width: 720px;
+      margin: 0 0 22px;
+      color: #344054;
+      font-size: 16px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .score-ring {
+      --value: 68;
+      width: 164px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, #fff 0 58%, transparent 59%),
+        conic-gradient(var(--green) calc(var(--value) * 1%), #e5e9f0 0);
+      border: 1px solid #e5e9f0;
+    }
+
+    .score-num {
+      text-align: center;
+    }
+
+    .score-num strong {
+      display: block;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .score-num span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .score-caption {
+      display: grid;
+      gap: 10px;
+    }
+
+    .caption-main {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .caption-text {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 520px;
+    }
+
+    .quick-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .metric {
+      min-height: 76px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+    }
+
+    .radar-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .radar-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 320px;
+    }
+
+    svg text {
+      fill: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 86px 1fr 34px;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .bar {
+      height: 7px;
+      background: #e6eaf0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      background: var(--green);
+      border-radius: inherit;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 24px 28px 28px;
+      background: var(--soft);
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .rank-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .rank-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .rank-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--rose);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .rank-item.strength .rank-num {
+      background: var(--green);
+    }
+
+    .rank-copy strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .rank-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .audience {
+      min-height: 92px;
+      display: grid;
+      align-content: start;
+      gap: 6px;
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--blue-soft);
+      border: 1px solid #cddcff;
+    }
+
+    .audience:nth-child(2) { background: var(--amber-soft); border-color: #f3d49d; }
+    .audience:nth-child(3) { background: var(--teal-soft); border-color: #bde5ea; }
+    .audience:nth-child(4) { background: var(--violet-soft); border-color: #d8d0ff; }
+    .audience:nth-child(5) { background: var(--rose-soft); border-color: #f5ccd4; }
+
+    .audience strong {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .audience span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .one-action {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid #f0c2ca;
+      background: var(--rose-soft);
+    }
+
+    .one-action span {
+      color: var(--rose);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .one-action strong {
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .video-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .video-item {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .video-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .video-copy strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .video-copy span {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+    }
+
+    .tag {
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #b7dfd1;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .footer-note {
+      padding: 16px 28px;
+      color: var(--muted);
+      font-size: 11px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .share-section {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 28px;
+      border-top: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .share-copy strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .share-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .share-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .share-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .share-actions a.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .content-grid,
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .audience-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quick-metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        padding: 12px;
+      }
+
+      .topbar,
+      .hero,
+      .content-grid,
+      .footer-note {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .meta {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .score-row {
+        grid-template-columns: 1fr;
+      }
+
+      .score-ring {
+        width: 142px;
+      }
+
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .video-item {
+        grid-template-columns: 42px 1fr;
+      }
+
+      .tag {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .share-section {
+        grid-template-columns: 1fr;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .share-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <article class="report" aria-label="お客様どっと混む 無料診断レポート">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-name">お客様どっと混む</div>
+          <div class="brand-sub">えらばれる店スコア診断</div>
+        </div>
+        <div class="meta" aria-label="レポート情報">
+          <span class="pill">無料診断 v0.1</span>
+          <span class="pill">那須・カフェ想定</span>
+          <span class="pill">2026.05.11</span>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <div class="store-kicker"><span class="dot"></span> 診断対象テスト</div>
+          <h1>テスト店舗カフェ</h1>
+          <p class="diagnosis-line">Google Mapsの基本情報は整っています。ただし、初めての人が来店前に確認したい駐車場・入口・席・価格の情報がまだ弱く、保存後に来店計画へ進む途中で離脱している可能性があります。</p>
+
+          <div class="score-row">
+            <div class="score-ring" aria-label="総合えらばれ度 68点">
+              <div class="score-num"><strong>68</strong><span>/ 100</span></div>
+            </div>
+            <div class="score-caption">
+              <div class="caption-main">来店前不安を消すと、選ばれやすさが上がります。</div>
+              <div class="caption-text">発見される力はあります。次は、初来店の人が安心して向かえるPlan情報を整える段階です。</div>
+            </div>
+          </div>
+
+          <div class="quick-metrics" aria-label="主要指標">
+            <div class="metric"><span>最も強い導線</span><strong>Maps / 発見</strong></div>
+            <div class="metric"><span>最も弱い導線</span><strong>Plan / 来店準備</strong></div>
+            <div class="metric"><span>最優先改善</span><strong>駐車場情報</strong></div>
+          </div>
+        </div>
+
+        <aside class="radar-card" aria-label="レーダーチャート">
+          <div class="section-title">
+            <h2>見え方レーダー</h2>
+            <span>8軸 / 100点</span>
+          </div>
+          <div class="radar-wrap">
+            <svg width="330" height="300" viewBox="0 0 330 300" role="img" aria-label="8軸レーダーチャート">
+              <g transform="translate(165 142)">
+                <polygon points="0,-108 76,-76 108,0 76,76 0,108 -76,76 -108,0 -76,-76" fill="none" stroke="#d8dee7"/>
+                <polygon points="0,-81 57,-57 81,0 57,57 0,81 -57,57 -81,0 -57,-57" fill="none" stroke="#d8dee7"/>
+                <polygon points="0,-54 38,-38 54,0 38,38 0,54 -38,38 -54,0 -38,-38" fill="none" stroke="#d8dee7"/>
+                <line x1="0" y1="-108" x2="0" y2="108" stroke="#e4e8ef"/>
+                <line x1="76" y1="-76" x2="-76" y2="76" stroke="#e4e8ef"/>
+                <line x1="108" y1="0" x2="-108" y2="0" stroke="#e4e8ef"/>
+                <line x1="76" y1="76" x2="-76" y2="-76" stroke="#e4e8ef"/>
+                <polygon points="0,-70 46,-46 59,0 31,31 0,79 -36,36 -52,0 -57,-57"
+                  fill="rgba(31, 138, 112, .24)" stroke="#1f8a70" stroke-width="3"/>
+                <circle cx="0" cy="-70" r="4" fill="#1f8a70"/>
+                <circle cx="46" cy="-46" r="4" fill="#1f8a70"/>
+                <circle cx="59" cy="0" r="4" fill="#1f8a70"/>
+                <circle cx="31" cy="31" r="4" fill="#1f8a70"/>
+                <circle cx="0" cy="79" r="4" fill="#1f8a70"/>
+                <circle cx="-36" cy="36" r="4" fill="#1f8a70"/>
+                <circle cx="-52" cy="0" r="4" fill="#1f8a70"/>
+                <circle cx="-57" cy="-57" r="4" fill="#1f8a70"/>
+                <text x="0" y="-124" text-anchor="middle">Maps</text>
+                <text x="91" y="-88" text-anchor="start">口コミ</text>
+                <text x="124" y="4" text-anchor="start">SEO/GEO</text>
+                <text x="91" y="91" text-anchor="start">Instagram</text>
+                <text x="0" y="133" text-anchor="middle">動画</text>
+                <text x="-91" y="91" text-anchor="end">不安解消</text>
+                <text x="-124" y="4" text-anchor="end">SPI</text>
+                <text x="-91" y="-88" text-anchor="end">体験</text>
+              </g>
+            </svg>
+          </div>
+          <div class="legend">
+            <div class="legend-row"><span>Maps整備</span><div class="bar"><span style="width:72%"></span></div><b>72</b></div>
+            <div class="legend-row"><span>Plan情報</span><div class="bar"><span style="width:52%"></span></div><b>52</b></div>
+            <div class="legend-row"><span>世界観</span><div class="bar"><span style="width:70%"></span></div><b>70</b></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="section-title">
+            <h2>弱点トップ3</h2>
+            <span>離脱ポイント</span>
+          </div>
+          <div class="rank-list">
+            <div class="rank-item">
+              <div class="rank-num">1</div>
+              <div class="rank-copy">
+                <strong>駐車場・入口情報が弱い</strong>
+                <span>行きたい気持ちはあるのに、初来店の不安で後回しになる可能性があります。</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">2</div>
+              <div class="rank-copy">
+                <strong>Instagramが商品写真に偏っている</strong>
+                <span>店内の席、光、過ごす時間が見えず、保存理由が浅くなっています。</span>
+              </div>
+            </div>
+            <div class="rank-item">
+              <div class="rank-num">3</div>
+              <div class="rank-copy">
+                <strong>口コミ返信が少ない</strong>
+                <span>信頼形成とAI検索で読まれる一次情報が不足しています。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-title">
+            <h2>強みトップ3</h2>
+            <span>伸ばす起点</span>
+          </div>
+          <div class="rank-list">
+            <div class="rank-item strength">
+              <div class="rank-num">1</div>
+              <div class="rank-copy">
+                <strong>Google Mapsで発見される土台がある</strong>
+                <span>地域名と業種で比較されたとき、候補に入りやすい状態です。</span>
+              </div>
+            </div>
+            <div class="rank-item strength">
+              <div class="rank-num">2</div>
+              <div class="rank-copy">
+                <strong>商品写真の印象が良い</strong>
+                <span>名物メニューをSave導線の中心にできます。</span>
+              </div>
+            </div>
+            <div class="rank-item strength">
+              <div class="rank-num">3</div>
+              <div class="rank-copy">
+                <strong>地域の空気と相性が良い</strong>
+                <span>借景を活かしつつ、自店指名へ変換する余地があります。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel full">
+          <div class="section-title">
+            <h2>逃している可能性のあるお客様</h2>
+            <span>見込み客の取りこぼし</span>
+          </div>
+          <div class="audience-grid">
+            <div class="audience"><strong>初めて那須に来る観光客</strong><span>道・駐車場・入口の不安で比較から外れる</span></div>
+            <div class="audience"><strong>子連れで失敗したくない家族</strong><span>席、混雑、価格、取り分け情報が足りない</span></div>
+            <div class="audience"><strong>ひとりで静かに過ごしたい人</strong><span>一人客向きの席や時間帯が見えていない</span></div>
+            <div class="audience"><strong>Google Mapsで比較している人</strong><span>口コミ返信と最新写真で信頼を作りきれていない</span></div>
+            <div class="audience"><strong>Instagramで保存した人</strong><span>保存後に計画へ進むための情報が弱い</span></div>
+          </div>
+        </div>
+
+        <div class="panel full">
+          <div class="section-title">
+            <h2>今日から動くなら</h2>
+            <span>最初の改善アクション</span>
+          </div>
+          <div class="action-grid">
+            <div class="one-action">
+              <span>今すぐ直すべき1点</span>
+              <strong>Google MapsとInstagramハイライトに、駐車場・入口・席・価格を追加する。</strong>
+            </div>
+            <div class="video-list" aria-label="今撮るべき動画3本">
+              <div class="video-item">
+                <div class="video-icon">1</div>
+                <div class="video-copy"><strong>駐車場から入口まで15秒</strong><span>初来店の不安を消すPlan動画</span></div>
+                <div class="tag">Plan</div>
+              </div>
+              <div class="video-item">
+                <div class="video-icon">2</div>
+                <div class="video-copy"><strong>店内で一番気持ちいい席</strong><span>保存したくなる空気を作るSave動画</span></div>
+                <div class="tag">Save</div>
+              </div>
+              <div class="video-item">
+                <div class="video-icon">3</div>
+                <div class="video-copy"><strong>今日の仕込み・湯気・音</strong><span>今行きたい理由を作るImpulse動画</span></div>
+                <div class="tag">Impulse</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer-note">
+        この診断は味や技術そのものを評価するものではありません。初めてのお客様から見た「選びやすさ」「不安の少なさ」「世界観の伝わり方」を、なすぱらTV実地検証・Save → Plan → Impulse・世界観設計7層モデルに基づき改善目安として可視化しています。
+      </footer>
+
+      <section class="share-section" aria-label="診断結果の共有と無料診断導線">
+        <div class="share-copy">
+          <strong>この診断結果を共有できます</strong>
+          <span>家族、スタッフ、知人のお店にLINEやメールで送れます。共有先の人も、ページ下部から無料診断を試せます。</span>
+        </div>
+        <div class="share-actions">
+          <a id="line-share" href="#">LINEで送る</a>
+          <a id="mail-share" href="#">メールで送る</a>
+          <a class="primary" href="/">あなたのお店も試してみませんか？ 完全無料</a>
+        </div>
+      </section>
+    </article>
+  </main>
+  <script>
+    const reportUrl = window.location.href;
+    const shareText = `お客様どっと混むで「テスト店舗カフェ」の見え方診断を見ました。\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\nあなたのお店も無料で試せます。\n${reportUrl}`;
+    const lineShare = document.querySelector("#line-share");
+    const mailShare = document.querySelector("#mail-share");
+
+    if (lineShare) {
+      lineShare.href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(shareText)}`;
+    }
+
+    if (mailShare) {
+      mailShare.href = `mailto:?subject=${encodeURIComponent("お店の見え方診断を共有します")}&body=${encodeURIComponent(shareText)}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 *.md
 mockups/
 google-apps-script/
+data/
+scripts/
 source_texts/
 extract_sources.py
 .DS_Store
