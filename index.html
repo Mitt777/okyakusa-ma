@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>お客様どっと混む トップ UI v0.1</title>
+  <style>
+    :root {
+      --ink: #17202c;
+      --muted: #667085;
+      --line: #d7dde6;
+      --soft: #f4f7fb;
+      --paper: #ffffff;
+      --green: #1f8a70;
+      --green-dark: #12614e;
+      --blue: #245bdb;
+      --amber: #b76b08;
+      --rose: #b93b55;
+      --shadow: 0 22px 70px rgba(23, 32, 44, .14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #f9fbfd 0%, #eef3f8 52%, #e8eef5 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+    }
+
+    .site {
+      min-height: 100vh;
+    }
+
+    header {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand strong {
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .brand span,
+    nav a {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .hero {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 56px 0 34px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green-dark);
+      background: #e6f4ef;
+      border: 1px solid #b9dfd1;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 auto 12px;
+      max-width: 820px;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0 auto 34px;
+      color: #344054;
+      font-size: 18px;
+    }
+
+    .search-stage {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .step-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .progress {
+      width: 180px;
+      height: 6px;
+      border-radius: 999px;
+      background: #e3e8f0;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 20%;
+      background: var(--green);
+      border-radius: inherit;
+    }
+
+    .search-main {
+      padding: 28px;
+    }
+
+    .prompt {
+      margin-bottom: 14px;
+    }
+
+    .prompt strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+
+    .prompt span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 2px solid #b8c2d1;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .search-box input {
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      font: inherit;
+      font-size: 19px;
+      padding: 13px 14px;
+      color: var(--ink);
+    }
+
+    .search-box input::placeholder {
+      color: #98a2b3;
+    }
+
+    .search-box button {
+      border: 0;
+      border-radius: 6px;
+      padding: 14px 20px;
+      background: var(--green);
+      color: #fff;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 850;
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    .next-questions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .next-questions span {
+      font-weight: 750;
+      color: #475467;
+    }
+
+    .proof {
+      border-top: 1px solid var(--line);
+      background: #fcfdff;
+      padding: 18px 28px;
+    }
+
+    .proof-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .proof-title strong {
+      font-size: 15px;
+    }
+
+    .proof-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .signal-list {
+      display: grid;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .signal {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 14px;
+      padding: 14px 16px;
+      min-height: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .signal:first-child { border-top: 0; }
+
+    .signal b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    .signal ul {
+      margin: 0;
+      padding-left: 1.2em;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .signal li + li {
+      margin-top: 3px;
+    }
+
+    .divider-section {
+      width: min(1120px, calc(100% - 40px));
+      margin: 34px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .explain {
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .explain h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .explain p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .two-lanes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 16px;
+      padding: 18px;
+      align-items: start;
+    }
+
+    .lane + .lane {
+      border-top: 1px solid var(--line);
+    }
+
+    .lane-label {
+      border-radius: 999px;
+      padding: 6px 9px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 850;
+      color: var(--blue);
+      background: #eaf1ff;
+      border: 1px solid #cddcff;
+    }
+
+    .lane:nth-child(2) .lane-label {
+      color: var(--amber);
+      background: #fff4df;
+      border-color: #f1d39c;
+    }
+
+    .lane strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .lane span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sample-output {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+    }
+
+    .sample-output h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .mini-result {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .mini-result:first-of-type {
+      border-top: 0;
+    }
+
+    .score {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #edf7f3;
+      color: var(--green-dark);
+      font-weight: 900;
+    }
+
+    .mini-result strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .mini-result span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .status.warn { color: var(--amber); }
+    .status.bad { color: var(--rose); }
+    .status.good { color: var(--green-dark); }
+
+    .bottom-note {
+      width: min(1120px, calc(100% - 40px));
+      margin: 34px auto 0;
+      padding: 20px 0 40px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      header,
+      nav,
+      .step-line,
+      .proof-title {
+        align-items: flex-start;
+      }
+
+      header,
+      .step-line {
+        flex-direction: column;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 28px;
+      }
+
+      .search-box {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box button {
+        width: 100%;
+      }
+
+      .signal-list,
+      .divider-section {
+        grid-template-columns: 1fr;
+      }
+
+      .signal {
+        grid-template-columns: 1fr;
+      }
+
+      .lane {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site">
+    <header>
+      <div class="brand">
+        <strong>お客様どっと混む</strong>
+        <span>えらばれる店スコア診断</span>
+      </div>
+      <nav aria-label="主要ナビゲーション">
+        <a href="#">診断でわかること</a>
+        <a href="#">β版について</a>
+        <a href="#">料金</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="main-title">
+      <div class="eyebrow">無料診断 v0.1 / 那須・栃木の店舗向け</div>
+      <h1 id="main-title">お店の見え方を、まず1つの診断窓から。</h1>
+      <p class="lead">
+        Google Maps診断、簡易SEO診断、口コミ、公式サイト、Instagram、SNS動画、来店前不安をまとめて確認し、
+        「本来来てほしいお客様に選ばれる状態」へ翻訳します。
+      </p>
+
+      <div class="search-stage" aria-label="診断開始フォームのイメージ">
+        <div class="step-line">
+          <span>Step 1 / 5　まずは店舗名と地域だけで候補を特定します</span>
+          <div class="progress" aria-label="入力進捗 20%"><span></span></div>
+        </div>
+
+        <div class="search-main">
+          <div class="prompt">
+            <strong>診断したいお店を入力してください</strong>
+            <span>例: 森の入口カフェ　那須町 / 黒磯 ランチ / 大田原 美容室</span>
+          </div>
+          <div class="search-box">
+            <input value="" placeholder="店舗名・地域・業種を入力">
+            <button type="button">無料で診断する</button>
+          </div>
+          <div class="next-questions" aria-label="続く入力項目">
+            <span>次に行うこと:</span>
+            Google Maps候補を照合し、公式サイトやSNSがある場合だけSEO/GEO簡易判定へ進みます。
+          </div>
+        </div>
+
+        <div class="proof">
+          <div class="proof-title">
+            <strong>診断の前に、まず「そのお店で間違いないか」を判定します</strong>
+            <span>店舗特定が曖昧な場合は診断を進めません</span>
+          </div>
+          <div class="signal-list">
+            <div class="signal">
+              <b>店舗特定</b>
+              <ul>
+                <li>店舗名、住所、電話番号、カテゴリを照合</li>
+                <li>Google Maps URLと公式サイトURLの一致</li>
+                <li>同名店舗・支店・閉業候補を除外</li>
+              </ul>
+            </div>
+            <div class="signal">
+              <b>Google Maps診断</b>
+              <ul>
+                <li>カテゴリ、営業時間、写真、メニュー</li>
+                <li>口コミ件数、平均、最新日、返信率</li>
+                <li>経路、電話、予約、公式URLの整備</li>
+              </ul>
+            </div>
+            <div class="signal">
+              <b>簡易SEO診断</b>
+              <ul>
+                <li>公式サイト、Instagram、YouTube、X等がある場合だけ判定</li>
+                <li>地域名×グルメ/ランチ/ディナーの検索順位</li>
+                <li>title、H1、FAQ、料金、アクセス、投稿文の言葉</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="divider-section" aria-label="診断基準の説明">
+      <div class="explain">
+        <h2>まず店舗を特定し、その後に診断します。</h2>
+        <p>
+          入力された店舗名だけで採点すると、同名店舗や近隣店舗を誤って診断する危険があります。
+          そのため内部では、Google Maps、公式サイト、住所、電話番号、SNSを照合し、特定できた場合だけスコア化します。
+          公式サイトやSNSがない項目は「未判定」とし、総合点で不利になりすぎないようにします。
+        </p>
+      </div>
+
+      <div class="two-lanes">
+        <div class="lane">
+          <div class="lane-label">特定判定</div>
+          <div>
+            <strong>診断対象の成否を先に出す</strong>
+            <span>一致、要確認、不一致の3段階。要確認の場合は、候補店舗を見せてオーナーに選んでもらいます。</span>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-label">観測値</div>
+          <div>
+            <strong>数字で確認できる評価</strong>
+            <span>検索順位、口コミ件数、評価平均、返信率、写真枚数、GBP項目充足率、サイト/SNS基本項目など。素材がない場合は未判定。</span>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-label">独自スコア</div>
+          <div>
+            <strong>来店に変わるかを見る評価</strong>
+            <span>Save/Plan/Impulse、来店前不安、世界観一致、借景依存、自店魅力転換、顧客体験など。</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sample-output">
+        <h2>診断結果で見える例</h2>
+        <div class="mini-result">
+          <div class="score">OK</div>
+          <div><strong>店舗特定</strong><span>Google Maps、公式サイト、住所、電話番号、Instagramが同一店舗として一致。</span></div>
+          <div class="status good">一致</div>
+        </div>
+        <div class="mini-result">
+          <div class="score">72</div>
+          <div><strong>Google Maps整備度</strong><span>営業時間・写真・口コミは良好。メニュー、予約、駐車場説明に改善余地。</span></div>
+          <div class="status warn">要改善</div>
+        </div>
+        <div class="mini-result">
+          <div class="score">4</div>
+          <div><strong>「那須 ランチ」検索順位</strong><span>上位10件中4位。地域×用途語で発見される土台あり。</span></div>
+          <div class="status good">良好</div>
+        </div>
+        <div class="mini-result">
+          <div class="score">--</div>
+          <div><strong>YouTube / X 簡易SEO</strong><span>公式アカウント未入力のため今回は未判定。総合点の減点対象にはしません。</span></div>
+          <div class="status warn">未判定</div>
+        </div>
+        <div class="mini-result">
+          <div class="score">38</div>
+          <div><strong>Google Maps口コミ返信率</strong><span>最近30件中11件返信。信頼形成とGEO素材に改善余地。</span></div>
+          <div class="status warn">要改善</div>
+        </div>
+        <div class="mini-result">
+          <div class="score">48</div>
+          <div><strong>Plan導線スコア</strong><span>駐車場・入口・席・価格が弱く、保存後の来店準備で離脱しやすい。</span></div>
+          <div class="status bad">弱点</div>
+        </div>
+      </div>
+    </section>
+
+    <p class="bottom-note">
+      MVPでは公開情報と店舗入力をもとに人間が確認します。外部レビュー本文や画像の大量転載、規約に反するスクレイピングは行いません。
+    </p>
+  </main>
+</body>
+</html>
