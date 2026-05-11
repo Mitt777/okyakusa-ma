@@ -1,4 +1,7 @@
 const REQUIRED_FIELDS = ["store_query", "area", "category", "owner_name", "email"];
+const { fetchPlacesObservation } = require("./_lib/places");
+const { generateDiagnosisJson } = require("./_lib/gemini");
+const { buildMonthlyReport } = require("./_lib/monthly");
 
 function json(response, statusCode = 200) {
   return { response, statusCode };
@@ -74,6 +77,23 @@ module.exports = async function handler(request, response) {
     source: "okyakusa-ma.com"
   };
 
+  let enrichment = {};
+  if (process.env.AUTO_ENRICH_DIAGNOSIS === "true") {
+    try {
+      const places_observation = await fetchPlacesObservation(payload);
+      const ai_diagnosis = await generateDiagnosisJson(payload, places_observation);
+      const monthly_report = buildMonthlyReport(payload, places_observation, ai_diagnosis);
+      enrichment = { places_observation, ai_diagnosis, monthly_report };
+    } catch (error) {
+      enrichment = {
+        enrichment_error: {
+          message: error.message,
+          created_at: new Date().toISOString()
+        }
+      };
+    }
+  }
+
   const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
   if (!scriptUrl) {
     return send(json({
@@ -90,7 +110,8 @@ module.exports = async function handler(request, response) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         secret: process.env.GOOGLE_SCRIPT_SECRET || "",
-        record
+        record,
+        ...enrichment
       })
     });
 
@@ -98,7 +119,13 @@ module.exports = async function handler(request, response) {
       throw new Error(`Google Sheets連携でエラーが返りました: ${sheetResponse.status}`);
     }
 
-    return send(json({ ok: true, request_id: requestId, stored: true }));
+    return send(json({
+      ok: true,
+      request_id: requestId,
+      stored: true,
+      enriched: Boolean(enrichment.places_observation || enrichment.ai_diagnosis || enrichment.monthly_report),
+      enrichment_error: enrichment.enrichment_error || null
+    }));
   } catch (error) {
     return send(json({
       ok: false,

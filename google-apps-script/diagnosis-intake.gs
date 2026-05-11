@@ -70,6 +70,74 @@ const SHEETS = {
     "stripe_customer_id",
     "stripe_checkout_session_id",
     "stripe_subscription_id"
+  ],
+  maps_observations: [
+    "request_id",
+    "created_at",
+    "query",
+    "identity_status",
+    "identity_score",
+    "matched_place_id",
+    "matched_store_name",
+    "matched_address",
+    "maps_category",
+    "rating",
+    "user_rating_count",
+    "website_uri",
+    "phone",
+    "google_maps_uri",
+    "photos_count",
+    "maps_score",
+    "maps_strengths",
+    "maps_weaknesses",
+    "maps_quick_fixes",
+    "raw_json"
+  ],
+  ai_diagnoses: [
+    "request_id",
+    "created_at",
+    "generated_by",
+    "store_name",
+    "total_score",
+    "maps_score",
+    "review_score",
+    "meo_score",
+    "seo_score",
+    "geo_score",
+    "previsit_anxiety_score",
+    "save_score",
+    "plan_score",
+    "impulse_score",
+    "worldview_score",
+    "cx_score",
+    "summary",
+    "strengths",
+    "weaknesses",
+    "top_fix",
+    "video_ideas",
+    "raw_json"
+  ],
+  monthly_reports: [
+    "request_id",
+    "created_at",
+    "month",
+    "store_name",
+    "status",
+    "maps_rating",
+    "maps_review_count",
+    "maps_score",
+    "total_score",
+    "this_month_focus",
+    "action_items",
+    "video_plan",
+    "next_review_questions",
+    "raw_json"
+  ],
+  api_errors: [
+    "request_id",
+    "created_at",
+    "message",
+    "raw_json"
   ]
 };
 
@@ -89,10 +157,119 @@ function doPost(e) {
     const row = headers.map((header) => record[header] || "");
     sheet.appendRow(row);
 
+    if (payload.places_observation) {
+      appendMapsObservation_(record.request_id, payload.places_observation);
+    }
+
+    if (payload.ai_diagnosis) {
+      appendAiDiagnosis_(record.request_id, payload.ai_diagnosis);
+    }
+
+    if (payload.monthly_report) {
+      appendMonthlyReport_(record.request_id, payload.monthly_report);
+    }
+
+    if (payload.enrichment_error) {
+      appendApiError_(record.request_id, payload.enrichment_error);
+    }
+
     return json_({ ok: true, request_id: record.request_id });
   } catch (error) {
     return json_({ ok: false, message: error.message }, 500);
   }
+}
+
+function appendMapsObservation_(requestId, observation) {
+  const sheet = getSheet_("maps_observations", SHEETS.maps_observations);
+  const primary = observation.primary_place || {};
+  const report = observation.maps_report || {};
+  const row = [
+    requestId,
+    new Date(),
+    observation.query || "",
+    observation.identity && observation.identity.status || "",
+    observation.identity && observation.identity.score || "",
+    primary.place_id || "",
+    primary.name || "",
+    primary.address || "",
+    primary.primary_type_label || primary.primary_type || "",
+    primary.rating || "",
+    primary.user_rating_count || "",
+    primary.website_uri || "",
+    primary.phone || "",
+    primary.google_maps_uri || "",
+    primary.photos_count || "",
+    report.maps_score || "",
+    stringify_(report.strengths),
+    stringify_(report.weaknesses),
+    stringify_(report.quick_fixes),
+    stringify_(observation)
+  ];
+  sheet.appendRow(row);
+}
+
+function appendAiDiagnosis_(requestId, aiResult) {
+  const diagnosis = aiResult.diagnosis || aiResult;
+  const scores = diagnosis.scores || {};
+  const sheet = getSheet_("ai_diagnoses", SHEETS.ai_diagnoses);
+  const row = [
+    requestId,
+    new Date(),
+    diagnosis.generated_by || aiResult.model || "",
+    diagnosis.store_name || "",
+    diagnosis.total_score || "",
+    scores.maps_score || "",
+    scores.review_score || "",
+    scores.meo_score || "",
+    scores.seo_score || "",
+    scores.geo_score || "",
+    scores.previsit_anxiety_score || "",
+    scores.save_score || "",
+    scores.plan_score || "",
+    scores.impulse_score || "",
+    scores.worldview_score || "",
+    scores.cx_score || "",
+    diagnosis.summary || "",
+    stringify_(diagnosis.strengths),
+    stringify_(diagnosis.weaknesses),
+    diagnosis.top_fix || "",
+    stringify_(diagnosis.video_ideas),
+    stringify_(aiResult)
+  ];
+  sheet.appendRow(row);
+}
+
+function appendMonthlyReport_(requestId, monthlyReport) {
+  const metrics = monthlyReport.observed_metrics || {};
+  const scores = monthlyReport.score_snapshot || {};
+  const sheet = getSheet_("monthly_reports", SHEETS.monthly_reports);
+  const row = [
+    requestId,
+    new Date(),
+    monthlyReport.month || "",
+    monthlyReport.store_name || "",
+    monthlyReport.status || "",
+    metrics.maps_rating || "",
+    metrics.maps_review_count || "",
+    metrics.maps_score || "",
+    scores.total_score || "",
+    monthlyReport.this_month_focus || "",
+    stringify_(monthlyReport.action_items),
+    stringify_(monthlyReport.video_plan),
+    stringify_(monthlyReport.next_review_questions),
+    stringify_(monthlyReport)
+  ];
+  sheet.appendRow(row);
+}
+
+function appendApiError_(requestId, error) {
+  const sheet = getSheet_("api_errors", SHEETS.api_errors);
+  sheet.appendRow([
+    requestId,
+    new Date(),
+    error.message || "",
+    stringify_(error)
+  ]);
 }
 
 function setupSheets() {
@@ -124,4 +301,9 @@ function json_(data, statusCode) {
   return ContentService
     .createTextOutput(JSON.stringify({ ...data, statusCode }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function stringify_(value) {
+  if (value === null || value === undefined) return "";
+  return typeof value === "string" ? value : JSON.stringify(value);
 }
