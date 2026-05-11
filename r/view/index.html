@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>診断結果β | お客様どっと混む</title>
+  <style>
+    :root {
+      --ink: #1c2430;
+      --muted: #667085;
+      --line: #d8dee7;
+      --soft: #f6f8fb;
+      --paper: #ffffff;
+      --green: #1f8a70;
+      --green-soft: #e7f5ef;
+      --blue-soft: #eaf1ff;
+      --rose: #c9415d;
+      --rose-soft: #fdecef;
+      --amber: #c77a12;
+      --amber-soft: #fff3dd;
+      --shadow: 0 18px 50px rgba(28, 36, 48, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #edf1f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.6;
+    }
+
+    .shell {
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .report {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 22px;
+    }
+
+    .brand span,
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      padding: 30px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      max-width: 760px;
+      color: #344054;
+      margin: 0;
+    }
+
+    .score-ring {
+      --value: 0;
+      width: 150px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, #fff 0 58%, transparent 59%),
+        conic-gradient(var(--green) calc(var(--value) * 1%), #e5e9f0 0);
+      border: 1px solid #e5e9f0;
+    }
+
+    .score-ring strong {
+      display: block;
+      font-size: 42px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .score-ring span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 20px 28px;
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding: 24px 28px;
+      background: var(--soft);
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      color: #344054;
+      font-size: 14px;
+    }
+
+    .action {
+      border-color: #f0c2ca;
+      background: var(--rose-soft);
+    }
+
+    .action strong {
+      color: var(--rose);
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .video {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #b7dfd1;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .loading,
+    .error {
+      width: min(760px, 100%);
+      margin: 80px auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 28px;
+    }
+
+    .share {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 22px 28px;
+      border-top: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .share a {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .share a.primary {
+      color: #fff;
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    @media (max-width: 860px) {
+      .shell { padding: 12px; }
+      .topbar,
+      .hero,
+      .metrics,
+      .grid {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero,
+      .grid,
+      .metrics,
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="loading" id="loading">診断結果を読み込んでいます...</div>
+    <div class="error" id="error" hidden></div>
+    <article class="report" id="report" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <strong>お客様どっと混む</strong>
+          <span>えらばれる店スコア診断 β</span>
+        </div>
+        <div class="meta" id="meta"></div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <h1 id="store-name"></h1>
+          <p class="summary" id="summary"></p>
+        </div>
+        <div class="score-ring" id="score-ring">
+          <div><strong id="total-score">--</strong><span>/ 100</span></div>
+        </div>
+      </section>
+
+      <section class="metrics" id="metrics"></section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>Google Maps観測値</h2>
+          <ul class="list" id="maps-list"></ul>
+        </div>
+        <div class="panel">
+          <h2>弱点トップ3</h2>
+          <ul class="list" id="weaknesses"></ul>
+        </div>
+        <div class="panel">
+          <h2>強みトップ3</h2>
+          <ul class="list" id="strengths"></ul>
+        </div>
+        <div class="panel action">
+          <h2>今すぐ直すべき1点</h2>
+          <p><strong id="top-fix"></strong></p>
+        </div>
+        <div class="panel full">
+          <h2>今撮るべき動画3本</h2>
+          <div class="video-grid" id="videos"></div>
+        </div>
+        <div class="panel full">
+          <h2>月次レポートβ</h2>
+          <ul class="list" id="monthly"></ul>
+        </div>
+      </section>
+
+      <section class="share">
+        <a id="line-share" href="#">LINEで送る</a>
+        <a id="mail-share" href="#">メールで送る</a>
+        <a class="primary" href="/">あなたのお店も試してみませんか？ 完全無料</a>
+      </section>
+    </article>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id") || params.get("request_id");
+    const loading = document.querySelector("#loading");
+    const errorBox = document.querySelector("#error");
+    const reportEl = document.querySelector("#report");
+
+    function text(value, fallback = "未判定") {
+      return value === null || value === undefined || value === "" ? fallback : String(value);
+    }
+
+    function escapeHtml(value) {
+      return text(value, "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function parseJson(value, fallback) {
+      if (!value) return fallback;
+      if (typeof value !== "string") return value;
+      try {
+        return JSON.parse(value);
+      } catch {
+        return fallback;
+      }
+    }
+
+    function list(target, items) {
+      const el = document.querySelector(target);
+      el.innerHTML = "";
+      (items || []).filter(Boolean).slice(0, 8).forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = typeof item === "string" ? item : [item.title, item.body || item.reason].filter(Boolean).join(" - ");
+        el.appendChild(li);
+      });
+    }
+
+    function metric(label, value) {
+      return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(text(value))}</strong></div>`;
+    }
+
+    function showError(message) {
+      loading.hidden = true;
+      errorBox.hidden = false;
+      errorBox.textContent = message;
+    }
+
+    async function main() {
+      if (!id) {
+        showError("URLに受付IDがありません。 /r/view/?id=req_xxxxx の形式で開いてください。");
+        return;
+      }
+
+      const response = await fetch(`/api/report?id=${encodeURIComponent(id)}`);
+      const data = await response.json();
+      if (!response.ok || !data.ok) {
+        showError(data.message || "診断結果を読み込めませんでした。");
+        return;
+      }
+
+      const payload = data.report || {};
+      const request = payload.request || {};
+      const maps = payload.maps_observation || {};
+      const ai = payload.ai_diagnosis || {};
+      const monthly = payload.monthly_report || {};
+      const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
+      const monthlyRaw = payload.raw?.monthly_report || {};
+
+      const storeName = text(ai.store_name || request.store_name, "診断店舗");
+      const totalScore = Number(ai.total_score || monthly.total_score || aiRaw.total_score || 0);
+      const summary = ai.summary || aiRaw.summary || "診断下書きを生成しました。Google Maps観測値とAI診断を確認してください。";
+
+      document.querySelector("#store-name").textContent = storeName;
+      document.querySelector("#summary").textContent = summary;
+      document.querySelector("#total-score").textContent = totalScore || "--";
+      document.querySelector("#score-ring").style.setProperty("--value", totalScore || 0);
+      document.querySelector("#meta").textContent = `受付ID: ${id} / β診断`;
+
+      document.querySelector("#metrics").innerHTML = [
+        metric("Mapsスコア", ai.maps_score || maps.maps_score),
+        metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`),
+        metric("SEO/GEO", `${text(ai.seo_score)} / ${text(ai.geo_score)}`),
+        metric("今月の重点", monthly.this_month_focus || ai.top_fix)
+      ].join("");
+
+      list("#maps-list", [
+        `店舗特定: ${text(maps.identity_status)} / ${text(maps.identity_score)}点`,
+        `正式名: ${text(maps.matched_store_name || request.store_name)}`,
+        `住所: ${text(maps.matched_address)}`,
+        `カテゴリ: ${text(maps.maps_category)}`,
+        `評価: ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件`,
+        `Mapsスコア: ${text(maps.maps_score)}`
+      ]);
+
+      list("#weaknesses", parseJson(ai.weaknesses, aiRaw.weaknesses || []));
+      list("#strengths", parseJson(ai.strengths, aiRaw.strengths || []));
+      document.querySelector("#top-fix").textContent = ai.top_fix || aiRaw.top_fix || monthly.this_month_focus || "Google MapsとSNSの来店前情報を整える";
+
+      const videos = parseJson(ai.video_ideas, aiRaw.video_ideas || monthlyRaw.video_plan || []);
+      const videosEl = document.querySelector("#videos");
+      videosEl.innerHTML = "";
+      videos.slice(0, 3).forEach((video) => {
+        const card = document.createElement("div");
+        card.className = "video";
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = text(video.tag, "Video");
+        const title = document.createElement("strong");
+        title.textContent = text(video.title);
+        const reason = document.createElement("p");
+        reason.textContent = text(video.reason || video.body, "");
+        card.append(tag, title, reason);
+        videosEl.appendChild(card);
+      });
+
+      list("#monthly", [
+        `対象月: ${text(monthly.month || monthlyRaw.month)}`,
+        `今月の重点改善: ${text(monthly.this_month_focus || monthlyRaw.this_month_focus)}`,
+        ...parseJson(monthly.action_items, monthlyRaw.action_items || []).slice(0, 5),
+        ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
+      ]);
+
+      const shareText = `お客様どっと混むで「${storeName}」の見え方診断を見ました。\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${window.location.href}`;
+      document.querySelector("#line-share").href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`;
+      document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent("お店の見え方診断を共有します")}&body=${encodeURIComponent(shareText)}`;
+
+      loading.hidden = true;
+      reportEl.hidden = false;
+    }
+
+    main().catch((error) => showError(error.message));
+  </script>
+</body>
+</html>

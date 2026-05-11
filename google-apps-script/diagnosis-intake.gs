@@ -179,6 +179,40 @@ function doPost(e) {
   }
 }
 
+function doGet(e) {
+  try {
+    const params = e.parameter || {};
+
+    if (EXPECTED_SECRET !== "CHANGE_ME" && params.secret !== EXPECTED_SECRET) {
+      return json_({ ok: false, message: "Invalid secret" }, 403);
+    }
+
+    if (params.action !== "report") {
+      return json_({ ok: false, message: "Unknown action" }, 400);
+    }
+
+    const requestId = params.request_id || "";
+    if (!requestId) {
+      return json_({ ok: false, message: "request_id is required" }, 400);
+    }
+
+    setupSheets();
+
+    const report = buildReportPayload_(requestId);
+    if (!report.request) {
+      return json_({ ok: false, message: "Report not found", request_id: requestId }, 404);
+    }
+
+    return json_({
+      ok: true,
+      request_id: requestId,
+      report: report
+    });
+  } catch (error) {
+    return json_({ ok: false, message: error.message }, 500);
+  }
+}
+
 function appendMapsObservation_(requestId, observation) {
   const sheet = getSheet_("maps_observations", SHEETS.maps_observations);
   const primary = observation.primary_place || {};
@@ -206,6 +240,55 @@ function appendMapsObservation_(requestId, observation) {
     stringify_(observation)
   ];
   sheet.appendRow(row);
+}
+
+function buildReportPayload_(requestId) {
+  const request = findLatestRow_("requests", requestId);
+  const maps = findLatestRow_("maps_observations", requestId);
+  const diagnosis = findLatestRow_("ai_diagnoses", requestId);
+  const monthly = findLatestRow_("monthly_reports", requestId);
+  const apiError = findLatestRow_("api_errors", requestId);
+
+  return {
+    request: request,
+    maps_observation: maps,
+    ai_diagnosis: diagnosis,
+    monthly_report: monthly,
+    api_error: apiError,
+    raw: {
+      maps_observation: parseJsonSafe_(maps && maps.raw_json),
+      ai_diagnosis: parseJsonSafe_(diagnosis && diagnosis.raw_json),
+      monthly_report: parseJsonSafe_(monthly && monthly.raw_json),
+      api_error: parseJsonSafe_(apiError && apiError.raw_json)
+    }
+  };
+}
+
+function findLatestRow_(sheetName, requestId) {
+  const headers = SHEETS[sheetName];
+  const sheet = getSheet_(sheetName, headers);
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) return null;
+
+  const requestIdIndex = headers.indexOf("request_id");
+  let found = null;
+
+  for (let i = 1; i < values.length; i += 1) {
+    if (String(values[i][requestIdIndex]) === String(requestId)) {
+      found = rowToObject_(headers, values[i]);
+    }
+  }
+
+  return found;
+}
+
+function rowToObject_(headers, row) {
+  const object = {};
+  headers.forEach((header, index) => {
+    const value = row[index];
+    object[header] = value instanceof Date ? value.toISOString() : value;
+  });
+  return object;
 }
 
 function appendAiDiagnosis_(requestId, aiResult) {
@@ -306,4 +389,14 @@ function json_(data, statusCode) {
 function stringify_(value) {
   if (value === null || value === undefined) return "";
   return typeof value === "string" ? value : JSON.stringify(value);
+}
+
+function parseJsonSafe_(value) {
+  if (!value) return null;
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    return null;
+  }
 }
