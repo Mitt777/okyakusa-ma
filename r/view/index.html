@@ -324,7 +324,8 @@
       background: #fbfcfe;
     }
 
-    .share a {
+    .share a,
+    .share button {
       display: inline-flex;
       min-height: 42px;
       align-items: center;
@@ -337,12 +338,20 @@
       font-size: 13px;
       font-weight: 850;
       text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .share a.primary {
       color: #fff;
       background: var(--green);
       border-color: var(--green);
+    }
+
+    .share button.primary-lite {
+      color: var(--green);
+      border-color: #b7dfd1;
+      background: var(--green-soft);
     }
 
     @media (max-width: 860px) {
@@ -430,8 +439,10 @@
       </section>
 
       <section class="share">
+        <button class="primary-lite" id="native-share" type="button">共有する</button>
         <a id="line-share" href="#">LINEで送る</a>
         <a id="mail-share" href="#">メールで送る</a>
+        <button id="copy-share" type="button">リンクをコピー</button>
         <a class="primary" href="/">あなたのお友達のお店も診断してみませんか？ 完全無料</a>
       </section>
     </article>
@@ -740,8 +751,32 @@ https://okyakusa-ma.com/
       const shareText = `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${window.location.href}`;
       const mailSubject = buildMailSubject(storeName);
       const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly);
-      document.querySelector("#line-share").href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`;
+      document.querySelector("#line-share").href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
       document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+      document.querySelector("#native-share").addEventListener("click", async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: `${storeName}様のお店の見え方診断`,
+              text: shareText,
+              url: window.location.href
+            });
+            return;
+          }
+          await navigator.clipboard.writeText(shareText);
+          document.querySelector("#native-share").textContent = "コピーしました";
+        } catch (error) {
+          document.querySelector("#native-share").textContent = "共有を中止しました";
+        }
+      });
+      document.querySelector("#copy-share").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(shareText);
+          document.querySelector("#copy-share").textContent = "コピーしました";
+        } catch (error) {
+          document.querySelector("#copy-share").textContent = "コピーできませんでした";
+        }
+      });
 
       loading.hidden = true;
       reportEl.hidden = false;
