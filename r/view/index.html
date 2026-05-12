@@ -220,16 +220,31 @@
 
     .premium-hint {
       display: inline-flex;
+      align-items: center;
+      justify-content: center;
       margin-top: 12px;
       border-radius: 999px;
-      padding: 4px 9px;
+      padding: 8px 12px;
       color: var(--amber);
       background: var(--amber-soft);
       border: 1px solid #f1c27a;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 850;
       cursor: pointer;
       font-family: inherit;
+      line-height: 1.2;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .premium-hint::before {
+      content: "▼";
+      margin-right: 5px;
+      font-size: 10px;
+    }
+
+    .premium-hint[aria-expanded="true"]::before {
+      content: "▲";
     }
 
     .deep-dive {
@@ -591,7 +606,7 @@
         <div class="improvement-card">
           <h3>${escapeHtml(label)}</h3>
           <ol>${listItems}</ol>
-          <button class="premium-hint" type="button" data-label="${escapeHtml(hint)}">${escapeHtml(hint)}</button>
+          <button class="premium-hint" type="button" data-label="${escapeHtml(hint)}" aria-expanded="false">詳細を見る（テスト）: ${escapeHtml(hint.replace(/^詳細診断: /, ""))}</button>
           <div class="deep-dive">
             <strong>テスト表示: ワンコイン詳細で見せる内容</strong>
             <ul>${detailItems}</ul>
@@ -910,13 +925,14 @@ https://okyakusa-ma.com/
         improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り", seoDeepDive(request, ai)),
         improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り", geoDeepDive(ai))
       ].join("");
-      document.querySelectorAll(".premium-hint").forEach((button) => {
-        button.addEventListener("click", () => {
-          const detail = button.nextElementSibling;
-          if (!detail) return;
-          detail.classList.toggle("is-open");
-          button.textContent = detail.classList.contains("is-open") ? "詳細を閉じる" : button.dataset.label || button.textContent;
-        });
+      document.querySelector("#improvement-grid").addEventListener("click", (event) => {
+        const button = event.target.closest(".premium-hint");
+        if (!button) return;
+        const detail = button.nextElementSibling;
+        if (!detail) return;
+        const isOpen = detail.classList.toggle("is-open");
+        button.setAttribute("aria-expanded", String(isOpen));
+        button.textContent = isOpen ? "詳細を閉じる" : `詳細を見る（テスト）: ${(button.dataset.label || "").replace(/^詳細診断: /, "")}`;
       });
 
       list("#maps-list", [
