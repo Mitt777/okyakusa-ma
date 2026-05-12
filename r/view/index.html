@@ -228,6 +228,37 @@
       border: 1px solid #f1c27a;
       font-size: 11px;
       font-weight: 850;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .deep-dive {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #f1c27a;
+      border-radius: 8px;
+      background: #fffaf1;
+      padding: 12px;
+      color: #4a3b22;
+      font-size: 12px;
+    }
+
+    .deep-dive.is-open {
+      display: block;
+    }
+
+    .deep-dive strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .deep-dive ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .deep-dive li + li {
+      margin-top: 6px;
     }
 
     .grid {
@@ -553,13 +584,18 @@
       `;
     }
 
-    function improvementCard(label, items, hint) {
+    function improvementCard(label, items, hint, details) {
       const listItems = items.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+      const detailItems = details.slice(0, 5).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
       return `
         <div class="improvement-card">
           <h3>${escapeHtml(label)}</h3>
           <ol>${listItems}</ol>
-          <span class="premium-hint">${escapeHtml(hint)}</span>
+          <button class="premium-hint" type="button" data-label="${escapeHtml(hint)}">${escapeHtml(hint)}</button>
+          <div class="deep-dive">
+            <strong>テスト表示: ワンコイン詳細で見せる内容</strong>
+            <ul>${detailItems}</ul>
+          </div>
         </div>
       `;
     }
@@ -659,6 +695,21 @@
       return items;
     }
 
+    function mapsDeepDive(maps, rawMaps) {
+      const missing = parseJson(maps.maps_missing_items, rawMaps?.maps_report?.missing_items || []);
+      const checked = parseJson(maps.maps_checked_items, rawMaps?.maps_report?.checked_items || []);
+      const details = [];
+      if (missing.length) {
+        details.push(`未記載/未取得の可能性: ${missing.slice(0, 6).join("、")}`);
+      } else {
+        details.push("基本項目は比較的整っています。次は写真の質、説明文、来店前不安の見せ方を確認します。");
+      }
+      details.push(`確認済み項目数: ${checked.filter((item) => item.ok).length || 0} / ${checked.length || "未取得"}`);
+      details.push("駐車場・入口・席・価格帯・支払い方法は、初来店前の不安を左右するため優先チェック対象です。");
+      details.push("詳細診断では、未記載項目ごとにGoogleビジネスプロフィールへ入れる文言案まで作れます。");
+      return details;
+    }
+
     function reviewImprovements(maps) {
       const reviews = Number(maps.user_rating_count || 0);
       const items = [];
@@ -670,6 +721,15 @@
       items.push("口コミ返信状況は現時点では未取得。未返信が多い場合は、感謝＋再来店理由を添えて返信する");
       items.push("低評価や迷いが出やすい点を読み取り、駐車場・価格・混雑・席などの不安情報として先回り掲載する");
       return items;
+    }
+
+    function reviewDeepDive(maps) {
+      const details = [];
+      details.push(`現在の観測値: 評価 ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件`);
+      details.push("口コミ返信状況はPlaces APIだけでは原則取得できません。詳細診断では目視、または管理権限で確認します。");
+      details.push("未返信が多い場合は、感謝・利用シーン・再来店理由を入れた返信テンプレートを作成します。");
+      details.push("口コミ本文から、褒められている要素と不安につながる要素を分けて、SNS/Maps投稿へ転用します。");
+      return details;
     }
 
     function seoImprovements(request, ai) {
@@ -684,12 +744,30 @@
       return items;
     }
 
+    function seoDeepDive(request, ai) {
+      const details = [];
+      details.push(`SEOスコア: ${text(ai.seo_score)}点 / 公式サイトURL: ${request.website_url ? "確認済み" : "未確認"}`);
+      details.push("地域名＋業種、地域名＋ランチ/カフェ/ディナー、駐車場、営業時間、価格帯などの検索意図を確認します。");
+      details.push("詳細診断では、トップページに追加すべき見出し、本文、FAQ案を具体的に出します。");
+      details.push("AI検索にも効くように、店の特徴を短い説明文として構造化します。");
+      return details;
+    }
+
     function geoImprovements(ai) {
       const items = [];
       items.push("AIが推薦文に使えるように、店の特徴を「誰に・どんな時に・なぜ良いか」で明文化する");
       items.push("Save/Plan/Impulseのうち、Plan情報（駐車場、入口、席、価格、混雑）をGoogle MapsとSNSに増やす");
       items.push("周辺人気店や観光地の“ついで”ではなく、この店を選ぶ理由を1文で固定化する");
       return items;
+    }
+
+    function geoDeepDive(ai) {
+      const details = [];
+      details.push(`AI検索/GEOスコア: ${text(ai.geo_score)}点`);
+      details.push("AIが推薦理由として使える材料は、特徴、利用シーン、対象客、来店前不安への回答です。");
+      details.push("詳細診断では『この店は誰におすすめか』をAIが拾いやすい説明文に変換します。");
+      details.push("Save/Plan/Impulseのどこが弱いかを、SNS投稿案・Maps投稿案に落とし込みます。");
+      return details;
     }
 
     function mapsChecklistItems(maps, rawMaps) {
@@ -827,11 +905,19 @@ https://okyakusa-ma.com/
       ].join("");
 
       document.querySelector("#improvement-grid").innerHTML = [
-        improvementCard("Google Maps", mapsImprovements(maps), "詳細診断: 写真・カテゴリ・導線を深掘り"),
-        improvementCard("口コミ", reviewImprovements(maps), "詳細診断: 返信状況・口コミ傾向を深掘り"),
-        improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り"),
-        improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り")
+        improvementCard("Google Maps", mapsImprovements(maps), "詳細診断: 写真・カテゴリ・導線を深掘り", mapsDeepDive(maps, rawMaps)),
+        improvementCard("口コミ", reviewImprovements(maps), "詳細診断: 返信状況・口コミ傾向を深掘り", reviewDeepDive(maps)),
+        improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り", seoDeepDive(request, ai)),
+        improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り", geoDeepDive(ai))
       ].join("");
+      document.querySelectorAll(".premium-hint").forEach((button) => {
+        button.addEventListener("click", () => {
+          const detail = button.nextElementSibling;
+          if (!detail) return;
+          detail.classList.toggle("is-open");
+          button.textContent = detail.classList.contains("is-open") ? "詳細を閉じる" : button.dataset.label || button.textContent;
+        });
+      });
 
       list("#maps-list", [
         `店舗特定: ${text(maps.identity_status)} / ${text(maps.identity_score)}点`,
