@@ -215,6 +215,48 @@
       font-weight: 800;
     }
 
+    .referral-cta {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      border: 1px solid #b7dfd1;
+      border-radius: 8px;
+      background: var(--green-soft);
+      padding: 18px;
+    }
+
+    .referral-cta strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .referral-cta span {
+      display: block;
+      color: #345d50;
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .referral-cta a {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #fff;
+      background: var(--green);
+      border: 1px solid var(--green);
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
     .loading,
     .error {
       width: min(760px, 100%);
@@ -268,7 +310,8 @@
       .hero,
       .grid,
       .metrics,
-      .video-grid {
+      .video-grid,
+      .referral-cta {
         grid-template-columns: 1fr;
       }
     }
@@ -320,6 +363,13 @@
           <h2>今撮るべき動画3本</h2>
           <div class="video-grid" id="videos"></div>
         </div>
+        <div class="referral-cta">
+          <div>
+            <strong>あなたのお友達のお店も診断してみませんか？</strong>
+            <span>Google Maps、口コミ、SNS、来店前不安を無料でβ診断できます。</span>
+          </div>
+          <a href="/">完全無料で試す</a>
+        </div>
         <div class="panel full">
           <h2>月次レポートβ</h2>
           <ul class="list" id="monthly"></ul>
@@ -329,7 +379,7 @@
       <section class="share">
         <a id="line-share" href="#">LINEで送る</a>
         <a id="mail-share" href="#">メールで送る</a>
-        <a class="primary" href="/">あなたのお店も試してみませんか？ 完全無料</a>
+        <a class="primary" href="/">あなたのお友達のお店も診断してみませんか？ 完全無料</a>
       </section>
     </article>
   </main>
@@ -378,6 +428,26 @@
       return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(text(value))}</strong></div>`;
     }
 
+    function shortFocus(value) {
+      const raw = text(value, "重点未判定");
+      if (raw.includes("Googleビジネスプロフィール")) return "Googleビジネスプロフィール整備";
+      if (raw.includes("駐車場") || raw.includes("入口") || raw.includes("席")) return "来店前不安の解消";
+      const firstSentence = raw.split(/[。.!！?？]/)[0];
+      return firstSentence.length > 24 ? `${firstSentence.slice(0, 24)}...` : firstSentence;
+    }
+
+    function formatMonth(value) {
+      if (!value) return "未判定";
+      const date = new Date(value);
+      if (!Number.isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        return `${year}年${month}月`;
+      }
+      const match = String(value).match(/^(\d{4})-(\d{2})/);
+      return match ? `${match[1]}年${match[2]}月` : String(value);
+    }
+
     function showError(message) {
       loading.hidden = true;
       errorBox.hidden = false;
@@ -418,8 +488,8 @@
       document.querySelector("#metrics").innerHTML = [
         metric("Mapsスコア", ai.maps_score || maps.maps_score),
         metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`),
-        metric("SEO/GEO", `${text(ai.seo_score)} / ${text(ai.geo_score)}`),
-        metric("今月の重点", monthly.this_month_focus || ai.top_fix)
+        metric("検索スコア", `SEO ${text(ai.seo_score)} / AI検索 ${text(ai.geo_score)}`),
+        metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix))
       ].join("");
 
       list("#maps-list", [
@@ -453,7 +523,7 @@
       });
 
       list("#monthly", [
-        `対象月: ${text(monthly.month || monthlyRaw.month)}`,
+        `対象月: ${formatMonth(monthly.month || monthlyRaw.month)}`,
         `今月の重点改善: ${text(monthly.this_month_focus || monthlyRaw.this_month_focus)}`,
         ...parseJson(monthly.action_items, monthlyRaw.action_items || []).slice(0, 5),
         ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
