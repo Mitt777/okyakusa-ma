@@ -539,6 +539,7 @@
   </main>
 
   <script>
+    const REPORT_VIEW_VERSION = "v0.2.5-deep-dive-toggle";
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
@@ -602,17 +603,26 @@
     function improvementCard(label, items, hint, details) {
       const listItems = items.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
       const detailItems = details.slice(0, 5).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+      const shortHint = hint.replace(/^詳細診断: /, "");
       return `
         <div class="improvement-card">
           <h3>${escapeHtml(label)}</h3>
           <ol>${listItems}</ol>
-          <button class="premium-hint" type="button" data-label="${escapeHtml(hint)}" aria-expanded="false">詳細を見る（テスト）: ${escapeHtml(hint.replace(/^詳細診断: /, ""))}</button>
+          <button class="premium-hint" type="button" data-label="${escapeHtml(shortHint)}" aria-expanded="false" onclick="toggleDeepDive(this)">詳細を見る（テスト）: ${escapeHtml(shortHint)}</button>
           <div class="deep-dive">
             <strong>テスト表示: ワンコイン詳細で見せる内容</strong>
             <ul>${detailItems}</ul>
           </div>
         </div>
       `;
+    }
+
+    function toggleDeepDive(button) {
+      const detail = button.nextElementSibling;
+      if (!detail) return;
+      const isOpen = detail.classList.toggle("is-open");
+      button.setAttribute("aria-expanded", String(isOpen));
+      button.textContent = isOpen ? "詳細を閉じる" : `詳細を見る（テスト）: ${button.dataset.label || ""}`;
     }
 
     function scoreLevel(score) {
@@ -903,7 +913,7 @@ https://okyakusa-ma.com/
       document.querySelector("#summary").textContent = summary;
       document.querySelector("#total-score").textContent = totalScore || "--";
       document.querySelector("#score-ring").style.setProperty("--value", totalScore || 0);
-      document.querySelector("#meta").textContent = `受付ID: ${id} / β診断`;
+      document.querySelector("#meta").textContent = `受付ID: ${id} / β診断 / ${REPORT_VIEW_VERSION}`;
 
       document.querySelector("#metrics").innerHTML = [
         metric("Mapsスコア", ai.maps_score || maps.maps_score, mapsMetricNote(maps, ai)),
@@ -925,15 +935,6 @@ https://okyakusa-ma.com/
         improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り", seoDeepDive(request, ai)),
         improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り", geoDeepDive(ai))
       ].join("");
-      document.querySelector("#improvement-grid").addEventListener("click", (event) => {
-        const button = event.target.closest(".premium-hint");
-        if (!button) return;
-        const detail = button.nextElementSibling;
-        if (!detail) return;
-        const isOpen = detail.classList.toggle("is-open");
-        button.setAttribute("aria-expanded", String(isOpen));
-        button.textContent = isOpen ? "詳細を閉じる" : `詳細を見る（テスト）: ${(button.dataset.label || "").replace(/^詳細診断: /, "")}`;
-      });
 
       list("#maps-list", [
         `店舗特定: ${text(maps.identity_status)} / ${text(maps.identity_score)}点`,
