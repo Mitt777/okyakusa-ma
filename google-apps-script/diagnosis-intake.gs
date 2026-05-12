@@ -88,6 +88,23 @@ const SHEETS = {
     "google_maps_uri",
     "photos_count",
     "maps_score",
+    "detail_level",
+    "business_status",
+    "current_opening_hours",
+    "secondary_hours_count",
+    "price_level",
+    "price_range",
+    "parking_options",
+    "payment_options",
+    "accessibility_options",
+    "service_options",
+    "editorial_summary",
+    "generative_summary",
+    "review_summary",
+    "reviews_count_returned",
+    "maps_missing_items",
+    "maps_checked_items",
+    "maps_completion_score",
     "maps_strengths",
     "maps_weaknesses",
     "maps_quick_fixes",
@@ -215,31 +232,49 @@ function doGet(e) {
 
 function appendMapsObservation_(requestId, observation) {
   const sheet = getSheet_("maps_observations", SHEETS.maps_observations);
+  const headers = getHeaders_(sheet);
   const primary = observation.primary_place || {};
   const report = observation.maps_report || {};
-  const row = [
-    requestId,
-    new Date(),
-    observation.query || "",
-    observation.identity && observation.identity.status || "",
-    observation.identity && observation.identity.score || "",
-    primary.place_id || "",
-    primary.name || "",
-    primary.address || "",
-    primary.primary_type_label || primary.primary_type || "",
-    primary.rating || "",
-    primary.user_rating_count || "",
-    primary.website_uri || "",
-    primary.phone || "",
-    primary.google_maps_uri || "",
-    primary.photos_count || "",
-    report.maps_score || "",
-    stringify_(report.strengths),
-    stringify_(report.weaknesses),
-    stringify_(report.quick_fixes),
-    stringify_(observation)
-  ];
-  sheet.appendRow(row);
+  const record = {
+    request_id: requestId,
+    created_at: new Date(),
+    query: observation.query || "",
+    identity_status: observation.identity && observation.identity.status || "",
+    identity_score: observation.identity && observation.identity.score || "",
+    matched_place_id: primary.place_id || "",
+    matched_store_name: primary.name || "",
+    matched_address: primary.address || "",
+    maps_category: primary.primary_type_label || primary.primary_type || "",
+    rating: primary.rating || "",
+    user_rating_count: primary.user_rating_count || "",
+    website_uri: primary.website_uri || "",
+    phone: primary.phone || "",
+    google_maps_uri: primary.google_maps_uri || "",
+    photos_count: primary.photos_count || "",
+    maps_score: report.maps_score || "",
+    detail_level: observation.detail_level || "",
+    business_status: primary.business_status || "",
+    current_opening_hours: stringify_(primary.current_weekday_descriptions),
+    secondary_hours_count: primary.secondary_hours_count || "",
+    price_level: primary.price_level || "",
+    price_range: stringify_(primary.price_range),
+    parking_options: stringify_(primary.parking_options),
+    payment_options: stringify_(primary.payment_options),
+    accessibility_options: stringify_(primary.accessibility_options),
+    service_options: stringify_(primary.service_options),
+    editorial_summary: primary.editorial_summary || "",
+    generative_summary: primary.generative_summary || "",
+    review_summary: primary.review_summary || "",
+    reviews_count_returned: primary.reviews_count_returned || "",
+    maps_missing_items: stringify_(report.missing_items),
+    maps_checked_items: stringify_(report.checked_items),
+    maps_completion_score: report.completion_score || "",
+    maps_strengths: stringify_(report.strengths),
+    maps_weaknesses: stringify_(report.weaknesses),
+    maps_quick_fixes: stringify_(report.quick_fixes),
+    raw_json: stringify_(observation)
+  };
+  sheet.appendRow(headers.map((header) => record[header] || ""));
 }
 
 function buildReportPayload_(requestId) {
@@ -265,8 +300,8 @@ function buildReportPayload_(requestId) {
 }
 
 function findLatestRow_(sheetName, requestId) {
-  const headers = SHEETS[sheetName];
-  const sheet = getSheet_(sheetName, headers);
+  const sheet = getSheet_(sheetName, SHEETS[sheetName]);
+  const headers = getHeaders_(sheet);
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return null;
 
@@ -375,9 +410,20 @@ function getSheet_(sheetName, headers) {
   if (!hasHeaders) {
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     sheet.setFrozenRows(1);
+  } else {
+    const existingHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), headers.length)).getValues()[0];
+    const missingHeaders = headers.filter((header) => existingHeaders.indexOf(header) === -1);
+    if (missingHeaders.length > 0) {
+      const startColumn = existingHeaders.filter(Boolean).length + 1;
+      sheet.getRange(1, startColumn, 1, missingHeaders.length).setValues([missingHeaders]);
+    }
   }
 
   return sheet;
+}
+
+function getHeaders_(sheet) {
+  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].filter(Boolean);
 }
 
 function json_(data, statusCode) {

@@ -450,6 +450,10 @@
           <ul class="list" id="maps-list"></ul>
         </div>
         <div class="panel">
+          <h2>Google Maps未記載チェック</h2>
+          <ul class="list" id="maps-checklist"></ul>
+        </div>
+        <div class="panel">
           <h2>弱点トップ3</h2>
           <ul class="list" id="weaknesses"></ul>
         </div>
@@ -688,6 +692,21 @@
       return items;
     }
 
+    function mapsChecklistItems(maps, rawMaps) {
+      const checked = parseJson(maps.maps_checked_items, rawMaps?.maps_report?.checked_items || []);
+      if (!checked.length) {
+        return [
+          "詳細Mapsチェックは未取得です。ワンコイン診断では、駐車場・支払い・価格帯・サービス属性まで確認します。",
+          "現在確認できる範囲: 店舗名、住所、カテゴリ、評価、口コミ数、営業時間、電話、公式サイト、写真数",
+          "口コミ返信状況はGoogle Places APIでは原則取得できないため、詳細診断では目視または管理権限で確認します。"
+        ];
+      }
+      return checked.map((item) => {
+        const mark = item.ok ? "OK" : "未記載/未取得";
+        return `${mark}: ${item.label}`;
+      });
+    }
+
     function buildMailSubject(storeName) {
       return `【無料診断結果】${storeName}様のお店の見え方診断`;
     }
@@ -779,6 +798,7 @@ https://okyakusa-ma.com/
       const maps = payload.maps_observation || {};
       const ai = payload.ai_diagnosis || {};
       const monthly = payload.monthly_report || {};
+      const rawMaps = payload.raw?.maps_observation || {};
       const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
       const monthlyRaw = payload.raw?.monthly_report || {};
 
@@ -819,8 +839,10 @@ https://okyakusa-ma.com/
         `住所: ${text(maps.matched_address)}`,
         `カテゴリ: ${text(maps.maps_category)}`,
         `評価: ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件`,
-        `Mapsスコア: ${text(maps.maps_score)}`
+        `Mapsスコア: ${text(maps.maps_score)}`,
+        `取得レベル: ${text(maps.detail_level, "basic")}`
       ]);
+      list("#maps-checklist", mapsChecklistItems(maps, rawMaps));
 
       list("#weaknesses", parseJson(ai.weaknesses, aiRaw.weaknesses || []));
       list("#strengths", parseJson(ai.strengths, aiRaw.strengths || []));

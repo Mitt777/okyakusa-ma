@@ -1,6 +1,6 @@
 const PLACES_ENDPOINT = "https://places.googleapis.com/v1/places:searchText";
 
-const FIELD_MASK = [
+const BASIC_FIELD_MASKS = [
   "places.id",
   "places.name",
   "places.displayName",
@@ -17,7 +17,56 @@ const FIELD_MASK = [
   "places.nationalPhoneNumber",
   "places.googleMapsUri",
   "places.photos"
-].join(",");
+];
+
+const EXTENDED_FIELD_MASKS = [
+  "places.addressComponents",
+  "places.currentOpeningHours",
+  "places.regularSecondaryOpeningHours",
+  "places.currentSecondaryOpeningHours",
+  "places.internationalPhoneNumber",
+  "places.priceLevel",
+  "places.priceRange",
+  "places.accessibilityOptions",
+  "places.parkingOptions",
+  "places.paymentOptions",
+  "places.editorialSummary",
+  "places.generativeSummary",
+  "places.reviewSummary",
+  "places.reviews",
+  "places.allowsDogs",
+  "places.curbsidePickup",
+  "places.delivery",
+  "places.dineIn",
+  "places.goodForChildren",
+  "places.goodForGroups",
+  "places.liveMusic",
+  "places.outdoorSeating",
+  "places.reservable",
+  "places.restroom",
+  "places.servesBeer",
+  "places.servesBreakfast",
+  "places.servesBrunch",
+  "places.servesCocktails",
+  "places.servesCoffee",
+  "places.servesDessert",
+  "places.servesDinner",
+  "places.servesLunch",
+  "places.servesVegetarianFood",
+  "places.servesWine",
+  "places.takeout"
+];
+
+function usesExtendedPlaceFields() {
+  return ["true", "1", "extended", "all"].includes(String(process.env.GOOGLE_PLACES_DETAIL_LEVEL || "").toLowerCase());
+}
+
+function fieldMask() {
+  const fields = usesExtendedPlaceFields()
+    ? BASIC_FIELD_MASKS.concat(EXTENDED_FIELD_MASKS)
+    : BASIC_FIELD_MASKS;
+  return Array.from(new Set(fields)).join(",");
+}
 
 function compact(value) {
   return String(value || "").trim();
@@ -33,7 +82,46 @@ function toText(value) {
   return value.text || "";
 }
 
+function hasAnyTrue(object) {
+  if (!object || typeof object !== "object") return false;
+  return Object.values(object).some((value) => value === true);
+}
+
+function normalizeReview(review) {
+  return {
+    rating: typeof review.rating === "number" ? review.rating : null,
+    text: toText(review.text),
+    publish_time: review.publishTime || "",
+    relative_publish_time: review.relativePublishTimeDescription || "",
+    author_name: review.authorAttribution?.displayName || ""
+  };
+}
+
 function normalizePlace(place) {
+  const serviceOptions = {
+    allows_dogs: place.allowsDogs,
+    curbside_pickup: place.curbsidePickup,
+    delivery: place.delivery,
+    dine_in: place.dineIn,
+    good_for_children: place.goodForChildren,
+    good_for_groups: place.goodForGroups,
+    live_music: place.liveMusic,
+    outdoor_seating: place.outdoorSeating,
+    reservable: place.reservable,
+    restroom: place.restroom,
+    serves_beer: place.servesBeer,
+    serves_breakfast: place.servesBreakfast,
+    serves_brunch: place.servesBrunch,
+    serves_cocktails: place.servesCocktails,
+    serves_coffee: place.servesCoffee,
+    serves_dessert: place.servesDessert,
+    serves_dinner: place.servesDinner,
+    serves_lunch: place.servesLunch,
+    serves_vegetarian_food: place.servesVegetarianFood,
+    serves_wine: place.servesWine,
+    takeout: place.takeout
+  };
+
   return {
     place_id: place.id || "",
     resource_name: place.name || "",
@@ -47,9 +135,25 @@ function normalizePlace(place) {
     user_rating_count: typeof place.userRatingCount === "number" ? place.userRatingCount : null,
     website_uri: place.websiteUri || "",
     phone: place.nationalPhoneNumber || "",
+    international_phone: place.internationalPhoneNumber || "",
     google_maps_uri: place.googleMapsUri || "",
     photos_count: Array.isArray(place.photos) ? place.photos.length : 0,
-    weekday_descriptions: place.regularOpeningHours?.weekdayDescriptions || []
+    weekday_descriptions: place.regularOpeningHours?.weekdayDescriptions || [],
+    current_weekday_descriptions: place.currentOpeningHours?.weekdayDescriptions || [],
+    secondary_hours_count: Array.isArray(place.regularSecondaryOpeningHours) ? place.regularSecondaryOpeningHours.length : 0,
+    current_secondary_hours_count: Array.isArray(place.currentSecondaryOpeningHours) ? place.currentSecondaryOpeningHours.length : 0,
+    price_level: place.priceLevel || "",
+    price_range: place.priceRange || null,
+    address_components_count: Array.isArray(place.addressComponents) ? place.addressComponents.length : 0,
+    accessibility_options: place.accessibilityOptions || null,
+    parking_options: place.parkingOptions || null,
+    payment_options: place.paymentOptions || null,
+    editorial_summary: toText(place.editorialSummary),
+    generative_summary: toText(place.generativeSummary?.overview),
+    review_summary: toText(place.reviewSummary?.text),
+    reviews: Array.isArray(place.reviews) ? place.reviews.map(normalizeReview).slice(0, 5) : [],
+    reviews_count_returned: Array.isArray(place.reviews) ? place.reviews.length : 0,
+    service_options: serviceOptions
   };
 }
 
@@ -111,6 +215,20 @@ function evaluateMapsReadiness(primary, competitors) {
     { key: "photos", ok: Number(primary.photos_count || 0) >= 3, label: "写真" }
   ];
 
+  if (usesExtendedPlaceFields()) {
+    checks.push(
+      { key: "current_hours", ok: primary.current_weekday_descriptions.length > 0, label: "現在の営業時間" },
+      { key: "parking", ok: hasAnyTrue(primary.parking_options), label: "駐車場情報" },
+      { key: "payment", ok: hasAnyTrue(primary.payment_options), label: "支払い方法" },
+      { key: "accessibility", ok: hasAnyTrue(primary.accessibility_options), label: "バリアフリー情報" },
+      { key: "price", ok: Boolean(primary.price_level || primary.price_range), label: "価格帯" },
+      { key: "summary", ok: Boolean(primary.editorial_summary || primary.generative_summary), label: "店舗説明/要約" },
+      { key: "review_summary", ok: Boolean(primary.review_summary), label: "口コミ要約" },
+      { key: "reviews_sample", ok: primary.reviews_count_returned > 0, label: "口コミサンプル" },
+      { key: "service_options", ok: hasAnyTrue(primary.service_options), label: "サービス属性" }
+    );
+  }
+
   const okCount = checks.filter((check) => check.ok).length;
   const mapsScore = Math.round((okCount / checks.length) * 100);
   const weaknesses = checks
@@ -134,6 +252,9 @@ function evaluateMapsReadiness(primary, competitors) {
 
   return {
     maps_score: mapsScore,
+    completion_score: mapsScore,
+    checked_items: checks.map((check) => ({ key: check.key, label: check.label, ok: check.ok })),
+    missing_items: checks.filter((check) => !check.ok).map((check) => check.label),
     strengths,
     weaknesses,
     quick_fixes: buildQuickFixes(primary, weaknesses),
@@ -162,6 +283,12 @@ function buildQuickFixes(primary, weaknesses) {
   if (primary.weekday_descriptions.length === 0) fixes.push("営業時間と定休日をGoogle Maps上で明確にする");
   if (primary.photos_count < 3) fixes.push("入口、駐車場、席、名物商品の写真を追加する");
   if ((primary.user_rating_count || 0) < 10) fixes.push("来店後に口コミを書きやすい声かけと導線を作る");
+  if (usesExtendedPlaceFields()) {
+    if (!hasAnyTrue(primary.parking_options)) fixes.push("駐車場の有無や種類をGoogle Maps/投稿/写真で明確にする");
+    if (!hasAnyTrue(primary.payment_options)) fixes.push("支払い方法をGoogle Mapsや公式情報で明確にする");
+    if (!primary.price_level && !primary.price_range) fixes.push("価格帯や代表メニュー価格を来店前に分かる形にする");
+    if (!primary.editorial_summary && !primary.generative_summary) fixes.push("AIや検索が引用しやすい店舗説明文を整える");
+  }
   if (fixes.length === 0 && weaknesses.length === 0) fixes.push("駐車場、入口、席、価格などPlan情報の見え方を強化する");
   return fixes.slice(0, 5);
 }
@@ -178,6 +305,7 @@ async function fetchPlacesObservation(input) {
       query,
       candidates: [],
       primary_place: null,
+      detail_level: usesExtendedPlaceFields() ? "extended" : "basic",
       identity: { status: "未判定", score: 0, reasons: ["APIキー未設定"] },
       maps_report: evaluateMapsReadiness(null, [])
     };
@@ -188,7 +316,7 @@ async function fetchPlacesObservation(input) {
     headers: {
       "content-type": "application/json",
       "x-goog-api-key": apiKey,
-      "x-goog-fieldmask": FIELD_MASK
+      "x-goog-fieldmask": fieldMask()
     },
     body: JSON.stringify({
       textQuery: query,
@@ -215,6 +343,7 @@ async function fetchPlacesObservation(input) {
     ok: true,
     configured: true,
     query,
+    detail_level: usesExtendedPlaceFields() ? "extended" : "basic",
     candidates,
     primary_place: primaryPlace,
     competitors,
