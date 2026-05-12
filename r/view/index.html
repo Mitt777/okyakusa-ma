@@ -160,7 +160,14 @@
       gap: 10px;
     }
 
-    .score-explain {
+    .improvement-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score-explain,
+    .improvement-card {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
@@ -193,6 +200,34 @@
       color: var(--muted);
       font-size: 11px;
       font-weight: 700;
+    }
+
+    .improvement-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .improvement-card ol {
+      margin: 0;
+      padding-left: 20px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .improvement-card li + li {
+      margin-top: 8px;
+    }
+
+    .premium-hint {
+      display: inline-flex;
+      margin-top: 12px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid #f1c27a;
+      font-size: 11px;
+      font-weight: 850;
     }
 
     .grid {
@@ -369,6 +404,7 @@
       .metrics,
       .video-grid,
       .score-explain-grid,
+      .improvement-grid,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -404,6 +440,10 @@
         <div class="panel full">
           <h2>スコアの見方</h2>
           <div class="score-explain-grid" id="score-explanations"></div>
+        </div>
+        <div class="panel full">
+          <h2>今すぐ改善する3点</h2>
+          <div class="improvement-grid" id="improvement-grid"></div>
         </div>
         <div class="panel">
           <h2>Google Maps観測値</h2>
@@ -509,6 +549,17 @@
       `;
     }
 
+    function improvementCard(label, items, hint) {
+      const listItems = items.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+      return `
+        <div class="improvement-card">
+          <h3>${escapeHtml(label)}</h3>
+          <ol>${listItems}</ol>
+          <span class="premium-hint">${escapeHtml(hint)}</span>
+        </div>
+      `;
+    }
+
     function scoreLevel(score) {
       const number = Number(score);
       if (!Number.isFinite(number)) return "未判定";
@@ -591,6 +642,50 @@
     function focusMetricNote(value) {
       const raw = text(value, "今月の重点改善を確認します。");
       return concise(raw, 48);
+    }
+
+    function mapsImprovements(maps) {
+      const items = [];
+      const photosText = text(maps.maps_weaknesses, "");
+      if (photosText.includes("写真") || Number(maps.maps_score || 0) < 90) {
+        items.push("入口、駐車場、席、看板、人気商品など、初来店前に見たい写真を追加する");
+      }
+      items.push("Googleビジネスプロフィールの説明文に、誰に向いた店か、何が楽しめるかを1文で追記する");
+      items.push("営業時間、定休日、電話、公式サイトURL、カテゴリが現在の営業実態と合っているか確認する");
+      return items;
+    }
+
+    function reviewImprovements(maps) {
+      const reviews = Number(maps.user_rating_count || 0);
+      const items = [];
+      if (reviews >= 50) {
+        items.push("口コミ数は強みなので、良い口コミの傾向を店頭・SNS・Google投稿の言葉に変換する");
+      } else {
+        items.push("来店後に口コミを書きやすい声かけとQR導線を作り、まず20件以上を目指す");
+      }
+      items.push("口コミ返信状況は現時点では未取得。未返信が多い場合は、感謝＋再来店理由を添えて返信する");
+      items.push("低評価や迷いが出やすい点を読み取り、駐車場・価格・混雑・席などの不安情報として先回り掲載する");
+      return items;
+    }
+
+    function seoImprovements(request, ai) {
+      const items = [];
+      if (request.website_url) {
+        items.push("公式サイト内に、地域名＋業種、ランチ、カフェ、駐車場、営業時間などの検索語を自然に追加する");
+      } else {
+        items.push("公式サイトURLが未確認。まずGoogle MapsとSNSから公式導線を明確にする");
+      }
+      items.push("トップページに、初めての人が知りたい価格帯、席、予約、子連れ可否、アクセスをまとめる");
+      items.push("店名だけでなく「地域名＋利用シーン」で見つかるよう、ページタイトルと見出しを見直す");
+      return items;
+    }
+
+    function geoImprovements(ai) {
+      const items = [];
+      items.push("AIが推薦文に使えるように、店の特徴を「誰に・どんな時に・なぜ良いか」で明文化する");
+      items.push("Save/Plan/Impulseのうち、Plan情報（駐車場、入口、席、価格、混雑）をGoogle MapsとSNSに増やす");
+      items.push("周辺人気店や観光地の“ついで”ではなく、この店を選ぶ理由を1文で固定化する");
+      return items;
     }
 
     function buildMailSubject(storeName) {
@@ -709,6 +804,13 @@ https://okyakusa-ma.com/
         scoreCard("口コミ信頼", `${text(ai.review_score)}点`, reviewScoreComment(maps, ai), "評価平均、口コミ件数、信頼形成、来店理由への変換余地を確認"),
         scoreCard("SEO", `${text(ai.seo_score)}点`, seoScoreComment(request, ai), "公式サイト、地域名＋業種、来店前検索語、基本情報の見つけやすさを確認"),
         scoreCard("AI検索/GEO", `${text(ai.geo_score)}点`, geoScoreComment(ai), "AIが店を説明・推薦しやすい特徴、利用シーン、Plan情報を確認")
+      ].join("");
+
+      document.querySelector("#improvement-grid").innerHTML = [
+        improvementCard("Google Maps", mapsImprovements(maps), "詳細診断: 写真・カテゴリ・導線を深掘り"),
+        improvementCard("口コミ", reviewImprovements(maps), "詳細診断: 返信状況・口コミ傾向を深掘り"),
+        improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り"),
+        improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り")
       ].join("");
 
       list("#maps-list", [
