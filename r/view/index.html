@@ -147,6 +147,13 @@
       font-size: 20px;
     }
 
+    .metric p {
+      margin: 8px 0 0;
+      color: #344054;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
     .score-explain-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -470,8 +477,14 @@
       });
     }
 
-    function metric(label, value) {
-      return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(text(value))}</strong></div>`;
+    function metric(label, value, note) {
+      return `
+        <div class="metric">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(text(value))}</strong>
+          <p>${escapeHtml(note)}</p>
+        </div>
+      `;
     }
 
     function scoreCard(label, score, body, criteria) {
@@ -538,6 +551,37 @@
       return `AI検索がこの店を説明・推薦するための材料が不足気味です。公式サイト、Maps、SNSに特徴文とPlan情報を増やす必要があります。`;
     }
 
+    function concise(value, max = 52) {
+      const raw = text(value, "");
+      return raw.length > max ? `${raw.slice(0, max)}...` : raw;
+    }
+
+    function mapsMetricNote(maps, ai) {
+      const full = mapsScoreComment(maps, ai);
+      return concise(full, 48);
+    }
+
+    function reviewMetricNote(maps, ai) {
+      const full = reviewScoreComment(maps, ai);
+      return concise(full, 48);
+    }
+
+    function searchMetricNote(request, ai) {
+      const seo = Number(ai.seo_score);
+      const geo = Number(ai.geo_score);
+      if (Number.isFinite(seo) && Number.isFinite(geo)) {
+        if (seo >= 60 && geo < 60) return "Webの土台はあります。AI検索で推薦される理由の明文化が次の課題です。";
+        if (seo < 60 && geo < 60) return "検索とAI検索の両方で、地域名・特徴・来店前情報の補強が必要です。";
+        return "検索導線は一定あります。地域名＋利用シーンへの対応をさらに強化できます。";
+      }
+      return request.website_url ? "公式サイトは確認済み。地域検索語への対応を追加確認します。" : "公式サイト未確認のため、SEO評価は限定的です。";
+    }
+
+    function focusMetricNote(value) {
+      const raw = text(value, "今月の重点改善を確認します。");
+      return concise(raw, 48);
+    }
+
     function shortFocus(value) {
       const raw = text(value, "重点未判定");
       if (raw.includes("Googleビジネスプロフィール")) return "Googleビジネスプロフィール整備";
@@ -596,10 +640,10 @@
       document.querySelector("#meta").textContent = `受付ID: ${id} / β診断`;
 
       document.querySelector("#metrics").innerHTML = [
-        metric("Mapsスコア", ai.maps_score || maps.maps_score),
-        metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`),
-        metric("検索スコア", `SEO ${text(ai.seo_score)} / AI検索 ${text(ai.geo_score)}`),
-        metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix))
+        metric("Mapsスコア", ai.maps_score || maps.maps_score, mapsMetricNote(maps, ai)),
+        metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`, reviewMetricNote(maps, ai)),
+        metric("検索スコア", `SEO ${text(ai.seo_score)} / AI検索 ${text(ai.geo_score)}`, searchMetricNote(request, ai)),
+        metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix), focusMetricNote(monthly.this_month_focus || ai.top_fix))
       ].join("");
 
       document.querySelector("#score-explanations").innerHTML = [
