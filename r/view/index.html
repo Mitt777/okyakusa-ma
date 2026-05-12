@@ -582,6 +582,53 @@
       return concise(raw, 48);
     }
 
+    function buildMailSubject(storeName) {
+      return `【無料診断結果】${storeName}様のお店の見え方診断`;
+    }
+
+    function buildMailBody(storeName, totalScore, maps, ai, monthly) {
+      const focus = text(monthly.this_month_focus || ai.top_fix, "Google MapsとSNSの来店前情報を整える");
+      const mapsScore = text(ai.maps_score || maps.maps_score);
+      const reviewText = `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`;
+      const seoScore = text(ai.seo_score);
+      const geoScore = text(ai.geo_score);
+      const reportUrl = window.location.href;
+      const topFix = text(ai.top_fix || monthly.this_month_focus, "Google MapsとSNSの来店前情報を整える");
+
+      return `${storeName}様
+
+お客様どっと混むの無料β診断結果ができました。
+
+今回の診断では、Google Maps、口コミ、簡易SEO、AI検索、SNS、来店前不安の観点から、
+「お店がネット上でどう見えているか」を確認しています。
+
+▼診断結果はこちら
+${reportUrl}
+
+主な結果
+・総合スコア：${text(totalScore || "")} / 100
+・Google Mapsスコア：${mapsScore}
+・口コミ：${reviewText}
+・検索スコア：SEO ${seoScore} / AI検索 ${geoScore}
+・今月の重点：${shortFocus(focus)}
+
+短評
+・Google Maps：${mapsMetricNote(maps, ai)}
+・口コミ：${reviewMetricNote(maps, ai)}
+・検索/AI検索：${searchMetricNote({}, ai)}
+
+今すぐ直すべき1点
+${topFix}
+
+よろしければ、従業員様・ご家族・知人のお店の方にも共有してみてください。
+
+▼お友達のお店も無料で診断できます
+https://okyakusa-ma.com/
+
+お客様どっと混む
+えらばれる店スコア診断 β`;
+    }
+
     function shortFocus(value) {
       const raw = text(value, "重点未判定");
       if (raw.includes("Googleビジネスプロフィール")) return "Googleビジネスプロフィール整備";
@@ -690,9 +737,11 @@
         ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
       ]);
 
-      const shareText = `お客様どっと混むで「${storeName}」の見え方診断を見ました。\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${window.location.href}`;
+      const shareText = `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${window.location.href}`;
+      const mailSubject = buildMailSubject(storeName);
+      const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly);
       document.querySelector("#line-share").href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareText)}`;
-      document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent("お店の見え方診断を共有します")}&body=${encodeURIComponent(shareText)}`;
+      document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 
       loading.hidden = true;
       reportEl.hidden = false;
