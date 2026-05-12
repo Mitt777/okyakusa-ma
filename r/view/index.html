@@ -147,6 +147,47 @@
       font-size: 20px;
     }
 
+    .score-explain-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score-explain {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .score-explain span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .score-explain strong {
+      display: block;
+      margin: 4px 0 8px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .score-explain p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .criteria {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -311,6 +352,7 @@
       .grid,
       .metrics,
       .video-grid,
+      .score-explain-grid,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -343,6 +385,10 @@
       <section class="metrics" id="metrics"></section>
 
       <section class="grid">
+        <div class="panel full">
+          <h2>スコアの見方</h2>
+          <div class="score-explain-grid" id="score-explanations"></div>
+        </div>
         <div class="panel">
           <h2>Google Maps観測値</h2>
           <ul class="list" id="maps-list"></ul>
@@ -428,6 +474,70 @@
       return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(text(value))}</strong></div>`;
     }
 
+    function scoreCard(label, score, body, criteria) {
+      return `
+        <div class="score-explain">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(text(score))}</strong>
+          <p>${escapeHtml(body)}</p>
+          <small class="criteria">${escapeHtml(criteria)}</small>
+        </div>
+      `;
+    }
+
+    function scoreLevel(score) {
+      const number = Number(score);
+      if (!Number.isFinite(number)) return "未判定";
+      if (number >= 80) return "強い";
+      if (number >= 60) return "土台あり";
+      if (number >= 40) return "改善余地あり";
+      return "要改善";
+    }
+
+    function mapsScoreComment(maps, ai) {
+      const score = ai.maps_score || maps.maps_score;
+      const status = scoreLevel(score);
+      const rating = text(maps.rating);
+      const reviews = text(maps.user_rating_count, "0");
+      if (status === "強い") {
+        return `Google Maps上で店舗特定、評価、口コミの土台は強い状態です。評価${rating}、口コミ${reviews}件が信頼の入口になっています。`;
+      }
+      if (status === "土台あり") {
+        return `Google Maps上で見つけられる土台はあります。次は写真、営業時間、入口、駐車場など来店前情報の見せ方を整える段階です。`;
+      }
+      return `Google Maps上で選ばれるための基本情報に改善余地があります。店舗特定、写真、営業時間、電話、Web導線を優先確認します。`;
+    }
+
+    function reviewScoreComment(maps, ai) {
+      const reviews = Number(maps.user_rating_count || 0);
+      const rating = Number(maps.rating || 0);
+      if (reviews >= 100 && rating >= 4) {
+        return `口コミ数と評価平均は信頼形成にかなり効いています。ただし、口コミを「行く理由」へ変える写真・投稿・返信導線が次の改善点です。`;
+      }
+      if (reviews >= 20) {
+        return `一定の口コミ蓄積があります。初来店客に安心感を出すには、良い口コミの傾向をGoogle MapsやSNSで見える形に翻訳すると強くなります。`;
+      }
+      return `口コミ量がまだ少なめです。来店後に自然に口コミを書いてもらえる声かけと、写真つき投稿の導線づくりが重要です。`;
+    }
+
+    function seoScoreComment(request, ai) {
+      if (request.website_url) {
+        return `公式サイトURLは確認できています。地域名＋業種、ランチ、カフェ、駐車場、営業時間など検索意図に答えるページ・文言の強化余地を見ます。`;
+      }
+      return `公式サイトURLが未入力、または確認できていません。SEO診断は限定的ですが、Google Maps、SNS、外部ページで最低限の検索導線を補えます。`;
+    }
+
+    function geoScoreComment(ai) {
+      const score = ai.geo_score;
+      if (Number(score) >= 70) {
+        return `AI検索が推薦理由に使える特徴が比較的見えています。さらに「誰に、なぜおすすめか」を明文化すると強くなります。`;
+      }
+      if (Number(score) >= 50) {
+        return `AI検索に拾われる情報はありますが、推薦文にしやすい特徴、利用シーン、来店前不安への回答がまだ弱い可能性があります。`;
+      }
+      return `AI検索がこの店を説明・推薦するための材料が不足気味です。公式サイト、Maps、SNSに特徴文とPlan情報を増やす必要があります。`;
+    }
+
     function shortFocus(value) {
       const raw = text(value, "重点未判定");
       if (raw.includes("Googleビジネスプロフィール")) return "Googleビジネスプロフィール整備";
@@ -490,6 +600,13 @@
         metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`),
         metric("検索スコア", `SEO ${text(ai.seo_score)} / AI検索 ${text(ai.geo_score)}`),
         metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix))
+      ].join("");
+
+      document.querySelector("#score-explanations").innerHTML = [
+        scoreCard("Mapsスコア", `${text(ai.maps_score || maps.maps_score)}点`, mapsScoreComment(maps, ai), "店舗特定、カテゴリ、営業時間、口コミ、Web導線、電話、写真を確認"),
+        scoreCard("口コミ信頼", `${text(ai.review_score)}点`, reviewScoreComment(maps, ai), "評価平均、口コミ件数、信頼形成、来店理由への変換余地を確認"),
+        scoreCard("SEO", `${text(ai.seo_score)}点`, seoScoreComment(request, ai), "公式サイト、地域名＋業種、来店前検索語、基本情報の見つけやすさを確認"),
+        scoreCard("AI検索/GEO", `${text(ai.geo_score)}点`, geoScoreComment(ai), "AIが店を説明・推薦しやすい特徴、利用シーン、Plan情報を確認")
       ].join("");
 
       list("#maps-list", [
