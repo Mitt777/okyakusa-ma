@@ -881,35 +881,6 @@
       font-weight: 800;
     }
 
-    .keyword-rows {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .keyword-row {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 10px;
-      color: #344054;
-      font-size: 12px;
-    }
-
-    .keyword-row strong {
-      display: block;
-      color: var(--ink);
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .keyword-row span {
-      display: inline-flex;
-      margin: 0 8px 6px 0;
-      color: #245b92;
-      font-weight: 900;
-    }
-
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -1232,20 +1203,6 @@
               </div>
               <div class="ai-lab-result" id="photo-diagnosis-result"></div>
             </div>
-            <div class="ai-lab-card">
-              <h3>お店の検索ことば診断</h3>
-              <p>入力された重要キーワードをもとに、検索される準備度、表示候補、競合の出方を確認します。</p>
-              <ul>
-                <li>地域名＋業種＋利用シーンの整理</li>
-                <li>自社サイト・SNSの簡易表示確認</li>
-                <li>検索需要と月額Search Console伴走の受け皿</li>
-              </ul>
-              <div class="ai-lab-actions">
-                <button class="ai-lab-button" id="keyword-diagnosis-run" type="button">検索ことばを深掘りする</button>
-                <span class="ai-lab-note" id="keyword-diagnosis-status">β版では、入力キーワードから改善候補を整理します。</span>
-              </div>
-              <div class="ai-lab-result" id="keyword-diagnosis-result"></div>
-            </div>
           </div>
         </div>
         <div class="panel full">
@@ -1307,7 +1264,6 @@
     let worldviewDeepResult = null;
     let egoSearchResult = null;
     let photoDiagnosisResult = null;
-    let keywordDiagnosisResult = null;
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -2158,107 +2114,6 @@
       );
     }
 
-    function localKeywordDiagnosisFallback() {
-      const { storeName, request } = shareContext || {};
-      const area = text(request?.area, "地域");
-      const category = text(request?.category, "業種");
-      let websiteHost = "";
-      try {
-        websiteHost = request?.website_url ? new URL(request.website_url).hostname.replace(/^www\./, "") : "";
-      } catch {
-        websiteHost = "";
-      }
-      const keywords = text(request?.target_keywords || "", "")
-        .split(/[\n,、]/)
-        .map((item) => item.trim())
-        .filter(Boolean);
-      const baseKeywords = keywords.length ? keywords : [`${area} ${category}`, `${area} ランチ`, `${area} カフェ`, `${area} グルメ`];
-      return {
-        title: `${storeName || "診断店舗"}の検索ことば診断 β`,
-        summary: "入力キーワードと店舗情報から、検索される準備度を整理しています。API接続後は簡易順位、関連語、検索需要の目安まで追加できます。",
-        items: [
-          { label: "入力キーワード", value: `${baseKeywords.length}語`, note: baseKeywords.slice(0, 3).join(" / ") },
-          { label: "公式サイト", value: websiteHost ? "確認あり" : "未確認", note: websiteHost || "Maps/SNSで補助する設計です。" },
-          { label: "需要目安", value: "接続準備中", note: "Keyword Planner接続後に表示します。" },
-          { label: "簡易順位", value: "接続準備中", note: "Custom Search接続後に確認します。" }
-        ],
-        rows: baseKeywords.slice(0, 5).map((keyword) => ({
-          keyword,
-          demand: "確認優先",
-          visibility: websiteHost ? "順位未取得" : "公式サイト未確認",
-          ownResult: websiteHost || "Maps/SNS補強",
-          action: `${keyword}で探す人向けに、駐車場・価格帯・席・予約・初来店案内をまとめる`
-        })),
-        actions: [
-          "重要キーワード5語を決める",
-          "地域名＋利用シーンの見出しを足す",
-          "月額版ではSearch Consoleで実クリックを追う"
-        ],
-        configured: {
-          customSearch: false,
-          keywordPlanner: false
-        }
-      };
-    }
-
-    function renderKeywordDiagnosisResult(result) {
-      renderAiLabResult(
-        "#keyword-diagnosis-result",
-        result.title || "お店の検索ことば診断",
-        result.summary || "",
-        result.items || [],
-        result.actions || [],
-        result.sources || []
-      );
-      const el = document.querySelector("#keyword-diagnosis-result");
-      const rows = result.rows || [];
-      if (!rows.length) return;
-      const rowsEl = document.createElement("div");
-      rowsEl.className = "keyword-rows";
-      rowsEl.innerHTML = rows.slice(0, 6).map((row) => `
-        <div class="keyword-row">
-          <strong>${escapeHtml(row.keyword)}</strong>
-          <span>需要: ${escapeHtml(row.demand || "未判定")}</span>
-          <span>表示: ${escapeHtml(row.visibility || "未判定")}</span>
-          <p>${escapeHtml(row.action || "")}</p>
-        </div>
-      `).join("");
-      el.appendChild(rowsEl);
-    }
-
-    async function runKeywordDiagnosis() {
-      const status = document.querySelector("#keyword-diagnosis-status");
-      if (!shareContext) return;
-      status.textContent = "検索ことばを整理しています...";
-      const { storeName, request } = shareContext;
-      try {
-        const response = await fetch("/api/keyword-diagnosis", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            storeName,
-            area: request.area,
-            category: request.category,
-            targetKeywords: request.target_keywords,
-            websiteUrl: request.website_url,
-            googleMapsUrl: request.google_maps_url,
-            instagramUrl: request.instagram_url,
-            snsUrl: request.sns_url
-          })
-        });
-        const data = await response.json();
-        keywordDiagnosisResult = data.result || localKeywordDiagnosisFallback();
-      } catch {
-        keywordDiagnosisResult = localKeywordDiagnosisFallback();
-      }
-      const custom = keywordDiagnosisResult?.configured?.customSearch;
-      const planner = keywordDiagnosisResult?.configured?.keywordPlanner;
-      status.textContent = custom
-        ? planner ? "簡易表示確認と検索需要の接続準備を反映しました。" : "簡易表示確認を反映しました。検索需要は次の接続対象です。"
-        : "β版の安定診断として、入力キーワードから改善候補を表示しています。";
-      renderKeywordDiagnosisResult(keywordDiagnosisResult);
-    }
-
     function photoFallback(files) {
       const count = files.length;
       const { storeName, maps, ai } = shareContext || {};
@@ -2785,7 +2640,6 @@ https://okyakusa-ma.com/
     document.querySelector("#ego-search-run").addEventListener("click", runEgoSearch);
     document.querySelector("#photo-diagnosis-run").addEventListener("click", runPhotoDiagnosis);
     document.querySelector("#photo-diagnosis-clear").addEventListener("click", clearPhotoDiagnosis);
-    document.querySelector("#keyword-diagnosis-run").addEventListener("click", runKeywordDiagnosis);
 
     main().catch((error) => showError(error.message));
   </script>
