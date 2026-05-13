@@ -10,6 +10,7 @@ const SHEETS = {
     "category",
     "google_maps_url",
     "website_url",
+    "target_keywords",
     "instagram_url",
     "sns_url",
     "current_problem",

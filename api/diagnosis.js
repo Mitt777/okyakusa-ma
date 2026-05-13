@@ -68,6 +68,7 @@ module.exports = async function handler(request, response) {
     category: payload.category,
     google_maps_url: payload.google_maps_url || "",
     website_url: payload.website_url || "",
+    target_keywords: payload.target_keywords || "",
     instagram_url: payload.instagram_url || "",
     sns_url: payload.sns_url || "",
     current_problem: payload.current_problem || "",
