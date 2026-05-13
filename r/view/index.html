@@ -591,6 +591,12 @@
       display: block;
     }
 
+    .panel.pre-entry-check {
+      margin-top: 0;
+      border-color: #c7d7f0;
+      background: #f8fbff;
+    }
+
     .pre-entry-head {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -1121,7 +1127,6 @@
             </div>
           </div>
           <div class="worldview-result" id="worldview-result"></div>
-          <div class="pre-entry-check" id="pre-entry-check"></div>
           <div class="worldview-deep" id="worldview-deep">
             <div class="worldview-deep-head">
               <h3>さらに、あなたの本当に求めている世界観を深掘りしますか？</h3>
@@ -1136,6 +1141,7 @@
           <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
+        <div class="panel full pre-entry-check" id="pre-entry-check"></div>
         <div class="panel full">
           <h2>今すぐ改善する3点</h2>
           <div class="improvement-grid" id="improvement-grid"></div>
@@ -1806,7 +1812,7 @@
     }
 
     function renderPreEntryCheck() {
-      if (!shareContext || !worldviewShareResult) return;
+      if (!shareContext) return;
       const { request, maps, ai } = shareContext;
       const checked = parseJson(maps.maps_checked_items, []);
       const missing = parseJson(maps.maps_missing_items, []);
@@ -1821,7 +1827,7 @@
       const hasPlanInfo = Number(ai.geo_score || 0) >= 60 || Number(ai.seo_score || 0) >= 60;
       const scoreParts = [hasPhotos, hasHours, hasSite, hasCategory, hasParking, hasPhone, hasPlanInfo];
       const score = Math.round(scoreParts.filter(Boolean).length / scoreParts.length * 100);
-      const type = worldviewShareResult.primaryName;
+      const type = worldviewShareResult?.primaryName || "このお店";
       const weakItems = [
         !hasPhotos ? "入口・席・駐車場など、入る前に見たい写真" : "",
         !hasParking ? "駐車場や入口までの道順" : "",
@@ -1831,12 +1837,15 @@
       const suggestion = weakItems.length
         ? `${type}の魅力を壊さずに、まず「${weakItems.slice(0, 2).join("」「")}」を足すと、初めてのお客様が入りやすくなります。`
         : `${type}の世界観は来店前にも比較的伝わっています。次は、写真と言葉を揃えて「この店を選ぶ理由」をさらに強くできます。`;
+      const description = worldviewShareResult
+        ? `このお店の「${escapeHtml(type)}」らしさが、初めてのお客様に来店前から伝わっているかを確認します。`
+        : "Google Maps・公式サイト・検索情報から、初めてのお客様が入る前に安心できる材料があるかを確認します。世界観タイプ診断を行うと、タイプに合わせて見方が更新されます。";
       const el = document.querySelector("#pre-entry-check");
       el.innerHTML = `
         <div class="pre-entry-head">
           <div>
             <h3>入る前の世界観チェック β</h3>
-            <p>このお店の「${escapeHtml(type)}」らしさが、初めてのお客様に来店前から伝わっているかを確認します。</p>
+            <p>${description}</p>
           </div>
           <div class="pre-entry-score">
             <span>伝わり度</span>
@@ -2584,6 +2593,7 @@ https://okyakusa-ma.com/
       ]);
 
       shareContext = { storeName, totalScore, request, maps, ai, monthly };
+      renderPreEntryCheck();
       updateShareLinks();
       document.querySelector("#native-share").addEventListener("click", async () => {
         try {
