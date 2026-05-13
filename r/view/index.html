@@ -276,6 +276,171 @@
       margin-top: 6px;
     }
 
+    .worldview-panel {
+      border-color: #b9cde8;
+      background: linear-gradient(180deg, #ffffff 0%, #f3f7ff 100%);
+    }
+
+    .worldview-intro {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .worldview-intro p {
+      margin: 6px 0 0;
+      color: #344054;
+      font-size: 14px;
+    }
+
+    .worldview-toggle,
+    .worldview-submit {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #fff;
+      background: var(--green);
+      border: 1px solid var(--green);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .worldview-quiz {
+      display: none;
+      margin-top: 18px;
+      border-top: 1px solid #d7e4f5;
+      padding-top: 18px;
+    }
+
+    .worldview-quiz.is-open {
+      display: block;
+    }
+
+    .worldview-question {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .worldview-question + .worldview-question {
+      margin-top: 10px;
+    }
+
+    .worldview-question strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .worldview-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .worldview-option {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      color: #344054;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .worldview-option:has(input:checked) {
+      border-color: #87cdb8;
+      background: var(--green-soft);
+    }
+
+    .worldview-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .worldview-message {
+      color: var(--rose);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .worldview-result {
+      display: none;
+      margin-top: 18px;
+      border: 1px solid #b7dfd1;
+      border-radius: 8px;
+      background: #f7fffb;
+      padding: 16px;
+    }
+
+    .worldview-result.is-open {
+      display: block;
+    }
+
+    .worldview-result h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .worldview-result p {
+      margin: 0 0 12px;
+      color: #344054;
+      font-size: 14px;
+    }
+
+    .worldview-result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .worldview-result-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .worldview-result-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .worldview-result-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .worldview-result-card ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .worldview-disclaimer {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -451,6 +616,9 @@
       .video-grid,
       .score-explain-grid,
       .improvement-grid,
+      .worldview-intro,
+      .worldview-options,
+      .worldview-result-grid,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -490,6 +658,24 @@
         <div class="panel full">
           <h2>今すぐ改善する3点</h2>
           <div class="improvement-grid" id="improvement-grid"></div>
+        </div>
+        <div class="panel full worldview-panel">
+          <div class="worldview-intro">
+            <div>
+              <h2>お店世界観タイプ診断 β</h2>
+              <p>Google Mapsや口コミだけでは見えない「お店の空気」「接客距離感」「本来つながるべきお客様像」を7問でかんたん診断できます。</p>
+            </div>
+            <button class="worldview-toggle" id="worldview-toggle" type="button">無料でお店世界観タイプ診断をする</button>
+          </div>
+          <div class="worldview-quiz" id="worldview-quiz">
+            <div id="worldview-questions"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="worldview-submit" type="button">診断する</button>
+              <span class="worldview-message" id="worldview-message"></span>
+            </div>
+          </div>
+          <div class="worldview-result" id="worldview-result"></div>
+          <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
         <div class="panel">
           <h2>Google Maps観測値</h2>
@@ -539,7 +725,7 @@
   </main>
 
   <script>
-    const REPORT_VIEW_VERSION = "v0.2.5-deep-dive-toggle";
+    const REPORT_VIEW_VERSION = "v0.3.0-worldview-type";
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
@@ -623,6 +809,247 @@
       const isOpen = detail.classList.toggle("is-open");
       button.setAttribute("aria-expanded", String(isOpen));
       button.textContent = isOpen ? "詳細を閉じる" : `詳細を見る（テスト）: ${button.dataset.label || ""}`;
+    }
+
+    const WORLDVIEW_TYPES = {
+      quiet_resonance: {
+        name: "静かな共鳴型",
+        description: "静かに好きになられる店。落ち着いた空間、余白、居心地、静かな時間が魅力です。",
+        strength: "派手なバズよりも、空気感や美意識が伝わった時に相性の良いお客様が増えやすいタイプです。",
+        tiring: "騒がしすぎるお客様、急かすお客様、空間の余白を壊す使われ方には疲れやすい傾向があります。",
+        sns: ["Instagram", "YouTube Shorts"],
+        videos: ["静かな時間帯の店内", "開店前の光と準備", "駐車場から入口までの道案内"]
+      },
+      craft_trust: {
+        name: "職人信頼型",
+        description: "この人に任せたい店。技術、誠実さ、所作、積み重ねで信頼を生みます。",
+        strength: "商品や技術の理由を丁寧に伝えるほど、価格ではなく信頼で選ばれやすいタイプです。",
+        tiring: "こだわりを軽く扱われることや、短時間で雑に比較される導線には疲れやすい傾向があります。",
+        sns: ["Instagram", "YouTube Shorts", "公式サイト"],
+        videos: ["職人の手元", "素材や道具の紹介", "よくある質問への短い回答"]
+      },
+      local_community: {
+        name: "地域交流型",
+        description: "近所の居場所になる店。会話、常連、地域のあたたかさが魅力です。",
+        strength: "地域の人の顔が見えるほど、安心感と再訪理由が育ちやすいタイプです。",
+        tiring: "距離感が近くなりすぎることや、常連感が初来店の壁に見えることには注意が必要です。",
+        sns: ["Instagram", "Google投稿"],
+        videos: ["常連さんが好きなメニュー", "地域の小さな季節感", "初めての人への歓迎メッセージ"]
+      },
+      live_impulse: {
+        name: "ライブ感・衝動型",
+        description: "今入りたい店。活気、音、限定感、焼きたて、今日感が強いタイプです。",
+        strength: "今日行く理由を作るのが得意で、湯気、音、数量限定、空席情報と相性が良いタイプです。",
+        tiring: "一時的なバズや急な混雑で、理想の接客リズムが崩れやすい点に注意が必要です。",
+        sns: ["TikTok", "YouTube Shorts", "Instagramリール"],
+        videos: ["焼きたて・作りたての瞬間", "本日の限定メニュー", "今空いている時間帯の案内"]
+      },
+      worldview_immersion: {
+        name: "世界観没入型",
+        description: "異世界に入る感覚の店。美意識、内装、物語、独自性で記憶に残ります。",
+        strength: "店内に入った瞬間の物語が強く、写真・言葉・商品が揃うほど指名来店につながります。",
+        tiring: "世界観に合わない使われ方や、写真だけ撮って帰るお客様が増えると疲れやすい傾向があります。",
+        sns: ["Instagram", "YouTube Shorts", "公式サイト"],
+        videos: ["店内の世界観ツアー", "一番象徴的な席や商品", "この空間を作った理由"]
+      },
+      daily_companion: {
+        name: "日常伴走型",
+        description: "毎日の味方になる店。通いやすさ、安心感、生活の一部になる魅力があります。",
+        strength: "使いやすさや安心感が伝わるほど、派手ではなく長く通われる関係を作りやすいタイプです。",
+        tiring: "急かされることや、便利さだけで消費される導線が強くなりすぎると疲れやすい傾向があります。",
+        sns: ["Google投稿", "Instagram", "公式サイト"],
+        videos: ["いつもの使い方", "混みにくい時間帯", "一人でも入りやすい席の紹介"]
+      },
+      tourism_destination: {
+        name: "観光目的地型",
+        description: "ここに行くために来る店。土地性、名物、旅の体験、目的地性が強いタイプです。",
+        strength: "地域の魅力を借りながら、この店でしか残らない記憶に変換できると強くなります。",
+        tiring: "観光地のついでや写真目的だけで終わり、自店の記憶に残らない来店が増えると疲れやすい傾向があります。",
+        sns: ["Instagram", "YouTube Shorts", "Google Maps"],
+        videos: ["観光ルートから店まで", "旅の記憶に残る名物", "周辺とセットで楽しむ過ごし方"]
+      },
+      entry_anxiety_relief: {
+        name: "入口不安解消型",
+        description: "入って大丈夫そうな店。初めての人、一人客、子連れ、観光客に安心を与えるタイプです。",
+        strength: "来店前の不安を先回りして消せるほど、初めてのお客様から選ばれやすくなります。",
+        tiring: "説明不足のまま不安そうなお客様が増えると、現場の負担が大きくなりやすい傾向があります。",
+        sns: ["Google Maps", "Instagram", "公式サイト"],
+        videos: ["駐車場から入口まで", "初めての注文方法", "席・価格・子連れ可否の案内"]
+      }
+    };
+
+    const WORLDVIEW_QUESTIONS = [
+      {
+        id: "q1",
+        text: "お店の理想の空気はどちらに近いですか？",
+        options: [
+          ["静かで落ち着いた空気", { quiet_resonance: 3, worldview_immersion: 1 }],
+          ["活気がありにぎやかな空気", { live_impulse: 3, local_community: 1 }],
+          ["どちらも大切", { daily_companion: 2, entry_anxiety_relief: 1 }]
+        ]
+      },
+      {
+        id: "q2",
+        text: "お客様との距離感はどちらが理想ですか？",
+        options: [
+          ["必要な時だけ話す、静かな距離感", { quiet_resonance: 2, craft_trust: 1 }],
+          ["会話や交流を大切にしたい", { local_community: 3, live_impulse: 1 }],
+          ["お客様によって変えたい", { entry_anxiety_relief: 2, daily_companion: 1 }]
+        ]
+      },
+      {
+        id: "q3",
+        text: "増えると嬉しいお客様は？",
+        options: [
+          ["静かに過ごしてくれる人", { quiet_resonance: 3 }],
+          ["商品や技術を信頼してくれる人", { craft_trust: 3 }],
+          ["地域の人や常連さん", { local_community: 3 }],
+          ["今すぐ楽しみたい人", { live_impulse: 3 }],
+          ["世界観を好きになってくれる人", { worldview_immersion: 3 }],
+          ["日常的に通ってくれる人", { daily_companion: 3 }],
+          ["観光目的で来てくれる人", { tourism_destination: 3 }],
+          ["初めてでも安心したい人", { entry_anxiety_relief: 3 }]
+        ]
+      },
+      {
+        id: "q4",
+        text: "SNSで一番伝えたいものは？",
+        options: [
+          ["空気感・居心地", { quiet_resonance: 2, worldview_immersion: 1 }],
+          ["技術・こだわり", { craft_trust: 3 }],
+          ["人とのつながり", { local_community: 3 }],
+          ["限定感・ライブ感", { live_impulse: 3 }],
+          ["独自の世界観", { worldview_immersion: 3 }],
+          ["毎日の使いやすさ", { daily_companion: 3 }],
+          ["その土地らしさ", { tourism_destination: 3 }],
+          ["初めてでも入りやすい安心感", { entry_anxiety_relief: 3 }]
+        ]
+      },
+      {
+        id: "q5",
+        text: "お店が混むなら、どんな状態が理想ですか？",
+        options: [
+          ["静かに席が埋まる", { quiet_resonance: 3 }],
+          ["信頼して任せてくれる人が増える", { craft_trust: 3 }],
+          ["近所の人であたたかく賑わう", { local_community: 3 }],
+          ["活気が出て盛り上がる", { live_impulse: 3 }],
+          ["世界観が好きな人だけが集まる", { worldview_immersion: 3 }],
+          ["日常的に自然に使われる", { daily_companion: 3 }],
+          ["遠方から目的地として来る", { tourism_destination: 3 }],
+          ["初めての人も安心して入ってくる", { entry_anxiety_relief: 3 }]
+        ]
+      },
+      {
+        id: "q6",
+        text: "逆に、少し疲れやすいのは？",
+        options: [
+          ["騒がしすぎるお客様", { quiet_resonance: 2 }],
+          ["技術やこだわりを軽く扱うお客様", { craft_trust: 2 }],
+          ["距離感が近すぎるお客様", { local_community: 1, quiet_resonance: 1 }],
+          ["一時的なバズ目的のお客様", { live_impulse: 2 }],
+          ["世界観を壊すお客様", { worldview_immersion: 2 }],
+          ["急かすお客様", { daily_companion: 2 }],
+          ["写真だけ撮って帰るお客様", { tourism_destination: 2 }],
+          ["初来店で不安そうなお客様への説明不足", { entry_anxiety_relief: 2 }]
+        ]
+      },
+      {
+        id: "q7",
+        text: "今後のお店の理想像に近いものは？",
+        options: [
+          ["静かに長く愛される店", { quiet_resonance: 3 }],
+          ["技術や信頼で選ばれる店", { craft_trust: 3 }],
+          ["地域の居場所になる店", { local_community: 3 }],
+          ["活気とライブ感で人を呼ぶ店", { live_impulse: 3 }],
+          ["独自世界観で記憶に残る店", { worldview_immersion: 3 }],
+          ["日常の中で自然に通われる店", { daily_companion: 3 }],
+          ["観光目的地として選ばれる店", { tourism_destination: 3 }],
+          ["初めてでも安心して入れる店", { entry_anxiety_relief: 3 }]
+        ]
+      }
+    ];
+
+    function renderWorldviewQuestions() {
+      const container = document.querySelector("#worldview-questions");
+      container.innerHTML = WORLDVIEW_QUESTIONS.map((question, index) => `
+        <div class="worldview-question">
+          <strong>Q${index + 1}. ${escapeHtml(question.text)}</strong>
+          <div class="worldview-options">
+            ${question.options.map(([label], optionIndex) => `
+              <label class="worldview-option">
+                <input type="radio" name="${escapeHtml(question.id)}" value="${optionIndex}">
+                <span>${escapeHtml(label)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function calculateWorldviewType() {
+      const scores = Object.fromEntries(Object.keys(WORLDVIEW_TYPES).map((key) => [key, 0]));
+      for (const question of WORLDVIEW_QUESTIONS) {
+        const selected = document.querySelector(`input[name="${question.id}"]:checked`);
+        if (!selected) return null;
+        const [, weights] = question.options[Number(selected.value)];
+        Object.entries(weights).forEach(([type, point]) => {
+          scores[type] += point;
+        });
+      }
+      const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      return {
+        primaryKey: ranked[0][0],
+        secondaryKey: ranked[1][1] === ranked[0][1] ? ranked[1][0] : ranked[1][0],
+        scores,
+        ranked
+      };
+    }
+
+    function worldviewCard(title, body, items) {
+      return `
+        <div class="worldview-result-card">
+          <span>${escapeHtml(title)}</span>
+          <strong>${escapeHtml(body)}</strong>
+          ${items ? `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+        </div>
+      `;
+    }
+
+    function showWorldviewResult() {
+      const message = document.querySelector("#worldview-message");
+      const result = calculateWorldviewType();
+      if (!result) {
+        message.textContent = "7問すべてに回答してください。";
+        return;
+      }
+      message.textContent = "";
+      const primary = WORLDVIEW_TYPES[result.primaryKey];
+      const secondary = WORLDVIEW_TYPES[result.secondaryKey];
+      const resultEl = document.querySelector("#worldview-result");
+      const typeTitle = `${primary.name} × ${secondary.name}`;
+      resultEl.innerHTML = `
+        <h3>あなたのお店は「${escapeHtml(typeTitle)}」の傾向があります。</h3>
+        <p>${escapeHtml(primary.description)} ${escapeHtml(secondary.name)}の要素もあり、発信では「何を増やすか」だけでなく「どんなお客様と出会いたいか」を揃えると強くなります。</p>
+        <div class="worldview-result-grid">
+          ${worldviewCard("強み", primary.strength)}
+          ${worldviewCard("疲れやすいズレ", primary.tiring)}
+          ${worldviewCard("向いているSNS", primary.sns.join(" / "))}
+          ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
+        </div>
+        <div class="worldview-actions">
+          <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="toggleDeepDive(this)">ワンコイン深掘り診断へ進む（準備中）</button>
+          <div class="deep-dive">
+            <strong>深掘り版で確認する予定の内容</strong>
+            <ul>
+              <li>理想のお客様像と、増えすぎると疲れるお客様像</li>
+              <li>理想の混み具合、接客距離感、店主さんの出し方</li>
+              <li>Google Maps診断と世界観タイプを合わせた今月の行動プラン</li>
+            </ul>
+          </div>
+        </div>
+      `;
+      resultEl.classList.add("is-open");
+      resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     function scoreLevel(score) {
@@ -1008,6 +1435,14 @@ https://okyakusa-ma.com/
       loading.hidden = true;
       reportEl.hidden = false;
     }
+
+    renderWorldviewQuestions();
+    document.querySelector("#worldview-toggle").addEventListener("click", () => {
+      const quiz = document.querySelector("#worldview-quiz");
+      const isOpen = quiz.classList.toggle("is-open");
+      document.querySelector("#worldview-toggle").textContent = isOpen ? "診断を閉じる" : "無料でお店世界観タイプ診断をする";
+    });
+    document.querySelector("#worldview-submit").addEventListener("click", showWorldviewResult);
 
     main().catch((error) => showError(error.message));
   </script>
