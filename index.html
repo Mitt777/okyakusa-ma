@@ -220,6 +220,27 @@
       font-weight: 800;
     }
 
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .url-help-link {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--green-dark);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 850;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
     .intake-fields input,
     .intake-fields textarea {
       width: 100%;
@@ -240,6 +261,36 @@
 
     .field-wide {
       grid-column: 1 / -1;
+    }
+
+    .url-help-box {
+      grid-column: 1 / -1;
+      border: 1px solid #b9dfd1;
+      border-radius: 8px;
+      background: #f4fbf8;
+      padding: 14px;
+      color: #285347;
+      font-size: 13px;
+    }
+
+    .url-help-box[hidden] {
+      display: none;
+    }
+
+    .url-help-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green-dark);
+      font-size: 14px;
+    }
+
+    .url-help-box ol {
+      margin: 8px 0 0;
+      padding-left: 1.3em;
+    }
+
+    .url-help-box li + li {
+      margin-top: 4px;
     }
 
     .submit-row {
@@ -595,7 +646,7 @@
                 <input name="category" placeholder="例: カフェ / ランチ / 美容室" required>
               </label>
               <label>
-                Google Maps URL
+                <span class="field-label">Google Maps URL <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
                 <input name="google_maps_url" type="url" placeholder="https://maps.google.com/...">
               </label>
               <label>
@@ -603,13 +654,23 @@
                 <input name="website_url" type="url" placeholder="https://example.com">
               </label>
               <label>
-                Instagram URL
+                <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
                 <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
               </label>
               <label>
-                YouTube / TikTok / X URL
-                <input name="sns_url" type="url" placeholder="任意">
+                <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
+                <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
               </label>
+              <label>
+                <span class="field-label">TikTok URL <button class="url-help-link" type="button" data-url-help="tiktok">※URLの調べかた</button></span>
+                <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/@...">
+              </label>
+              <label>
+                <span class="field-label">X URL <button class="url-help-link" type="button" data-url-help="x">※URLの調べかた</button></span>
+                <input name="x_url" type="url" placeholder="https://x.com/...">
+              </label>
+              <input name="sns_url" type="hidden">
+              <div class="url-help-box" id="url-help-box" hidden></div>
               <label>
                 お名前
                 <input name="owner_name" placeholder="診断結果を受け取る方" required>
@@ -750,10 +811,83 @@
   <script>
     const form = document.querySelector("#diagnosis-form");
     const message = document.querySelector("#form-message");
+    const urlHelpBox = document.querySelector("#url-help-box");
+    const urlHelp = {
+      maps: {
+        title: "Google Maps URLの調べかた",
+        steps: [
+          "Google Mapsでお店の名前を検索します。",
+          "該当するお店のページを開きます。",
+          "「共有」ボタンを押します。",
+          "「リンクをコピー」を押して、この欄に貼り付けます。"
+        ]
+      },
+      instagram: {
+        title: "Instagram URLの調べかた",
+        steps: [
+          "Instagramでお店のプロフィール画面を開きます。",
+          "右上のメニュー、または共有メニューを開きます。",
+          "「プロフィールURLをコピー」または「リンクをコピー」を押します。",
+          "コピーしたURLを、この欄に貼り付けます。"
+        ]
+      },
+      youtube: {
+        title: "YouTube URLの調べかた",
+        steps: [
+          "YouTubeでお店のチャンネル、または代表的な動画を開きます。",
+          "「共有」を押します。",
+          "「コピー」を押します。",
+          "チャンネルURLでも動画URLでも大丈夫です。"
+        ]
+      },
+      tiktok: {
+        title: "TikTok URLの調べかた",
+        steps: [
+          "TikTokでお店のプロフィール、または代表的な動画を開きます。",
+          "共有ボタンを押します。",
+          "「リンクをコピー」を押します。",
+          "プロフィールURLでも動画URLでも大丈夫です。"
+        ]
+      },
+      x: {
+        title: "X URLの調べかた",
+        steps: [
+          "Xでお店のプロフィール、または代表的な投稿を開きます。",
+          "共有ボタンを押します。",
+          "「リンクをコピー」を押します。",
+          "プロフィールURLでも投稿URLでも大丈夫です。"
+        ]
+      }
+    };
+
+    document.querySelectorAll("[data-url-help]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const help = urlHelp[button.dataset.urlHelp];
+        if (!help || !urlHelpBox) return;
+        urlHelpBox.hidden = false;
+        urlHelpBox.innerHTML = `
+          <strong>${help.title}</strong>
+          <span>わからない場合は空欄でも大丈夫です。入力があると診断の精度が上がります。</span>
+          <ol>${help.steps.map((step) => `<li>${step}</li>`).join("")}</ol>
+        `;
+      });
+    });
+
+    function mergeSnsUrls() {
+      const hidden = form?.querySelector('input[name="sns_url"]');
+      if (!hidden) return;
+      const sources = [
+        ["YouTube", form.querySelector('input[name="youtube_url"]')?.value],
+        ["TikTok", form.querySelector('input[name="tiktok_url"]')?.value],
+        ["X", form.querySelector('input[name="x_url"]')?.value]
+      ].filter(([, value]) => value && value.trim());
+      hidden.value = sources.map(([label, value]) => `${label}: ${value.trim()}`).join("\n");
+    }
 
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
       message.textContent = "送信しています...";
+      mergeSnsUrls();
 
       const submitButtons = form.querySelectorAll("button[type='submit']");
       submitButtons.forEach((button) => {
