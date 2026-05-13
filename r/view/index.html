@@ -395,6 +395,27 @@
       font-size: 20px;
     }
 
+    .worldview-result-lead {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .worldview-result-image {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+    }
+
+    .worldview-result-copy {
+      min-width: 0;
+    }
+
     .worldview-result p {
       margin: 0 0 12px;
       color: #344054;
@@ -618,6 +639,7 @@
       .improvement-grid,
       .worldview-intro,
       .worldview-options,
+      .worldview-result-lead,
       .worldview-result-grid,
       .referral-cta {
         grid-template-columns: 1fr;
@@ -814,6 +836,7 @@
     const WORLDVIEW_TYPES = {
       quiet_resonance: {
         name: "静かな共鳴型",
+        image: "/assets/worldview-types/quiet_resonance.jpg",
         description: "静かに好きになられる店。落ち着いた空間、余白、居心地、静かな時間が魅力です。",
         strength: "派手なバズよりも、空気感や美意識が伝わった時に相性の良いお客様が増えやすいタイプです。",
         tiring: "騒がしすぎるお客様、急かすお客様、空間の余白を壊す使われ方には疲れやすい傾向があります。",
@@ -822,6 +845,7 @@
       },
       craft_trust: {
         name: "職人信頼型",
+        image: "/assets/worldview-types/craft_trust.jpg",
         description: "この人に任せたい店。技術、誠実さ、所作、積み重ねで信頼を生みます。",
         strength: "商品や技術の理由を丁寧に伝えるほど、価格ではなく信頼で選ばれやすいタイプです。",
         tiring: "こだわりを軽く扱われることや、短時間で雑に比較される導線には疲れやすい傾向があります。",
@@ -830,6 +854,7 @@
       },
       local_community: {
         name: "地域交流型",
+        image: "/assets/worldview-types/local_community.jpg",
         description: "近所の居場所になる店。会話、常連、地域のあたたかさが魅力です。",
         strength: "地域の人の顔が見えるほど、安心感と再訪理由が育ちやすいタイプです。",
         tiring: "距離感が近くなりすぎることや、常連感が初来店の壁に見えることには注意が必要です。",
@@ -838,6 +863,7 @@
       },
       live_impulse: {
         name: "ライブ感・衝動型",
+        image: "/assets/worldview-types/live_impulse.jpg",
         description: "今入りたい店。活気、音、限定感、焼きたて、今日感が強いタイプです。",
         strength: "今日行く理由を作るのが得意で、湯気、音、数量限定、空席情報と相性が良いタイプです。",
         tiring: "一時的なバズや急な混雑で、理想の接客リズムが崩れやすい点に注意が必要です。",
@@ -846,6 +872,7 @@
       },
       worldview_immersion: {
         name: "世界観没入型",
+        image: "/assets/worldview-types/worldview_immersion.jpg",
         description: "異世界に入る感覚の店。美意識、内装、物語、独自性で記憶に残ります。",
         strength: "店内に入った瞬間の物語が強く、写真・言葉・商品が揃うほど指名来店につながります。",
         tiring: "世界観に合わない使われ方や、写真だけ撮って帰るお客様が増えると疲れやすい傾向があります。",
@@ -854,6 +881,7 @@
       },
       daily_companion: {
         name: "日常伴走型",
+        image: "/assets/worldview-types/daily_companion.jpg",
         description: "毎日の味方になる店。通いやすさ、安心感、生活の一部になる魅力があります。",
         strength: "使いやすさや安心感が伝わるほど、派手ではなく長く通われる関係を作りやすいタイプです。",
         tiring: "急かされることや、便利さだけで消費される導線が強くなりすぎると疲れやすい傾向があります。",
@@ -862,6 +890,7 @@
       },
       tourism_destination: {
         name: "観光目的地型",
+        image: "/assets/worldview-types/tourism_destination.jpg",
         description: "ここに行くために来る店。土地性、名物、旅の体験、目的地性が強いタイプです。",
         strength: "地域の魅力を借りながら、この店でしか残らない記憶に変換できると強くなります。",
         tiring: "観光地のついでや写真目的だけで終わり、自店の記憶に残らない来店が増えると疲れやすい傾向があります。",
@@ -870,6 +899,7 @@
       },
       entry_anxiety_relief: {
         name: "入口不安解消型",
+        image: "/assets/worldview-types/entry_anxiety_relief.jpg",
         description: "入って大丈夫そうな店。初めての人、一人客、子連れ、観光客に安心を与えるタイプです。",
         strength: "来店前の不安を先回りして消せるほど、初めてのお客様から選ばれやすくなります。",
         tiring: "説明不足のまま不安そうなお客様が増えると、現場の負担が大きくなりやすい傾向があります。",
@@ -1028,8 +1058,13 @@
       const resultEl = document.querySelector("#worldview-result");
       const typeTitle = `${primary.name} × ${secondary.name}`;
       resultEl.innerHTML = `
-        <h3>あなたのお店は「${escapeHtml(typeTitle)}」の傾向があります。</h3>
-        <p>${escapeHtml(primary.description)} ${escapeHtml(secondary.name)}の要素もあり、発信では「何を増やすか」だけでなく「どんなお客様と出会いたいか」を揃えると強くなります。</p>
+        <div class="worldview-result-lead">
+          <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
+          <div class="worldview-result-copy">
+            <h3>あなたのお店は「${escapeHtml(typeTitle)}」の傾向があります。</h3>
+            <p>${escapeHtml(primary.description)} ${escapeHtml(secondary.name)}の要素もあり、発信では「何を増やすか」だけでなく「どんなお客様と出会いたいか」を揃えると強くなります。</p>
+          </div>
+        </div>
         <div class="worldview-result-grid">
           ${worldviewCard("強み", primary.strength)}
           ${worldviewCard("疲れやすいズレ", primary.tiring)}
