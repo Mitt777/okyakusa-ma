@@ -501,6 +501,73 @@
       font-size: 12px;
     }
 
+    .worldview-deep {
+      display: none;
+      margin-top: 18px;
+      border: 1px solid #d7e4f5;
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .worldview-deep.is-open {
+      display: block;
+    }
+
+    .worldview-deep-head h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .worldview-deep-head p {
+      margin: 0 0 14px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .worldview-deep-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .worldview-field {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 12px;
+    }
+
+    .worldview-field label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .worldview-field select,
+    .worldview-field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 10px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .worldview-field textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .worldview-deep-result {
+      border-color: #f1c27a;
+      background: #fffaf1;
+    }
+
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -687,6 +754,7 @@
       .worldview-options,
       .worldview-result-lead,
       .worldview-result-grid,
+      .worldview-deep-grid,
       .deep-dive-grid,
       .referral-cta {
         grid-template-columns: 1fr;
@@ -744,6 +812,18 @@
             </div>
           </div>
           <div class="worldview-result" id="worldview-result"></div>
+          <div class="worldview-deep" id="worldview-deep">
+            <div class="worldview-deep-head">
+              <h3>さらに、あなたの本当に求めている世界観を深掘りしますか？</h3>
+              <p>理想のお客様、混み具合、接客距離感、発信で疲れることを整理し、このお店らしい発信方針と今月の行動プランに落とし込みます。</p>
+            </div>
+            <div class="worldview-deep-grid" id="worldview-deep-fields"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="worldview-deep-submit" type="button">深掘り結果を表示する</button>
+              <span class="worldview-message" id="worldview-deep-message"></span>
+            </div>
+          </div>
+          <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
         <div class="panel">
@@ -794,7 +874,7 @@
   </main>
 
   <script>
-    const REPORT_VIEW_VERSION = "v0.3.0-worldview-type";
+    const REPORT_VIEW_VERSION = "v0.3.1-worldview-deep-inline";
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
@@ -802,6 +882,7 @@
     const reportEl = document.querySelector("#report");
     let shareContext = null;
     let worldviewShareResult = null;
+    let worldviewDeepResult = null;
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -1074,6 +1155,44 @@
       }
     ];
 
+    const WORLDVIEW_DEEP_FIELDS = [
+      {
+        id: "idealCrowding",
+        label: "理想の混み具合は？",
+        type: "select",
+        options: ["常に満席・行列も歓迎", "少し待ちが出るくらい", "静かに席が埋まるくらい", "予約中心で落ち着いている", "今より少し増えるだけでよい"]
+      },
+      { id: "idealCustomer", label: "増えると一番嬉しいお客様は？", type: "textarea", placeholder: "例：静かに過ごしてくれる方、商品をじっくり選びたい方" },
+      { id: "tiringCustomer", label: "逆に、増えすぎると疲れてしまうお客様は？", type: "textarea", placeholder: "例：急いでいる方、写真だけ撮って帰る方" },
+      {
+        id: "idealAtmosphere",
+        label: "理想の店内の空気は？",
+        type: "select",
+        options: ["静か", "会話がある", "活気がある", "非日常感がある", "日常的で安心", "職人感がある"]
+      },
+      {
+        id: "entranceImpression",
+        label: "理想の外観・入口の印象は？",
+        type: "select",
+        options: ["入りやすい", "特別感がある", "落ち着いている", "地域に馴染んでいる", "写真を撮りたくなる", "隠れ家感がある"]
+      },
+      {
+        id: "ownerVisibility",
+        label: "店主・スタッフの見せ方について",
+        type: "select",
+        options: ["顔や声を出したい", "手元や所作だけなら出したい", "できれば出したくない", "お客様との会話なら出したい"]
+      },
+      {
+        id: "snsFocus",
+        label: "SNSでやりたい発信は？",
+        type: "select",
+        options: ["雰囲気", "商品", "技術", "地域", "店主の考え", "限定情報", "お客様との関係"]
+      },
+      { id: "snsFatigue", label: "SNSで疲れることは？", type: "textarea", placeholder: "例：毎日投稿、顔出し、反応を気にしすぎること" },
+      { id: "fiveYearVision", label: "5年後、どんな店になっていたら嬉しいですか？", type: "textarea", placeholder: "例：無理なく続き、好きなお客様に静かに通われる店" },
+      { id: "signatureMoment", label: "「この店らしい」と思う瞬間は？", type: "textarea", placeholder: "例：夕方の光、常連さんの一言、仕込みの香り" }
+    ];
+
     function renderWorldviewQuestions() {
       const container = document.querySelector("#worldview-questions");
       container.innerHTML = WORLDVIEW_QUESTIONS.map((question, index) => `
@@ -1087,6 +1206,23 @@
               </label>
             `).join("")}
           </div>
+        </div>
+      `).join("");
+    }
+
+    function renderWorldviewDeepFields() {
+      const container = document.querySelector("#worldview-deep-fields");
+      container.innerHTML = WORLDVIEW_DEEP_FIELDS.map((field) => `
+        <div class="worldview-field">
+          <label for="deep-${escapeHtml(field.id)}">${escapeHtml(field.label)}</label>
+          ${field.type === "select" ? `
+            <select id="deep-${escapeHtml(field.id)}" data-deep-field="${escapeHtml(field.id)}">
+              <option value="">選択してください</option>
+              ${field.options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join("")}
+            </select>
+          ` : `
+            <textarea id="deep-${escapeHtml(field.id)}" data-deep-field="${escapeHtml(field.id)}" placeholder="${escapeHtml(field.placeholder || "")}"></textarea>
+          `}
         </div>
       `).join("");
     }
@@ -1148,21 +1284,40 @@
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
+      if (worldviewDeepResult) {
+        url.searchParams.set("wvd", encodeState(worldviewDeepResult));
+      }
       return url.toString();
     }
 
     function updateWorldviewUrl() {
-      if (!worldviewShareResult?.answerCode) return;
       const url = new URL(window.location.href);
-      url.searchParams.set("wv", worldviewShareResult.answerCode);
+      if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
+      if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(worldviewDeepResult));
       window.history.replaceState({}, "", url.toString());
+    }
+
+    function encodeState(value) {
+      const json = encodeURIComponent(JSON.stringify(value));
+      return btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function decodeState(value) {
+      try {
+        const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+        return JSON.parse(decodeURIComponent(atob(padded)));
+      } catch {
+        return null;
+      }
     }
 
     function buildShareText() {
       if (!shareContext) return "";
       const { storeName, totalScore, maps, ai } = shareContext;
       const worldviewLine = worldviewShareResult ? `\n世界観タイプ: ${worldviewShareResult.typeTitle}` : "";
-      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
+      const deepLine = worldviewDeepResult ? `\n深掘り方針: ${worldviewDeepResult.positioning}` : "";
+      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
     }
 
     function updateShareLinks() {
@@ -1170,7 +1325,7 @@
       const { storeName, totalScore, maps, ai, monthly } = shareContext;
       const shareText = buildShareText();
       const mailSubject = buildMailSubject(storeName);
-      const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewShareResult, worldviewShareUrl());
+      const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewShareResult, worldviewDeepResult, worldviewShareUrl());
       document.querySelector("#line-share").href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
       document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
     }
@@ -1210,15 +1365,7 @@
           ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
         </div>
         <div class="worldview-actions">
-          <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="toggleDeepDive(this)">深掘り診断へ進む（準備中）</button>
-          <div class="deep-dive">
-            <strong>深掘り版で確認する予定の内容</strong>
-            <ul>
-              <li>理想のお客様像と、増えすぎると疲れるお客様像</li>
-              <li>理想の混み具合、接客距離感、店主さんの出し方</li>
-              <li>Google Maps診断と世界観タイプを合わせた今月の行動プラン</li>
-            </ul>
-          </div>
+          <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>
       `;
       resultEl.classList.add("is-open");
@@ -1229,12 +1376,104 @@
       }
     }
 
+    function openWorldviewDeepDive() {
+      const panel = document.querySelector("#worldview-deep");
+      panel.classList.add("is-open");
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function getWorldviewDeepAnswers() {
+      const answers = {};
+      WORLDVIEW_DEEP_FIELDS.forEach((field) => {
+        const input = document.querySelector(`[data-deep-field="${field.id}"]`);
+        answers[field.id] = input ? input.value.trim() : "";
+      });
+      return answers;
+    }
+
+    function generateWorldviewDeepResult() {
+      const message = document.querySelector("#worldview-deep-message");
+      if (!worldviewShareResult) {
+        message.textContent = "先に7問の世界観タイプ診断を完了してください。";
+        return null;
+      }
+      const answers = getWorldviewDeepAnswers();
+      const missingSelect = WORLDVIEW_DEEP_FIELDS
+        .filter((field) => field.type === "select" && !answers[field.id])
+        .map((field) => field.label);
+      if (missingSelect.length) {
+        message.textContent = "選択式の項目をすべて選んでください。";
+        return null;
+      }
+      message.textContent = "";
+      const primary = worldviewShareResult.primaryName;
+      const secondary = worldviewShareResult.secondaryName;
+      const idealCustomer = answers.idealCustomer || `${primary}に共鳴し、${answers.idealAtmosphere}な空気を好むお客様`;
+      const tiringCustomer = answers.tiringCustomer || "お店のペースや世界観と合わず、急ぎすぎるお客様";
+      const signature = answers.signatureMoment || "お店らしい空気が自然に伝わる瞬間";
+      const snsFatigue = answers.snsFatigue || "無理に毎日投稿しようとすること";
+      const fiveYear = answers.fiveYearVision || `${primary}らしさを保ちながら、相性の良いお客様に長く通われる店`;
+      return {
+        typeTitle: worldviewShareResult.typeTitle,
+        positioning: `${answers.idealAtmosphere}な空気を大切にする、${answers.idealCrowding}の店`,
+        idealCustomer: concise(idealCustomer, 80),
+        avoidMismatch: concise(tiringCustomer, 80),
+        idealCrowding: answers.idealCrowding,
+        entranceImpression: answers.entranceImpression,
+        ownerVisibility: answers.ownerVisibility,
+        snsStrategy: `${answers.snsFocus}を中心に、${signature}を短い投稿で伝える`,
+        fatigueCare: `${snsFatigue}を避け、週1-2本でも続く発信にする`,
+        fiveYearVision: concise(fiveYear, 90),
+        monthlyActions: [
+          `${answers.entranceImpression}が伝わる入口・外観・席の写真を3枚追加する`,
+          `${answers.ownerVisibility}の方針に合わせて、店主/スタッフの見せ方を1本だけ試す`,
+          `${answers.snsFocus}を軸に「この店らしい瞬間」を1投稿にまとめる`
+        ]
+      };
+    }
+
+    function renderWorldviewDeepResult(result, options = {}) {
+      worldviewDeepResult = result;
+      const resultEl = document.querySelector("#worldview-deep-result");
+      resultEl.innerHTML = `
+        <h3>深掘り結果: ${escapeHtml(result.positioning)}</h3>
+        <p>無料診断の「${escapeHtml(result.typeTitle)}」を土台に、理想のお客様像・疲れやすいズレ・無理のない発信方針を整理しました。</p>
+        <div class="worldview-result-grid">
+          ${worldviewCard("理想のお客様像", result.idealCustomer)}
+          ${worldviewCard("避けたいズレ", result.avoidMismatch)}
+          ${worldviewCard("発信方針", result.snsStrategy)}
+          ${worldviewCard("今月の行動", "まずこの3つ", result.monthlyActions)}
+        </div>
+        <div class="deep-dive-next">この深掘り結果も共有URLに反映されます。ご家族・スタッフ・知人のお店の方に送っても、同じ結果を確認できます。</div>
+      `;
+      resultEl.classList.add("is-open");
+      updateWorldviewUrl();
+      updateShareLinks();
+      if (!options.skipScroll) {
+        resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function runWorldviewDeepDive() {
+      const result = generateWorldviewDeepResult();
+      if (!result) return;
+      renderWorldviewDeepResult(result);
+    }
+
     function restoreWorldviewFromUrl() {
       if (!applyWorldviewAnswers(new URLSearchParams(window.location.search).get("wv"))) return;
       const quiz = document.querySelector("#worldview-quiz");
       quiz.classList.add("is-open");
       document.querySelector("#worldview-toggle").textContent = "診断を閉じる";
       showWorldviewResult({ skipScroll: true });
+      restoreWorldviewDeepFromUrl();
+    }
+
+    function restoreWorldviewDeepFromUrl() {
+      const result = decodeState(new URLSearchParams(window.location.search).get("wvd") || "");
+      if (!result) return;
+      document.querySelector("#worldview-deep").classList.add("is-open");
+      renderWorldviewDeepResult(result, { skipScroll: true });
     }
 
     function scoreLevel(score) {
@@ -1474,7 +1713,7 @@
       return `【無料診断結果】${storeName}様のお店の見え方診断`;
     }
 
-    function buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewResult, reportUrl = window.location.href) {
+    function buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewResult, worldviewDeep, reportUrl = window.location.href) {
       const focus = text(monthly.this_month_focus || ai.top_fix, "Google MapsとSNSの来店前情報を整える");
       const mapsScore = text(ai.maps_score || maps.maps_score);
       const reviewText = `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`;
@@ -1484,6 +1723,12 @@
       const worldviewBlock = worldviewResult ? `
 お店世界観タイプ診断
 ・${worldviewResult.typeTitle}
+` : "";
+      const worldviewDeepBlock = worldviewDeep ? `
+世界観深掘り診断
+・方向性：${worldviewDeep.positioning}
+・理想のお客様像：${worldviewDeep.idealCustomer}
+・今月の行動：${worldviewDeep.monthlyActions.join(" / ")}
 ` : "";
 
       return `${storeName}様
@@ -1503,6 +1748,7 @@ ${reportUrl}
 ・検索スコア：SEO ${seoScore} / AI検索 ${geoScore}
 ・今月の重点：${shortFocus(focus)}
 ${worldviewBlock}
+${worldviewDeepBlock}
 
 短評
 ・Google Maps：${mapsMetricNote(maps, ai)}
@@ -1673,12 +1919,14 @@ https://okyakusa-ma.com/
     }
 
     renderWorldviewQuestions();
+    renderWorldviewDeepFields();
     document.querySelector("#worldview-toggle").addEventListener("click", () => {
       const quiz = document.querySelector("#worldview-quiz");
       const isOpen = quiz.classList.toggle("is-open");
       document.querySelector("#worldview-toggle").textContent = isOpen ? "診断を閉じる" : "無料でお店世界観タイプ診断をする";
     });
     document.querySelector("#worldview-submit").addEventListener("click", showWorldviewResult);
+    document.querySelector("#worldview-deep-submit").addEventListener("click", runWorldviewDeepDive);
 
     main().catch((error) => showError(error.message));
   </script>
