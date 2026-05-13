@@ -1074,13 +1074,44 @@
           <h2>今すぐ改善する3点</h2>
           <div class="improvement-grid" id="improvement-grid"></div>
         </div>
+        <div class="panel full worldview-panel">
+          <div class="worldview-intro">
+            <div>
+              <h2>お店世界観タイプ診断 β</h2>
+              <p>Google Mapsや口コミだけでは見えない「お店の空気」「接客距離感」「本来つながるべきお客様像」を7問でかんたん診断できます。</p>
+            </div>
+            <button class="worldview-toggle" id="worldview-toggle" type="button">無料でお店世界観タイプ診断をする</button>
+          </div>
+          <div class="worldview-quiz" id="worldview-quiz">
+            <div id="worldview-questions"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="worldview-submit" type="button">診断する</button>
+              <span class="worldview-message" id="worldview-message"></span>
+            </div>
+          </div>
+          <div class="worldview-result" id="worldview-result"></div>
+          <div class="pre-entry-check" id="pre-entry-check"></div>
+          <div class="worldview-deep" id="worldview-deep">
+            <div class="worldview-deep-head">
+              <h3>さらに、あなたの本当に求めている世界観を深掘りしますか？</h3>
+              <p>理想のお客様、混み具合、接客距離感、発信で疲れることを整理し、このお店らしい発信方針と今月の行動プランに落とし込みます。</p>
+            </div>
+            <div class="worldview-deep-grid" id="worldview-deep-fields"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="worldview-deep-submit" type="button">深掘り結果を表示する</button>
+              <span class="worldview-message" id="worldview-deep-message"></span>
+            </div>
+          </div>
+          <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
+          <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
+        </div>
         <div class="panel full ai-lab-panel">
           <div class="ai-lab-head">
             <div>
               <h2>AI追加診断 β</h2>
-              <p>今の無料診断を土台に、店主さんが何度も試したくなる「AI de 店エゴサーチ」と、写真で見る「THE お店入りやすさ診断」を追加します。</p>
+              <p>世界観タイプ診断と無料スコア診断を土台に、GeminiとAI Visionで「AI de 店エゴサーチ」と「THE お店入りやすさ診断」を追加します。</p>
             </div>
-            <span class="ai-lab-badge">無料入口 + 将来の追加診断</span>
+            <span class="ai-lab-badge">Gemini + AI Vision β</span>
           </div>
           <div class="ai-lab-grid">
             <div class="ai-lab-card">
@@ -1116,7 +1147,7 @@
                 <li>口コミ返信・不安ワードの整理</li>
                 <li>今月やる改善タスクの優先順位</li>
               </ul>
-              <span class="ai-lab-note">価格表示はβテスト後に調整します。今は「何を見せれば払いたくなるか」を検証します。</span>
+              <span class="ai-lab-note">価格や提供範囲はβテスト後に調整します。まずは、店主さんが実際に行動しやすい深掘り内容を検証します。</span>
             </div>
             <div class="ai-lab-card">
               <h3>WEBマーケター向け拡張</h3>
@@ -1129,37 +1160,6 @@
               <span class="ai-lab-note">個店向けは軽く、マーケター向けは深く。この切り分けで進めます。</span>
             </div>
           </div>
-        </div>
-        <div class="panel full worldview-panel">
-          <div class="worldview-intro">
-            <div>
-              <h2>お店世界観タイプ診断 β</h2>
-              <p>Google Mapsや口コミだけでは見えない「お店の空気」「接客距離感」「本来つながるべきお客様像」を7問でかんたん診断できます。</p>
-            </div>
-            <button class="worldview-toggle" id="worldview-toggle" type="button">無料でお店世界観タイプ診断をする</button>
-          </div>
-          <div class="worldview-quiz" id="worldview-quiz">
-            <div id="worldview-questions"></div>
-            <div class="worldview-actions">
-              <button class="worldview-submit" id="worldview-submit" type="button">診断する</button>
-              <span class="worldview-message" id="worldview-message"></span>
-            </div>
-          </div>
-          <div class="worldview-result" id="worldview-result"></div>
-          <div class="pre-entry-check" id="pre-entry-check"></div>
-          <div class="worldview-deep" id="worldview-deep">
-            <div class="worldview-deep-head">
-              <h3>さらに、あなたの本当に求めている世界観を深掘りしますか？</h3>
-              <p>理想のお客様、混み具合、接客距離感、発信で疲れることを整理し、このお店らしい発信方針と今月の行動プランに落とし込みます。</p>
-            </div>
-            <div class="worldview-deep-grid" id="worldview-deep-fields"></div>
-            <div class="worldview-actions">
-              <button class="worldview-submit" id="worldview-deep-submit" type="button">深掘り結果を表示する</button>
-              <span class="worldview-message" id="worldview-deep-message"></span>
-            </div>
-          </div>
-          <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
-          <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
         <div class="panel">
           <h2>Google Maps観測値</h2>
