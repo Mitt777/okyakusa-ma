@@ -800,6 +800,8 @@
     const loading = document.querySelector("#loading");
     const errorBox = document.querySelector("#error");
     const reportEl = document.querySelector("#report");
+    let shareContext = null;
+    let worldviewShareResult = null;
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -1089,6 +1091,29 @@
       `).join("");
     }
 
+    function getWorldviewAnswers() {
+      const answers = [];
+      for (const question of WORLDVIEW_QUESTIONS) {
+        const selected = document.querySelector(`input[name="${question.id}"]:checked`);
+        if (!selected) return null;
+        answers.push(Number(selected.value));
+      }
+      return answers;
+    }
+
+    function applyWorldviewAnswers(answerCode) {
+      if (!answerCode || answerCode.length !== WORLDVIEW_QUESTIONS.length) return false;
+      const answers = answerCode.split("").map((value) => Number(value));
+      if (answers.some((value, index) => !Number.isInteger(value) || value < 0 || value >= WORLDVIEW_QUESTIONS[index].options.length)) {
+        return false;
+      }
+      answers.forEach((value, index) => {
+        const input = document.querySelector(`input[name="${WORLDVIEW_QUESTIONS[index].id}"][value="${value}"]`);
+        if (input) input.checked = true;
+      });
+      return true;
+    }
+
     function calculateWorldviewType() {
       const scores = Object.fromEntries(Object.keys(WORLDVIEW_TYPES).map((key) => [key, 0]));
       for (const question of WORLDVIEW_QUESTIONS) {
@@ -1118,8 +1143,41 @@
       `;
     }
 
-    function showWorldviewResult() {
+    function worldviewShareUrl() {
+      const url = new URL(window.location.href);
+      if (worldviewShareResult?.answerCode) {
+        url.searchParams.set("wv", worldviewShareResult.answerCode);
+      }
+      return url.toString();
+    }
+
+    function updateWorldviewUrl() {
+      if (!worldviewShareResult?.answerCode) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set("wv", worldviewShareResult.answerCode);
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function buildShareText() {
+      if (!shareContext) return "";
+      const { storeName, totalScore, maps, ai } = shareContext;
+      const worldviewLine = worldviewShareResult ? `\n世界観タイプ: ${worldviewShareResult.typeTitle}` : "";
+      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
+    }
+
+    function updateShareLinks() {
+      if (!shareContext) return;
+      const { storeName, totalScore, maps, ai, monthly } = shareContext;
+      const shareText = buildShareText();
+      const mailSubject = buildMailSubject(storeName);
+      const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewShareResult, worldviewShareUrl());
+      document.querySelector("#line-share").href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
+      document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+    }
+
+    function showWorldviewResult(options = {}) {
       const message = document.querySelector("#worldview-message");
+      const answers = getWorldviewAnswers();
       const result = calculateWorldviewType();
       if (!result) {
         message.textContent = "7問すべてに回答してください。";
@@ -1130,6 +1188,13 @@
       const secondary = WORLDVIEW_TYPES[result.secondaryKey];
       const resultEl = document.querySelector("#worldview-result");
       const typeTitle = `${primary.name} × ${secondary.name}`;
+      worldviewShareResult = {
+        typeTitle,
+        primaryName: primary.name,
+        secondaryName: secondary.name,
+        answerCode: answers.join(""),
+        scores: result.scores
+      };
       resultEl.innerHTML = `
         <div class="worldview-result-lead">
           <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
@@ -1157,7 +1222,19 @@
         </div>
       `;
       resultEl.classList.add("is-open");
-      resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      updateWorldviewUrl();
+      updateShareLinks();
+      if (!options.skipScroll) {
+        resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function restoreWorldviewFromUrl() {
+      if (!applyWorldviewAnswers(new URLSearchParams(window.location.search).get("wv"))) return;
+      const quiz = document.querySelector("#worldview-quiz");
+      quiz.classList.add("is-open");
+      document.querySelector("#worldview-toggle").textContent = "診断を閉じる";
+      showWorldviewResult({ skipScroll: true });
     }
 
     function scoreLevel(score) {
@@ -1397,14 +1474,17 @@
       return `【無料診断結果】${storeName}様のお店の見え方診断`;
     }
 
-    function buildMailBody(storeName, totalScore, maps, ai, monthly) {
+    function buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewResult, reportUrl = window.location.href) {
       const focus = text(monthly.this_month_focus || ai.top_fix, "Google MapsとSNSの来店前情報を整える");
       const mapsScore = text(ai.maps_score || maps.maps_score);
       const reviewText = `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`;
       const seoScore = text(ai.seo_score);
       const geoScore = text(ai.geo_score);
-      const reportUrl = window.location.href;
       const topFix = text(ai.top_fix || monthly.this_month_focus, "Google MapsとSNSの来店前情報を整える");
+      const worldviewBlock = worldviewResult ? `
+お店世界観タイプ診断
+・${worldviewResult.typeTitle}
+` : "";
 
       return `${storeName}様
 
@@ -1422,6 +1502,7 @@ ${reportUrl}
 ・口コミ：${reviewText}
 ・検索スコア：SEO ${seoScore} / AI検索 ${geoScore}
 ・今月の重点：${shortFocus(focus)}
+${worldviewBlock}
 
 短評
 ・Google Maps：${mapsMetricNote(maps, ai)}
@@ -1558,18 +1639,16 @@ https://okyakusa-ma.com/
         ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
       ]);
 
-      const shareText = `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${window.location.href}`;
-      const mailSubject = buildMailSubject(storeName);
-      const mailBody = buildMailBody(storeName, totalScore, maps, ai, monthly);
-      document.querySelector("#line-share").href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
-      document.querySelector("#mail-share").href = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+      shareContext = { storeName, totalScore, maps, ai, monthly };
+      updateShareLinks();
       document.querySelector("#native-share").addEventListener("click", async () => {
         try {
+          const shareText = buildShareText();
           if (navigator.share) {
             await navigator.share({
               title: `${storeName}様のお店の見え方診断`,
               text: shareText,
-              url: window.location.href
+              url: worldviewShareUrl()
             });
             return;
           }
@@ -1581,7 +1660,7 @@ https://okyakusa-ma.com/
       });
       document.querySelector("#copy-share").addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(shareText);
+          await navigator.clipboard.writeText(buildShareText());
           document.querySelector("#copy-share").textContent = "コピーしました";
         } catch (error) {
           document.querySelector("#copy-share").textContent = "コピーできませんでした";
@@ -1590,6 +1669,7 @@ https://okyakusa-ma.com/
 
       loading.hidden = true;
       reportEl.hidden = false;
+      restoreWorldviewFromUrl();
     }
 
     renderWorldviewQuestions();
