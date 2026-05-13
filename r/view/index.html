@@ -818,7 +818,7 @@
           <ol>${listItems}</ol>
           <button class="premium-hint" type="button" data-label="${escapeHtml(shortHint)}" aria-expanded="false" onclick="toggleDeepDive(this)">詳細を見る（テスト）: ${escapeHtml(shortHint)}</button>
           <div class="deep-dive">
-            <strong>テスト表示: ワンコイン詳細で見せる内容</strong>
+            <strong>テスト表示: 詳細診断で見せる内容</strong>
             <ul>${detailItems}</ul>
           </div>
         </div>
@@ -1072,7 +1072,7 @@
           ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
         </div>
         <div class="worldview-actions">
-          <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="toggleDeepDive(this)">ワンコイン深掘り診断へ進む（準備中）</button>
+          <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="toggleDeepDive(this)">深掘り診断へ進む（準備中）</button>
           <div class="deep-dive">
             <strong>深掘り版で確認する予定の内容</strong>
             <ul>
@@ -1261,7 +1261,7 @@
       const checked = parseJson(maps.maps_checked_items, rawMaps?.maps_report?.checked_items || []);
       if (!checked.length) {
         return [
-          "詳細Mapsチェックは未取得です。ワンコイン診断では、駐車場・支払い・価格帯・サービス属性まで確認します。",
+          "詳細Mapsチェックは未取得です。深掘り診断では、駐車場・支払い・価格帯・サービス属性まで確認します。",
           "現在確認できる範囲: 店舗名、住所、カテゴリ、評価、口コミ数、営業時間、電話、公式サイト、写真数",
           "口コミ返信状況はGoogle Places APIでは原則取得できないため、詳細診断では目視または管理権限で確認します。"
         ];
