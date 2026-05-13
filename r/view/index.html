@@ -818,7 +818,7 @@
           <ol>${listItems}</ol>
           <button class="premium-hint" type="button" data-label="${escapeHtml(shortHint)}" aria-expanded="false" onclick="toggleDeepDive(this)">詳細を見る（テスト）: ${escapeHtml(shortHint)}</button>
           <div class="deep-dive">
-            <strong>テスト表示: 詳細診断で見せる内容</strong>
+            <strong>詳細診断メモ</strong>
             <ul>${detailItems}</ul>
           </div>
         </div>
@@ -1171,6 +1171,27 @@
       return concise(raw, 48);
     }
 
+    function hasValue(value) {
+      return value !== null && value !== undefined && value !== "";
+    }
+
+    function yesNo(value) {
+      return hasValue(value) ? "確認済み" : "未確認";
+    }
+
+    function scoreBand(score) {
+      const number = Number(score);
+      if (!Number.isFinite(number)) return "未判定";
+      if (number >= 80) return "強みとして使える";
+      if (number >= 60) return "土台はあるが改善余地あり";
+      if (number >= 40) return "優先的に見直したい";
+      return "早めの整備が必要";
+    }
+
+    function firstFilled(...values) {
+      return values.find((value) => hasValue(value));
+    }
+
     function mapsImprovements(maps) {
       const items = [];
       const photosText = text(maps.maps_weaknesses, "");
@@ -1185,15 +1206,20 @@
     function mapsDeepDive(maps, rawMaps) {
       const missing = parseJson(maps.maps_missing_items, rawMaps?.maps_report?.missing_items || []);
       const checked = parseJson(maps.maps_checked_items, rawMaps?.maps_report?.checked_items || []);
+      const mapsScore = firstFilled(maps.maps_score, rawMaps?.maps_report?.score);
+      const okCount = checked.filter((item) => item.ok).length;
+      const checkedCount = checked.length;
+      const missingText = missing.length ? missing.slice(0, 6).join("、") : "大きな未記載は目立ちません";
+      const currentHours = firstFilled(maps.current_opening_hours, rawMaps?.current_opening_hours);
+      const parking = firstFilled(maps.parking_options, rawMaps?.parking_options);
+      const payment = firstFilled(maps.payment_options, rawMaps?.payment_options);
+      const price = firstFilled(maps.price_range, maps.price_level, rawMaps?.price_range, rawMaps?.price_level);
       const details = [];
-      if (missing.length) {
-        details.push(`未記載/未取得の可能性: ${missing.slice(0, 6).join("、")}`);
-      } else {
-        details.push("基本項目は比較的整っています。次は写真の質、説明文、来店前不安の見せ方を確認します。");
-      }
-      details.push(`確認済み項目数: ${checked.filter((item) => item.ok).length || 0} / ${checked.length || "未取得"}`);
-      details.push("駐車場・入口・席・価格帯・支払い方法は、初来店前の不安を左右するため優先チェック対象です。");
-      details.push("詳細診断では、未記載項目ごとにGoogleビジネスプロフィールへ入れる文言案まで作れます。");
+      details.push(`判定: Mapsスコア ${text(mapsScore)}点。現在は「${scoreBand(mapsScore)}」状態です。`);
+      details.push(`確認状況: ${checkedCount ? `${okCount}/${checkedCount}項目を確認` : "基本項目のみ確認"}。未記載/未取得候補は「${missingText}」です。`);
+      details.push(`来店前不安: 営業時間 ${yesNo(currentHours)}、駐車場 ${yesNo(parking)}、価格帯 ${yesNo(price)}、支払い方法 ${yesNo(payment)}。ここが弱いほど初来店前の迷いが残ります。`);
+      details.push(`すぐ直す案: Googleビジネスプロフィールに「入口・駐車場・席・価格帯・初めての人向け案内」が分かる写真と説明文を追加します。`);
+      details.push(`投稿案: 「初めての方へ。駐車場から入口までの流れ、席の雰囲気、混みやすい時間を写真でまとめました。」`);
       return details;
     }
 
@@ -1212,10 +1238,15 @@
 
     function reviewDeepDive(maps) {
       const details = [];
-      details.push(`現在の観測値: 評価 ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件`);
-      details.push("口コミ返信状況はPlaces APIだけでは原則取得できません。詳細診断では目視、または管理権限で確認します。");
-      details.push("未返信が多い場合は、感謝・利用シーン・再来店理由を入れた返信テンプレートを作成します。");
-      details.push("口コミ本文から、褒められている要素と不安につながる要素を分けて、SNS/Maps投稿へ転用します。");
+      const rating = Number(maps.rating || 0);
+      const reviews = Number(maps.user_rating_count || 0);
+      const ratingComment = rating >= 4.2 ? "評価平均は信頼材料として強い" : rating >= 3.8 ? "評価平均は標準的で、返信と改善説明で補強したい" : "評価平均の不安を先回りして説明したい";
+      const reviewVolume = reviews >= 100 ? "口コミ数は十分に多く、店選びの根拠として使えます" : reviews >= 30 ? "口コミ数は一定ありますが、もう一段増やす余地があります" : "口コミ数はまだ育成余地があります";
+      details.push(`判定: 評価 ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件。${ratingComment}状態です。`);
+      details.push(`量の見方: ${reviewVolume}。良い口コミの言葉を、Google投稿・店頭POP・SNSに転用すると来店理由に変わります。`);
+      details.push("返信状況: Google Places APIだけでは口コミ返信状況を原則取得できません。返信の有無は目視、またはGoogleビジネスプロフィール管理権限で確認します。");
+      details.push("すぐ直す案: 良い口コミには「何を褒められたか」を受け止め、低評価や迷いには「改善点・次回安心できる情報」を短く返信します。");
+      details.push("返信テンプレ: 「ご来店ありがとうございます。◯◯を気に入っていただけて嬉しいです。初めての方にも安心していただけるよう、駐車場・席・混雑時間の案内も整えてまいります。」");
       return details;
     }
 
@@ -1233,10 +1264,15 @@
 
     function seoDeepDive(request, ai) {
       const details = [];
-      details.push(`SEOスコア: ${text(ai.seo_score)}点 / 公式サイトURL: ${request.website_url ? "確認済み" : "未確認"}`);
-      details.push("地域名＋業種、地域名＋ランチ/カフェ/ディナー、駐車場、営業時間、価格帯などの検索意図を確認します。");
-      details.push("詳細診断では、トップページに追加すべき見出し、本文、FAQ案を具体的に出します。");
-      details.push("AI検索にも効くように、店の特徴を短い説明文として構造化します。");
+      const score = ai.seo_score;
+      const hasSite = Boolean(request.website_url);
+      const area = text(request.area, "地域名");
+      const category = text(request.category, "業種");
+      details.push(`判定: SEOスコア ${text(score)}点。公式サイトURLは${hasSite ? "確認済み" : "未確認"}で、「${scoreBand(score)}」状態です。`);
+      details.push(`見るべき検索語: ${area}＋${category}、${area}＋ランチ、${area}＋カフェ、${area}＋駐車場、${area}＋一人、${area}＋子連れ。`);
+      details.push(hasSite ? "すぐ直す案: トップページの上部に、価格帯・席・予約・駐車場・営業時間・初めての人向け案内をまとめます。" : "すぐ直す案: 公式サイトがない/未確認の場合は、Google Maps、Instagram、外部ページのプロフィール文で検索語を補います。");
+      details.push("ページ文案: 「初めての方へ。駐車場、席の雰囲気、混みやすい時間、価格帯、予約の有無をこちらにまとめています。」");
+      details.push("次の確認: Search Console連携ができると、実際に表示された検索語・クリックされた検索語まで見られます。");
       return details;
     }
 
@@ -1250,10 +1286,15 @@
 
     function geoDeepDive(ai) {
       const details = [];
-      details.push(`AI検索/GEOスコア: ${text(ai.geo_score)}点`);
-      details.push("AIが推薦理由として使える材料は、特徴、利用シーン、対象客、来店前不安への回答です。");
-      details.push("詳細診断では『この店は誰におすすめか』をAIが拾いやすい説明文に変換します。");
-      details.push("Save/Plan/Impulseのどこが弱いかを、SNS投稿案・Maps投稿案に落とし込みます。");
+      const score = ai.geo_score;
+      const summary = text(ai.summary, "");
+      const topFix = text(ai.top_fix, "");
+      details.push(`判定: AI検索/GEOスコア ${text(score)}点。AIに推薦される材料は「${scoreBand(score)}」状態です。`);
+      details.push(`AIが拾いやすい材料: 店の特徴、誰に向くか、どんな時に使うか、なぜ良いか、初来店前の不安への回答です。`);
+      if (summary) details.push(`現在の要約傾向: ${concise(summary, 92)}`);
+      if (topFix) details.push(`優先改善: ${concise(topFix, 92)}`);
+      details.push("すぐ直す案: Google Mapsと公式サイトに「この店は誰におすすめか」「どんな過ごし方に向くか」を1文で追加します。");
+      details.push("AI向け説明文案: 「当店は、初めての方でも入りやすく、◯◯をゆっくり楽しみたい方に向いた、◯◯エリアの小さなお店です。」");
       return details;
     }
 
