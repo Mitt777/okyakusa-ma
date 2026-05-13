@@ -241,6 +241,13 @@
       white-space: nowrap;
     }
 
+    .url-help-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: -2px;
+    }
+
     .intake-fields input,
     .intake-fields textarea {
       width: 100%;
@@ -655,19 +662,16 @@
               </label>
               <label>
                 <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
+                <span class="url-help-inline">
+                  <button class="url-help-link" type="button" data-url-help="x">Xの場合</button>
+                  <button class="url-help-link" type="button" data-url-help="tiktok">TikTokの場合</button>
+                  <button class="url-help-link" type="button" data-url-help="facebook">Facebookの場合</button>
+                </span>
                 <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
               </label>
               <label>
                 <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
                 <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
-              </label>
-              <label>
-                <span class="field-label">TikTok URL <button class="url-help-link" type="button" data-url-help="tiktok">※URLの調べかた</button></span>
-                <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/@...">
-              </label>
-              <label>
-                <span class="field-label">X URL <button class="url-help-link" type="button" data-url-help="x">※URLの調べかた</button></span>
-                <input name="x_url" type="url" placeholder="https://x.com/...">
               </label>
               <input name="sns_url" type="hidden">
               <div class="url-help-box" id="url-help-box" hidden></div>
@@ -682,10 +686,6 @@
               <label class="field-wide">
                 来てほしいお客様・今困っていること
                 <textarea name="current_problem" placeholder="例: 観光客に見つけてほしい / Instagramは頑張っているが来店につながっているかわからない"></textarea>
-              </label>
-              <label class="field-wide">
-                お店にとって重要だと思う検索キーワードを自由に記載してください ※複合ワードOK / 任意記載
-                <textarea name="target_keywords" placeholder="例: 那須 ランチ&#10;那須 カフェ&#10;黒磯 グルメ&#10;子連れ ランチ 那須"></textarea>
               </label>
               <label class="hp">
                 入力しないでください
@@ -723,7 +723,7 @@
               <ul>
                 <li>公式サイトがあれば簡易SEOと地域語の入り方を見る</li>
                 <li>AI検索/GEOで推薦文に使いやすい情報を確認</li>
-                <li>Instagram、YouTube、TikTok、Xは入力がある場合だけ補助診断</li>
+                <li>Instagram、YouTubeは入力がある場合だけ補助診断</li>
               </ul>
             </div>
             <div class="signal">
@@ -860,6 +860,15 @@
           "「リンクをコピー」を押します。",
           "プロフィールURLでも投稿URLでも大丈夫です。"
         ]
+      },
+      facebook: {
+        title: "Facebook URLの調べかた",
+        steps: [
+          "Facebookでお店のページ、または代表的な投稿を開きます。",
+          "ページの場合はブラウザのアドレスバーのURLをコピーします。",
+          "投稿の場合は共有メニューから「リンクをコピー」を押します。",
+          "FacebookページURLでも投稿URLでも大丈夫です。Instagram欄に入れる必要はなく、迷った時の確認用です。"
+        ]
       }
     };
 
@@ -880,9 +889,7 @@
       const hidden = form?.querySelector('input[name="sns_url"]');
       if (!hidden) return;
       const sources = [
-        ["YouTube", form.querySelector('input[name="youtube_url"]')?.value],
-        ["TikTok", form.querySelector('input[name="tiktok_url"]')?.value],
-        ["X", form.querySelector('input[name="x_url"]')?.value]
+        ["YouTube", form.querySelector('input[name="youtube_url"]')?.value]
       ].filter(([, value]) => value && value.trim());
       hidden.value = sources.map(([label, value]) => `${label}: ${value.trim()}`).join("\n");
     }
