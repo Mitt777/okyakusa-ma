@@ -1646,10 +1646,10 @@
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
       if (worldviewDeepResult) {
-        url.searchParams.set("wvd", encodeState(worldviewDeepResult));
+        url.searchParams.set("wvd", encodeState(compactWorldviewDeepResult(worldviewDeepResult)));
       }
       if (isFreshSharedState(photoDiagnosisResult)) {
-        url.searchParams.set("pd", encodeState(photoDiagnosisResult));
+        url.searchParams.set("pd", encodeState(compactPhotoDiagnosisResult(photoDiagnosisResult)));
       }
       return url.toString();
     }
@@ -1657,9 +1657,9 @@
     function updateWorldviewUrl() {
       const url = new URL(window.location.href);
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
-      if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(worldviewDeepResult));
+      if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(compactWorldviewDeepResult(worldviewDeepResult)));
       if (isFreshSharedState(photoDiagnosisResult)) {
-        url.searchParams.set("pd", encodeState(photoDiagnosisResult));
+        url.searchParams.set("pd", encodeState(compactPhotoDiagnosisResult(photoDiagnosisResult)));
       } else {
         url.searchParams.delete("pd");
       }
@@ -1686,13 +1686,42 @@
       return Date.now() - Number(value.createdAt) < 24 * 60 * 60 * 1000;
     }
 
+    function compactWorldviewDeepResult(result) {
+      if (!result) return null;
+      return {
+        v: 1,
+        typeTitle: concise(result.typeTitle, 40),
+        positioning: concise(result.positioning, 60),
+        idealCustomer: concise(result.idealCustomer, 60),
+        avoidMismatch: concise(result.avoidMismatch, 60),
+        snsStrategy: concise(result.snsStrategy, 70),
+        monthlyActions: (result.monthlyActions || []).slice(0, 3).map((item) => concise(item, 54))
+      };
+    }
+
+    function compactPhotoDiagnosisResult(result) {
+      if (!result) return null;
+      return {
+        v: 1,
+        createdAt: result.createdAt || Date.now(),
+        title: concise(result.title, 50),
+        summary: concise(result.summary, 110),
+        items: (result.items || []).slice(0, 4).map((item) => ({
+          label: concise(item.label, 18),
+          value: concise(item.value, 24),
+          note: concise(item.note, 46)
+        })),
+        actions: (result.actions || []).slice(0, 3).map((item) => concise(item, 42))
+      };
+    }
+
     function buildShareText() {
       if (!shareContext) return "";
       const { storeName, totalScore, maps, ai } = shareContext;
       const worldviewLine = worldviewShareResult ? `\n世界観タイプ: ${worldviewShareResult.typeTitle}` : "";
-      const deepLine = worldviewDeepResult ? `\n深掘り方針: ${worldviewDeepResult.positioning}` : "";
-      const photoLine = isFreshSharedState(photoDiagnosisResult) ? `\n入りやすさ診断: ${photoDiagnosisResult.title || "写真診断結果あり"}` : "";
-      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}${photoLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
+      const deepLine = worldviewDeepResult ? `\n深掘り: ${concise(worldviewDeepResult.positioning, 36)}` : "";
+      const photoLine = isFreshSharedState(photoDiagnosisResult) ? `\n入りやすさ: ${concise(photoDiagnosisResult.title || "写真診断結果あり", 34)}` : "";
+      return `「${storeName}」のお店の見え方診断\n総合${text(totalScore || "")}点 / Maps ${text(ai.maps_score || maps.maps_score)} / 口コミ ${text(maps.rating)}(${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}${photoLine}\n${worldviewShareUrl()}`;
     }
 
     function updateShareLinks() {
