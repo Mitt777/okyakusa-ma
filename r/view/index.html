@@ -678,6 +678,169 @@
       font-weight: 800;
     }
 
+    .ai-lab-panel {
+      border-color: #c3d5f4;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+    }
+
+    .ai-lab-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .ai-lab-head p {
+      margin: 6px 0 0;
+      color: #344054;
+      font-size: 14px;
+    }
+
+    .ai-lab-badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #245b92;
+      background: #eaf3ff;
+      border: 1px solid #bdd7f4;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ai-lab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .ai-lab-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .ai-lab-card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .ai-lab-card p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .ai-lab-card ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .ai-lab-card li + li {
+      margin-top: 6px;
+    }
+
+    .ai-lab-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .ai-lab-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 9px 13px;
+      color: #fff;
+      background: #245b92;
+      border: 1px solid #245b92;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .ai-lab-button.secondary {
+      color: #245b92;
+      background: #eaf3ff;
+      border-color: #bdd7f4;
+    }
+
+    .ai-lab-file {
+      width: 100%;
+      margin-top: 10px;
+      border: 1px dashed #bdd7f4;
+      border-radius: 8px;
+      background: #f8fbff;
+      padding: 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .ai-lab-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .ai-lab-result {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid #bdd7f4;
+      border-radius: 8px;
+      background: #f8fbff;
+      padding: 14px;
+    }
+
+    .ai-lab-result.is-open {
+      display: block;
+    }
+
+    .ai-lab-result h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .ai-lab-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .ai-lab-result-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .ai-lab-result-item span {
+      display: block;
+      color: #245b92;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ai-lab-result-item strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -868,6 +1031,9 @@
       .deep-dive-grid,
       .pre-entry-head,
       .pre-entry-grid,
+      .ai-lab-head,
+      .ai-lab-grid,
+      .ai-lab-result-grid,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -907,6 +1073,62 @@
         <div class="panel full">
           <h2>今すぐ改善する3点</h2>
           <div class="improvement-grid" id="improvement-grid"></div>
+        </div>
+        <div class="panel full ai-lab-panel">
+          <div class="ai-lab-head">
+            <div>
+              <h2>AI追加診断 β</h2>
+              <p>今の無料診断を土台に、店主さんが何度も試したくなる「AI de 店エゴサーチ」と、写真で見る「THE お店入りやすさ診断」を追加します。</p>
+            </div>
+            <span class="ai-lab-badge">無料入口 + 将来の追加診断</span>
+          </div>
+          <div class="ai-lab-grid">
+            <div class="ai-lab-card">
+              <h3>AI de 店エゴサーチ</h3>
+              <p>お店がAI検索・Google検索文脈でどう見えそうかを、店主さん向けの言葉に翻訳します。</p>
+              <ul>
+                <li>AIにはどんな店として見えそうか</li>
+                <li>推薦されやすいお客様像</li>
+                <li>足りない説明文・検索語</li>
+              </ul>
+              <div class="ai-lab-actions">
+                <button class="ai-lab-button" id="ego-search-run" type="button">AIで見え方を確認する</button>
+                <span class="ai-lab-note" id="ego-search-status">β版では無料サービスとして検証します。</span>
+              </div>
+              <div class="ai-lab-result" id="ego-search-result"></div>
+            </div>
+            <div class="ai-lab-card">
+              <h3>THE お店入りやすさ診断</h3>
+              <p>外観・入口・駐車場・店内・メニュー写真から、初めてのお客様が「入って大丈夫そう」と思えるかを見ます。</p>
+              <input class="ai-lab-file" id="photo-diagnosis-files" type="file" accept="image/*" multiple>
+              <span class="ai-lab-note">写真5枚までは無料想定。追加15枚・メニュー深掘りは将来の追加診断候補です。</span>
+              <div class="ai-lab-actions">
+                <button class="ai-lab-button" id="photo-diagnosis-run" type="button">写真で入りやすさを見る</button>
+                <button class="ai-lab-button secondary" id="photo-diagnosis-clear" type="button">写真をクリア</button>
+              </div>
+              <div class="ai-lab-result" id="photo-diagnosis-result"></div>
+            </div>
+            <div class="ai-lab-card">
+              <h3>まとめ深掘り診断 β</h3>
+              <p>写真、Maps、口コミ、SEO/GEO、SNS動画ネタをまとめて、実行順に並べる追加診断の受け皿です。</p>
+              <ul>
+                <li>Google Mapsに載せる写真の順番</li>
+                <li>口コミ返信・不安ワードの整理</li>
+                <li>今月やる改善タスクの優先順位</li>
+              </ul>
+              <span class="ai-lab-note">価格表示はβテスト後に調整します。今は「何を見せれば払いたくなるか」を検証します。</span>
+            </div>
+            <div class="ai-lab-card">
+              <h3>WEBマーケター向け拡張</h3>
+              <p>SEOは今のβでは簡易診断に留め、ニーズが見えたらSearch Consoleやキーワード調査を月次レポートに追加します。</p>
+              <ul>
+                <li>複数店舗・複数サイトの比較</li>
+                <li>Search Console連携の実データ診断</li>
+                <li>地域SEO辞書・Keyword Planner連携</li>
+              </ul>
+              <span class="ai-lab-note">個店向けは軽く、マーケター向けは深く。この切り分けで進めます。</span>
+            </div>
+          </div>
         </div>
         <div class="panel full worldview-panel">
           <div class="worldview-intro">
@@ -987,7 +1209,7 @@
   </main>
 
   <script>
-    const REPORT_VIEW_VERSION = "v0.3.2-pre-entry-worldview";
+    const REPORT_VIEW_VERSION = "v0.4.0-ai-visibility-photo-beta";
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
@@ -996,6 +1218,8 @@
     let shareContext = null;
     let worldviewShareResult = null;
     let worldviewDeepResult = null;
+    let egoSearchResult = null;
+    let photoDiagnosisResult = null;
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -1707,6 +1931,199 @@
       return raw.length > max ? `${raw.slice(0, max)}...` : raw;
     }
 
+    function renderAiLabResult(target, title, lead, items, actions) {
+      const el = document.querySelector(target);
+      el.innerHTML = `
+        <h4>${escapeHtml(title)}</h4>
+        <p>${escapeHtml(lead)}</p>
+        <div class="ai-lab-result-grid">
+          ${(items || []).slice(0, 6).map((item) => `
+            <div class="ai-lab-result-item">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.value)}</strong>
+              <p>${escapeHtml(item.note || "")}</p>
+            </div>
+          `).join("")}
+        </div>
+        ${actions?.length ? `<div class="deep-dive-next">${escapeHtml(actions.join(" / "))}</div>` : ""}
+      `;
+      el.classList.add("is-open");
+    }
+
+    function localEgoSearchFallback() {
+      const { storeName, request, maps, ai } = shareContext || {};
+      const area = text(request?.area, "地域");
+      const category = text(request?.category, "お店");
+      const rating = Number(maps?.rating || 0);
+      const reviews = Number(maps?.user_rating_count || 0);
+      const hasWebsite = Boolean(request?.website_url);
+      const hasInstagram = Boolean(request?.instagram_url);
+      const planWeak = Number(ai?.plan_score || ai?.geo_score || 0) < 65;
+      return {
+        generated_by: "local_fallback",
+        title: `${storeName}は「${area}で見つかる${category}」として見えています`,
+        summary: `${rating >= 4 && reviews >= 30 ? "口コミの信頼土台はあります。" : "口コミの信頼材料は育成余地があります。"} ${hasWebsite ? "公式サイト導線は確認できます。" : "公式サイト導線は弱めです。"} AIに推薦されるには、誰に・どんな時に・なぜ良い店かを明文化したい状態です。`,
+        items: [
+          { label: "AIに見える店像", value: `${area}の${category}`, note: "現時点では地域名・業種・口コミから見え方が作られやすいです。" },
+          { label: "信頼材料", value: `${text(maps?.rating)} / ${text(maps?.user_rating_count, "0")}件`, note: "評価と口コミ数はAI要約にも影響しやすい観測値です。" },
+          { label: "Web導線", value: hasWebsite ? "あり" : "弱い", note: hasWebsite ? "公式サイトの説明文をAIが拾いやすくできます。" : "MapsとSNSのプロフィール文で補強します。" },
+          { label: "SNS補助", value: hasInstagram ? "Instagramあり" : "未確認", note: "世界観や写真の補助情報として使えます。" },
+          { label: "弱点候補", value: planWeak ? "Plan情報" : "推薦理由", note: planWeak ? "駐車場・席・価格・入口の安心情報を増やします。" : "この店を選ぶ理由を1文で固定します。" },
+          { label: "次の一手", value: "AI推薦文を作る", note: "AIがそのまま紹介しやすい短い店舗説明を整えます。" }
+        ],
+        actions: [
+          "店名検索で出る説明文を確認",
+          "誰におすすめかを1文で追加",
+          "地域名＋利用シーンの言葉を足す"
+        ]
+      };
+    }
+
+    async function runEgoSearch() {
+      const status = document.querySelector("#ego-search-status");
+      if (!shareContext) return;
+      status.textContent = "AIで見え方を確認しています...";
+      const { storeName, request, maps, ai } = shareContext;
+      try {
+        const response = await fetch("/api/ego-search", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            storeName,
+            area: request.area,
+            category: request.category,
+            websiteUrl: request.website_url,
+            googleMapsUrl: request.google_maps_url,
+            instagramUrl: request.instagram_url,
+            maps,
+            ai
+          })
+        });
+        const data = await response.json();
+        egoSearchResult = data.result || localEgoSearchFallback();
+        status.textContent = data.grounded ? "Google検索Groundingを使って確認しました。" : "β版の安定診断として表示しています。";
+      } catch {
+        egoSearchResult = localEgoSearchFallback();
+        status.textContent = "通信できないため、現在の診断結果からβ表示しています。";
+      }
+      renderAiLabResult(
+        "#ego-search-result",
+        egoSearchResult.title || "AI de 店エゴサーチ結果",
+        egoSearchResult.summary || "",
+        egoSearchResult.items || [],
+        egoSearchResult.actions || []
+      );
+    }
+
+    function photoFallback(files) {
+      const count = files.length;
+      const { storeName, maps, ai } = shareContext || {};
+      const base = Number(ai?.previsit_anxiety_score || maps?.maps_score || 60);
+      const photoBonus = Math.min(16, count * 3);
+      const score = Math.max(35, Math.min(92, Math.round(base * 0.74 + photoBonus)));
+      return {
+        generated_by: "local_fallback",
+        title: `写真${count}枚から見る「入りやすさ」仮診断`,
+        summary: `${storeName}の写真を、初めてのお客様が見る来店前情報として整理します。AI Vision未実行時も、写真枚数と既存診断から入口・駐車場・席・メニューの優先度を示します。`,
+        items: [
+          { label: "入りやすさ", value: `${score}点`, note: "外観・入口・店内・メニューが揃うほど上がります。" },
+          { label: "写真枚数", value: `${count}枚`, note: count <= 5 ? "無料診断の範囲です。" : "追加診断候補の枚数です。" },
+          { label: "最優先写真", value: "入口・駐車場", note: "地方店では迷わないことが来店率に効きます。" },
+          { label: "次に足す写真", value: "席・価格・人気商品", note: "一人客・子連れ・観光客の不安を減らします。" },
+          { label: "メニュー見え方", value: count >= 8 ? "深掘り候補" : "追加余地あり", note: "価格と頼み方が見える写真が効きます。" },
+          { label: "Maps掲載順", value: "外観→入口→席", note: "初めての人が順番に想像できる並びにします。" }
+        ],
+        actions: [
+          "入口の写真を1枚目候補にする",
+          "駐車場から入口までを追加",
+          "メニュー価格が読める写真を足す"
+        ]
+      };
+    }
+
+    function readImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const image = new Image();
+          image.onload = () => {
+            const maxSide = 1280;
+            const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(image.width * scale));
+            canvas.height = Math.max(1, Math.round(image.height * scale));
+            const context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+            resolve({
+              name: file.name,
+              mimeType: "image/jpeg",
+              data: dataUrl.split(",")[1]
+            });
+          };
+          image.onerror = reject;
+          image.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function runPhotoDiagnosis() {
+      const input = document.querySelector("#photo-diagnosis-files");
+      const files = Array.from(input.files || []).filter((file) => file.type.startsWith("image/")).slice(0, 20);
+      const resultEl = document.querySelector("#photo-diagnosis-result");
+      if (!files.length) {
+        renderAiLabResult(
+          "#photo-diagnosis-result",
+          "写真がまだ選択されていません",
+          "外観、入口、駐車場、店内、メニューの写真を選ぶと、入りやすさ診断を表示できます。",
+          [
+            { label: "おすすめ1", value: "外観", note: "初めての人が店を見つける写真です。" },
+            { label: "おすすめ2", value: "入口", note: "入って大丈夫そうかを判断します。" },
+            { label: "おすすめ3", value: "メニュー", note: "価格と注文不安を減らします。" }
+          ],
+          []
+        );
+        return;
+      }
+      resultEl.innerHTML = "<h4>写真を読み込んでいます...</h4><p>枚数が多い場合は少し時間がかかります。</p>";
+      resultEl.classList.add("is-open");
+      try {
+        const images = await Promise.all(files.map(readImageFile));
+        const response = await fetch("/api/photo-diagnosis", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            storeName: shareContext?.storeName,
+            area: shareContext?.request?.area,
+            category: shareContext?.request?.category,
+            worldviewType: worldviewShareResult?.typeTitle || "",
+            images
+          })
+        });
+        const data = await response.json();
+        photoDiagnosisResult = data.result || photoFallback(files);
+      } catch {
+        photoDiagnosisResult = photoFallback(files);
+      }
+      renderAiLabResult(
+        "#photo-diagnosis-result",
+        photoDiagnosisResult.title || "THE お店入りやすさ診断",
+        photoDiagnosisResult.summary || "",
+        photoDiagnosisResult.items || [],
+        photoDiagnosisResult.actions || []
+      );
+    }
+
+    function clearPhotoDiagnosis() {
+      document.querySelector("#photo-diagnosis-files").value = "";
+      const resultEl = document.querySelector("#photo-diagnosis-result");
+      resultEl.classList.remove("is-open");
+      resultEl.innerHTML = "";
+      photoDiagnosisResult = null;
+    }
+
     function mapsMetricNote(maps, ai) {
       const full = mapsScoreComment(maps, ai);
       return concise(full, 48);
@@ -2100,6 +2517,9 @@ https://okyakusa-ma.com/
     });
     document.querySelector("#worldview-submit").addEventListener("click", showWorldviewResult);
     document.querySelector("#worldview-deep-submit").addEventListener("click", runWorldviewDeepDive);
+    document.querySelector("#ego-search-run").addEventListener("click", runEgoSearch);
+    document.querySelector("#photo-diagnosis-run").addEventListener("click", runPhotoDiagnosis);
+    document.querySelector("#photo-diagnosis-clear").addEventListener("click", clearPhotoDiagnosis);
 
     main().catch((error) => showError(error.message));
   </script>
