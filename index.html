@@ -696,38 +696,38 @@
           </form>
           <div class="next-questions" aria-label="続く入力項目">
             <span>次に行うこと:</span>
-            Google Maps候補を照合し、公式サイトやSNSがある場合だけSEO/GEO簡易判定へ進みます。
+            店舗特定、Google Maps観測、AI検索/GEO、SNS導線、入りやすさ、世界観タイプを順に確認します。
           </div>
         </div>
 
         <div class="proof">
           <div class="proof-title">
-            <strong>診断の前に、まず「そのお店で間違いないか」を判定します</strong>
-            <span>店舗特定が曖昧な場合は診断を進めません</span>
+            <strong>入力された情報から、静かに、しかし確実に見えるものを拾います</strong>
+            <span>ない媒体は未判定。ある情報だけを無理なく診断します</span>
           </div>
           <div class="signal-list">
             <div class="signal">
-              <b>店舗特定</b>
+              <b>店舗特定・Maps</b>
               <ul>
-                <li>店舗名、住所、電話番号、カテゴリを照合</li>
-                <li>Google Maps URLと公式サイトURLの一致</li>
-                <li>同名店舗・支店・閉業候補を除外</li>
+                <li>店舗名、住所、カテゴリ、電話、公式URLを照合</li>
+                <li>評価、口コミ件数、営業時間、写真、Web導線を取得</li>
+                <li>駐車場・入口・席・メニューなど来店前不安の材料を確認</li>
               </ul>
             </div>
             <div class="signal">
-              <b>Google Maps診断</b>
+              <b>検索・AIでの見え方</b>
               <ul>
-                <li>カテゴリ、営業時間、写真、メニュー</li>
-                <li>口コミ件数、平均、最新日、返信率</li>
-                <li>経路、電話、予約、公式URLの整備</li>
+                <li>公式サイトがあれば簡易SEOと地域語の入り方を見る</li>
+                <li>AI検索/GEOで推薦文に使いやすい情報を確認</li>
+                <li>Instagram、YouTube、TikTok、Xは入力がある場合だけ補助診断</li>
               </ul>
             </div>
             <div class="signal">
-              <b>簡易SEO診断</b>
+              <b>世界観・入りやすさ</b>
               <ul>
-                <li>公式サイト、Instagram、YouTube、X等がある場合だけ判定</li>
-                <li>地域名×グルメ/ランチ/ディナーの検索順位</li>
-                <li>title、H1、FAQ、料金、アクセス、投稿文の言葉</li>
+                <li>7問でお店世界観タイプを診断</li>
+                <li>入る前に怖くないか、初来店の安心材料を確認</li>
+                <li>写真を入れた場合はAI Visionで入口・外観・店内の伝わり方を見る</li>
               </ul>
             </div>
           </div>
@@ -737,11 +737,10 @@
 
     <section class="divider-section" aria-label="診断基準の説明">
       <div class="explain">
-        <h2>まず店舗を特定し、その後に診断します。</h2>
+        <h2>数字で拾えるものと、空気として見えるものを分けて診断します。</h2>
         <p>
-          入力された店舗名だけで採点すると、同名店舗や近隣店舗を誤って診断する危険があります。
-          そのため内部では、Google Maps、公式サイト、住所、電話番号、SNSを照合し、特定できた場合だけスコア化します。
-          公式サイトやSNSがない項目は「未判定」とし、総合点で不利になりすぎないようにします。
+          Google Mapsの評価や口コミ件数のように取得できる数字と、来店前不安、世界観、入りやすさのように翻訳が必要な要素を分けて見ます。
+          公式サイトやSNSがない項目は未判定とし、ある情報から「今どこを直すと選ばれやすくなるか」を整理します。
         </p>
       </div>
 
@@ -749,22 +748,22 @@
         <div class="lane">
           <div class="lane-label">特定判定</div>
           <div>
-            <strong>診断対象の成否を先に出す</strong>
-            <span>一致、要確認、不一致の3段階。要確認の場合は、候補店舗を見せてオーナーに選んでもらいます。</span>
+            <strong>そのお店で間違いないかを先に見る</strong>
+            <span>Google Maps、公式サイト、住所、電話番号、SNSを照合し、違う店舗を診断しないようにします。</span>
           </div>
         </div>
         <div class="lane">
           <div class="lane-label">観測値</div>
           <div>
-            <strong>数字で確認できる評価</strong>
-            <span>検索順位、口コミ件数、評価平均、返信率、写真枚数、GBP項目充足率、サイト/SNS基本項目など。素材がない場合は未判定。</span>
+            <strong>数字と項目で確認できる評価</strong>
+            <span>口コミ件数、評価平均、営業時間、写真、Web導線、カテゴリ、SEO/GEOの基本情報など。素材がない場合は未判定。</span>
           </div>
         </div>
         <div class="lane">
           <div class="lane-label">独自スコア</div>
           <div>
             <strong>来店に変わるかを見る評価</strong>
-            <span>Save/Plan/Impulse、来店前不安、世界観一致、借景依存、自店魅力転換、顧客体験など。</span>
+            <span>Save/Plan/Impulse、来店前不安、世界観タイプ、入りやすさ、AI検索で推薦されやすい理由を見ます。</span>
           </div>
         </div>
       </div>
