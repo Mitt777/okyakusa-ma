@@ -568,6 +568,116 @@
       background: #fffaf1;
     }
 
+    .pre-entry-check {
+      display: none;
+      margin-top: 18px;
+      border: 1px solid #c7d7f0;
+      border-radius: 8px;
+      background: #f8fbff;
+      padding: 16px;
+    }
+
+    .pre-entry-check.is-open {
+      display: block;
+    }
+
+    .pre-entry-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .pre-entry-head h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .pre-entry-head p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .pre-entry-score {
+      min-width: 112px;
+      border: 1px solid #b9cde8;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .pre-entry-score span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .pre-entry-score strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .pre-entry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .pre-entry-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .pre-entry-item span {
+      display: inline-flex;
+      margin-bottom: 5px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .pre-entry-item span.ok {
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #b7dfd1;
+    }
+
+    .pre-entry-item span.warn {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid #f1c27a;
+    }
+
+    .pre-entry-item strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .pre-entry-item p {
+      margin: 5px 0 0;
+      color: #344054;
+      font-size: 12px;
+    }
+
+    .pre-entry-suggestion {
+      margin-top: 12px;
+      border: 1px solid #b7dfd1;
+      border-radius: 8px;
+      background: #f7fffb;
+      padding: 12px;
+      color: #285347;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -756,6 +866,8 @@
       .worldview-result-grid,
       .worldview-deep-grid,
       .deep-dive-grid,
+      .pre-entry-head,
+      .pre-entry-grid,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -812,6 +924,7 @@
             </div>
           </div>
           <div class="worldview-result" id="worldview-result"></div>
+          <div class="pre-entry-check" id="pre-entry-check"></div>
           <div class="worldview-deep" id="worldview-deep">
             <div class="worldview-deep-head">
               <h3>さらに、あなたの本当に求めている世界観を深掘りしますか？</h3>
@@ -874,7 +987,7 @@
   </main>
 
   <script>
-    const REPORT_VIEW_VERSION = "v0.3.1-worldview-deep-inline";
+    const REPORT_VIEW_VERSION = "v0.3.2-pre-entry-worldview";
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
@@ -1369,11 +1482,71 @@
         </div>
       `;
       resultEl.classList.add("is-open");
+      renderPreEntryCheck();
       updateWorldviewUrl();
       updateShareLinks();
       if (!options.skipScroll) {
         resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
+    }
+
+    function preEntryItem(label, ok, body) {
+      return `
+        <div class="pre-entry-item">
+          <span class="${ok ? "ok" : "warn"}">${ok ? "伝わりやすい" : "要補強"}</span>
+          <strong>${escapeHtml(label)}</strong>
+          <p>${escapeHtml(body)}</p>
+        </div>
+      `;
+    }
+
+    function renderPreEntryCheck() {
+      if (!shareContext || !worldviewShareResult) return;
+      const { request, maps, ai } = shareContext;
+      const checked = parseJson(maps.maps_checked_items, []);
+      const missing = parseJson(maps.maps_missing_items, []);
+      const checkedLabels = checked.map((item) => String(item.label || ""));
+      const missingLabels = missing.map((item) => String(item));
+      const hasPhotos = !missingLabels.some((label) => label.includes("写真"));
+      const hasHours = hasValue(maps.current_opening_hours) || checkedLabels.some((label) => label.includes("営業"));
+      const hasSite = Boolean(request?.website_url);
+      const hasCategory = Boolean(maps.maps_category);
+      const hasParking = hasValue(maps.parking_options) || !missingLabels.some((label) => label.includes("駐車"));
+      const hasPhone = hasValue(maps.phone_number) || checkedLabels.some((label) => label.includes("電話"));
+      const hasPlanInfo = Number(ai.geo_score || 0) >= 60 || Number(ai.seo_score || 0) >= 60;
+      const scoreParts = [hasPhotos, hasHours, hasSite, hasCategory, hasParking, hasPhone, hasPlanInfo];
+      const score = Math.round(scoreParts.filter(Boolean).length / scoreParts.length * 100);
+      const type = worldviewShareResult.primaryName;
+      const weakItems = [
+        !hasPhotos ? "入口・席・駐車場など、入る前に見たい写真" : "",
+        !hasParking ? "駐車場や入口までの道順" : "",
+        !hasSite ? "公式サイトやプロフィールでの初来店案内" : "",
+        !hasPlanInfo ? "価格帯・席・予約・子連れ可否などのPlan情報" : ""
+      ].filter(Boolean);
+      const suggestion = weakItems.length
+        ? `${type}の魅力を壊さずに、まず「${weakItems.slice(0, 2).join("」「")}」を足すと、初めてのお客様が入りやすくなります。`
+        : `${type}の世界観は来店前にも比較的伝わっています。次は、写真と言葉を揃えて「この店を選ぶ理由」をさらに強くできます。`;
+      const el = document.querySelector("#pre-entry-check");
+      el.innerHTML = `
+        <div class="pre-entry-head">
+          <div>
+            <h3>入る前の世界観チェック β</h3>
+            <p>このお店の「${escapeHtml(type)}」らしさが、初めてのお客様に来店前から伝わっているかを確認します。</p>
+          </div>
+          <div class="pre-entry-score">
+            <span>伝わり度</span>
+            <strong>${score}</strong>
+          </div>
+        </div>
+        <div class="pre-entry-grid">
+          ${preEntryItem("入口の安心感", hasPhotos, hasPhotos ? "写真の土台はあります。入口・席・看板・人気商品の見せ方を揃えるとさらに伝わります。" : "入口や席の写真が弱い可能性があります。初めての人が入る前に安心できる写真を足したいです。")}
+          ${preEntryItem("駐車場から入口までの想像しやすさ", hasParking, hasParking ? "アクセス不安は比較的抑えられています。混みやすい時間も足せるとさらに親切です。" : "駐車場や入口までの流れが見えにくい可能性があります。ここは地方店舗では特に効きます。")}
+          ${preEntryItem("初めてでも入れる雰囲気", hasPhone && hasHours, hasPhone && hasHours ? "営業時間や連絡導線は確認できます。あとは初来店向けの一言があると強いです。" : "営業時間・電話・初来店案内のどれかが弱い可能性があります。迷う前に分かる状態へ整えます。")}
+          ${preEntryItem("世界観と来店前情報の一致", hasPlanInfo, hasPlanInfo ? "検索やAI検索に使える情報の土台があります。世界観タイプとPlan情報をつなげると強くなります。" : "世界観はあっても、価格・席・予約・子連れ可否などのPlan情報が弱い可能性があります。")}
+        </div>
+        <div class="pre-entry-suggestion">${escapeHtml(suggestion)}</div>
+      `;
+      el.classList.add("is-open");
     }
 
     function openWorldviewDeepDive() {
@@ -1885,7 +2058,7 @@ https://okyakusa-ma.com/
         ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
       ]);
 
-      shareContext = { storeName, totalScore, maps, ai, monthly };
+      shareContext = { storeName, totalScore, request, maps, ai, monthly };
       updateShareLinks();
       document.querySelector("#native-share").addEventListener("click", async () => {
         try {
