@@ -1624,6 +1624,9 @@
       if (worldviewDeepResult) {
         url.searchParams.set("wvd", encodeState(worldviewDeepResult));
       }
+      if (isFreshSharedState(photoDiagnosisResult)) {
+        url.searchParams.set("pd", encodeState(photoDiagnosisResult));
+      }
       return url.toString();
     }
 
@@ -1631,6 +1634,11 @@
       const url = new URL(window.location.href);
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
       if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(worldviewDeepResult));
+      if (isFreshSharedState(photoDiagnosisResult)) {
+        url.searchParams.set("pd", encodeState(photoDiagnosisResult));
+      } else {
+        url.searchParams.delete("pd");
+      }
       window.history.replaceState({}, "", url.toString());
     }
 
@@ -1649,12 +1657,18 @@
       }
     }
 
+    function isFreshSharedState(value) {
+      if (!value?.createdAt) return false;
+      return Date.now() - Number(value.createdAt) < 24 * 60 * 60 * 1000;
+    }
+
     function buildShareText() {
       if (!shareContext) return "";
       const { storeName, totalScore, maps, ai } = shareContext;
       const worldviewLine = worldviewShareResult ? `\n世界観タイプ: ${worldviewShareResult.typeTitle}` : "";
       const deepLine = worldviewDeepResult ? `\n深掘り方針: ${worldviewDeepResult.positioning}` : "";
-      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
+      const photoLine = isFreshSharedState(photoDiagnosisResult) ? `\n入りやすさ診断: ${photoDiagnosisResult.title || "写真診断結果あり"}` : "";
+      return `お客様どっと混むで「${storeName}」の見え方診断を見ました。\n総合スコア: ${text(totalScore || "")}/100\nMaps: ${text(ai.maps_score || maps.maps_score)} / 口コミ: ${text(maps.rating)} (${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}${photoLine}\nGoogle Maps・口コミ・SNS・来店前不安が点数で見られます。\n${worldviewShareUrl()}`;
     }
 
     function updateShareLinks() {
@@ -1860,8 +1874,8 @@
     function restoreWorldviewFromUrl() {
       if (!applyWorldviewAnswers(new URLSearchParams(window.location.search).get("wv"))) return;
       const quiz = document.querySelector("#worldview-quiz");
-      quiz.classList.add("is-open");
-      document.querySelector("#worldview-toggle").textContent = "診断を閉じる";
+      quiz.classList.remove("is-open");
+      document.querySelector("#worldview-toggle").textContent = "診断をやり直す";
       showWorldviewResult({ skipScroll: true });
       restoreWorldviewDeepFromUrl();
     }
@@ -1869,7 +1883,7 @@
     function restoreWorldviewDeepFromUrl() {
       const result = decodeState(new URLSearchParams(window.location.search).get("wvd") || "");
       if (!result) return;
-      document.querySelector("#worldview-deep").classList.add("is-open");
+      document.querySelector("#worldview-deep").classList.remove("is-open");
       renderWorldviewDeepResult(result, { skipScroll: true });
     }
 
@@ -2107,6 +2121,10 @@
       } catch {
         photoDiagnosisResult = photoFallback(files);
       }
+      photoDiagnosisResult = {
+        ...photoDiagnosisResult,
+        createdAt: Date.now()
+      };
       renderAiLabResult(
         "#photo-diagnosis-result",
         photoDiagnosisResult.title || "THE お店入りやすさ診断",
@@ -2114,6 +2132,8 @@
         photoDiagnosisResult.items || [],
         photoDiagnosisResult.actions || []
       );
+      updateWorldviewUrl();
+      updateShareLinks();
     }
 
     function clearPhotoDiagnosis() {
@@ -2122,6 +2142,27 @@
       resultEl.classList.remove("is-open");
       resultEl.innerHTML = "";
       photoDiagnosisResult = null;
+      updateWorldviewUrl();
+      updateShareLinks();
+    }
+
+    function restorePhotoDiagnosisFromUrl() {
+      const restored = decodeState(new URLSearchParams(window.location.search).get("pd") || "");
+      if (!restored) return;
+      if (!isFreshSharedState(restored)) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("pd");
+        window.history.replaceState({}, "", url.toString());
+        return;
+      }
+      photoDiagnosisResult = restored;
+      renderAiLabResult(
+        "#photo-diagnosis-result",
+        photoDiagnosisResult.title || "THE お店入りやすさ診断",
+        photoDiagnosisResult.summary || "",
+        photoDiagnosisResult.items || [],
+        photoDiagnosisResult.actions || []
+      );
     }
 
     function mapsMetricNote(maps, ai) {
@@ -2505,7 +2546,9 @@ https://okyakusa-ma.com/
 
       loading.hidden = true;
       reportEl.hidden = false;
+      restorePhotoDiagnosisFromUrl();
       restoreWorldviewFromUrl();
+      updateShareLinks();
     }
 
     renderWorldviewQuestions();
