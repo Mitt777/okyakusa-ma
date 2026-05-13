@@ -329,9 +329,19 @@
 
     .worldview-intro {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 96px 1fr auto;
       gap: 18px;
       align-items: center;
+    }
+
+    .worldview-teaser-image {
+      width: 96px;
+      border: 1px solid #d7e4f5;
+      border-radius: 8px;
+      background: #fff;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      box-shadow: 0 8px 20px rgba(30, 41, 59, 0.08);
     }
 
     .worldview-intro p {
@@ -1096,6 +1106,7 @@
         </div>
         <div class="panel full worldview-panel">
           <div class="worldview-intro">
+            <img class="worldview-teaser-image" src="/assets/worldview-types/quiet_resonance.jpg" alt="静かな共鳴型のイメージ">
             <div>
               <h2>お店世界観タイプ診断 β</h2>
               <p>Google Mapsや口コミだけでは見えない「お店の空気」「接客距離感」「本来つながるべきお客様像」を7問でかんたん診断できます。</p>
@@ -1125,6 +1136,14 @@
           <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
+        <div class="panel full">
+          <h2>今すぐ改善する3点</h2>
+          <div class="improvement-grid" id="improvement-grid"></div>
+        </div>
+        <div class="panel action">
+          <h2>今すぐ直すべき1点</h2>
+          <p><strong id="top-fix"></strong></p>
+        </div>
         <div class="panel">
           <h2>弱点トップ3</h2>
           <ul class="list" id="weaknesses"></ul>
@@ -1132,10 +1151,6 @@
         <div class="panel">
           <h2>強みトップ3</h2>
           <ul class="list" id="strengths"></ul>
-        </div>
-        <div class="panel action">
-          <h2>今すぐ直すべき1点</h2>
-          <p><strong id="top-fix"></strong></p>
         </div>
         <div class="panel full">
           <h2>今撮るべき動画3本</h2>
@@ -1147,10 +1162,6 @@
             <span>Google Maps、口コミ、SNS、来店前不安を無料でβ診断できます。</span>
           </div>
           <a href="/">完全無料で試す</a>
-        </div>
-        <div class="panel full">
-          <h2>今すぐ改善する3点</h2>
-          <div class="improvement-grid" id="improvement-grid"></div>
         </div>
         <div class="panel full ai-lab-panel">
           <div class="ai-lab-head">
@@ -1222,14 +1233,6 @@
               <span class="ai-lab-note">個店向けは軽く、マーケター向けは深く。この切り分けで進めます。</span>
             </div>
           </div>
-        </div>
-        <div class="panel">
-          <h2>Google Maps観測値</h2>
-          <ul class="list" id="maps-list"></ul>
-        </div>
-        <div class="panel">
-          <h2>Google Maps未記載チェック</h2>
-          <ul class="list" id="maps-checklist"></ul>
         </div>
       </section>
 
@@ -2523,7 +2526,7 @@ https://okyakusa-ma.com/
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");
       const totalScore = Number(ai.total_score || monthly.total_score || aiRaw.total_score || 0);
-      const summary = ai.summary || aiRaw.summary || "診断下書きを生成しました。Google Maps観測値とAI診断を確認してください。";
+      const summary = ai.summary || aiRaw.summary || "診断下書きを生成しました。スコア、改善ポイント、世界観タイプ診断を確認してください。";
 
       document.querySelector("#store-name").textContent = storeName;
       document.querySelector("#summary").textContent = summary;
@@ -2551,17 +2554,6 @@ https://okyakusa-ma.com/
         improvementCard("SEO", seoImprovements(request, ai), "詳細診断: 検索語・ページ改善を深掘り", seoDeepDive(request, ai)),
         improvementCard("AI検索/GEO", geoImprovements(ai), "詳細診断: AI推薦理由を深掘り", geoDeepDive(ai))
       ].join("");
-
-      list("#maps-list", [
-        `店舗特定: ${text(maps.identity_status)} / ${text(maps.identity_score)}点`,
-        `正式名: ${text(maps.matched_store_name || request.store_name)}`,
-        `住所: ${text(maps.matched_address)}`,
-        `カテゴリ: ${text(maps.maps_category)}`,
-        `評価: ${text(maps.rating)} / 口コミ ${text(maps.user_rating_count, "0")}件`,
-        `Mapsスコア: ${text(maps.maps_score)}`,
-        `取得レベル: ${text(maps.detail_level, "basic")}`
-      ]);
-      list("#maps-checklist", mapsChecklistItems(maps, rawMaps));
 
       list("#weaknesses", parseJson(ai.weaknesses, aiRaw.weaknesses || []));
       list("#strengths", parseJson(ai.strengths, aiRaw.strengths || []));
