@@ -841,6 +841,30 @@
       font-size: 14px;
     }
 
+    .ai-lab-sources {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .ai-lab-sources span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ai-lab-sources a {
+      display: inline-flex;
+      margin: 0 8px 6px 0;
+      color: #245b92;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -1945,7 +1969,7 @@
       return raw.length > max ? `${raw.slice(0, max)}...` : raw;
     }
 
-    function renderAiLabResult(target, title, lead, items, actions) {
+    function renderAiLabResult(target, title, lead, items, actions, sources = []) {
       const el = document.querySelector(target);
       el.innerHTML = `
         <h4>${escapeHtml(title)}</h4>
@@ -1959,6 +1983,14 @@
             </div>
           `).join("")}
         </div>
+        ${sources?.length ? `
+          <div class="ai-lab-sources">
+            <span>参照ソース</span>
+            ${sources.slice(0, 6).map((source) => `
+              <a href="${escapeHtml(source.uri)}" target="_blank" rel="noopener">${escapeHtml(source.provider || "Source")}: ${escapeHtml(source.title || source.uri)}</a>
+            `).join("")}
+          </div>
+        ` : ""}
         ${actions?.length ? `<div class="deep-dive-next">${escapeHtml(actions.join(" / "))}</div>` : ""}
       `;
       el.classList.add("is-open");
@@ -2015,7 +2047,7 @@
         });
         const data = await response.json();
         egoSearchResult = data.result || localEgoSearchFallback();
-        status.textContent = data.grounded ? "Google検索Groundingを使って確認しました。" : "β版の安定診断として表示しています。";
+        status.textContent = data.mapsGrounded ? "Google Search / Google Maps Groundingを使って確認しました。" : data.grounded ? "Google検索Groundingを使って確認しました。" : "β版の安定診断として表示しています。";
       } catch {
         egoSearchResult = localEgoSearchFallback();
         status.textContent = "通信できないため、現在の診断結果からβ表示しています。";
@@ -2025,7 +2057,8 @@
         egoSearchResult.title || "AI de 店エゴサーチ結果",
         egoSearchResult.summary || "",
         egoSearchResult.items || [],
-        egoSearchResult.actions || []
+        egoSearchResult.actions || [],
+        egoSearchResult.sources || []
       );
     }
 
@@ -2130,7 +2163,8 @@
         photoDiagnosisResult.title || "THE お店入りやすさ診断",
         photoDiagnosisResult.summary || "",
         photoDiagnosisResult.items || [],
-        photoDiagnosisResult.actions || []
+        photoDiagnosisResult.actions || [],
+        photoDiagnosisResult.sources || []
       );
       updateWorldviewUrl();
       updateShareLinks();
@@ -2161,7 +2195,8 @@
         photoDiagnosisResult.title || "THE お店入りやすさ診断",
         photoDiagnosisResult.summary || "",
         photoDiagnosisResult.items || [],
-        photoDiagnosisResult.actions || []
+        photoDiagnosisResult.actions || [],
+        photoDiagnosisResult.sources || []
       );
     }
 
