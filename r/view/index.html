@@ -329,19 +329,61 @@
 
     .worldview-intro {
       display: grid;
-      grid-template-columns: 96px 1fr auto;
+      grid-template-columns: 125px 1fr auto;
       gap: 18px;
       align-items: center;
     }
 
     .worldview-teaser-image {
-      width: 96px;
+      width: 125px;
       border: 1px solid #d7e4f5;
       border-radius: 8px;
       background: #fff;
       aspect-ratio: 3 / 4;
       object-fit: cover;
       box-shadow: 0 8px 20px rgba(30, 41, 59, 0.08);
+    }
+
+    .worldview-card-banner {
+      margin-top: 16px;
+      border: 1px solid #e5b868;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fff7df 0%, #f2fbf5 100%);
+      padding: 14px 16px;
+      color: #2f3f35;
+    }
+
+    .worldview-card-banner span {
+      display: inline-flex;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #dcebe5;
+      color: #0d5b4a;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .worldview-card-banner strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .worldview-card-banner p {
+      margin: 6px 0 0;
+      color: #55615b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .worldview-panel.has-worldview-result .worldview-teaser-image,
+    .worldview-panel.has-worldview-result .worldview-card-banner {
+      display: none;
+    }
+
+    .worldview-panel.has-worldview-result .worldview-intro {
+      grid-template-columns: 1fr auto;
     }
 
     .worldview-intro p {
@@ -684,6 +726,34 @@
       font: inherit;
       font-size: 12px;
       font-weight: 900;
+    }
+
+    .card-only-view .metrics,
+    .card-only-view .grid > .panel:not(.worldview-panel),
+    .card-only-view .grid > .referral-cta,
+    .card-only-view .share,
+    .card-only-view .worldview-intro,
+    .card-only-view .worldview-card-banner,
+    .card-only-view .worldview-quiz,
+    .card-only-view .worldview-deep,
+    .card-only-view .worldview-deep-result,
+    .card-only-view .worldview-disclaimer,
+    .card-only-view .worldview-result .worldview-actions,
+    .card-only-view .pre-entry-check {
+      display: none !important;
+    }
+
+    .card-only-view .hero {
+      grid-template-columns: 1fr;
+    }
+
+    .card-only-view .score-ring {
+      display: none;
+    }
+
+    .card-only-view .worldview-panel,
+    .card-only-view .worldview-result {
+      margin-top: 0;
     }
 
     .worldview-deep {
@@ -1297,10 +1367,6 @@
       <section class="metrics" id="metrics"></section>
 
       <section class="grid">
-        <div class="panel full">
-          <h2>スコアの見方</h2>
-          <div class="score-explain-grid" id="score-explanations"></div>
-        </div>
         <div class="panel full worldview-panel">
           <div class="worldview-intro">
             <img class="worldview-teaser-image" src="/assets/worldview-types/quiet_resonance.jpg" alt="静かな共鳴型のイメージ">
@@ -1309,6 +1375,11 @@
               <p>Google Mapsや口コミだけでは見えない「お店の空気」「接客距離感」「本来つながるべきお客様像」を7問でかんたん診断できます。</p>
             </div>
             <button class="worldview-toggle" id="worldview-toggle" type="button">無料でお店世界観タイプ診断をする</button>
+          </div>
+          <div class="worldview-card-banner" id="worldview-card-banner">
+            <span>お客様.COMカード β</span>
+            <strong>診断後に、SNSやLINEで送れるショップカードを進呈します。</strong>
+            <p>点数ではなく「うちらしさ」を1枚にまとめます。</p>
           </div>
           <div class="worldview-quiz" id="worldview-quiz">
             <div id="worldview-questions"></div>
@@ -1331,6 +1402,10 @@
           </div>
           <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
+        </div>
+        <div class="panel full">
+          <h2>スコアの見方</h2>
+          <div class="score-explain-grid" id="score-explanations"></div>
         </div>
         <div class="panel full pre-entry-check" id="pre-entry-check"></div>
         <div class="panel full">
@@ -1434,7 +1509,7 @@
       </section>
 
       <section class="share">
-        <button class="primary-lite" id="native-share" type="button">共有する</button>
+        <button class="primary-lite" id="native-share" type="button">全結果を共有する</button>
         <a id="line-share" href="#">LINEで送る</a>
         <a id="mail-share" href="#">メールで送る</a>
         <button id="copy-share" type="button">リンクをコピー</button>
@@ -1446,6 +1521,8 @@
   <script>
     const REPORT_VIEW_VERSION = "v0.4.0-ai-visibility-photo-beta";
     const params = new URLSearchParams(window.location.search);
+    const isCardOnlyView = params.get("card") === "1";
+    document.documentElement.classList.toggle("card-only-view", isCardOnlyView);
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
     const errorBox = document.querySelector("#error");
@@ -1762,8 +1839,8 @@
                 <li>今後、写真やQRコード付きのカードへ育てられます</li>
               </ul>
               <div class="ok-card-share">
-                <button type="button" onclick="shareWorldviewCardLine()">LINEでカードを送る</button>
-                <button type="button" onclick="copyWorldviewCardUrl(this)">カードURLをコピー</button>
+                <button type="button" onclick="shareWorldviewCardLine()">お友達に世界観カードを送る</button>
+                <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
               </div>
             </div>
           </div>
@@ -1988,6 +2065,7 @@
 
     function worldviewShareUrl() {
       const url = new URL(window.location.href);
+      url.searchParams.delete("card");
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
@@ -2000,9 +2078,20 @@
       return url.toString();
     }
 
+    function worldviewCardShareUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("card", "1");
+      url.searchParams.delete("wvd");
+      url.searchParams.delete("pd");
+      if (worldviewShareResult?.answerCode) {
+        url.searchParams.set("wv", worldviewShareResult.answerCode);
+      }
+      return url.toString();
+    }
+
     async function copyWorldviewCardUrl(button) {
       updateWorldviewUrl();
-      const url = worldviewShareUrl();
+      const url = worldviewCardShareUrl();
       try {
         await navigator.clipboard.writeText(url);
         const original = button.textContent;
@@ -2019,12 +2108,13 @@
       updateWorldviewUrl();
       const storeName = shareContext?.storeName || "このお店";
       const typeName = worldviewShareResult?.typeTitle || "お店世界観タイプ";
-      const message = `「${storeName}」のお客様.COMカード\n${typeName}の空気を見てみませんか？\n${worldviewShareUrl()}`;
+      const message = `「${storeName}」のお客様.COMカード\n${typeName}の空気を見てみませんか？\n${worldviewCardShareUrl()}`;
       window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`, "_blank", "noopener");
     }
 
     function updateWorldviewUrl() {
       const url = new URL(window.location.href);
+      if (!isCardOnlyView) url.searchParams.delete("card");
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
       if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(compactWorldviewDeepResult(worldviewDeepResult)));
       if (isFreshSharedState(photoDiagnosisResult)) {
@@ -2143,6 +2233,7 @@
         </div>
       `;
       resultEl.classList.add("is-open");
+      document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
       updateWorldviewUrl();
       updateShareLinks();
