@@ -2171,14 +2171,10 @@
     function worldviewShareUrl() {
       const url = new URL(window.location.href);
       url.searchParams.delete("card");
+      url.searchParams.delete("wvd");
+      url.searchParams.delete("pd");
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
-      }
-      if (worldviewDeepResult) {
-        url.searchParams.set("wvd", encodeState(compactWorldviewDeepResult(worldviewDeepResult)));
-      }
-      if (isFreshSharedState(photoDiagnosisResult)) {
-        url.searchParams.set("pd", encodeState(compactPhotoDiagnosisResult(photoDiagnosisResult)));
       }
       return url.toString();
     }
@@ -2221,12 +2217,8 @@
       const url = new URL(window.location.href);
       if (!isCardOnlyView) url.searchParams.delete("card");
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
-      if (worldviewDeepResult) url.searchParams.set("wvd", encodeState(compactWorldviewDeepResult(worldviewDeepResult)));
-      if (isFreshSharedState(photoDiagnosisResult)) {
-        url.searchParams.set("pd", encodeState(compactPhotoDiagnosisResult(photoDiagnosisResult)));
-      } else {
-        url.searchParams.delete("pd");
-      }
+      url.searchParams.delete("wvd");
+      url.searchParams.delete("pd");
       window.history.replaceState({}, "", url.toString());
     }
 
