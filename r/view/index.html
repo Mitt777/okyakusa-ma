@@ -511,6 +511,181 @@
       font-size: 12px;
     }
 
+    .ok-card-gift {
+      margin-top: 18px;
+      border: 1px solid #dfcfb4;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(250,244,232,.92)),
+        radial-gradient(circle at 12% 10%, rgba(183,107,8,.12), transparent 38%);
+      padding: 18px;
+    }
+
+    .ok-card-gift-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .ok-card-gift-head h3 {
+      margin: 0 0 6px;
+      font-size: 19px;
+    }
+
+    .ok-card-gift-head p {
+      margin: 0;
+      color: #5d4930;
+      font-size: 13px;
+    }
+
+    .ok-card-badge {
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: #8a5a16;
+      background: #fff7e7;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ok-card-stage {
+      display: grid;
+      grid-template-columns: minmax(260px, 420px) 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .ok-card-stack {
+      position: relative;
+      min-height: 560px;
+      perspective: 1200px;
+    }
+
+    .ok-card {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border: 1px solid rgba(95, 74, 44, .22);
+      border-radius: 18px;
+      background: #fbf7ee;
+      box-shadow: 0 28px 70px rgba(43, 31, 18, .22);
+    }
+
+    .ok-card.secondary {
+      transform: translate(22px, 18px) rotate(3deg) scale(.96);
+      opacity: .82;
+      filter: saturate(.9) contrast(.96);
+    }
+
+    .ok-card.primary {
+      transform: rotate(-1.2deg);
+    }
+
+    .ok-card-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ok-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(18, 15, 12, .08), rgba(18, 15, 12, .26) 54%, rgba(18, 15, 12, .78)),
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,.24), transparent 34%);
+      pointer-events: none;
+    }
+
+    .ok-card-content {
+      position: absolute;
+      z-index: 1;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      color: #fffdf7;
+      text-shadow: 0 2px 18px rgba(0, 0, 0, .4);
+    }
+
+    .ok-card-kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.46);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(255,255,255,.12);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .ok-card-title {
+      margin: 0 0 8px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+      font-size: 31px;
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .ok-card-line {
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .ok-card-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      border-top: 1px solid rgba(255,255,255,.34);
+      padding-top: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      opacity: .92;
+    }
+
+    .ok-card-note h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .ok-card-note p {
+      margin: 0 0 12px;
+      color: #4b3d2d;
+      font-size: 14px;
+    }
+
+    .ok-card-note ul {
+      margin: 0 0 14px;
+      padding-left: 1.2em;
+      color: #5a4a38;
+      font-size: 13px;
+    }
+
+    .ok-card-share {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ok-card-share button {
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: #fffaf0;
+      color: #7d4d0c;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
     .worldview-deep {
       display: none;
       margin-top: 18px;
@@ -1077,6 +1252,22 @@
       .referral-cta {
         grid-template-columns: 1fr;
       }
+
+      .ok-card-gift-head {
+        display: grid;
+      }
+
+      .ok-card-stage {
+        grid-template-columns: 1fr;
+      }
+
+      .ok-card-stack {
+        min-height: 500px;
+      }
+
+      .ok-card.secondary {
+        transform: translate(12px, 16px) rotate(2deg) scale(.95);
+      }
     }
   </style>
 </head>
@@ -1445,6 +1636,141 @@
       }
     };
 
+    const WORLDVIEW_CARD_IMAGES = {
+      quiet_resonance: {
+        day: "/assets/worldview-cards/quiet_resonance-day.jpg",
+        restaurant: "/assets/worldview-cards/quiet_resonance-restaurant.jpg",
+        night: "/assets/worldview-cards/quiet_resonance-night.jpg"
+      },
+      craft_trust: {
+        day: "/assets/worldview-cards/craft_trust-day.jpg",
+        restaurant: "/assets/worldview-cards/craft_trust-restaurant.jpg",
+        night: "/assets/worldview-cards/craft_trust-night.jpg"
+      },
+      local_community: {
+        day: "/assets/worldview-cards/local_community-day.jpg",
+        restaurant: "/assets/worldview-cards/local_community-restaurant.jpg",
+        night: "/assets/worldview-cards/local_community-night.jpg"
+      },
+      live_impulse: {
+        day: "/assets/worldview-cards/live_impulse-day.jpg",
+        restaurant: "/assets/worldview-cards/live_impulse-restaurant.jpg",
+        night: "/assets/worldview-cards/live_impulse-night.jpg"
+      },
+      worldview_immersion: {
+        day: "/assets/worldview-cards/worldview_immersion-day.jpg",
+        restaurant: "/assets/worldview-cards/worldview_immersion-restaurant.jpg",
+        night: "/assets/worldview-cards/worldview_immersion-night.jpg"
+      },
+      daily_companion: {
+        day: "/assets/worldview-cards/daily_companion-day.jpg",
+        restaurant: "/assets/worldview-cards/daily_companion-restaurant.jpg",
+        night: "/assets/worldview-cards/daily_companion-night.jpg"
+      },
+      tourism_destination: {
+        day: "/assets/worldview-cards/tourism_destination-day.jpg",
+        restaurant: "/assets/worldview-cards/tourism_destination-restaurant.jpg",
+        night: "/assets/worldview-cards/tourism_destination-night.jpg"
+      },
+      entry_anxiety_relief: {
+        day: "/assets/worldview-cards/entry_anxiety_relief-day.jpg",
+        restaurant: "/assets/worldview-cards/entry_anxiety_relief-restaurant.jpg",
+        night: "/assets/worldview-cards/entry_anxiety_relief-night.jpg"
+      }
+    };
+
+    const WORLDVIEW_CARD_LINES = {
+      quiet_resonance: "静かな時間を、自分のペースで過ごしたい人へ。",
+      craft_trust: "確かな仕事を、ゆっくり信頼したい人へ。",
+      local_community: "ふらっと立ち寄り、少し会話が生まれる場所。",
+      live_impulse: "今日の熱量に、ふっと心が動く人へ。",
+      worldview_immersion: "日常から少し離れ、物語の中で過ごしたい人へ。",
+      daily_companion: "いつもの日々に、そっと寄り添ってくれる場所。",
+      tourism_destination: "旅の記憶に、この場所を残したい人へ。",
+      entry_anxiety_relief: "はじめてでも、安心して扉を開けたい人へ。"
+    };
+
+    function cardMoodForType(typeKey, role = "primary") {
+      if (role === "secondary") return "night";
+      if (typeKey === "live_impulse" || typeKey === "craft_trust") return "restaurant";
+      return "day";
+    }
+
+    function worldviewCardImage(typeKey, role = "primary") {
+      const imageSet = WORLDVIEW_CARD_IMAGES[typeKey] || {};
+      const mood = cardMoodForType(typeKey, role);
+      return imageSet[mood] || imageSet.day || WORLDVIEW_TYPES[typeKey]?.image || "";
+    }
+
+    function worldviewCardGeneratedAt() {
+      return new Date().toLocaleString("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle) {
+      const primary = WORLDVIEW_TYPES[primaryKey];
+      const secondary = WORLDVIEW_TYPES[secondaryKey] || primary;
+      const storeName = shareContext?.storeName || "このお店";
+      const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
+      const secondaryLine = WORLDVIEW_CARD_LINES[secondaryKey] || secondary.description;
+      const generatedAt = worldviewCardGeneratedAt();
+
+      return `
+        <div class="ok-card-gift" id="okyakusama-card">
+          <div class="ok-card-gift-head">
+            <div>
+              <h3>お客様.COMカードをプレゼントします</h3>
+              <p>点数ではなく、お店の空気を1枚にした漂流型ショップカードです。LINEやSNSで「うちらしさ」を共有できます。</p>
+            </div>
+            <span class="ok-card-badge">βカード</span>
+          </div>
+          <div class="ok-card-stage">
+            <div class="ok-card-stack" aria-label="お客様.COMカードのプレビュー">
+              <article class="ok-card secondary" aria-hidden="true">
+                <img class="ok-card-photo" src="${escapeHtml(worldviewCardImage(secondaryKey, "secondary"))}" alt="">
+                <div class="ok-card-content">
+                  <span class="ok-card-kicker">SUB WORLDVIEW</span>
+                  <h4 class="ok-card-title">${escapeHtml(secondary.name)}</h4>
+                  <p class="ok-card-line">${escapeHtml(secondaryLine)}</p>
+                </div>
+              </article>
+              <article class="ok-card primary">
+                <img class="ok-card-photo" src="${escapeHtml(worldviewCardImage(primaryKey, "primary"))}" alt="${escapeHtml(primary.name)}のカード背景">
+                <div class="ok-card-content">
+                  <span class="ok-card-kicker">OKYAKUSAMA.COM</span>
+                  <h4 class="ok-card-title">${escapeHtml(typeTitle)}</h4>
+                  <p class="ok-card-line">${escapeHtml(primaryLine)}</p>
+                  <div class="ok-card-meta">
+                    <span>${escapeHtml(storeName)}</span>
+                    <span>${escapeHtml(generatedAt)} JST</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="ok-card-note">
+              <h4>このカードは、あなたのお店の“空気の名刺”です。</h4>
+              <p>細かい点数ではなく、相性の良いお客様に「ここ、自分に合いそう」と感じてもらうための入口として使えます。</p>
+              <ul>
+                <li>LINEで家族・スタッフ・常連さんに送れます</li>
+                <li>InstagramやWebサイトに載せるカード案として使えます</li>
+                <li>今後、写真やQRコード付きのカードへ育てられます</li>
+              </ul>
+              <div class="ok-card-share">
+                <button type="button" onclick="shareWorldviewCardLine()">LINEでカードを送る</button>
+                <button type="button" onclick="copyWorldviewCardUrl(this)">カードURLをコピー</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     const WORLDVIEW_QUESTIONS = [
       {
         id: "q1",
@@ -1674,6 +2000,29 @@
       return url.toString();
     }
 
+    async function copyWorldviewCardUrl(button) {
+      updateWorldviewUrl();
+      const url = worldviewShareUrl();
+      try {
+        await navigator.clipboard.writeText(url);
+        const original = button.textContent;
+        button.textContent = "コピーしました";
+        window.setTimeout(() => {
+          button.textContent = original;
+        }, 1600);
+      } catch {
+        window.prompt("カードURLをコピーしてください", url);
+      }
+    }
+
+    function shareWorldviewCardLine() {
+      updateWorldviewUrl();
+      const storeName = shareContext?.storeName || "このお店";
+      const typeName = worldviewShareResult?.typeTitle || "お店世界観タイプ";
+      const message = `「${storeName}」のお客様.COMカード\n${typeName}の空気を見てみませんか？\n${worldviewShareUrl()}`;
+      window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`, "_blank", "noopener");
+    }
+
     function updateWorldviewUrl() {
       const url = new URL(window.location.href);
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
@@ -1788,6 +2137,7 @@
           ${worldviewCard("向いているSNS", primary.sns.join(" / "))}
           ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
         </div>
+        ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle)}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>

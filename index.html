@@ -118,6 +118,76 @@
       overflow: hidden;
     }
 
+    .worldview-card-teaser {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      align-items: center;
+      max-width: 900px;
+      margin: 18px auto 0;
+      padding: 16px;
+      border: 1px solid #d9c7a8;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.9), rgba(249,245,236,.84)),
+        #fbf7ef;
+      box-shadow: 0 18px 44px rgba(39, 43, 54, .08);
+      text-align: left;
+    }
+
+    .worldview-card-teaser-stack {
+      position: relative;
+      min-height: 178px;
+    }
+
+    .worldview-card-teaser-card {
+      position: absolute;
+      inset: 0 18px 14px 0;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: 18px;
+      box-shadow: 0 18px 34px rgba(35, 42, 54, .2);
+      background: #efe7d7;
+    }
+
+    .worldview-card-teaser-card.back {
+      inset: 18px 0 0 22px;
+      opacity: .82;
+      transform: rotate(4deg) scale(.94);
+    }
+
+    .worldview-card-teaser-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .worldview-card-teaser-copy span {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(68, 145, 120, .12);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .worldview-card-teaser-copy strong {
+      display: block;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.45;
+    }
+
+    .worldview-card-teaser-copy p {
+      margin: 8px 0 0;
+      color: #536172;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
     .step-line {
       display: flex;
       align-items: center;
@@ -595,6 +665,14 @@
         grid-template-columns: 1fr;
       }
 
+      .worldview-card-teaser {
+        grid-template-columns: 1fr;
+      }
+
+      .worldview-card-teaser-stack {
+        min-height: 220px;
+      }
+
       .signal {
         grid-template-columns: 1fr;
       }
@@ -735,6 +813,22 @@
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
+        <div class="worldview-card-teaser-stack">
+          <div class="worldview-card-teaser-card back">
+            <img src="/assets/worldview-cards/worldview_immersion-night.jpg" alt="">
+          </div>
+          <div class="worldview-card-teaser-card">
+            <img src="/assets/worldview-cards/quiet_resonance-day.jpg" alt="お客様.COMカードのイメージ">
+          </div>
+        </div>
+        <div class="worldview-card-teaser-copy">
+          <span>お客様.COMカード β</span>
+          <strong>お店の世界観カード、ゲットしよう。</strong>
+          <p>診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
         </div>
       </div>
     </section>
