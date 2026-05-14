@@ -728,6 +728,46 @@
       font-weight: 900;
     }
 
+    .card-only-referral {
+      display: none;
+      margin-top: 16px;
+      border: 1px solid #b9dfcd;
+      border-radius: 8px;
+      background: #ecf8f1;
+      padding: 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .card-only-referral strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #123326;
+      font-size: 15px;
+    }
+
+    .card-only-referral span {
+      display: block;
+      color: #3f6355;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .card-only-referral a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--brand);
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
     .card-only-view .metrics,
     .card-only-view .grid > .panel:not(.worldview-panel),
     .card-only-view .grid > .referral-cta,
@@ -754,6 +794,14 @@
     .card-only-view .worldview-panel,
     .card-only-view .worldview-result {
       margin-top: 0;
+    }
+
+    .card-only-view .worldview-result-grid {
+      display: none !important;
+    }
+
+    .card-only-view .card-only-referral {
+      display: flex;
     }
 
     .worldview-deep {
@@ -1820,7 +1868,7 @@
               <article class="ok-card primary">
                 <img class="ok-card-photo" src="${escapeHtml(worldviewCardImage(primaryKey, "primary"))}" alt="${escapeHtml(primary.name)}のカード背景">
                 <div class="ok-card-content">
-                  <span class="ok-card-kicker">OKYAKUSAMA.COM</span>
+                  <span class="ok-card-kicker">OKYAKUSA-MA.COM</span>
                   <h4 class="ok-card-title">${escapeHtml(typeTitle)}</h4>
                   <p class="ok-card-line">${escapeHtml(primaryLine)}</p>
                   <div class="ok-card-meta">
@@ -1831,8 +1879,7 @@
               </article>
             </div>
             <div class="ok-card-note">
-              <h4>このカードは、あなたのお店の“空気の名刺”です。</h4>
-              <p>細かい点数ではなく、相性の良いお客様に「ここ、自分に合いそう」と感じてもらうための入口として使えます。</p>
+              <h4>このカードは、${escapeHtml(storeName)}の“空気の名刺”です。</h4>
               <ul>
                 <li>LINEで家族・スタッフ・常連さんに送れます</li>
                 <li>InstagramやWebサイトに載せるカード案として使えます</li>
@@ -1843,6 +1890,13 @@
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
               </div>
             </div>
+          </div>
+          <div class="card-only-referral">
+            <div>
+              <strong>あなたのお店も、世界観カードを作ってみませんか？</strong>
+              <span>Google Maps、口コミ、SNS、来店前不安を無料で診断できます。</span>
+            </div>
+            <a href="/">無料で試す</a>
           </div>
         </div>
       `;
@@ -2206,6 +2260,21 @@
       const secondary = WORLDVIEW_TYPES[result.secondaryKey];
       const resultEl = document.querySelector("#worldview-result");
       const typeTitle = `${primary.name} × ${secondary.name}`;
+      const storeName = shareContext?.storeName || "このお店";
+      const resultHeading = isCardOnlyView
+        ? `${storeName}は「${typeTitle}」の空気を持つお店です。`
+        : `あなたのお店は「${typeTitle}」の傾向があります。`;
+      const resultDescription = isCardOnlyView
+        ? `このカードは、${storeName}の空気をやわらかく言葉にしたものです。${primary.description}`
+        : `${primary.description} ${secondary.name}の要素もあり、発信では「何を増やすか」だけでなく「どんなお客様と出会いたいか」を揃えると強くなります。`;
+      const resultGrid = isCardOnlyView ? "" : `
+        <div class="worldview-result-grid">
+          ${worldviewCard("強み", primary.strength)}
+          ${worldviewCard("疲れやすいズレ", primary.tiring)}
+          ${worldviewCard("向いているSNS", primary.sns.join(" / "))}
+          ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
+        </div>
+      `;
       worldviewShareResult = {
         typeTitle,
         primaryName: primary.name,
@@ -2217,16 +2286,11 @@
         <div class="worldview-result-lead">
           <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
           <div class="worldview-result-copy">
-            <h3>あなたのお店は「${escapeHtml(typeTitle)}」の傾向があります。</h3>
-            <p>${escapeHtml(primary.description)} ${escapeHtml(secondary.name)}の要素もあり、発信では「何を増やすか」だけでなく「どんなお客様と出会いたいか」を揃えると強くなります。</p>
+            <h3>${escapeHtml(resultHeading)}</h3>
+            <p>${escapeHtml(resultDescription)}</p>
           </div>
         </div>
-        <div class="worldview-result-grid">
-          ${worldviewCard("強み", primary.strength)}
-          ${worldviewCard("疲れやすいズレ", primary.tiring)}
-          ${worldviewCard("向いているSNS", primary.sns.join(" / "))}
-          ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
-        </div>
+        ${resultGrid}
         ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle)}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
@@ -2869,7 +2933,7 @@
     }
 
     function buildMailSubject(storeName) {
-      return `【無料診断結果】${storeName}様のお店の見え方診断`;
+      return `【無料診断結果】${storeName}のお店の見え方診断`;
     }
 
     function buildMailBody(storeName, totalScore, maps, ai, monthly, worldviewResult, worldviewDeep, reportUrl = window.location.href) {
@@ -2890,7 +2954,7 @@
 ・今月の行動：${worldviewDeep.monthlyActions.join(" / ")}
 ` : "";
 
-      return `${storeName}様
+      return `「${storeName}」の診断結果です。
 
 お客様.COMの無料β診断結果ができました。
 
@@ -2976,7 +3040,9 @@ https://okyakusa-ma.com/
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");
       const totalScore = Number(ai.total_score || monthly.total_score || aiRaw.total_score || 0);
-      const summary = ai.summary || aiRaw.summary || "診断下書きを生成しました。スコア、改善ポイント、世界観タイプ診断を確認してください。";
+      const summary = isCardOnlyView
+        ? `${storeName}の空気を、1枚の世界観カードにしました。お店の雰囲気や相性を感じる入口としてご覧ください。`
+        : ai.summary || aiRaw.summary || "診断下書きを生成しました。スコア、改善ポイント、世界観タイプ診断を確認してください。";
 
       document.querySelector("#store-name").textContent = storeName;
       document.querySelector("#summary").textContent = summary;
@@ -3041,7 +3107,7 @@ https://okyakusa-ma.com/
           const shareText = buildShareText();
           if (navigator.share) {
             await navigator.share({
-              title: `${storeName}様のお店の見え方診断`,
+              title: `${storeName}のお店の見え方診断`,
               text: shareText,
               url: worldviewShareUrl()
             });
