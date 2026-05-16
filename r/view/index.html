@@ -587,6 +587,33 @@
       font-size: 12px;
     }
 
+    .persona-gallery-link {
+      margin: 26px 0 10px;
+      text-align: center;
+    }
+
+    .persona-gallery-link a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(208, 213, 221, 0.9);
+      border-radius: 999px;
+      padding: 9px 14px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #475467;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .persona-gallery-page-lead {
+      margin: 0 0 20px;
+      color: #475467;
+      font-size: 13px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
     .persona-gallery {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2785,10 +2812,8 @@
 
     function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
-      const secondary = WORLDVIEW_TYPES[secondaryKey] || primary;
       const storeName = shareContext?.storeName || "このお店";
       const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
-      const secondaryLine = WORLDVIEW_CARD_LINES[secondaryKey] || secondary.description;
       const cardImage = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
       const generatedAt = worldviewCardGeneratedAt();
 
@@ -2803,13 +2828,6 @@
           </div>
           <div class="ok-card-stage">
             <div class="ok-card-stack" aria-label="お客様.COMカードのプレビュー">
-              <article class="ok-card secondary" aria-hidden="true">
-                <div class="ok-card-content">
-                  <span class="ok-card-kicker">SUB WORLDVIEW</span>
-                  <h4 class="ok-card-title">${escapeHtml(secondary.name)}</h4>
-                  <p class="ok-card-line">${escapeHtml(secondaryLine)}</p>
-                </div>
-              </article>
               <article class="ok-card primary">
                 <img class="ok-card-photo" src="${cardImage}" alt="お客様.COMカード背景">
                 <div class="ok-card-content">
@@ -3069,6 +3087,7 @@
     function worldviewShareUrl() {
       const url = new URL(window.location.href);
       url.searchParams.delete("card");
+      url.searchParams.delete("personas");
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
       if (worldviewShareResult?.answerCode) {
@@ -3080,6 +3099,7 @@
     function worldviewCardShareUrl() {
       const url = new URL(window.location.href);
       url.searchParams.set("card", "1");
+      url.searchParams.delete("personas");
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
       if (worldviewShareResult?.answerCode) {
@@ -3113,6 +3133,73 @@
       });
     }
 
+    function personaRarityLabel(rarity) {
+      return {
+        Common: "親しみやすいタイプ",
+        Uncommon: "個性が光るタイプ",
+        Rare: "特別感のあるタイプ"
+      }[rarity] || rarity || "";
+    }
+
+    function renderPersonaGalleryCard(galleryPersonaKey) {
+      const galleryMeta = PERSONA_META[galleryPersonaKey] || {};
+      const galleryLabel = galleryMeta.title || galleryPersonaKey;
+      const galleryDisplayLabel = galleryMeta.icon ? `${galleryMeta.icon} ${galleryLabel}` : galleryLabel;
+      const galleryAccentStyle = galleryMeta.accentColor
+        ? ` style="color: ${escapeHtml(galleryMeta.accentColor)}"`
+        : "";
+      const rarityLabel = personaRarityLabel(galleryMeta.rarity);
+      const galleryRarity = rarityLabel
+        ? `<p class="persona-rarity">${escapeHtml(rarityLabel)}</p>`
+        : "";
+      const galleryQuote = galleryMeta.quote
+        ? `<p class="persona-quote">“${escapeHtml(concise(galleryMeta.quote, 24))}”</p>`
+        : "";
+      const galleryImage = PERSONA_IMAGE_MAP[galleryPersonaKey] || OKYAKUSAMA_CARD_IMAGE;
+      return `
+        <article class="persona-gallery-card persona-drift-card" data-persona-key="${escapeHtml(galleryPersonaKey)}" role="button" tabindex="0" aria-pressed="false">
+          <img class="worldview-result-image" src="${escapeHtml(galleryImage)}" alt="${escapeHtml(galleryLabel)}のイメージ">
+          <div class="worldview-result-copy">
+            <div class="persona-identity">
+              <h3${galleryAccentStyle}>${escapeHtml(galleryDisplayLabel)}</h3>
+              ${galleryRarity}
+            </div>
+            <div class="persona-atmosphere">
+              ${galleryQuote}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function personaGalleryUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("personas", "1");
+      url.searchParams.delete("card");
+      url.searchParams.delete("wv");
+      url.searchParams.delete("wvd");
+      url.searchParams.delete("pd");
+      return url.toString();
+    }
+
+    function renderPersonaGalleryPage() {
+      const resultEl = document.querySelector("#worldview-result");
+      const personaGallery = PERSONA_GALLERY_ORDER.map(renderPersonaGalleryCard).join("");
+      document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
+      resultEl.innerHTML = `
+        <p class="persona-gallery-page-lead">36の世界観タイプを、気候帯のように並べています。診断結果とは別に、空気の違いを眺めるためのページです。</p>
+        <div class="persona-axis-note" aria-label="人格漂流メモ">
+          <span>世界観タイプ一覧</span>
+          <p>朝 / 昼 / 曇天 / 夕暮 / 雨 / 静夜 / 都市夜</p>
+        </div>
+        <div class="persona-gallery persona-gallery-drift" aria-label="36の世界観タイプ">
+          ${personaGallery}
+        </div>
+      `;
+      resultEl.classList.add("is-open");
+      bindPersonaGallerySettling(resultEl);
+    }
+
     async function copyWorldviewCardUrl(button) {
       updateWorldviewUrl();
       const url = worldviewCardShareUrl();
@@ -3139,6 +3226,7 @@
     function updateWorldviewUrl() {
       const url = new URL(window.location.href);
       if (!isCardOnlyView) url.searchParams.delete("card");
+      url.searchParams.delete("personas");
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
@@ -3215,6 +3303,8 @@
 
     function showWorldviewResult(options = {}) {
       const message = document.querySelector("#worldview-message");
+      const isSharedWorldviewView = Boolean(options.skipScroll) || isCardOnlyView;
+      const shouldShowPersonaGalleryLink = !isSharedWorldviewView;
       const answers = getWorldviewAnswers();
       const result = calculateWorldviewType();
       if (!result) {
@@ -3248,21 +3338,12 @@
       const personaDisplayLabel = personaMeta?.icon
         ? `${personaMeta.icon} ${personaLabel}`
         : personaLabel;
-      const personaRarity = personaMeta?.rarity
-        ? `<p class="persona-rarity">${escapeHtml(personaMeta.rarity)}</p>`
+      const rarityLabel = personaRarityLabel(personaMeta?.rarity);
+      const personaRarity = rarityLabel
+        ? `<p class="persona-rarity">${escapeHtml(rarityLabel)}</p>`
         : "";
       const personaQuote = personaMeta?.quote
         ? `<p class="persona-quote">“${escapeHtml(personaMeta.quote)}”</p>`
-        : "";
-      const personaCoordinates = personaMeta?.coordinates
-        ? `<p class="persona-coordinates">${[
-            personaMeta.coordinates.atmosphere,
-            personaMeta.coordinates.tempo,
-            personaMeta.coordinates.space
-          ].filter(Boolean).map(escapeHtml).join(" / ")}</p>`
-        : "";
-      const personaActions = Array.isArray(personaMeta?.actions) && personaMeta.actions.length
-        ? `<div class="persona-actions"><strong>Suggested:</strong><ul>${personaMeta.actions.map((action) => `<li>${escapeHtml(action)}</li>`).join("")}</ul></div>`
         : "";
       const personaSystemInfo = [
         personaMeta?.stage ? `Stage: ${personaMeta.stage}` : "",
@@ -3274,8 +3355,8 @@
         Array.isArray(personaMeta?.logs) && personaMeta.logs.length ? `Log: ${personaMeta.logs.join(" / ")}` : "",
         personaMeta?.savedState ? `Saved: ${personaMeta.savedState}` : ""
       ].filter(Boolean);
-      const personaSystemDetails = personaSystemInfo.length
-        ? `<details class="persona-system-details"><summary>人格システム情報</summary>${personaSystemInfo.map((item) => `<p>${escapeHtml(item)}</p>`).join("")}</details>`
+      const personaSystemDetails = !isSharedWorldviewView && personaSystemInfo.length
+        ? `<details class="persona-system-details"><summary>お店の傾向性</summary>${personaSystemInfo.map((item) => `<p>${escapeHtml(item)}</p>`).join("")}</details>`
         : "";
       const personaAccentStyle = personaMeta?.accentColor
         ? ` style="color: ${escapeHtml(personaMeta.accentColor)}"`
@@ -3283,40 +3364,9 @@
       const personaSubtitle = personaMeta?.subtitle
         ? `<p>${escapeHtml(personaMeta.subtitle)}</p>`
         : "";
-      const personaTags = Array.isArray(personaMeta?.tags) && personaMeta.tags.length
-        ? `<p class="persona-tags">${personaMeta.tags.map((tag) => `#${escapeHtml(tag)}`).join(" ")}</p>`
+      const personaGalleryLink = shouldShowPersonaGalleryLink
+        ? `<div class="persona-gallery-link"><a href="${escapeHtml(personaGalleryUrl())}">36の世界観タイプを見たい方はこちら</a></div>`
         : "";
-      const renderPersonaGalleryCard = (galleryPersonaKey) => {
-        const galleryMeta = PERSONA_META[galleryPersonaKey] || {};
-        const galleryLabel = galleryMeta.title || galleryPersonaKey;
-        const galleryDisplayLabel = galleryMeta.icon ? `${galleryMeta.icon} ${galleryLabel}` : galleryLabel;
-        const galleryAccentStyle = galleryMeta.accentColor
-          ? ` style="color: ${escapeHtml(galleryMeta.accentColor)}"`
-          : "";
-        const galleryRarity = galleryMeta.rarity
-          ? `<p class="persona-rarity">${escapeHtml(galleryMeta.rarity)}</p>`
-          : "";
-        const galleryQuote = galleryMeta.quote
-          ? `<p class="persona-quote">“${escapeHtml(concise(galleryMeta.quote, 24))}”</p>`
-          : "";
-        const galleryImage = PERSONA_IMAGE_MAP[galleryPersonaKey] || OKYAKUSAMA_CARD_IMAGE;
-        return `
-          <article class="persona-gallery-card persona-drift-card" data-persona-key="${escapeHtml(galleryPersonaKey)}" role="button" tabindex="0" aria-pressed="false">
-            <img class="worldview-result-image" src="${escapeHtml(galleryImage)}" alt="${escapeHtml(galleryLabel)}のイメージ">
-            <div class="worldview-result-copy">
-              <div class="persona-identity">
-                <h3${galleryAccentStyle}>${escapeHtml(galleryDisplayLabel)}</h3>
-                ${galleryRarity}
-              </div>
-              <div class="persona-atmosphere">
-                ${galleryQuote}
-              </div>
-            </div>
-          </article>
-        `;
-      };
-      const personaGalleryOrder = PERSONA_GALLERY_ORDER;
-      const personaGallery = personaGalleryOrder.map(renderPersonaGalleryCard).join("");
       const resultEl = document.querySelector("#worldview-result");
       const typeTitle = `${primary.name} × ${secondary.name}`;
       const storeName = shareContext?.storeName || "このお店";
@@ -3353,26 +3403,12 @@
             </div>
             <div class="persona-atmosphere">
               ${personaQuote}
-              ${personaTags}
-              ${personaCoordinates}
             </div>
-            ${personaActions}
             ${personaSystemDetails}
           </div>
         </div>
         ${resultGrid}
-        <div class="persona-axis-note" aria-label="人格漂流メモ">
-          <span>人格漂流メモ</span>
-          <p>朝の光 / 曇天のページ / 夕暮の港 / 雨の停留 / 冬の灯 / 都市夜</p>
-          <div class="persona-axis-cloud">
-            <small>朝から夕暮へ</small>
-            <small>雨と曇りの滞在</small>
-            <small>冬灯から都市夜へ</small>
-          </div>
-        </div>
-        <div class="persona-gallery persona-gallery-drift" aria-label="人格ギャラリー">
-          ${personaGallery}
-        </div>
+        ${personaGalleryLink}
         ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey)}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
@@ -4214,7 +4250,11 @@ https://okyakusa-ma.com/
       loading.hidden = true;
       reportEl.hidden = false;
       restorePhotoDiagnosisFromUrl();
-      restoreWorldviewFromUrl();
+      if (new URLSearchParams(window.location.search).get("personas") === "1") {
+        renderPersonaGalleryPage();
+      } else {
+        restoreWorldviewFromUrl();
+      }
       updateShareLinks();
     }
 
