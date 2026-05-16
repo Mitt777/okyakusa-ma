@@ -520,6 +520,433 @@
       font-size: 14px;
     }
 
+    .persona-identity {
+      margin-bottom: 18px;
+    }
+
+    .persona-identity h3 {
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .persona-rarity,
+    .persona-tags,
+    .persona-coordinates,
+    .persona-actions,
+    .persona-system-details {
+      font-size: 12px;
+      color: #475467;
+    }
+
+    .persona-atmosphere {
+      margin: 18px 0;
+      padding: 16px 0;
+      border-top: 1px solid rgba(16, 185, 129, 0.18);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+    }
+
+    .persona-quote {
+      margin-bottom: 14px;
+      color: #1f2937;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .persona-tags,
+    .persona-coordinates {
+      margin-bottom: 8px;
+    }
+
+    .persona-actions {
+      margin: 16px 0;
+    }
+
+    .persona-actions strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #1f2937;
+    }
+
+    .persona-actions ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .persona-system-details {
+      margin-top: 14px;
+    }
+
+    .persona-system-details summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .persona-system-details p {
+      margin: 8px 0 0;
+      font-size: 12px;
+    }
+
+    .persona-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin: 28px 0 8px;
+      padding: 18px;
+      border-radius: 8px;
+      background: rgba(247, 255, 251, 0.68);
+    }
+
+    .persona-gallery-card {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 18px;
+      border: 1px solid rgba(208, 213, 221, 0.72);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .persona-gallery-card .worldview-result-image {
+      align-self: start;
+    }
+
+    .persona-gallery-card .persona-identity {
+      margin-bottom: 14px;
+    }
+
+    .persona-gallery-card .persona-identity h3 {
+      font-size: 18px;
+    }
+
+    .persona-gallery-card .persona-atmosphere {
+      margin: 16px 0 0;
+      padding: 14px 0 0;
+      border-bottom: 0;
+    }
+
+    .persona-gallery-card .persona-quote {
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .persona-gallery-card .persona-tags {
+      margin-bottom: 0;
+      line-height: 1.8;
+    }
+
+    .persona-gallery-drift {
+      column-gap: 32px;
+      row-gap: 36px;
+      overflow: hidden;
+      padding: 24px 22px 46px;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 252, 240, 0.52) 0%,
+        rgba(247, 255, 251, 0.46) 28%,
+        rgba(246, 251, 253, 0.5) 56%,
+        rgba(247, 248, 255, 0.52) 78%,
+        rgba(255, 247, 246, 0.36) 92%,
+        rgba(250, 250, 248, 0.32) 100%
+      );
+      position: relative;
+    }
+
+    .persona-gallery-drift::before,
+    .persona-gallery-drift::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .persona-gallery-drift::before {
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 224, 157, 0.16), transparent 26%),
+        radial-gradient(circle at 82% 62%, rgba(94, 109, 140, 0.1), transparent 30%);
+      opacity: .7;
+    }
+
+    .persona-gallery-drift::after {
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        transparent 48%,
+        rgba(70, 103, 130, 0.06) 63%,
+        rgba(70, 68, 112, 0.07) 82%,
+        rgba(70, 68, 112, 0.04) 100%
+      );
+      opacity: .86;
+    }
+
+    .persona-gallery-drift .persona-gallery-card {
+      grid-template-columns: 92px 1fr;
+      gap: 14px;
+      border-color: rgba(208, 213, 221, 0.58);
+      background: rgba(255, 255, 255, 0.74);
+      box-shadow: 0 10px 24px rgba(31, 41, 55, 0.055);
+      cursor: pointer;
+      overflow: hidden;
+      padding: 14px;
+      position: relative;
+      transform: translateY(0);
+      transition: transform .24s ease, box-shadow .24s ease, background .24s ease, border-color .24s ease, opacity .24s ease, filter .24s ease;
+      z-index: 1;
+    }
+
+    .persona-gallery-drift .persona-gallery-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .42;
+      transition: opacity .24s ease;
+      z-index: 0;
+    }
+
+    .persona-gallery-drift .persona-gallery-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:focus-visible {
+      outline: 2px solid rgba(15, 107, 79, 0.3);
+      outline-offset: 4px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(2) {
+      margin-top: 18px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(4) {
+      margin-top: 34px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(6) {
+      margin-top: 54px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(7) {
+      margin-top: 24px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(8) {
+      margin-top: 46px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(1) {
+      background: rgba(255, 253, 246, 0.78);
+      box-shadow: 0 10px 24px rgba(224, 161, 72, 0.09);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(1)::before {
+      background: radial-gradient(circle at 18% 0%, rgba(255, 215, 142, 0.18), transparent 42%);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(2) {
+      background: rgba(250, 255, 248, 0.76);
+      box-shadow: 0 12px 26px rgba(84, 131, 98, 0.085);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(3) {
+      background: rgba(255, 251, 244, 0.76);
+      box-shadow: 0 12px 26px rgba(139, 107, 63, 0.085);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(3)::before {
+      background: radial-gradient(circle at 78% 12%, rgba(168, 121, 67, 0.12), transparent 44%);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(4),
+    .persona-gallery-drift .persona-gallery-card:nth-child(6) {
+      background: rgba(246, 251, 253, 0.76);
+      box-shadow: 0 12px 26px rgba(68, 103, 130, 0.08);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(4)::before,
+    .persona-gallery-drift .persona-gallery-card:nth-child(6)::before {
+      background: radial-gradient(circle at 18% 0%, rgba(103, 145, 166, 0.12), transparent 48%);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(5) {
+      background: rgba(255, 248, 244, 0.77);
+      box-shadow: 0 12px 28px rgba(183, 107, 74, 0.09);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(5)::before {
+      background: radial-gradient(circle at 82% 14%, rgba(205, 117, 74, 0.16), transparent 46%);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(7),
+    .persona-gallery-drift .persona-gallery-card:nth-child(8) {
+      background: rgba(247, 248, 255, 0.76);
+      box-shadow: 0 12px 28px rgba(69, 67, 112, 0.085);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(7)::before,
+    .persona-gallery-drift .persona-gallery-card:nth-child(8)::before {
+      background: radial-gradient(circle at 82% 8%, rgba(93, 91, 145, 0.12), transparent 48%);
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(9) {
+      background: rgba(255, 247, 246, 0.76);
+      box-shadow: 0 12px 28px rgba(145, 77, 72, 0.095);
+      margin-bottom: 12px;
+    }
+
+    .persona-gallery-drift .persona-gallery-card:nth-child(9)::before {
+      background: radial-gradient(circle at 82% 14%, rgba(202, 80, 62, 0.15), transparent 45%);
+    }
+
+    .persona-gallery-drift.is-settling .persona-gallery-card:not(.is-settled) {
+      opacity: .62;
+      filter: saturate(.82);
+    }
+
+    .persona-gallery-drift .persona-gallery-card.is-settled {
+      border-color: rgba(173, 181, 189, 0.72);
+      background: rgba(255, 255, 255, 0.91);
+      box-shadow: 0 20px 42px rgba(31, 41, 55, 0.12);
+      transform: translateY(-3px) scale(1.025);
+      z-index: 2;
+    }
+
+    .persona-gallery-drift .persona-gallery-card.is-settled .persona-quote {
+      color: #1f2937;
+      line-height: 1.9;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .persona-gallery-drift .persona-gallery-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(173, 181, 189, 0.68);
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 16px 34px rgba(31, 41, 55, 0.095);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:hover::before {
+        opacity: .55;
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(1):hover {
+        box-shadow: 0 16px 34px rgba(224, 161, 72, 0.14);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(2):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 32px rgba(84, 131, 98, 0.13);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(3):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 32px rgba(139, 107, 63, 0.13);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(4):hover,
+      .persona-gallery-drift .persona-gallery-card:nth-child(6):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 32px rgba(68, 103, 130, 0.125);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(5):hover {
+        box-shadow: 0 16px 34px rgba(183, 107, 74, 0.14);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(7):hover,
+      .persona-gallery-drift .persona-gallery-card:nth-child(8):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 32px rgba(69, 67, 112, 0.13);
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(9):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 34px rgba(145, 77, 72, 0.15);
+      }
+
+      .persona-gallery-drift .persona-gallery-card.is-settled:hover {
+        transform: translateY(-3px) scale(1.025);
+        box-shadow: 0 20px 42px rgba(31, 41, 55, 0.12);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .persona-gallery-drift .persona-gallery-card {
+        transition: none;
+      }
+    }
+
+    .persona-drift-card .persona-identity {
+      margin-bottom: 8px;
+    }
+
+    .persona-drift-card .persona-identity h3 {
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .persona-drift-card .persona-rarity {
+      margin-bottom: 0;
+      color: #667085;
+      font-size: 11px;
+    }
+
+    .persona-drift-card .persona-atmosphere {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top-color: rgba(208, 213, 221, 0.46);
+    }
+
+    .persona-drift-card .persona-quote {
+      margin-bottom: 0;
+      color: #344054;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .persona-axis-note {
+      margin: 30px 0 -10px;
+      padding: 14px 16px;
+      border: 1px solid rgba(208, 213, 221, 0.48);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.52);
+    }
+
+    .persona-axis-note span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .persona-axis-note p {
+      margin: 8px 0 0;
+      color: #344054;
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .persona-axis-cloud {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .persona-axis-cloud small {
+      display: inline-flex;
+      border: 1px solid rgba(208, 213, 221, 0.58);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(247, 255, 251, 0.48);
+      color: #475467;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
     .worldview-result-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1399,6 +1826,8 @@
       .worldview-options,
       .worldview-result-lead,
       .worldview-result-grid,
+      .persona-gallery,
+      .persona-gallery-card,
       .worldview-deep-grid,
       .deep-dive-grid,
       .pre-entry-head,
@@ -1435,6 +1864,25 @@
 
       .ok-card.secondary {
         transform: translate(12px, 16px) rotate(2deg) scale(.95);
+      }
+
+      .persona-gallery-drift {
+        gap: 32px;
+        padding: 20px 16px 44px;
+      }
+
+      .persona-gallery-drift .persona-gallery-card {
+        margin-top: 0;
+      }
+
+      .persona-gallery-drift .persona-gallery-card:nth-child(6),
+      .persona-gallery-drift .persona-gallery-card:nth-child(8) {
+        margin-top: 14px;
+      }
+
+      .persona-gallery-drift .persona-gallery-card.is-settled,
+      .persona-gallery-drift .persona-gallery-card.is-settled:hover {
+        transform: translateY(-2px) scale(1.012);
       }
     }
   </style>
@@ -1877,6 +2325,453 @@
       return imageSet[mood] || imageSet.day || WORLDVIEW_TYPES[typeKey]?.image || "";
     }
 
+    const OKYAKUSAMA_CARD_IMAGE = "/assets/worldview-cards/craft_trust-restaurant.jpg";
+    const PERSONA_IMAGE_MAP = {
+      craft_trust_plan_high: "/assets/worldview-cards/craft_trust-day.jpg",
+      quiet_resonance_anxiety_high: "/assets/worldview-cards/quiet_resonance-night.jpg",
+      daily_companion_plan_high: "/assets/worldview-cards/daily_companion-day.jpg",
+      live_impulse_impulse_high: "/assets/worldview-cards/live_impulse-night.jpg",
+      local_community_worldview_high: "/assets/worldview-cards/local_community-day.jpg",
+      entry_anxiety_relief_anxiety_high: "/assets/worldview-cards/entry_anxiety_relief-night.jpg",
+      worldview_immersion_worldview_high: "/assets/worldview-cards/worldview_immersion-night.jpg",
+      tourism_destination_plan_high: "/assets/worldview-cards/tourism_destination-night.jpg",
+      quiet_resonance_worldview_high: "/assets/worldview-cards/quiet_resonance-day.jpg"
+    };
+    Object.assign(PERSONA_IMAGE_MAP, {
+      daily_companion_anxiety_high: "/assets/worldview-cards/daily_companion-day.jpg",
+      daily_companion_worldview_high: "/assets/worldview-cards/daily_companion-restaurant.jpg",
+      daily_companion_impulse_high: "/assets/worldview-cards/daily_companion-night.jpg",
+      local_community_plan_high: "/assets/worldview-cards/local_community-day.jpg",
+      local_community_anxiety_high: "/assets/worldview-cards/local_community-restaurant.jpg",
+      local_community_impulse_high: "/assets/worldview-cards/local_community-night.jpg",
+      craft_trust_anxiety_high: "/assets/worldview-cards/craft_trust-restaurant.jpg",
+      craft_trust_worldview_high: "/assets/worldview-cards/craft_trust-night.jpg",
+      craft_trust_impulse_high: "/assets/worldview-cards/craft_trust-restaurant.jpg",
+      quiet_resonance_plan_high: "/assets/worldview-cards/quiet_resonance-day.jpg",
+      quiet_resonance_impulse_high: "/assets/worldview-cards/quiet_resonance-night.jpg",
+      live_impulse_plan_high: "/assets/worldview-cards/live_impulse-day.jpg",
+      live_impulse_worldview_high: "/assets/worldview-cards/live_impulse-restaurant.jpg",
+      live_impulse_anxiety_high: "/assets/worldview-cards/live_impulse-night.jpg",
+      worldview_immersion_plan_high: "/assets/worldview-cards/worldview_immersion-day.jpg",
+      worldview_immersion_impulse_high: "/assets/worldview-cards/worldview_immersion-restaurant.jpg",
+      worldview_immersion_anxiety_high: "/assets/worldview-cards/worldview_immersion-night.jpg",
+      tourism_destination_worldview_high: "/assets/worldview-cards/tourism_destination-day.jpg",
+      tourism_destination_impulse_high: "/assets/worldview-cards/tourism_destination-restaurant.jpg",
+      tourism_destination_anxiety_high: "/assets/worldview-cards/tourism_destination-night.jpg",
+      entry_anxiety_relief_plan_high: "/assets/worldview-cards/entry_anxiety_relief-day.jpg",
+      entry_anxiety_relief_worldview_high: "/assets/worldview-cards/entry_anxiety_relief-restaurant.jpg",
+      entry_anxiety_relief_impulse_high: "/assets/worldview-cards/entry_anxiety_relief-night.jpg",
+      daily_companion_spring_breeze: "/assets/worldview-cards/daily_companion-day.jpg",
+      live_impulse_small_heat: "/assets/worldview-cards/live_impulse-day.jpg",
+      tourism_destination_moon_harbor: "/assets/worldview-cards/tourism_destination-night.jpg",
+      craft_trust_snowmelt: "/assets/worldview-cards/craft_trust-night.jpg"
+    });
+    const PERSONA_RULES = [
+      {
+        primary: "craft_trust",
+        signal: "plan_high",
+        personaKey: "craft_trust_plan_high"
+      },
+      {
+        primary: "quiet_resonance",
+        signal: "anxiety_high",
+        personaKey: "quiet_resonance_anxiety_high"
+      },
+      {
+        primary: "daily_companion",
+        signal: "plan_high",
+        personaKey: "daily_companion_plan_high"
+      },
+      {
+        primary: "live_impulse",
+        signal: "impulse_high",
+        personaKey: "live_impulse_impulse_high"
+      },
+      {
+        primary: "local_community",
+        signal: "worldview_high",
+        personaKey: "local_community_worldview_high"
+      },
+      {
+        primary: "entry_anxiety_relief",
+        signal: "anxiety_high",
+        personaKey: "entry_anxiety_relief_anxiety_high"
+      },
+      {
+        primary: "worldview_immersion",
+        signal: "worldview_high",
+        personaKey: "worldview_immersion_worldview_high"
+      },
+      {
+        primary: "tourism_destination",
+        signal: "plan_high",
+        personaKey: "tourism_destination_plan_high"
+      },
+      {
+        primary: "quiet_resonance",
+        signal: "worldview_high",
+        personaKey: "quiet_resonance_worldview_high"
+      }
+    ];
+    const PERSONA_META = {
+      craft_trust_plan_high: {
+        title: "計画信頼の職人",
+        subtitle: "丁寧な準備と確かな仕事で選ばれる人格",
+        accentColor: "#8B6B3F",
+        icon: "☕",
+        tags: ["丁寧", "信頼", "計画型", "クラフト"],
+        stage: "prototype",
+        cardId: "P-CRAFT-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Rare",
+        signature: "Generated for Craft & Bean",
+        quote: "丁寧な時間は、信頼を育てる。",
+        coordinates: {
+          atmosphere: "Craft",
+          tempo: "Quiet",
+          space: "Warm"
+        },
+        relatedPersonas: ["P-WARM-02", "P-QUIET-03"],
+        status: "Stable",
+        actions: ["ゆっくり滞在する", "店主と会話する"],
+        badges: ["CRAFT VERIFIED", "LOCAL TRUST"],
+        logs: ["First issued in Tokyo", "Craft Route unlocked"],
+        savedState: "Collected"
+      },
+      quiet_resonance_anxiety_high: {
+        title: "余白共鳴の灯",
+        subtitle: "不安をほどき、静かな没入へ案内する人格",
+        accentColor: "#5E6D8C",
+        icon: "☾",
+        tags: ["静けさ", "夜", "余白", "共鳴"],
+        stage: "prototype",
+        cardId: "P-QUIET-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Rare",
+        signature: "Generated for Quiet Room",
+        quote: "静かな余白は、不安をそっと眠らせる。",
+        coordinates: {
+          atmosphere: "Quiet",
+          tempo: "Slow",
+          space: "Night"
+        },
+        relatedPersonas: ["P-CRAFT-01", "P-DREAM-02"],
+        status: "Stable",
+        actions: ["静かな席で過ごす", "夜の余白を味わう"],
+        badges: ["QUIET SIGNAL", "NIGHT RESONANCE"],
+        logs: ["Anxiety Route unlocked", "Quiet Night issued"],
+        savedState: "Collected"
+      },
+      daily_companion_plan_high: {
+        title: "朝光の伴走者",
+        subtitle: "いつもの朝を、少しだけ明るい予定に変える人格",
+        accentColor: "#C48A36",
+        icon: "☀",
+        tags: ["朝の光", "日常", "一人時間", "安心"],
+        stage: "prototype",
+        cardId: "P-MORNING-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Common",
+        signature: "Generated for Morning Table",
+        quote: "朝の光は、今日の居場所をそっと決める。",
+        coordinates: {
+          atmosphere: "Morning",
+          tempo: "Easy",
+          space: "Light"
+        },
+        relatedPersonas: ["P-CRAFT-01", "P-WARM-02"],
+        status: "Stable",
+        actions: ["朝の席に座る", "いつもの一杯を選ぶ"],
+        badges: ["MORNING ROUTE", "DAILY LIGHT"],
+        logs: ["Morning Route opened", "Daily Companion issued"],
+        savedState: "Collected"
+      },
+      live_impulse_impulse_high: {
+        title: "都市夜の火花",
+        subtitle: "小さな熱量で、夜の入口を一瞬だけ明るくする人格",
+        accentColor: "#D85A3A",
+        icon: "✦",
+        tags: ["都市夜", "熱量", "瞬間", "灯り"],
+        stage: "prototype",
+        cardId: "P-NIGHT-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Rare",
+        signature: "Generated for Neon Alley",
+        quote: "夜は、ふいに灯る小さな理由で動き出す。",
+        coordinates: {
+          atmosphere: "Urban",
+          tempo: "Pulse",
+          space: "Night"
+        },
+        relatedPersonas: ["P-QUIET-01", "P-MORNING-01"],
+        status: "Stable",
+        actions: ["今だけの一皿を選ぶ", "夜の音に近づく"],
+        badges: ["NIGHT PULSE", "LIVE SPARK"],
+        logs: ["Urban Night unlocked", "Impulse Signal issued"],
+        savedState: "Collected"
+      },
+      local_community_worldview_high: {
+        title: "木漏れ日の寄り道",
+        subtitle: "ローカルな会話と木漏れ日を、ふらりと結ぶ人格",
+        accentColor: "#6F8B4E",
+        icon: "⌂",
+        tags: ["木漏れ日", "ローカル", "寄り道", "会話"],
+        stage: "prototype",
+        cardId: "P-LOCAL-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Uncommon",
+        signature: "Generated for Local Porch",
+        quote: "近くにある光ほど、帰り道をやさしくする。",
+        coordinates: {
+          atmosphere: "Local",
+          tempo: "Walk",
+          space: "Green"
+        },
+        relatedPersonas: ["P-MORNING-01", "P-CRAFT-01"],
+        status: "Stable",
+        actions: ["少しだけ寄り道する", "近くの人と話す"],
+        badges: ["LOCAL PORCH", "GREEN ROUTE"],
+        logs: ["Local Route opened", "Porch Signal issued"],
+        savedState: "Collected"
+      },
+      entry_anxiety_relief_anxiety_high: {
+        title: "雨停留のひと息",
+        subtitle: "雨音の下で、急がない入口を見つける人格",
+        accentColor: "#4E7280",
+        icon: "☂",
+        tags: ["雨", "停留", "ひと息", "安心"],
+        stage: "prototype",
+        cardId: "P-RAIN-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Uncommon",
+        signature: "Generated for Rain Stop",
+        quote: "雨なら、少し待てる。",
+        coordinates: {
+          atmosphere: "Rain",
+          tempo: "Pause",
+          space: "Shelter"
+        },
+        relatedPersonas: ["P-QUIET-01", "P-LOCAL-01"],
+        status: "Stable",
+        actions: ["雨宿りする", "入口で深呼吸する"],
+        badges: ["RAIN SHELTER", "SOFT ENTRY"],
+        logs: ["Rain Stop issued", "Shelter Route opened"],
+        savedState: "Collected"
+      },
+      worldview_immersion_worldview_high: {
+        title: "冬灯の没入者",
+        subtitle: "冷たい外気から、小さな灯りの奥へ入る人格",
+        accentColor: "#6A6F8F",
+        icon: "✧",
+        tags: ["冬灯", "没入", "静寂", "奥行き"],
+        stage: "prototype",
+        cardId: "P-WINTER-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Rare",
+        signature: "Generated for Winter Lamp",
+        quote: "灯りは、まだ消えない。",
+        coordinates: {
+          atmosphere: "Winter",
+          tempo: "Deep",
+          space: "Lamp"
+        },
+        relatedPersonas: ["P-QUIET-01", "P-NIGHT-01"],
+        status: "Stable",
+        actions: ["奥の席へ入る", "灯りのそばで過ごす"],
+        badges: ["WINTER LAMP", "DEEP STAY"],
+        logs: ["Winter Lamp issued", "Immersion Route opened"],
+        savedState: "Collected"
+      },
+      tourism_destination_plan_high: {
+        title: "夕暮寄港の旅人",
+        subtitle: "一日の終わりに、少しだけ帰る場所を探す人格",
+        accentColor: "#B46A4A",
+        icon: "◐",
+        tags: ["夕暮", "寄港", "旅", "余韻"],
+        stage: "prototype",
+        cardId: "P-DUSK-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Uncommon",
+        signature: "Generated for Dusk Harbor",
+        quote: "夕暮れは、寄港する。",
+        coordinates: {
+          atmosphere: "Dusk",
+          tempo: "Drift",
+          space: "Harbor"
+        },
+        relatedPersonas: ["P-LOCAL-01", "P-NIGHT-01"],
+        status: "Stable",
+        actions: ["夕方に立ち寄る", "旅の余韻を残す"],
+        badges: ["DUSK HARBOR", "TRAVEL REST"],
+        logs: ["Dusk Harbor issued", "Travel Route opened"],
+        savedState: "Collected"
+      },
+      quiet_resonance_worldview_high: {
+        title: "曇天読書の余白",
+        subtitle: "曇りの日に、ページと沈黙が近づく人格",
+        accentColor: "#7C8790",
+        icon: "☁",
+        tags: ["曇天", "読書", "沈黙", "余白"],
+        stage: "prototype",
+        cardId: "P-CLOUD-01",
+        issuedLabel: "Issued 2026.05",
+        rarity: "Common",
+        signature: "Generated for Cloud Reading",
+        quote: "曇りの日は、読める。",
+        coordinates: {
+          atmosphere: "Cloud",
+          tempo: "Still",
+          space: "Page"
+        },
+        relatedPersonas: ["P-QUIET-01", "P-RAIN-01"],
+        status: "Stable",
+        actions: ["ページを開く", "沈黙を選ぶ"],
+        badges: ["CLOUD PAGE", "QUIET READ"],
+        logs: ["Cloud Reading issued", "Still Route opened"],
+        savedState: "Collected"
+      }
+    };
+
+    const PERSONA_WORLDVIEW_IMAGE_MAP = {
+      worldview_immersion_worldview_high: "/assets/worldview-cards/personas/01-静かな物語型.png",
+      quiet_resonance_anxiety_high: "/assets/worldview-cards/personas/02-夜の呼吸型.png",
+      quiet_resonance_worldview_high: "/assets/worldview-cards/personas/03-森のやすらぎ型.png",
+      entry_anxiety_relief_anxiety_high: "/assets/worldview-cards/personas/04-雨宿り入口型.png",
+      live_impulse_impulse_high: "/assets/worldview-cards/personas/05-熱職人型.png",
+      tourism_destination_plan_high: "/assets/worldview-cards/personas/06-旅職人型.png",
+      craft_trust_plan_high: "/assets/worldview-cards/personas/07-秘密工房型.png",
+      daily_companion_plan_high: "/assets/worldview-cards/personas/08-朝の名店型.png",
+      local_community_worldview_high: "/assets/worldview-cards/personas/09-街角交流型.png",
+      entry_anxiety_relief_plan_hajimemashite: "/assets/worldview-cards/personas/10-はじめまして型.png",
+      local_community_impulse_matsuri: "/assets/worldview-cards/personas/11-祭りの居場所型.png",
+      worldview_immersion_impulse_rojiura: "/assets/worldview-cards/personas/12-路地裏世界型.png",
+      tourism_destination_worldview_kakurega: "/assets/worldview-cards/personas/13-旅の隠れ家型.png",
+      tourism_destination_anxiety_yasashii_tabi: "/assets/worldview-cards/personas/14-やさしい旅型.png",
+      tourism_destination_impulse_netsukyo: "/assets/worldview-cards/personas/15-旅の熱狂型.png",
+      daily_companion_worldview_monogatari: "/assets/worldview-cards/personas/16-物語の日常型.png",
+      daily_companion_anxiety_tadaima: "/assets/worldview-cards/personas/17-ただいま型.png",
+      live_impulse_anxiety_yasashii_heat: "/assets/worldview-cards/personas/18-やさしい熱量型.png",
+      quiet_resonance_plan_kohan: "/assets/worldview-cards/personas/19-湖畔の静寂型.png",
+      worldview_immersion_plan_hitomoshi: "/assets/worldview-cards/personas/20-火灯り没入型.png",
+      tourism_destination_plan_morning_traveler: "/assets/worldview-cards/personas/21-旅人の朝型.png",
+      craft_trust_anxiety_amayo_kobo: "/assets/worldview-cards/personas/22-雨夜の工房型.png",
+      entry_anxiety_relief_worldview_genkan: "/assets/worldview-cards/personas/23-世界の玄関型.png",
+      daily_companion_impulse_yofuke: "/assets/worldview-cards/personas/24-夜更け食堂型.png",
+      quiet_resonance_worldview_yamagoya: "/assets/worldview-cards/personas/25-山小屋読書型.png",
+      live_impulse_plan_ichiba: "/assets/worldview-cards/personas/26-市場の熱型.png",
+      craft_trust_worldview_shirakabe: "/assets/worldview-cards/personas/27-白壁珈琲型.png",
+      quiet_resonance_impulse_yogisha: "/assets/worldview-cards/personas/28-夜汽車ラウンジ型.png",
+      craft_trust_plan_yugure_bakery: "/assets/worldview-cards/personas/29-夕暮れベーカリー型.png",
+      live_impulse_worldview_okuroji: "/assets/worldview-cards/personas/30-奥路地バー型.png",
+      local_community_anxiety_mori_iriguchi: "/assets/worldview-cards/personas/31-森の入口型.png",
+      live_impulse_impulse_theater: "/assets/worldview-cards/personas/32-小さな劇場型.png",
+      tourism_destination_plan_asagiri: "/assets/worldview-cards/personas/33-朝霧テラス型.png",
+      entry_anxiety_relief_impulse_kosame: "/assets/worldview-cards/personas/34-小雨喫茶型.png",
+      tourism_destination_worldview_todai: "/assets/worldview-cards/personas/35-灯台ラウンジ型.png",
+      live_impulse_impulse_hi_pan: "/assets/worldview-cards/personas/36-火とパンの家型.png"
+    };
+
+    const PERSONA_ADDITIONAL_META = {
+      entry_anxiety_relief_plan_hajimemashite: { title: "はじめまして型", subtitle: "初めての扉を、明るく近づける人格", accentColor: "#8A7C68", icon: "□", tags: ["入口", "安心"], rarity: "Common", quote: "扉が少し開けば、もう大丈夫。" },
+      local_community_impulse_matsuri: { title: "祭りの居場所型", subtitle: "賑わいの中にも、戻れる席を作る人格", accentColor: "#B66B3E", icon: "✺", tags: ["祭り", "居場所"], rarity: "Uncommon", quote: "賑わいの中にも、帰る席がある。" },
+      worldview_immersion_impulse_rojiura: { title: "路地裏世界型", subtitle: "細い路地の奥に、別世界を灯す人格", accentColor: "#6A5E57", icon: "⌑", tags: ["路地裏", "没入"], rarity: "Rare", quote: "細い路地ほど、物語は濃くなる。" },
+      tourism_destination_worldview_kakurega: { title: "旅の隠れ家型", subtitle: "旅の途中に、静かな隠れ場所を渡す人格", accentColor: "#647C6C", icon: "⌂", tags: ["旅", "隠れ家"], rarity: "Rare", quote: "旅は、ときどき隠れ家を探す。" },
+      tourism_destination_anxiety_yasashii_tabi: { title: "やさしい旅型", subtitle: "知らない道を、やさしくほどく人格", accentColor: "#9A8A64", icon: "◌", tags: ["旅", "安心"], rarity: "Common", quote: "やさしい道は、遠くまで続く。" },
+      tourism_destination_impulse_netsukyo: { title: "旅の熱狂型", subtitle: "旅先の一瞬に、心を跳ねさせる人格", accentColor: "#C06D41", icon: "✦", tags: ["旅", "熱狂"], rarity: "Uncommon", quote: "知らない街で、心が少し跳ねる。" },
+      daily_companion_worldview_monogatari: { title: "物語の日常型", subtitle: "いつもの時間に、小さな物語を重ねる人格", accentColor: "#8A765A", icon: "▤", tags: ["日常", "物語"], rarity: "Common", quote: "いつもの日にも、ページはある。" },
+      daily_companion_anxiety_tadaima: { title: "ただいま型", subtitle: "帰ってきたと言える安心を置く人格", accentColor: "#8A6D4E", icon: "⌂", tags: ["帰宅", "安心"], rarity: "Common", quote: "帰ってきた、と言える席がある。" },
+      live_impulse_anxiety_yasashii_heat: { title: "やさしい熱量型", subtitle: "小さな熱を、やわらかく保つ人格", accentColor: "#B06A42", icon: "▪", tags: ["熱量", "やさしさ"], rarity: "Uncommon", quote: "あたたかさは、急がなくていい。" },
+      quiet_resonance_plan_kohan: { title: "湖畔の静寂型", subtitle: "水辺のような静けさに、予定を沈める人格", accentColor: "#5F7780", icon: "◌", tags: ["湖畔", "静寂"], rarity: "Rare", quote: "水辺では、沈黙も明るい。" },
+      worldview_immersion_plan_hitomoshi: { title: "火灯り没入型", subtitle: "火のそばで、時間を深くする人格", accentColor: "#A45E38", icon: "✧", tags: ["火灯り", "没入"], rarity: "Rare", quote: "火のそばで、時間は深くなる。" },
+      tourism_destination_plan_morning_traveler: { title: "旅人の朝型", subtitle: "朝の道を、旅のはじまりに変える人格", accentColor: "#9AAE78", icon: "☼", tags: ["旅人", "朝"], rarity: "Common", quote: "朝の道は、旅人にやさしい。" },
+      craft_trust_anxiety_amayo_kobo: { title: "雨夜の工房型", subtitle: "雨の夜に、手仕事の静けさを守る人格", accentColor: "#6B5F55", icon: "⚒", tags: ["雨夜", "工房"], rarity: "Rare", quote: "雨の夜、道具だけが起きている。" },
+      entry_anxiety_relief_worldview_genkan: { title: "世界の玄関型", subtitle: "入口から、別の空気へ案内する人格", accentColor: "#8B795F", icon: "⌖", tags: ["玄関", "世界観"], rarity: "Uncommon", quote: "ここから、別の空気へ入る。" },
+      daily_companion_impulse_yofuke: { title: "夜更け食堂型", subtitle: "夜更けにも、日常の温度を残す人格", accentColor: "#8A5E40", icon: "◔", tags: ["夜更け", "食堂"], rarity: "Rare", quote: "夜更けにも、あたたかい席がある。" },
+      quiet_resonance_worldview_yamagoya: { title: "山小屋読書型", subtitle: "冷たい外気と本の静けさを結ぶ人格", accentColor: "#66728E", icon: "▧", tags: ["山小屋", "読書"], rarity: "Rare", quote: "雪の外で、ページは静かに進む。" },
+      live_impulse_plan_ichiba: { title: "市場の熱型", subtitle: "市場の熱を、今日の理由にする人格", accentColor: "#B56C3F", icon: "✺", tags: ["市場", "熱"], rarity: "Uncommon", quote: "市場の熱は、朝まで残る。" },
+      craft_trust_worldview_shirakabe: { title: "白壁珈琲型", subtitle: "白い壁に、丁寧な時間を映す人格", accentColor: "#8FA09B", icon: "☕", tags: ["白壁", "珈琲"], rarity: "Common", quote: "白い壁に、珈琲の時間が映る。" },
+      quiet_resonance_impulse_yogisha: { title: "夜汽車ラウンジ型", subtitle: "夜の移動感に、静かな余韻を残す人格", accentColor: "#5B6681", icon: "☽", tags: ["夜汽車", "ラウンジ"], rarity: "Rare", quote: "窓の向こうで、夜が流れる。" },
+      craft_trust_plan_yugure_bakery: { title: "夕暮れベーカリー型", subtitle: "夕暮れの棚に、焼きたての安心を置く人格", accentColor: "#B46A4A", icon: "◐", tags: ["夕暮れ", "ベーカリー"], rarity: "Uncommon", quote: "夕暮れは、パンの香りで戻ってくる。" },
+      live_impulse_worldview_okuroji: { title: "奥路地バー型", subtitle: "奥の灯りに、都市夜の余白を集める人格", accentColor: "#A05248", icon: "✦", tags: ["奥路地", "夜"], rarity: "Rare", quote: "奥の灯りは、声を小さくする。" },
+      local_community_anxiety_mori_iriguchi: { title: "森の入口型", subtitle: "森へ入る前の不安を、灯りでほどく人格", accentColor: "#4F766D", icon: "♧", tags: ["森", "入口"], rarity: "Rare", quote: "森へ入る前に、灯りがひとつ。" },
+      live_impulse_impulse_theater: { title: "小さな劇場型", subtitle: "小さな舞台に、湯気と熱を集める人格", accentColor: "#B04745", icon: "◆", tags: ["劇場", "熱"], rarity: "Rare", quote: "幕が上がる前の湯気がある。" },
+      tourism_destination_plan_asagiri: { title: "朝霧テラス型", subtitle: "朝霧の奥に、旅の席を用意する人格", accentColor: "#6D8290", icon: "◒", tags: ["朝霧", "テラス"], rarity: "Uncommon", quote: "朝霧の中で、旅は目を覚ます。" },
+      entry_anxiety_relief_impulse_kosame: { title: "小雨喫茶型", subtitle: "小雨の日に、ふっと入れる理由を作る人格", accentColor: "#5E7B86", icon: "☔", tags: ["小雨", "喫茶"], rarity: "Uncommon", quote: "小雨の日は、喫茶が近い。" },
+      tourism_destination_worldview_todai: { title: "灯台ラウンジ型", subtitle: "遠い灯りを、旅の帰り道にする人格", accentColor: "#C06B46", icon: "▴", tags: ["灯台", "ラウンジ"], rarity: "Rare", quote: "遠い灯りほど、帰り道になる。" },
+      live_impulse_impulse_hi_pan: { title: "火とパンの家型", subtitle: "火とパンの熱で、居場所を作る人格", accentColor: "#A76A3D", icon: "▰", tags: ["火", "パン"], rarity: "Rare", quote: "火とパンがあれば、家になる。" }
+    };
+
+    const PERSONA_GALLERY_ORDER = [
+      "daily_companion_plan_high",
+      "tourism_destination_plan_morning_traveler",
+      "tourism_destination_plan_asagiri",
+      "craft_trust_worldview_shirakabe",
+      "quiet_resonance_worldview_high",
+      "tourism_destination_anxiety_yasashii_tabi",
+      "local_community_worldview_high",
+      "daily_companion_anxiety_tadaima",
+      "daily_companion_worldview_monogatari",
+      "entry_anxiety_relief_worldview_genkan",
+      "entry_anxiety_relief_plan_hajimemashite",
+      "tourism_destination_plan_high",
+      "craft_trust_plan_yugure_bakery",
+      "tourism_destination_worldview_kakurega",
+      "worldview_immersion_worldview_high",
+      "craft_trust_plan_high",
+      "worldview_immersion_impulse_rojiura",
+      "local_community_anxiety_mori_iriguchi",
+      "entry_anxiety_relief_impulse_kosame",
+      "entry_anxiety_relief_anxiety_high",
+      "quiet_resonance_plan_kohan",
+      "quiet_resonance_worldview_yamagoya",
+      "craft_trust_anxiety_amayo_kobo",
+      "quiet_resonance_anxiety_high",
+      "worldview_immersion_plan_hitomoshi",
+      "daily_companion_impulse_yofuke",
+      "quiet_resonance_impulse_yogisha",
+      "live_impulse_worldview_okuroji",
+      "tourism_destination_worldview_todai",
+      "live_impulse_impulse_theater",
+      "live_impulse_impulse_high",
+      "live_impulse_anxiety_yasashii_heat",
+      "live_impulse_plan_ichiba",
+      "local_community_impulse_matsuri",
+      "tourism_destination_impulse_netsukyo",
+      "live_impulse_impulse_hi_pan"
+    ];
+
+    Object.assign(PERSONA_IMAGE_MAP, PERSONA_WORLDVIEW_IMAGE_MAP);
+    Object.assign(PERSONA_META, PERSONA_ADDITIONAL_META);
+    PERSONA_RULES.push(
+      { primary: "entry_anxiety_relief", secondary: "daily_companion", signal: "plan_high", personaKey: "entry_anxiety_relief_plan_hajimemashite" },
+      { primary: "local_community", secondary: "live_impulse", signal: "impulse_high", personaKey: "local_community_impulse_matsuri" },
+      { primary: "worldview_immersion", secondary: "live_impulse", signal: "impulse_high", personaKey: "worldview_immersion_impulse_rojiura" },
+      { primary: "tourism_destination", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "tourism_destination_worldview_kakurega" },
+      { primary: "tourism_destination", secondary: "entry_anxiety_relief", signal: "anxiety_high", personaKey: "tourism_destination_anxiety_yasashii_tabi" },
+      { primary: "tourism_destination", secondary: "live_impulse", signal: "impulse_high", personaKey: "tourism_destination_impulse_netsukyo" },
+      { primary: "daily_companion", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "daily_companion_worldview_monogatari" },
+      { primary: "daily_companion", secondary: "entry_anxiety_relief", signal: "anxiety_high", personaKey: "daily_companion_anxiety_tadaima" },
+      { primary: "live_impulse", secondary: "entry_anxiety_relief", signal: "anxiety_high", personaKey: "live_impulse_anxiety_yasashii_heat" },
+      { primary: "quiet_resonance", secondary: "tourism_destination", signal: "plan_high", personaKey: "quiet_resonance_plan_kohan" },
+      { primary: "worldview_immersion", secondary: "quiet_resonance", signal: "plan_high", personaKey: "worldview_immersion_plan_hitomoshi" },
+      { primary: "tourism_destination", secondary: "daily_companion", signal: "plan_high", personaKey: "tourism_destination_plan_morning_traveler" },
+      { primary: "craft_trust", secondary: "entry_anxiety_relief", signal: "anxiety_high", personaKey: "craft_trust_anxiety_amayo_kobo" },
+      { primary: "entry_anxiety_relief", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "entry_anxiety_relief_worldview_genkan" },
+      { primary: "daily_companion", secondary: "live_impulse", signal: "impulse_high", personaKey: "daily_companion_impulse_yofuke" },
+      { primary: "quiet_resonance", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "quiet_resonance_worldview_yamagoya" },
+      { primary: "live_impulse", secondary: "local_community", signal: "plan_high", personaKey: "live_impulse_plan_ichiba" },
+      { primary: "craft_trust", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "craft_trust_worldview_shirakabe" },
+      { primary: "quiet_resonance", secondary: "live_impulse", signal: "impulse_high", personaKey: "quiet_resonance_impulse_yogisha" },
+      { primary: "craft_trust", secondary: "tourism_destination", signal: "plan_high", personaKey: "craft_trust_plan_yugure_bakery" },
+      { primary: "live_impulse", secondary: "worldview_immersion", signal: "worldview_high", personaKey: "live_impulse_worldview_okuroji" },
+      { primary: "local_community", secondary: "entry_anxiety_relief", signal: "anxiety_high", personaKey: "local_community_anxiety_mori_iriguchi" },
+      { primary: "live_impulse", secondary: "worldview_immersion", signal: "impulse_high", personaKey: "live_impulse_impulse_theater" },
+      { primary: "tourism_destination", secondary: "quiet_resonance", signal: "plan_high", personaKey: "tourism_destination_plan_asagiri" },
+      { primary: "entry_anxiety_relief", secondary: "quiet_resonance", signal: "impulse_high", personaKey: "entry_anxiety_relief_impulse_kosame" },
+      { primary: "tourism_destination", secondary: "live_impulse", signal: "worldview_high", personaKey: "tourism_destination_worldview_todai" },
+      { primary: "live_impulse", secondary: "craft_trust", signal: "impulse_high", personaKey: "live_impulse_impulse_hi_pan" }
+    );
+
     function worldviewCardGeneratedAt() {
       return new Date().toLocaleString("ja-JP", {
         timeZone: "Asia/Tokyo",
@@ -1888,12 +2783,13 @@
       });
     }
 
-    function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle) {
+    function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
       const secondary = WORLDVIEW_TYPES[secondaryKey] || primary;
       const storeName = shareContext?.storeName || "このお店";
       const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
       const secondaryLine = WORLDVIEW_CARD_LINES[secondaryKey] || secondary.description;
+      const cardImage = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
       const generatedAt = worldviewCardGeneratedAt();
 
       return `
@@ -1908,7 +2804,6 @@
           <div class="ok-card-stage">
             <div class="ok-card-stack" aria-label="お客様.COMカードのプレビュー">
               <article class="ok-card secondary" aria-hidden="true">
-                <img class="ok-card-photo" src="${escapeHtml(worldviewCardImage(secondaryKey, "secondary"))}" alt="">
                 <div class="ok-card-content">
                   <span class="ok-card-kicker">SUB WORLDVIEW</span>
                   <h4 class="ok-card-title">${escapeHtml(secondary.name)}</h4>
@@ -1916,7 +2811,7 @@
                 </div>
               </article>
               <article class="ok-card primary">
-                <img class="ok-card-photo" src="${escapeHtml(worldviewCardImage(primaryKey, "primary"))}" alt="${escapeHtml(primary.name)}のカード背景">
+                <img class="ok-card-photo" src="${cardImage}" alt="お客様.COMカード背景">
                 <div class="ok-card-content">
                   <span class="ok-card-kicker">OKYAKUSA-MA.COM</span>
                   <h4 class="ok-card-title">${escapeHtml(typeTitle)}</h4>
@@ -2193,6 +3088,31 @@
       return url.toString();
     }
 
+    function bindPersonaGallerySettling(root) {
+      const gallery = root.querySelector(".persona-gallery-drift");
+      if (!gallery) return;
+      const cards = Array.from(gallery.querySelectorAll(".persona-gallery-card"));
+      const settleCard = (card) => {
+        const isSettled = card.classList.contains("is-settled");
+        cards.forEach((item) => {
+          item.classList.remove("is-settled");
+          item.setAttribute("aria-pressed", "false");
+        });
+        gallery.classList.toggle("is-settling", !isSettled);
+        if (isSettled) return;
+        card.classList.add("is-settled");
+        card.setAttribute("aria-pressed", "true");
+      };
+      cards.forEach((card) => {
+        card.addEventListener("click", () => settleCard(card));
+        card.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          settleCard(card);
+        });
+      });
+    }
+
     async function copyWorldviewCardUrl(button) {
       updateWorldviewUrl();
       const url = worldviewCardShareUrl();
@@ -2304,6 +3224,99 @@
       message.textContent = "";
       const primary = WORLDVIEW_TYPES[result.primaryKey];
       const secondary = WORLDVIEW_TYPES[result.secondaryKey];
+      const aiScores = shareContext?.ai || {};
+      const personaSignals = [
+        ["plan", Number(aiScores.plan_score || 0)],
+        ["impulse", Number(aiScores.impulse_score || 0)],
+        ["worldview", Number(aiScores.worldview_score || 0)],
+        ["anxiety", Number(aiScores.previsit_anxiety_score || 0)]
+      ];
+      const strongestPersonaSignal = personaSignals.sort((a, b) => b[1] - a[1])[0][0];
+      const personaSignalKey = `${strongestPersonaSignal}_high`;
+      const personaRule = PERSONA_RULES.find((rule) =>
+        rule.primary === result.primaryKey &&
+        rule.secondary === result.secondaryKey &&
+        rule.signal === personaSignalKey
+      ) || PERSONA_RULES.find((rule) =>
+        rule.primary === result.primaryKey &&
+        !rule.secondary &&
+        rule.signal === personaSignalKey
+      );
+      const personaKey = personaRule?.personaKey || `${result.primaryKey}_${personaSignalKey}`;
+      const personaMeta = PERSONA_META[personaKey];
+      const personaLabel = personaMeta?.title || personaKey;
+      const personaDisplayLabel = personaMeta?.icon
+        ? `${personaMeta.icon} ${personaLabel}`
+        : personaLabel;
+      const personaRarity = personaMeta?.rarity
+        ? `<p class="persona-rarity">${escapeHtml(personaMeta.rarity)}</p>`
+        : "";
+      const personaQuote = personaMeta?.quote
+        ? `<p class="persona-quote">“${escapeHtml(personaMeta.quote)}”</p>`
+        : "";
+      const personaCoordinates = personaMeta?.coordinates
+        ? `<p class="persona-coordinates">${[
+            personaMeta.coordinates.atmosphere,
+            personaMeta.coordinates.tempo,
+            personaMeta.coordinates.space
+          ].filter(Boolean).map(escapeHtml).join(" / ")}</p>`
+        : "";
+      const personaActions = Array.isArray(personaMeta?.actions) && personaMeta.actions.length
+        ? `<div class="persona-actions"><strong>Suggested:</strong><ul>${personaMeta.actions.map((action) => `<li>${escapeHtml(action)}</li>`).join("")}</ul></div>`
+        : "";
+      const personaSystemInfo = [
+        personaMeta?.stage ? `Stage: ${personaMeta.stage}` : "",
+        personaMeta?.cardId ? `Card ID: ${personaMeta.cardId}` : "",
+        personaMeta?.issuedLabel || "",
+        personaMeta?.signature || "",
+        personaMeta?.status ? `Status: ${personaMeta.status}` : "",
+        Array.isArray(personaMeta?.relatedPersonas) && personaMeta.relatedPersonas.length ? `Related: ${personaMeta.relatedPersonas.join(" / ")}` : "",
+        Array.isArray(personaMeta?.logs) && personaMeta.logs.length ? `Log: ${personaMeta.logs.join(" / ")}` : "",
+        personaMeta?.savedState ? `Saved: ${personaMeta.savedState}` : ""
+      ].filter(Boolean);
+      const personaSystemDetails = personaSystemInfo.length
+        ? `<details class="persona-system-details"><summary>人格システム情報</summary>${personaSystemInfo.map((item) => `<p>${escapeHtml(item)}</p>`).join("")}</details>`
+        : "";
+      const personaAccentStyle = personaMeta?.accentColor
+        ? ` style="color: ${escapeHtml(personaMeta.accentColor)}"`
+        : "";
+      const personaSubtitle = personaMeta?.subtitle
+        ? `<p>${escapeHtml(personaMeta.subtitle)}</p>`
+        : "";
+      const personaTags = Array.isArray(personaMeta?.tags) && personaMeta.tags.length
+        ? `<p class="persona-tags">${personaMeta.tags.map((tag) => `#${escapeHtml(tag)}`).join(" ")}</p>`
+        : "";
+      const renderPersonaGalleryCard = (galleryPersonaKey) => {
+        const galleryMeta = PERSONA_META[galleryPersonaKey] || {};
+        const galleryLabel = galleryMeta.title || galleryPersonaKey;
+        const galleryDisplayLabel = galleryMeta.icon ? `${galleryMeta.icon} ${galleryLabel}` : galleryLabel;
+        const galleryAccentStyle = galleryMeta.accentColor
+          ? ` style="color: ${escapeHtml(galleryMeta.accentColor)}"`
+          : "";
+        const galleryRarity = galleryMeta.rarity
+          ? `<p class="persona-rarity">${escapeHtml(galleryMeta.rarity)}</p>`
+          : "";
+        const galleryQuote = galleryMeta.quote
+          ? `<p class="persona-quote">“${escapeHtml(concise(galleryMeta.quote, 24))}”</p>`
+          : "";
+        const galleryImage = PERSONA_IMAGE_MAP[galleryPersonaKey] || OKYAKUSAMA_CARD_IMAGE;
+        return `
+          <article class="persona-gallery-card persona-drift-card" data-persona-key="${escapeHtml(galleryPersonaKey)}" role="button" tabindex="0" aria-pressed="false">
+            <img class="worldview-result-image" src="${escapeHtml(galleryImage)}" alt="${escapeHtml(galleryLabel)}のイメージ">
+            <div class="worldview-result-copy">
+              <div class="persona-identity">
+                <h3${galleryAccentStyle}>${escapeHtml(galleryDisplayLabel)}</h3>
+                ${galleryRarity}
+              </div>
+              <div class="persona-atmosphere">
+                ${galleryQuote}
+              </div>
+            </div>
+          </article>
+        `;
+      };
+      const personaGalleryOrder = PERSONA_GALLERY_ORDER;
+      const personaGallery = personaGalleryOrder.map(renderPersonaGalleryCard).join("");
       const resultEl = document.querySelector("#worldview-result");
       const typeTitle = `${primary.name} × ${secondary.name}`;
       const storeName = shareContext?.storeName || "このお店";
@@ -2325,6 +3338,7 @@
         typeTitle,
         primaryName: primary.name,
         secondaryName: secondary.name,
+        personaKey,
         answerCode: answers.join(""),
         scores: result.scores
       };
@@ -2332,17 +3346,40 @@
         <div class="worldview-result-lead">
           <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
           <div class="worldview-result-copy">
-            <h3>${escapeHtml(resultHeading)}</h3>
-            <p>${escapeHtml(resultDescription)}</p>
+            <div class="persona-identity">
+              <h3${personaAccentStyle}>${escapeHtml(personaDisplayLabel)}</h3>
+              ${personaRarity}
+              ${personaSubtitle || `<p>${escapeHtml(resultDescription)}</p>`}
+            </div>
+            <div class="persona-atmosphere">
+              ${personaQuote}
+              ${personaTags}
+              ${personaCoordinates}
+            </div>
+            ${personaActions}
+            ${personaSystemDetails}
           </div>
         </div>
         ${resultGrid}
-        ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle)}
+        <div class="persona-axis-note" aria-label="人格漂流メモ">
+          <span>人格漂流メモ</span>
+          <p>朝の光 / 曇天のページ / 夕暮の港 / 雨の停留 / 冬の灯 / 都市夜</p>
+          <div class="persona-axis-cloud">
+            <small>朝から夕暮へ</small>
+            <small>雨と曇りの滞在</small>
+            <small>冬灯から都市夜へ</small>
+          </div>
+        </div>
+        <div class="persona-gallery persona-gallery-drift" aria-label="人格ギャラリー">
+          ${personaGallery}
+        </div>
+        ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey)}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>
       `;
       resultEl.classList.add("is-open");
+      bindPersonaGallerySettling(resultEl);
       document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
       updateWorldviewUrl();
