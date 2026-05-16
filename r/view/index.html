@@ -1029,49 +1029,6 @@
       text-decoration: none;
     }
 
-    .worldview-type-footnote {
-      display: grid;
-      grid-template-columns: 92px 1fr;
-      gap: 14px;
-      align-items: start;
-      margin: 18px 0 14px;
-      padding: 14px;
-      border: 1px solid rgba(208, 213, 221, 0.58);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.48);
-    }
-
-    .worldview-type-footnote img {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      border: 1px solid rgba(208, 213, 221, 0.75);
-      border-radius: 8px;
-      object-fit: cover;
-      background: #fff;
-    }
-
-    .worldview-type-footnote span {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 850;
-    }
-
-    .worldview-type-footnote strong {
-      display: block;
-      margin-bottom: 6px;
-      color: #1f2937;
-      font-size: 14px;
-    }
-
-    .worldview-type-footnote p {
-      margin: 0;
-      color: #475467;
-      font-size: 12px;
-      line-height: 1.75;
-    }
-
     .worldview-result-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1950,7 +1907,6 @@
       .worldview-intro,
       .worldview-options,
       .worldview-result-lead,
-      .worldview-type-footnote,
       .worldview-result-grid,
       .persona-gallery,
       .persona-gallery-card,
@@ -3240,24 +3196,12 @@
       });
     }
 
-    function personaRarityLabel(rarity) {
-      return {
-        Common: "親しみやすいタイプ",
-        Uncommon: "個性が光るタイプ",
-        Rare: "特別感のあるタイプ"
-      }[rarity] || rarity || "";
-    }
-
     function renderPersonaGalleryCard(galleryPersonaKey) {
       const galleryMeta = PERSONA_META[galleryPersonaKey] || {};
       const galleryLabel = galleryMeta.title || galleryPersonaKey;
       const galleryDisplayLabel = galleryMeta.icon ? `${galleryMeta.icon} ${galleryLabel}` : galleryLabel;
       const galleryAccentStyle = galleryMeta.accentColor
         ? ` style="color: ${escapeHtml(galleryMeta.accentColor)}"`
-        : "";
-      const rarityLabel = personaRarityLabel(galleryMeta.rarity);
-      const galleryRarity = rarityLabel
-        ? `<p class="persona-rarity">${escapeHtml(rarityLabel)}</p>`
         : "";
       const galleryQuote = galleryMeta.quote
         ? `<p class="persona-quote">“${escapeHtml(concise(galleryMeta.quote, 24))}”</p>`
@@ -3269,7 +3213,6 @@
           <div class="worldview-result-copy">
             <div class="persona-identity">
               <h3${galleryAccentStyle}>${escapeHtml(galleryDisplayLabel)}</h3>
-              ${galleryRarity}
             </div>
             <div class="persona-atmosphere">
               ${galleryQuote}
@@ -3478,37 +3421,6 @@
         rule.signal === personaSignalKey
       );
       const personaKey = personaRule?.personaKey || `${result.primaryKey}_${personaSignalKey}`;
-      const personaMeta = PERSONA_META[personaKey];
-      const personaLabel = personaMeta?.title || personaKey;
-      const personaDisplayLabel = personaMeta?.icon
-        ? `${personaMeta.icon} ${personaLabel}`
-        : personaLabel;
-      const rarityLabel = personaRarityLabel(personaMeta?.rarity);
-      const personaRarity = rarityLabel
-        ? `<p class="persona-rarity">${escapeHtml(rarityLabel)}</p>`
-        : "";
-      const personaQuote = personaMeta?.quote
-        ? `<p class="persona-quote">“${escapeHtml(personaMeta.quote)}”</p>`
-        : "";
-      const personaSystemInfo = [
-        personaMeta?.stage ? `Stage: ${personaMeta.stage}` : "",
-        personaMeta?.cardId ? `Card ID: ${personaMeta.cardId}` : "",
-        personaMeta?.issuedLabel || "",
-        personaMeta?.signature || "",
-        personaMeta?.status ? `Status: ${personaMeta.status}` : "",
-        Array.isArray(personaMeta?.relatedPersonas) && personaMeta.relatedPersonas.length ? `Related: ${personaMeta.relatedPersonas.join(" / ")}` : "",
-        Array.isArray(personaMeta?.logs) && personaMeta.logs.length ? `Log: ${personaMeta.logs.join(" / ")}` : "",
-        personaMeta?.savedState ? `Saved: ${personaMeta.savedState}` : ""
-      ].filter(Boolean);
-      const personaSystemDetails = !isSharedWorldviewView && personaSystemInfo.length
-        ? `<details class="persona-system-details"><summary>お店の傾向性</summary>${personaSystemInfo.map((item) => `<p>${escapeHtml(item)}</p>`).join("")}</details>`
-        : "";
-      const personaAccentStyle = personaMeta?.accentColor
-        ? ` style="color: ${escapeHtml(personaMeta.accentColor)}"`
-        : "";
-      const personaSubtitle = personaMeta?.subtitle
-        ? `<p>${escapeHtml(personaMeta.subtitle)}</p>`
-        : "";
       const personaGalleryLink = shouldShowPersonaGalleryLink
         ? `<div class="persona-gallery-link"><a href="${escapeHtml(personaGalleryUrl())}">36の世界観タイプを見たい方はこちら</a></div>`
         : "";
@@ -3530,17 +3442,6 @@
           ${worldviewCard("今撮るべき動画", "3本の方向性", primary.videos)}
         </div>
       `;
-      const typeFootnote = `
-        <div class="worldview-type-footnote">
-          <img src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
-          <div>
-            <span>お店世界観タイプ</span>
-            <strong>${escapeHtml(primary.name)} - ${escapeHtml(primary.description.split("。")[0])}</strong>
-            <p>${escapeHtml(resultDescription)}</p>
-          </div>
-        </div>
-      `;
-      const personaImage = PERSONA_IMAGE_MAP[personaKey] || primary.image;
       worldviewShareResult = {
         typeTitle,
         primaryName: primary.name,
@@ -3551,24 +3452,18 @@
       };
       resultEl.innerHTML = `
         <div class="worldview-result-lead">
-          <img class="worldview-result-image" src="${escapeHtml(personaImage)}" alt="${escapeHtml(personaLabel)}のイメージ">
+          <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(typeTitle)}のイメージ">
           <div class="worldview-result-copy">
             <div class="persona-identity">
-              <h3${personaAccentStyle}>${escapeHtml(personaDisplayLabel)}</h3>
-              ${personaRarity}
-              ${personaSubtitle || `<p>${escapeHtml(resultDescription)}</p>`}
+              <h3>${escapeHtml(resultHeading)}</h3>
+              <p>${escapeHtml(resultDescription)}</p>
             </div>
-            <div class="persona-atmosphere">
-              ${personaQuote}
-            </div>
-            ${personaSystemDetails}
             ${personaQuietLinks}
           </div>
         </div>
         ${resultGrid}
         ${personaGalleryLink}
         ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey)}
-        ${typeFootnote}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>
