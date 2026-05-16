@@ -3465,7 +3465,7 @@
         answerCode: answers.join(""),
         scores: result.scores
       };
-      resultEl.innerHTML = `
+      const renderWorldviewTypeLead = (includeQuietLinks = false) => `
         <div class="worldview-result-lead">
           <img class="worldview-result-image" src="${escapeHtml(primary.image)}" alt="${escapeHtml(typeTitle)}のイメージ">
           <div class="worldview-result-copy">
@@ -3473,12 +3473,20 @@
               <h3>${escapeHtml(resultHeading)}</h3>
               <p>${escapeHtml(resultDescription)}</p>
             </div>
-            ${personaQuietLinks}
+            ${includeQuietLinks ? personaQuietLinks : ""}
           </div>
         </div>
+      `;
+      const okyakusamaCard = renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey);
+      resultEl.innerHTML = isCardOnlyView ? `
+        ${okyakusamaCard}
+        ${personaQuietLinks}
+        ${renderWorldviewTypeLead()}
+      ` : `
+        ${renderWorldviewTypeLead(true)}
         ${resultGrid}
         ${personaGalleryLink}
-        ${renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey)}
+        ${okyakusamaCard}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>
