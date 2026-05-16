@@ -975,29 +975,39 @@
     }
 
     .persona-quiet-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
       margin: 18px 0 4px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(208, 213, 221, 0.5);
+      padding-top: 16px;
+      border-top: 1px solid rgba(208, 213, 221, 0.56);
     }
 
     .persona-quiet-link,
     .persona-connect summary {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      min-height: 30px;
-      border: 1px solid rgba(208, 213, 221, 0.82);
-      border-radius: 999px;
-      padding: 6px 11px;
-      background: rgba(255, 255, 255, 0.62);
-      color: #475467;
-      font-size: 12px;
-      font-weight: 750;
-      line-height: 1.2;
+      justify-content: space-between;
+      min-height: 54px;
+      border: 1px solid rgba(138, 118, 90, 0.32);
+      border-radius: 8px;
+      padding: 13px 15px;
+      background:
+        linear-gradient(135deg, rgba(255, 252, 244, 0.96), rgba(247, 255, 251, 0.9));
+      color: #344054;
+      box-shadow: 0 10px 24px rgba(28, 36, 48, 0.07);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.35;
       text-decoration: none;
+    }
+
+    .persona-quiet-link::after,
+    .persona-connect summary::after {
+      content: "→";
+      color: #8a765a;
+      font-size: 16px;
+      font-weight: 850;
     }
 
     .persona-connect summary {
@@ -1010,22 +1020,26 @@
     }
 
     .persona-connect[open] summary {
-      color: #344054;
-      background: rgba(247, 255, 251, 0.78);
+      border-color: rgba(15, 107, 79, 0.24);
+      color: #1f2937;
+      background:
+        linear-gradient(135deg, rgba(247, 255, 251, 0.98), rgba(255, 252, 244, 0.9));
     }
 
     .persona-connect-list {
-      display: flex;
+      display: grid;
       gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      padding: 0 2px;
+      margin-top: 9px;
+      border: 1px solid rgba(208, 213, 221, 0.68);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.68);
     }
 
     .persona-connect-list a {
-      color: #667085;
+      color: #475467;
       font-size: 12px;
-      font-weight: 750;
+      font-weight: 800;
       text-decoration: none;
     }
 
@@ -1945,7 +1959,8 @@
       }
 
       .persona-quiet-links {
-        align-items: flex-start;
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
 
       .persona-connect {
@@ -1953,7 +1968,7 @@
       }
 
       .persona-connect-list {
-        padding-left: 4px;
+        padding: 10px 12px;
       }
 
       .persona-gallery-drift {
@@ -3260,10 +3275,10 @@
         ["Website", safeHttpUrl(request.website_url)]
       ].filter(([, url]) => Boolean(url));
       const mapsLink = mapsUrl
-        ? `<a class="persona-quiet-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">行き方を見る</a>`
+        ? `<a class="persona-quiet-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Google Mapsを見る</a>`
         : "";
       const connect = links.length
-        ? `<details class="persona-connect"><summary>Connect</summary><div class="persona-connect-list">${links.map(([label, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join("")}</div></details>`
+        ? `<details class="persona-connect"><summary>お店のリンク一覧</summary><div class="persona-connect-list">${links.map(([label, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join("")}</div></details>`
         : "";
       return mapsLink || connect
         ? `<div class="persona-quiet-links">${mapsLink}${connect}</div>`
