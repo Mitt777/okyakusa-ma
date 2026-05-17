@@ -1946,6 +1946,10 @@
     }
 
     @media (max-width: 860px) {
+      body {
+        font-size: 17px;
+      }
+
       .shell { padding: 12px; }
       .topbar,
       .home-return-banner,
@@ -1954,6 +1958,73 @@
       .grid {
         padding-left: 16px;
         padding-right: 16px;
+      }
+
+      .topbar {
+        gap: 10px;
+      }
+
+      .brand strong {
+        font-size: 24px;
+      }
+
+      .brand span,
+      .meta,
+      .metric span,
+      .status,
+      .score-explain span,
+      .worldview-result-card span {
+        font-size: 13px;
+      }
+
+      .home-return-banner strong {
+        font-size: 18px;
+      }
+
+      .home-return-banner span {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .home-return-banner a,
+      .share a,
+      .share button,
+      .worldview-submit,
+      .premium-hint,
+      .ai-lab-button {
+        font-size: 15px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 8vw, 38px);
+      }
+
+      .summary,
+      .metric p,
+      .score-explain p,
+      .improvement-card ol,
+      .panel li,
+      .worldview-result p,
+      .worldview-result-card ul,
+      .ok-card-note p,
+      .ok-card-note ul,
+      .pre-entry-item p,
+      .ai-lab-card p,
+      .ai-lab-card li,
+      .ai-lab-result p,
+      .deep-dive-section p {
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      .panel h2,
+      .worldview-card-banner strong,
+      .pre-entry-head h2 {
+        font-size: 21px;
+      }
+
+      .metric strong {
+        font-size: 24px;
       }
 
       .hero,
@@ -1993,6 +2064,93 @@
 
       .home-return-banner a {
         width: 100%;
+      }
+
+      .card-only-view .shell {
+        padding: 0;
+      }
+
+      .card-only-view .report {
+        border: 0;
+        border-radius: 0;
+      }
+
+      .card-only-view .topbar,
+      .card-only-view .home-return-banner,
+      .card-only-view .hero {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .card-only-view .grid {
+        gap: 0;
+        padding: 0;
+      }
+
+      .card-only-view .worldview-panel {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        padding: 0;
+      }
+
+      .card-only-view .worldview-result {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        padding: 0 10px 22px;
+      }
+
+      .card-only-view .ok-card-gift {
+        margin-top: 10px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        padding: 0;
+      }
+
+      .card-only-view .ok-card-gift-head {
+        margin: 0 2px 12px;
+      }
+
+      .card-only-view .ok-card-stage {
+        display: block;
+      }
+
+      .card-only-view .ok-card-stack {
+        width: min(100%, 430px);
+        min-height: min(78vh, 620px);
+        margin: 0 auto;
+      }
+
+      .card-only-view .ok-card {
+        border-radius: 14px;
+        box-shadow: 0 22px 54px rgba(43, 31, 18, .24);
+      }
+
+      .card-only-view .ok-card-content {
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+      }
+
+      .card-only-view .ok-card-title {
+        font-size: clamp(28px, 8vw, 36px);
+      }
+
+      .card-only-view .ok-card-line {
+        font-size: 16px;
+      }
+
+      .card-only-view .ok-card-note {
+        margin-top: 16px;
+        padding: 0 4px;
+      }
+
+      .card-only-view .persona-quiet-links,
+      .card-only-view .worldview-result-lead {
+        margin-left: 2px;
+        margin-right: 2px;
       }
 
       .ok-card-gift-head {
