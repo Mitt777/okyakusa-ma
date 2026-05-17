@@ -2390,8 +2390,8 @@
           <div class="improvement-grid" id="improvement-grid"></div>
         </div>
         <div class="panel action">
-          <h2>今すぐ直すべき1点</h2>
-          <p><strong id="top-fix"></strong></p>
+          <h2>今月の重点</h2>
+          <p><strong id="monthly-focus"></strong></p>
         </div>
         <div class="panel">
           <h2>弱点トップ3</h2>
@@ -4656,9 +4656,11 @@ https://okyakusa-ma.com/
         { label: "AI検索/GEO", value: ai.geo_score, color: "#8b5cf6" },
         { label: "入る前の世界観チェック β", value: ai.previsit_anxiety_score, color: "#ec4899" }
       ];
+      const topFixText = ai.top_fix || aiRaw.top_fix || monthly.this_month_focus || "Google MapsとSNSの来店前情報を整える";
+      const monthlyFocusText = monthly.this_month_focus || ai.top_fix || "Google MapsとSNSの来店前情報を整える";
       document.querySelector("#metrics").innerHTML = [
         scoreRadarChart(radarScores),
-        metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix), focusMetricNote(monthly.this_month_focus || ai.top_fix))
+        metric("今すぐ直すべき1点", shortFocus(topFixText), focusMetricNote(topFixText))
       ].join("");
 
       document.querySelector("#score-explanations").innerHTML = [
@@ -4677,7 +4679,7 @@ https://okyakusa-ma.com/
 
       list("#weaknesses", parseJson(ai.weaknesses, aiRaw.weaknesses || []));
       list("#strengths", parseJson(ai.strengths, aiRaw.strengths || []));
-      document.querySelector("#top-fix").textContent = ai.top_fix || aiRaw.top_fix || monthly.this_month_focus || "Google MapsとSNSの来店前情報を整える";
+      document.querySelector("#monthly-focus").textContent = monthlyFocusText;
 
       const videos = parseJson(ai.video_ideas, aiRaw.video_ideas || monthlyRaw.video_plan || []);
       const videosEl = document.querySelector("#videos");
