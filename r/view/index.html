@@ -197,6 +197,73 @@
       line-height: 1.55;
     }
 
+    .score-radar-card {
+      grid-column: span 3;
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+      min-height: 260px;
+    }
+
+    .score-radar-visual {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+    }
+
+    .score-radar-svg {
+      width: min(100%, 320px);
+      height: auto;
+      overflow: visible;
+    }
+
+    .score-radar-title {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .score-radar-sub {
+      margin: 8px 0 18px;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .score-radar-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .score-radar-item {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .score-radar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--dot-color) 18%, transparent);
+      background: var(--dot-color);
+    }
+
+    .score-radar-value {
+      color: #111827;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
     .score-explain-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2039,6 +2106,29 @@
         font-size: 24px;
       }
 
+      .score-radar-card {
+        grid-column: 1;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .score-radar-svg {
+        width: min(100%, 300px);
+      }
+
+      .score-radar-title {
+        font-size: 15px;
+      }
+
+      .score-radar-sub {
+        font-size: 14px;
+      }
+
+      .score-radar-item {
+        font-size: 14px;
+      }
+
       .hero,
       .home-return-banner,
       .grid,
@@ -2459,6 +2549,83 @@
           <span>${escapeHtml(label)}</span>
           <strong>${escapeHtml(text(value))}</strong>
           <p>${escapeHtml(note)}</p>
+        </div>
+      `;
+    }
+
+    function clampScore(value) {
+      const score = Number(value);
+      if (!Number.isFinite(score)) return 0;
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function radarPoint(index, total, value, radius, center) {
+      const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
+      const distance = radius * (clampScore(value) / 100);
+      return {
+        x: center + Math.cos(angle) * distance,
+        y: center + Math.sin(angle) * distance
+      };
+    }
+
+    function radarGridPoint(index, total, distance, center) {
+      const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
+      return {
+        x: center + Math.cos(angle) * distance,
+        y: center + Math.sin(angle) * distance
+      };
+    }
+
+    function pointsToPolygon(points) {
+      return points.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+    }
+
+    function scoreRadarChart(items) {
+      const center = 120;
+      const radius = 92;
+      const total = items.length;
+      const gridLines = [0.25, 0.5, 0.75, 1].map((scale) =>
+        pointsToPolygon(items.map((_, index) => radarGridPoint(index, total, radius * scale, center)))
+      );
+      const shapePoints = items.map((item, index) => radarPoint(index, total, item.value, radius, center));
+      const axisLines = items.map((_, index) => {
+        const point = radarGridPoint(index, total, radius, center);
+        return `<line x1="${center}" y1="${center}" x2="${point.x.toFixed(1)}" y2="${point.y.toFixed(1)}" stroke="#d9e1ea" stroke-width="1" />`;
+      }).join("");
+      const dots = shapePoints.map((point, index) => `
+        <circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="4.2" fill="${items[index].color}" stroke="#fff" stroke-width="2" />
+      `).join("");
+
+      return `
+        <div class="metric score-radar-card">
+          <div class="score-radar-visual" aria-hidden="true">
+            <svg class="score-radar-svg" viewBox="0 0 240 240" role="img">
+              <defs>
+                <linearGradient id="score-radar-fill" x1="35" y1="20" x2="205" y2="220" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#2f9b7b" stop-opacity="0.28" />
+                  <stop offset="0.45" stop-color="#3b82f6" stop-opacity="0.22" />
+                  <stop offset="1" stop-color="#ec4899" stop-opacity="0.24" />
+                </linearGradient>
+              </defs>
+              ${gridLines.map((line) => `<polygon points="${line}" fill="none" stroke="#e5ebf1" stroke-width="1" />`).join("")}
+              ${axisLines}
+              <polygon points="${pointsToPolygon(shapePoints)}" fill="url(#score-radar-fill)" stroke="#2f9b7b" stroke-width="2.5" />
+              ${dots}
+            </svg>
+          </div>
+          <div>
+            <p class="score-radar-title">5つの診断指標</p>
+            <p class="score-radar-sub">Maps、口コミ、検索、AI検索、入店前の世界観をまとめて見ます。</p>
+            <ul class="score-radar-list">
+              ${items.map((item) => `
+                <li class="score-radar-item">
+                  <span class="score-radar-dot" style="--dot-color: ${item.color};"></span>
+                  <span>${escapeHtml(item.label)}</span>
+                  <strong class="score-radar-value">${escapeHtml(text(item.value, "--"))}</strong>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
         </div>
       `;
     }
@@ -4482,10 +4649,15 @@ https://okyakusa-ma.com/
       document.querySelector("#score-ring").style.setProperty("--value", totalScore || 0);
       document.querySelector("#meta").textContent = `受付ID: ${id} / β診断 / ${REPORT_VIEW_VERSION}`;
 
+      const radarScores = [
+        { label: "Mapsスコア", value: ai.maps_score || maps.maps_score, color: "#2f9b7b" },
+        { label: "口コミ信頼", value: ai.review_score, color: "#f59e0b" },
+        { label: "SEO", value: ai.seo_score, color: "#3b82f6" },
+        { label: "AI検索/GEO", value: ai.geo_score, color: "#8b5cf6" },
+        { label: "入る前の世界観チェック β", value: ai.previsit_anxiety_score, color: "#ec4899" }
+      ];
       document.querySelector("#metrics").innerHTML = [
-        metric("Mapsスコア", ai.maps_score || maps.maps_score, mapsMetricNote(maps, ai)),
-        metric("口コミ", `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件`, reviewMetricNote(maps, ai)),
-        metric("検索スコア", `SEO ${text(ai.seo_score)} / AI検索 ${text(ai.geo_score)}`, searchMetricNote(request, ai)),
+        scoreRadarChart(radarScores),
         metric("今月の重点", shortFocus(monthly.this_month_focus || ai.top_fix), focusMetricNote(monthly.this_month_focus || ai.top_fix))
       ].join("");
 
