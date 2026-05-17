@@ -1071,18 +1071,26 @@
 
     .persona-connect-list {
       display: grid;
-      gap: 8px;
-      margin-top: 9px;
+      gap: 10px;
+      margin-top: 10px;
       border: 1px solid rgba(208, 213, 221, 0.68);
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 12px;
       background: rgba(255, 255, 255, 0.68);
     }
 
     .persona-connect-list a {
-      color: #475467;
-      font-size: 12px;
-      font-weight: 800;
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      border: 1px solid rgba(208, 213, 221, 0.72);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #344054;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
       text-decoration: none;
     }
 
@@ -2182,7 +2190,14 @@
       }
 
       .persona-connect-list {
-        padding: 10px 12px;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .persona-connect-list a {
+        min-height: 54px;
+        padding: 13px 14px;
+        font-size: 21px;
       }
 
       .persona-gallery-drift {
