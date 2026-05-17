@@ -68,6 +68,49 @@
       font-weight: 700;
     }
 
+    .home-return-banner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin: 0;
+      padding: 16px 28px;
+      border-bottom: 1px solid rgba(185, 223, 209, .9);
+      background:
+        linear-gradient(135deg, rgba(230, 244, 239, .98), rgba(255, 248, 234, .92));
+    }
+
+    .home-return-banner strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #12614e;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .home-return-banner span {
+      display: block;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .home-return-banner a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 8px;
+      padding: 11px 16px;
+      background: #1f8a70;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 12px 24px rgba(31, 138, 112, .24);
+    }
+
     .hero {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -1905,6 +1948,7 @@
     @media (max-width: 860px) {
       .shell { padding: 12px; }
       .topbar,
+      .home-return-banner,
       .hero,
       .metrics,
       .grid {
@@ -1913,6 +1957,7 @@
       }
 
       .hero,
+      .home-return-banner,
       .grid,
       .metrics,
       .video-grid,
@@ -1944,6 +1989,10 @@
 
       .card-only-floating-share button {
         flex: 1;
+      }
+
+      .home-return-banner a {
+        width: 100%;
       }
 
       .ok-card-gift-head {
@@ -2004,6 +2053,13 @@
         </div>
         <div class="meta" id="meta"></div>
       </header>
+      <div class="home-return-banner">
+        <div>
+          <strong>お友達のお店も、無料で1分診断できます。</strong>
+          <span>Maps・口コミ・AI検索・世界観カードまで、TOPからかんたんに試せます。</span>
+        </div>
+        <a href="/">TOPページへ戻る</a>
+      </div>
 
       <section class="hero">
         <div>
