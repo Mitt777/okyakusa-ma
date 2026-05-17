@@ -45,7 +45,7 @@ module.exports = async function handler(request, response) {
 
   const payload = normalizePayload(body);
 
-  if (payload.company) {
+  if (payload.okm_hp_guard) {
     return send(json({ ok: true, request_id: makeRequestId() }));
   }
 
