@@ -3685,6 +3685,58 @@
       }
     }
 
+    function classifySocialUrl(url, fallbackLabel = "Link") {
+      try {
+        const { hostname } = new URL(url);
+        const host = hostname.replace(/^www\./, "").toLowerCase();
+        if (host.includes("instagram.com")) return "Instagram";
+        if (host.includes("youtube.com") || host.includes("youtu.be")) return "YouTube";
+        if (host.includes("facebook.com") || host === "fb.com" || host.includes("fb.me")) return "Facebook";
+        if (host.includes("line.me") || host.includes("lin.ee")) return "LINE";
+        if (host === "x.com" || host.includes("twitter.com")) return "X";
+        if (host.includes("tiktok.com")) return "TikTok";
+        return fallbackLabel;
+      } catch {
+        return fallbackLabel;
+      }
+    }
+
+    function parseSnsUrlLines(value) {
+      return text(value, "")
+        .split(/\n+/)
+        .map((line) => {
+          const trimmed = line.trim();
+          if (!trimmed) return null;
+          const match = trimmed.match(/^([^:：]+)[:：]\s*(https?:\/\/.+)$/i);
+          if (match) return [match[1].trim(), match[2].trim()];
+          const urlMatch = trimmed.match(/https?:\/\/\S+/i);
+          return urlMatch ? ["Link", urlMatch[0]] : null;
+        })
+        .filter(Boolean);
+    }
+
+    function buildConnectLinks(request) {
+      const sources = [
+        ["Instagram", request.instagram_url],
+        ["YouTube", request.youtube_url],
+        ["Facebook", request.facebook_url],
+        ["LINE", request.line_url || request.line_official_url],
+        ["X", request.x_url],
+        ["TikTok", request.tiktok_url],
+        ...parseSnsUrlLines(request.sns_url),
+        ["Website", request.website_url]
+      ];
+      const seen = new Set();
+      return sources
+        .map(([fallbackLabel, value]) => {
+          const url = safeHttpUrl(value);
+          if (!url || seen.has(url)) return null;
+          seen.add(url);
+          return [classifySocialUrl(url, fallbackLabel), url];
+        })
+        .filter(Boolean);
+    }
+
     function buildMapsUrl() {
       const request = shareContext?.request || {};
       const direct = safeHttpUrl(request.google_maps_url || request.maps_url || request.place_url);
@@ -3696,12 +3748,7 @@
     function renderPersonaQuietLinks() {
       const request = shareContext?.request || {};
       const mapsUrl = buildMapsUrl();
-      const links = [
-        ["Instagram", safeHttpUrl(request.instagram_url)],
-        ["YouTube", safeHttpUrl(request.youtube_url)],
-        ["LINE", safeHttpUrl(request.line_url || request.line_official_url)],
-        ["Website", safeHttpUrl(request.website_url)]
-      ].filter(([, url]) => Boolean(url));
+      const links = buildConnectLinks(request);
       const mapsLink = mapsUrl
         ? `<a class="persona-quiet-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Google Mapsを見る</a>`
         : "";

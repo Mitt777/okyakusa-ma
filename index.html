@@ -463,6 +463,43 @@
       margin-top: -2px;
     }
 
+    .sns-extra-fields {
+      grid-column: 1 / -1;
+      border: 1px solid #d9e2ee;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .sns-extra-fields summary {
+      color: #1f6f5c;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .sns-extra-fields summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .sns-extra-fields summary::after {
+      content: "＋";
+      float: right;
+      color: #667085;
+    }
+
+    .sns-extra-fields[open] summary::after {
+      content: "－";
+    }
+
+    .sns-extra-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
     .intake-fields input,
     .intake-fields textarea {
       width: 100%;
@@ -800,6 +837,10 @@
         grid-template-columns: 1fr;
       }
 
+      .sns-extra-grid {
+        grid-template-columns: 1fr;
+      }
+
       .diagnosis-scope {
         padding: 20px 16px;
       }
@@ -934,6 +975,27 @@
                 <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
                 <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
               </label>
+              <details class="sns-extra-fields">
+                <summary>Facebook・LINEなども追加する</summary>
+                <div class="sns-extra-grid">
+                  <label>
+                    Facebook URL
+                    <input name="facebook_url" type="url" placeholder="https://www.facebook.com/...">
+                  </label>
+                  <label>
+                    LINE URL
+                    <input name="line_url" type="url" placeholder="https://lin.ee/...">
+                  </label>
+                  <label>
+                    X URL
+                    <input name="x_url" type="url" placeholder="https://x.com/...">
+                  </label>
+                  <label>
+                    TikTok URL
+                    <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/...">
+                  </label>
+                </div>
+              </details>
               <input name="sns_url" type="hidden">
               <div class="url-help-box" id="url-help-box" hidden></div>
               <label>
@@ -1223,7 +1285,12 @@
       const hidden = form?.querySelector('input[name="sns_url"]');
       if (!hidden) return;
       const sources = [
-        ["YouTube", form.querySelector('input[name="youtube_url"]')?.value]
+        ["Instagram", form.querySelector('input[name="instagram_url"]')?.value],
+        ["YouTube", form.querySelector('input[name="youtube_url"]')?.value],
+        ["Facebook", form.querySelector('input[name="facebook_url"]')?.value],
+        ["LINE", form.querySelector('input[name="line_url"]')?.value],
+        ["X", form.querySelector('input[name="x_url"]')?.value],
+        ["TikTok", form.querySelector('input[name="tiktok_url"]')?.value]
       ].filter(([, value]) => value && value.trim());
       hidden.value = sources.map(([label, value]) => `${label}: ${value.trim()}`).join("\n");
     }
