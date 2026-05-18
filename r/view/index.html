@@ -1101,7 +1101,7 @@
 
     .persona-quiet-links {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       margin: 18px 0 4px;
       padding-top: 16px;
@@ -1109,7 +1109,8 @@
     }
 
     .persona-quiet-link,
-    .persona-connect summary {
+    .persona-connect summary,
+    .persona-previsit summary {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -1128,30 +1129,35 @@
     }
 
     .persona-quiet-link::after,
-    .persona-connect summary::after {
+    .persona-connect summary::after,
+    .persona-previsit summary::after {
       content: "→";
       color: #8a765a;
       font-size: 16px;
       font-weight: 850;
     }
 
-    .persona-connect summary {
+    .persona-connect summary,
+    .persona-previsit summary {
       cursor: pointer;
       list-style: none;
     }
 
-    .persona-connect summary::-webkit-details-marker {
+    .persona-connect summary::-webkit-details-marker,
+    .persona-previsit summary::-webkit-details-marker {
       display: none;
     }
 
-    .persona-connect[open] summary {
+    .persona-connect[open] summary,
+    .persona-previsit[open] summary {
       border-color: rgba(15, 107, 79, 0.24);
       color: #1f2937;
       background:
         linear-gradient(135deg, rgba(247, 255, 251, 0.98), rgba(255, 252, 244, 0.9));
     }
 
-    .persona-connect-list {
+    .persona-connect-list,
+    .persona-previsit-card {
       display: grid;
       gap: 10px;
       margin-top: 10px;
@@ -1159,6 +1165,39 @@
       border-radius: 8px;
       padding: 12px;
       background: rgba(255, 255, 255, 0.68);
+    }
+
+    .persona-previsit-card {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .persona-previsit-item {
+      display: grid;
+      gap: 4px;
+      border: 1px solid rgba(208, 213, 221, 0.62);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .persona-previsit-item span {
+      color: #667085;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .persona-previsit-item strong {
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .persona-previsit-note {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: #475467;
+      font-size: 12px;
+      line-height: 1.7;
     }
 
     .persona-connect-list a {
@@ -2300,13 +2339,19 @@
         gap: 10px;
       }
 
-      .persona-connect {
+      .persona-connect,
+      .persona-previsit {
         width: 100%;
       }
 
-      .persona-connect-list {
+      .persona-connect-list,
+      .persona-previsit-card {
         gap: 12px;
         padding: 12px;
+      }
+
+      .persona-previsit-card {
+        grid-template-columns: 1fr;
       }
 
       .persona-connect-list a {
@@ -3737,6 +3782,54 @@
         .filter(Boolean);
     }
 
+    function compactMapsValue(value) {
+      if (!hasValue(value)) return "";
+      if (typeof value === "string") return value;
+      if (typeof value === "number") return String(value);
+      if (typeof value === "boolean") return value ? "確認できます" : "";
+      if (Array.isArray(value)) return value.filter(Boolean).join(" / ");
+      if (typeof value === "object") {
+        const labels = Object.entries(value)
+          .filter(([, itemValue]) => Boolean(itemValue))
+          .map(([key]) => key.replace(/_/g, " "));
+        return labels.join(" / ");
+      }
+      return "";
+    }
+
+    function previsitItem(label, value, fallback = "") {
+      const display = compactMapsValue(value) || fallback;
+      if (!display) return "";
+      return `
+        <div class="persona-previsit-item">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(display)}</strong>
+        </div>
+      `;
+    }
+
+    function renderPrevisitMemo() {
+      const { request = {}, maps = {} } = shareContext || {};
+      const items = [
+        previsitItem("エリア", request.area || maps.address),
+        previsitItem("口コミ", maps.rating ? `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件` : ""),
+        previsitItem("営業時間", maps.current_opening_hours, "Google Mapsで確認"),
+        previsitItem("駐車場", maps.parking_options, "Google Mapsで確認"),
+        previsitItem("支払い", maps.payment_options, "Google Mapsで確認"),
+        previsitItem("カテゴリ", maps.maps_category || request.category)
+      ].filter(Boolean).join("");
+      if (!items) return "";
+      return `
+        <details class="persona-previsit">
+          <summary>来店前メモ</summary>
+          <div class="persona-previsit-card">
+            ${items}
+            <p class="persona-previsit-note">Google Mapsや登録情報をもとに、初めて行く前に見たいことだけを短くまとめています。最新情報はGoogle Mapsで確認してください。</p>
+          </div>
+        </details>
+      `;
+    }
+
     function buildMapsUrl() {
       const request = shareContext?.request || {};
       const direct = safeHttpUrl(request.google_maps_url || request.maps_url || request.place_url);
@@ -3749,14 +3842,15 @@
       const request = shareContext?.request || {};
       const mapsUrl = buildMapsUrl();
       const links = buildConnectLinks(request);
+      const previsitMemo = renderPrevisitMemo();
       const mapsLink = mapsUrl
         ? `<a class="persona-quiet-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Google Mapsを見る</a>`
         : "";
       const connect = links.length
         ? `<details class="persona-connect"><summary>お店のリンク一覧</summary><div class="persona-connect-list">${links.map(([label, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join("")}</div></details>`
         : "";
-      return mapsLink || connect
-        ? `<div class="persona-quiet-links">${mapsLink}${connect}</div>`
+      return mapsLink || previsitMemo || connect
+        ? `<div class="persona-quiet-links">${mapsLink}${previsitMemo}${connect}</div>`
         : "";
     }
 
