@@ -140,7 +140,7 @@ function normalizePlace(place) {
     google_maps_uri: place.googleMapsUri || "",
     photos_count: Array.isArray(place.photos) ? place.photos.length : 0,
     weekday_descriptions: place.regularOpeningHours?.weekdayDescriptions || [],
-    current_weekday_descriptions: place.currentOpeningHours?.weekdayDescriptions || [],
+    current_weekday_descriptions: place.currentOpeningHours?.weekdayDescriptions || place.regularOpeningHours?.weekdayDescriptions || [],
     secondary_hours_count: Array.isArray(place.regularSecondaryOpeningHours) ? place.regularSecondaryOpeningHours.length : 0,
     current_secondary_hours_count: Array.isArray(place.currentSecondaryOpeningHours) ? place.currentSecondaryOpeningHours.length : 0,
     price_level: place.priceLevel || "",

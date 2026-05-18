@@ -3784,7 +3784,17 @@
 
     function compactMapsValue(value) {
       if (!hasValue(value)) return "";
-      if (typeof value === "string") return value;
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
+          try {
+            return compactMapsValue(JSON.parse(trimmed));
+          } catch {
+            return trimmed;
+          }
+        }
+        return trimmed;
+      }
       if (typeof value === "number") return String(value);
       if (typeof value === "boolean") return value ? "確認できます" : "";
       if (Array.isArray(value)) return value.filter(Boolean).join(" / ");
@@ -3822,14 +3832,23 @@
     }
 
     function renderPrevisitMemo() {
-      const { request = {}, maps = {} } = shareContext || {};
+      const { request = {}, maps = {}, rawMaps = {} } = shareContext || {};
+      const primaryPlace = rawMaps.primary_place || {};
       const notListedOnMaps = "GoogleMapには記載されていません。";
+      const hours = firstFilled(
+        maps.current_opening_hours,
+        maps.weekday_descriptions,
+        primaryPlace.current_weekday_descriptions,
+        primaryPlace.weekday_descriptions
+      );
+      const parking = firstFilled(maps.parking_options, primaryPlace.parking_options);
+      const payment = firstFilled(maps.payment_options, primaryPlace.payment_options);
       const items = [
-        previsitItem("エリア", request.area || maps.address),
+        previsitItem("エリア", request.area || maps.matched_address || primaryPlace.address),
         previsitItem("口コミ", maps.rating ? `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件` : ""),
-        previsitItem("営業時間", maps.weekday_descriptions || maps.current_weekday_descriptions, notListedOnMaps),
-        previsitItem("駐車場", maps.parking_options, notListedOnMaps),
-        previsitItem("支払い", maps.payment_options, notListedOnMaps),
+        previsitItem("営業時間", hours, notListedOnMaps),
+        previsitItem("駐車場", parking, notListedOnMaps),
+        previsitItem("支払い", payment, notListedOnMaps),
         previsitItem("カテゴリ", maps.maps_category || request.category)
       ].filter(Boolean).join("");
       if (!items) return "";
@@ -4885,7 +4904,7 @@ https://okyakusa-ma.com/
         ...parseJson(monthly.next_review_questions, monthlyRaw.next_review_questions || []).slice(0, 3)
       ]);
 
-      shareContext = { storeName, totalScore, request, maps, ai, monthly };
+      shareContext = { storeName, totalScore, request, maps, rawMaps, ai, monthly };
       renderPreEntryCheck();
       updateShareLinks();
       document.querySelector("#native-share").addEventListener("click", async () => {

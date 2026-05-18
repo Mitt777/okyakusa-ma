@@ -255,7 +255,11 @@ function appendMapsObservation_(requestId, observation) {
     maps_score: report.maps_score || "",
     detail_level: observation.detail_level || "",
     business_status: primary.business_status || "",
-    current_opening_hours: stringify_(primary.current_weekday_descriptions),
+    current_opening_hours: stringify_(
+      primary.current_weekday_descriptions && primary.current_weekday_descriptions.length
+        ? primary.current_weekday_descriptions
+        : primary.weekday_descriptions
+    ),
     secondary_hours_count: primary.secondary_hours_count || "",
     price_level: primary.price_level || "",
     price_range: stringify_(primary.price_range),
