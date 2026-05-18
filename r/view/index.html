@@ -28,6 +28,7 @@
       background: #edf1f6;
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      font-size: 17px;
       line-height: 1.6;
     }
 
@@ -64,7 +65,7 @@
     .brand span,
     .meta {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
     }
 
@@ -130,6 +131,7 @@
       max-width: 760px;
       color: #344054;
       margin: 0;
+      font-size: 17px;
     }
 
     .score-ring {
@@ -180,21 +182,23 @@
     .metric span {
       display: block;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
     }
 
     .metric strong {
       display: block;
       margin-top: 4px;
-      font-size: 20px;
+      font-size: 22px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
     }
 
     .metric p {
       margin: 8px 0 0;
       color: #344054;
-      font-size: 12px;
-      line-height: 1.55;
+      font-size: 13px;
+      line-height: 1.65;
     }
 
     .score-radar-card {
@@ -213,14 +217,14 @@
     }
 
     .score-radar-svg {
-      width: min(100%, 320px);
+      width: min(100%, 340px);
       height: auto;
       overflow: visible;
     }
 
     .score-radar-title {
       margin: 0;
-      font-size: 14px;
+      font-size: 15px;
       color: var(--muted);
       font-weight: 900;
     }
@@ -228,7 +232,7 @@
     .score-radar-sub {
       margin: 8px 0 18px;
       color: #344054;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.7;
     }
 
@@ -260,8 +264,19 @@
 
     .score-radar-value {
       color: #111827;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 900;
+    }
+
+    .urgent-metric {
+      border-color: #f0c2ca;
+      background: var(--rose-soft);
+    }
+
+    .urgent-metric strong {
+      color: var(--rose);
+      font-size: 20px;
+      line-height: 1.55;
     }
 
     .score-explain-grid {
@@ -1900,12 +1915,12 @@
     }
 
     .action {
-      border-color: #f0c2ca;
-      background: var(--rose-soft);
+      border-color: #b7dfd1;
+      background: var(--green-soft);
     }
 
     .action strong {
-      color: var(--rose);
+      color: var(--green);
     }
 
     .video-grid {
@@ -2026,7 +2041,7 @@
 
     @media (max-width: 860px) {
       body {
-        font-size: 17px;
+        font-size: 18px;
       }
 
       .shell { padding: 12px; }
@@ -2071,7 +2086,7 @@
       .worldview-submit,
       .premium-hint,
       .ai-lab-button {
-        font-size: 15px;
+        font-size: 16px;
       }
 
       h1 {
@@ -2092,7 +2107,7 @@
       .ai-lab-card li,
       .ai-lab-result p,
       .deep-dive-section p {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.8;
       }
 
@@ -2103,7 +2118,7 @@
       }
 
       .metric strong {
-        font-size: 24px;
+        font-size: 25px;
       }
 
       .score-radar-card {
@@ -2111,22 +2126,32 @@
         grid-template-columns: 1fr;
         gap: 12px;
         min-height: 0;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       .score-radar-svg {
-        width: min(100%, 300px);
+        width: min(100%, 360px);
       }
 
       .score-radar-title {
-        font-size: 15px;
+        font-size: 16px;
       }
 
       .score-radar-sub {
-        font-size: 14px;
+        font-size: 15px;
       }
 
       .score-radar-item {
-        font-size: 14px;
+        font-size: 15px;
+      }
+
+      .score-radar-value {
+        font-size: 18px;
+      }
+
+      .urgent-metric strong {
+        font-size: 21px;
       }
 
       .hero,
@@ -2543,9 +2568,9 @@
       });
     }
 
-    function metric(label, value, note) {
+    function metric(label, value, note, className = "") {
       return `
-        <div class="metric">
+        <div class="metric ${escapeHtml(className)}">
           <span>${escapeHtml(label)}</span>
           <strong>${escapeHtml(text(value))}</strong>
           <p>${escapeHtml(note)}</p>
@@ -4660,7 +4685,7 @@ https://okyakusa-ma.com/
       const monthlyFocusText = monthly.this_month_focus || ai.top_fix || "Google MapsとSNSの来店前情報を整える";
       document.querySelector("#metrics").innerHTML = [
         scoreRadarChart(radarScores),
-        metric("今すぐ直すべき1点", shortFocus(topFixText), focusMetricNote(topFixText))
+        metric("今すぐ直すべき1点", topFixText, "最優先で確認したい改善ポイントです。", "urgent-metric")
       ].join("");
 
       document.querySelector("#score-explanations").innerHTML = [
