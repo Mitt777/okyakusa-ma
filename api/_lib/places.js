@@ -58,7 +58,8 @@ const EXTENDED_FIELD_MASKS = [
 ];
 
 function usesExtendedPlaceFields() {
-  return ["true", "1", "extended", "all"].includes(String(process.env.GOOGLE_PLACES_DETAIL_LEVEL || "").toLowerCase());
+  const setting = String(process.env.GOOGLE_PLACES_DETAIL_LEVEL || "extended").toLowerCase();
+  return !["false", "0", "basic", "off"].includes(setting);
 }
 
 function fieldMask() {

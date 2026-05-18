@@ -3789,9 +3789,22 @@
       if (typeof value === "boolean") return value ? "確認できます" : "";
       if (Array.isArray(value)) return value.filter(Boolean).join(" / ");
       if (typeof value === "object") {
+        const labelMap = {
+          freeParkingLot: "無料駐車場",
+          paidParkingLot: "有料駐車場",
+          freeStreetParking: "無料路上駐車",
+          paidStreetParking: "有料路上駐車",
+          valetParking: "バレー駐車",
+          freeGarageParking: "無料屋内駐車場",
+          paidGarageParking: "有料屋内駐車場",
+          acceptsCreditCards: "クレジットカード",
+          acceptsDebitCards: "デビットカード",
+          acceptsCashOnly: "現金のみ",
+          acceptsNfc: "タッチ決済"
+        };
         const labels = Object.entries(value)
           .filter(([, itemValue]) => Boolean(itemValue))
-          .map(([key]) => key.replace(/_/g, " "));
+          .map(([key]) => labelMap[key] || key.replace(/_/g, " "));
         return labels.join(" / ");
       }
       return "";
@@ -3810,12 +3823,13 @@
 
     function renderPrevisitMemo() {
       const { request = {}, maps = {} } = shareContext || {};
+      const notListedOnMaps = "GoogleMapには記載されていません。";
       const items = [
         previsitItem("エリア", request.area || maps.address),
         previsitItem("口コミ", maps.rating ? `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件` : ""),
-        previsitItem("営業時間", maps.current_opening_hours, "Google Mapsで確認"),
-        previsitItem("駐車場", maps.parking_options, "Google Mapsで確認"),
-        previsitItem("支払い", maps.payment_options, "Google Mapsで確認"),
+        previsitItem("営業時間", maps.weekday_descriptions || maps.current_weekday_descriptions, notListedOnMaps),
+        previsitItem("駐車場", maps.parking_options, notListedOnMaps),
+        previsitItem("支払い", maps.payment_options, notListedOnMaps),
         previsitItem("カテゴリ", maps.maps_category || request.category)
       ].filter(Boolean).join("");
       if (!items) return "";
