@@ -1192,6 +1192,19 @@
       line-height: 1.45;
     }
 
+    .persona-previsit-hours {
+      display: grid;
+      gap: 3px;
+    }
+
+    .persona-previsit-hours small {
+      display: block;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
     .persona-previsit-note {
       grid-column: 1 / -1;
       margin: 0;
@@ -3820,13 +3833,37 @@
       return "";
     }
 
-    function previsitItem(label, value, fallback = "") {
+    function normalizeHoursLine(line) {
+      return String(line || "")
+        .replace(/\s+/g, "")
+        .replace(/曜日/g, "")
+        .replace(/午前/g, "")
+        .replace(/午後/g, "")
+        .replace(/時00分/g, ":00")
+        .replace(/時30分/g, ":30")
+        .replace(/時/g, ":00")
+        .replace(/分/g, "")
+        .replace(/～/g, "-");
+    }
+
+    function renderHoursValue(value) {
+      const display = compactMapsValue(value);
+      if (!display) return "";
+      const lines = display.split(/\s*\/\s*/).map(normalizeHoursLine).filter(Boolean);
+      if (!lines.length) return escapeHtml(display);
+      return `<span class="persona-previsit-hours">${lines.map((line) => `<small>${escapeHtml(line)}</small>`).join("")}</span>`;
+    }
+
+    function previsitItem(label, value, fallback = "", options = {}) {
       const display = compactMapsValue(value) || fallback;
       if (!display) return "";
+      const valueHtml = options.format === "hours" && compactMapsValue(value)
+        ? renderHoursValue(value)
+        : escapeHtml(display);
       return `
         <div class="persona-previsit-item">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(display)}</strong>
+          <strong>${valueHtml}</strong>
         </div>
       `;
     }
@@ -3846,9 +3883,9 @@
       const items = [
         previsitItem("エリア", request.area || maps.matched_address || primaryPlace.address),
         previsitItem("口コミ", maps.rating ? `${text(maps.rating)} / ${text(maps.user_rating_count, "0")}件` : ""),
-        previsitItem("営業時間", hours, notListedOnMaps),
+        previsitItem("営業時間", hours, notListedOnMaps, { format: "hours" }),
         previsitItem("駐車場", parking, notListedOnMaps),
-        previsitItem("支払い", payment, notListedOnMaps),
+        previsitItem("現金以外の支払い", payment, notListedOnMaps),
         previsitItem("カテゴリ", maps.maps_category || request.category)
       ].filter(Boolean).join("");
       if (!items) return "";
