@@ -30,6 +30,28 @@ function enabled(value, fallback = false) {
   return ["true", "1", "yes", "on"].includes(normalized);
 }
 
+function classifyEnrichmentError(error) {
+  const message = error?.message || String(error || "");
+  const statusMatch = message.match(/\b(429|500|502|503|504)\b/);
+  const status = statusMatch ? Number(statusMatch[1]) : null;
+  if (status === 503 || /high demand|overloaded|unavailable/i.test(message)) {
+    return {
+      type: "gemini_high_demand",
+      public_message: "AI診断が混み合っているため、結果の一部はあとで更新される可能性があります。"
+    };
+  }
+  if (status === 429 || /quota|rate limit/i.test(message)) {
+    return {
+      type: "gemini_rate_limit",
+      public_message: "AI診断の利用上限に近づいているため、結果の一部はあとで更新される可能性があります。"
+    };
+  }
+  return {
+    type: "diagnosis_enrichment_error",
+    public_message: "AI診断の一部を確認中です。結果の一部はあとで更新される可能性があります。"
+  };
+}
+
 module.exports = async function handler(request, response) {
   response.setHeader("content-type", "application/json; charset=utf-8");
   response.setHeader("cache-control", "no-store");
@@ -97,9 +119,12 @@ module.exports = async function handler(request, response) {
       const monthly_report = buildMonthlyReport(payload, places_observation, ai_diagnosis);
       enrichment = { places_observation, ai_diagnosis, monthly_report };
     } catch (error) {
+      const classified = classifyEnrichmentError(error);
       enrichment = {
         enrichment_error: {
+          type: classified.type,
           message: error.message,
+          public_message: classified.public_message,
           created_at: new Date().toISOString()
         }
       };

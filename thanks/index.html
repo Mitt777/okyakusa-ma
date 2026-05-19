@@ -163,12 +163,13 @@
       document.querySelector("#report-link").href = `/r/view/?id=${encodeURIComponent(id)}`;
     }
     const enriched = params.get("enriched");
-    const diagError = params.get("diag_error");
+    const diagStatus = params.get("diag_status");
     const debug = document.querySelector("#diagnosis-debug");
-    if (enriched === "0" || diagError) {
-      debug.textContent = diagError
-        ? `診断生成で補足があります: ${diagError}`
-        : "受付は保存されましたが、AI診断データは同時生成されていません。VercelのAUTO_ENRICH_DIAGNOSIS、Gemini API、Google Places API設定を確認してください。";
+    if (diagStatus === "gemini_high_demand") {
+      debug.textContent = "AI診断が混み合っているため、結果の一部はあとで更新される可能性があります。";
+      debug.classList.add("is-open");
+    } else if (enriched === "0" || diagStatus) {
+      debug.textContent = "受付は保存されました。AI診断の一部は確認中です。";
       debug.classList.add("is-open");
     }
   </script>

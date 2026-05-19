@@ -1324,7 +1324,7 @@
         const thanksUrl = new URL("/thanks/", window.location.origin);
         thanksUrl.searchParams.set("id", result.request_id || "");
         if ("enriched" in result) thanksUrl.searchParams.set("enriched", result.enriched ? "1" : "0");
-        if (result.enrichment_error?.message) thanksUrl.searchParams.set("diag_error", result.enrichment_error.message.slice(0, 180));
+        if (result.enrichment_error?.type) thanksUrl.searchParams.set("diag_status", result.enrichment_error.type);
         window.location.href = thanksUrl.toString();
       } catch (error) {
         message.textContent = error.message || "送信に失敗しました。時間をおいて再度お試しください。";
