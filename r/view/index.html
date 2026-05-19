@@ -4201,11 +4201,10 @@
         return;
       }
       const reader = new FileReader();
-      reader.onload = async () => {
-        const normalizedImage = await normalizeWorldviewCardImage(String(reader.result || ""));
+      reader.onload = () => {
         customWorldviewCard = {
           ...customWorldviewCard,
-          sourceImageDataUrl: normalizedImage,
+          sourceImageDataUrl: String(reader.result || ""),
           sourceImageName: file.name,
           generatedImageDataUrl: "",
           generatedCount: 0,
@@ -4219,33 +4218,6 @@
         showWorldviewResult({ noScroll: true });
       };
       reader.readAsDataURL(file);
-    }
-
-    function loadImageElement(src) {
-      return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = reject;
-        image.src = src;
-      });
-    }
-
-    async function normalizeWorldviewCardImage(dataUrl) {
-      try {
-        const image = await loadImageElement(dataUrl);
-        const maxSide = 1280;
-        const scale = Math.min(1, maxSide / Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height));
-        const width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
-        const height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d");
-        context.drawImage(image, 0, 0, width, height);
-        return canvas.toDataURL("image/jpeg", 0.82);
-      } catch {
-        return dataUrl;
-      }
     }
 
     async function generateCustomWorldviewCard() {
@@ -4272,16 +4244,7 @@
             worldviewType: worldviewShareResult?.typeTitle || ""
           })
         });
-        const raw = await response.text();
-        let data = {};
-        try {
-          data = JSON.parse(raw);
-        } catch {
-          data = {
-            ok: false,
-            message: response.ok ? "画像生成APIの応答を読み取れませんでした。" : `画像生成APIに接続できませんでした。HTTP ${response.status}`
-          };
-        }
+        const data = await response.json();
         customWorldviewCard.generatedCount += 1;
         if (!data.ok || !data.imageDataUrl) {
           customWorldviewCard.status = "failed";
