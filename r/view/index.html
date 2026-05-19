@@ -3949,6 +3949,9 @@
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
+      if (shareContext?.storeName) {
+        url.searchParams.set("sn", concise(shareContext.storeName, 60));
+      }
       applyWorldviewCardUrlParams(url);
       return url.toString();
     }
@@ -5464,15 +5467,53 @@ https://okyakusa-ma.com/
       errorBox.textContent = message;
     }
 
+    function renderCardOnlyFallback(message = "") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const answerCode = urlParams.get("wv") || "";
+      if (!isCardOnlyView || !answerCode) return false;
+      const storeName = text(urlParams.get("sn"), "このお店");
+      shareContext = {
+        storeName,
+        totalScore: 0,
+        request: {},
+        maps: {},
+        rawMaps: {},
+        ai: {},
+        monthly: {}
+      };
+      document.querySelector("#store-name").textContent = storeName;
+      document.querySelector("#summary").textContent = `${storeName}の空気を、1枚の世界観カードにしました。`;
+      document.querySelector("#total-score").textContent = "--";
+      document.querySelector("#score-ring").style.setProperty("--value", 0);
+      document.querySelector("#meta").textContent = `受付ID: ${id} / カード表示 / ${REPORT_VIEW_VERSION}`;
+      loading.hidden = true;
+      errorBox.hidden = true;
+      reportEl.hidden = false;
+      restoreWorldviewFromUrl();
+      if (message) {
+        console.info("Card-only fallback:", message);
+      }
+      return true;
+    }
+
     async function main() {
       if (!id) {
         showError("URLに受付IDがありません。 /r/view/?id=req_xxxxx の形式で開いてください。");
         return;
       }
 
-      const response = await fetch(`/api/report?id=${encodeURIComponent(id)}`);
-      const data = await response.json();
+      let response;
+      let data;
+      try {
+        response = await fetch(`/api/report?id=${encodeURIComponent(id)}`);
+        data = await response.json();
+      } catch (error) {
+        if (renderCardOnlyFallback(error.message)) return;
+        showError(error.message);
+        return;
+      }
       if (!response.ok || !data.ok) {
+        if (renderCardOnlyFallback(data.message || "診断結果を読み込めませんでした。")) return;
         showError(data.message || "診断結果を読み込めませんでした。");
         return;
       }
