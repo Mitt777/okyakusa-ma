@@ -2911,85 +2911,6 @@
       return merged;
     }
 
-    function hasScoreData(ai, maps, monthly) {
-      return [
-        ai.total_score,
-        ai.maps_score,
-        ai.review_score,
-        ai.seo_score,
-        ai.geo_score,
-        maps.maps_score,
-        monthly.total_score
-      ].some((value) => Number.isFinite(Number(value)));
-    }
-
-    function buildLocalReportFallback(request, maps = {}) {
-      const storeName = request.store_name || request.store_query || "診断店舗";
-      const hasSite = Boolean(request.website_url);
-      const hasSns = Boolean(request.instagram_url || request.youtube_url || request.tiktok_url || request.facebook_url || request.x_url || request.line_url || request.sns_url);
-      const mapsScore = Number(maps.maps_score || 0) || 55;
-      const reviewScore = Number(maps.user_rating_count || 0) >= 20 ? 62 : 48;
-      const seoScore = hasSite ? 58 : 42;
-      const geoScore = hasSite || hasSns ? 54 : 45;
-      const planScore = Math.max(44, Math.min(70, Math.round((mapsScore + seoScore + geoScore) / 3)));
-      const totalScore = Math.round((mapsScore * 0.35) + (reviewScore * 0.18) + (seoScore * 0.18) + (geoScore * 0.16) + (planScore * 0.13));
-      return {
-        generated_by: "local_display_fallback",
-        store_name: storeName,
-        total_score: totalScore,
-        maps_score: mapsScore,
-        review_score: reviewScore,
-        meo_score: mapsScore,
-        seo_score: seoScore,
-        geo_score: geoScore,
-        previsit_anxiety_score: planScore,
-        entry_ease_score: planScore,
-        save_score: 56,
-        plan_score: planScore,
-        impulse_score: 50,
-        worldview_score: 58,
-        cx_score: 55,
-        summary: `${storeName}は、受付情報をもとに仮診断を表示しています。Google Maps、口コミ、SNS、来店前情報が揃うほど、より具体的な診断になります。`,
-        strengths: [
-          "診断受付に必要な店舗情報は取得できています",
-          hasSite ? "公式サイト導線が確認できます" : "Google MapsやSNSの整備で見え方を補強できます",
-          hasSns ? "SNS導線があり、空気感を伝える入口があります" : "SNSや写真を足すと世界観が伝わりやすくなります"
-        ],
-        weaknesses: [
-          "外観、入口、駐車場、席、価格感などの来店前不安を下げる情報を確認したい状態です",
-          "AIが推薦文に使える「誰におすすめか」「どんな時に良いか」の言葉を増やす余地があります",
-          "写真と説明文をGoogle MapsとSNSでつなげると、初めての人に伝わりやすくなります"
-        ],
-        top_fix: "Google MapsとSNSに、入口・駐車場・席・価格感が分かる写真と説明を追加する",
-        entry_ease_diagnosis: {
-          title: "THE お店入りやすさ診断 Lite",
-          score: planScore,
-          summary: "受付情報をもとにした仮診断です。初めての人が行く前に確認したい写真と説明を優先すると、入りやすさが上がります。",
-          reasons: [
-            "入口、駐車場、席、価格感が見えるほど来店前不安が下がります。",
-            "Google MapsとSNSで同じ説明が見えると、初めての人が安心しやすくなります。",
-            "店名だけでなく、利用シーンが伝わる言葉があると選ばれやすくなります。"
-          ],
-          missing_photos: [
-            "外観と看板が一緒に分かる写真",
-            "入口から席までの流れが分かる写真",
-            "代表メニューと価格感が伝わる写真"
-          ],
-          quick_actions: [
-            "Google Mapsに初めての方向け説明を足す",
-            "駐車場から入口までの写真を追加する",
-            "代表メニューと価格感をSNSに載せる"
-          ],
-          maps_copy: "初めての方にも分かりやすいよう、入口・駐車場・席・価格感が伝わる情報を整えています。"
-        },
-        video_ideas: [
-          { title: "駐車場から入口まで15秒", tag: "Plan", reason: "初来店の不安を減らす" },
-          { title: "席と店内の雰囲気", tag: "Save", reason: "保存したくなる空気を見せる" },
-          { title: "今日のおすすめと価格感", tag: "Impulse", reason: "今行きたい理由を作る" }
-        ]
-      };
-    }
-
     function list(target, items) {
       const el = document.querySelector(target);
       el.innerHTML = "";
@@ -5626,11 +5547,8 @@ https://okyakusa-ma.com/
       const monthly = payload.monthly_report || {};
       const rawMaps = payload.raw?.maps_observation || {};
       const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
+      const ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
       const monthlyRaw = payload.raw?.monthly_report || {};
-      let ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
-      if (!hasScoreData(ai, maps, monthly)) {
-        ai = mergeAiDiagnosis(buildLocalReportFallback(request, maps), aiRaw);
-      }
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");
       const totalScore = Number(ai.total_score || monthly.total_score || aiRaw.total_score || 0);
