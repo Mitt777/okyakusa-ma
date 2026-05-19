@@ -2295,6 +2295,23 @@
       padding: 28px;
     }
 
+    .diagnosis-warning {
+      display: none;
+      margin: 14px 28px 0;
+      border: 1px solid #f1c27a;
+      border-radius: 8px;
+      background: #fffaf1;
+      padding: 12px 14px;
+      color: #6f4b12;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+
+    .diagnosis-warning.is-open {
+      display: block;
+    }
+
     .share {
       display: flex;
       gap: 10px;
@@ -2682,6 +2699,8 @@
           <div><strong id="total-score">--</strong><span>/ 100</span></div>
         </div>
       </section>
+
+      <div class="diagnosis-warning" id="diagnosis-warning"></div>
 
       <section class="metrics" id="metrics"></section>
 
@@ -5630,6 +5649,15 @@ https://okyakusa-ma.com/
       let ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
       if (new URLSearchParams(window.location.search).get("fallback") === "1" && !hasScoreData(ai, maps, monthly)) {
         ai = mergeAiDiagnosis(buildLocalReportFallback(request, maps), aiRaw);
+      }
+      const apiError = payload.api_error || {};
+      const warning = document.querySelector("#diagnosis-warning");
+      if (apiError.message) {
+        warning.textContent = `診断生成時の補足: ${apiError.message}`;
+        warning.classList.add("is-open");
+      } else if (!hasScoreData(ai, maps, monthly)) {
+        warning.textContent = "診断スコアがまだ保存されていません。新規受付時のAI診断生成設定、Vercel環境変数、Google Places/Gemini APIの状態を確認してください。";
+        warning.classList.add("is-open");
       }
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");

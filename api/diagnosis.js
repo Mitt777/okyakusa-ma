@@ -1,6 +1,6 @@
 const REQUIRED_FIELDS = ["store_query", "area", "category", "owner_name", "email"];
 const { fetchPlacesObservation } = require("./_lib/places");
-const { generateDiagnosisJson } = require("./_lib/gemini");
+const { fallbackDiagnosis, generateDiagnosisJson } = require("./_lib/gemini");
 const { buildMonthlyReport } = require("./_lib/monthly");
 
 function json(response, statusCode = 200) {
@@ -86,17 +86,47 @@ module.exports = async function handler(request, response) {
   let enrichment = {};
   const shouldEnrich = !["false", "0", "off"].includes(String(process.env.AUTO_ENRICH_DIAGNOSIS || "true").toLowerCase());
   if (shouldEnrich) {
+    const enrichmentErrors = [];
+    let places_observation = null;
+    let ai_diagnosis = null;
     try {
-      const places_observation = await fetchPlacesObservation(payload);
-      const ai_diagnosis = await generateDiagnosisJson(payload, places_observation);
-      const monthly_report = buildMonthlyReport(payload, places_observation, ai_diagnosis);
-      enrichment = { places_observation, ai_diagnosis, monthly_report };
+      places_observation = await fetchPlacesObservation(payload);
     } catch (error) {
-      enrichment = {
-        enrichment_error: {
-          message: error.message,
-          created_at: new Date().toISOString()
+      enrichmentErrors.push(`Places: ${error.message}`);
+      places_observation = {
+        ok: false,
+        configured: true,
+        message: error.message,
+        query: [payload.store_query, payload.area, payload.category].filter(Boolean).join(" "),
+        candidates: [],
+        primary_place: null,
+        maps_report: {
+          maps_score: 0,
+          strengths: [],
+          weaknesses: ["Google Maps観測でエラーが発生しました。Google Maps URL、APIキー、Places APIの利用設定を確認してください。"],
+          quick_fixes: ["Google Maps URLとAPIキー設定を確認して再診断する"]
         }
+      };
+    }
+
+    try {
+      ai_diagnosis = await generateDiagnosisJson(payload, places_observation);
+    } catch (error) {
+      enrichmentErrors.push(`Gemini: ${error.message}`);
+      ai_diagnosis = {
+        ok: false,
+        configured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY),
+        message: error.message,
+        diagnosis: fallbackDiagnosis(payload, places_observation)
+      };
+    }
+
+    const monthly_report = buildMonthlyReport(payload, places_observation, ai_diagnosis);
+    enrichment = { places_observation, ai_diagnosis, monthly_report };
+    if (enrichmentErrors.length) {
+      enrichment.enrichment_error = {
+        message: enrichmentErrors.join(" / "),
+        created_at: new Date().toISOString()
       };
     }
   }
