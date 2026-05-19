@@ -77,6 +77,22 @@
       overflow-wrap: anywhere;
     }
 
+    .debug {
+      display: none;
+      margin: 12px 0 0;
+      border: 1px solid #f1c27a;
+      border-radius: 8px;
+      background: #fffaf1;
+      padding: 12px;
+      color: #6f4b12;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .debug.is-open {
+      display: block;
+    }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -125,6 +141,7 @@
       <span>受付ID</span>
       <strong id="request-id">確認中</strong>
     </div>
+    <div class="debug" id="diagnosis-debug"></div>
 
     <p>
       β版では手動確認を含むため、診断結果の公開まで少し時間をいただきます。
@@ -139,10 +156,20 @@
   </main>
 
   <script>
-    const id = new URLSearchParams(window.location.search).get("id");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
     document.querySelector("#request-id").textContent = id || "未取得";
     if (id) {
       document.querySelector("#report-link").href = `/r/view/?id=${encodeURIComponent(id)}`;
+    }
+    const enriched = params.get("enriched");
+    const diagError = params.get("diag_error");
+    const debug = document.querySelector("#diagnosis-debug");
+    if (enriched === "0" || diagError) {
+      debug.textContent = diagError
+        ? `診断生成で補足があります: ${diagError}`
+        : "受付は保存されましたが、AI診断データは同時生成されていません。VercelのAUTO_ENRICH_DIAGNOSIS、Gemini API、Google Places API設定を確認してください。";
+      debug.classList.add("is-open");
     }
   </script>
 </body>

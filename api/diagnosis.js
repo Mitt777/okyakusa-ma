@@ -24,6 +24,12 @@ function normalizePayload(body) {
   return payload;
 }
 
+function enabled(value, fallback = false) {
+  const normalized = String(value ?? "").trim().toLowerCase().replace(/^["']|["']$/g, "");
+  if (!normalized) return fallback;
+  return ["true", "1", "yes", "on"].includes(normalized);
+}
+
 module.exports = async function handler(request, response) {
   response.setHeader("content-type", "application/json; charset=utf-8");
   response.setHeader("cache-control", "no-store");
@@ -84,7 +90,7 @@ module.exports = async function handler(request, response) {
   };
 
   let enrichment = {};
-  if (process.env.AUTO_ENRICH_DIAGNOSIS === "true") {
+  if (enabled(process.env.AUTO_ENRICH_DIAGNOSIS, true)) {
     try {
       const places_observation = await fetchPlacesObservation(payload);
       const ai_diagnosis = await generateDiagnosisJson(payload, places_observation);
