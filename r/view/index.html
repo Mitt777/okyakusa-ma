@@ -1974,6 +1974,167 @@
       padding-right: 4px;
     }
 
+    .ok-card-layers {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ok-card-layer {
+      display: grid;
+      grid-template-columns: 1fr 132px;
+      gap: 12px;
+      align-items: stretch;
+      border: 1px solid rgba(216, 196, 166, .9);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 12px;
+    }
+
+    .ok-card-layer.compact {
+      grid-template-columns: 1fr 96px;
+    }
+
+    .ok-card-layer.full {
+      display: block;
+      padding-bottom: 10px;
+    }
+
+    .ok-card-layer-copy > span {
+      display: inline-flex;
+      min-width: 24px;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 7px;
+      border-radius: 999px;
+      background: #f2e1c3;
+      color: #7b5525;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .ok-card-layer-copy strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #2f2418;
+      font-size: 14px;
+    }
+
+    .ok-card-layer-copy p {
+      margin: 0 0 10px;
+      color: #5f5345;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .ok-card-file {
+      width: 100%;
+      margin-bottom: 9px;
+      border: 1px dashed #d8c4a6;
+      border-radius: 8px;
+      background: #fffaf2;
+      padding: 8px;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .ok-card-layer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ok-card-layer-actions button {
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      background: #fffaf0;
+      padding: 8px 11px;
+      color: #7d4d0c;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .ok-card-layer-actions button:disabled {
+      cursor: not-allowed;
+      opacity: .48;
+    }
+
+    .ok-card-status {
+      display: block;
+      margin-top: 8px;
+      color: #6b5a42;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .ok-card-layer-preview,
+    .ok-card-recommended-preview {
+      display: flex;
+      min-height: 156px;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #e5d4bb;
+      border-radius: 8px;
+      background: #f7efe2;
+      color: #8a6a3c;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .ok-card-recommended-preview {
+      width: 100%;
+      min-height: 128px;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .ok-card-layer-preview.is-selected,
+    .ok-card-recommended-preview.is-selected {
+      border-color: #1f8a70;
+      box-shadow: 0 0 0 2px rgba(31, 138, 112, .16);
+    }
+
+    .ok-card-layer-preview img,
+    .ok-card-recommended-preview img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+    }
+
+    .ok-card-style-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+
+    .ok-card-style {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid #e5d4bb;
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 9px;
+      color: #6b5a42;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .ok-card-style.is-selected {
+      border-color: #1f8a70;
+      color: #0f6b4f;
+      background: #eef8f3;
+    }
+
     .ok-card-choice {
       display: grid;
       gap: 5px;
@@ -2308,6 +2469,8 @@
       .ai-lab-head,
       .ai-lab-grid,
       .ai-lab-result-grid,
+      .ok-card-layer,
+      .ok-card-layer.compact,
       .referral-cta {
         grid-template-columns: 1fr;
       }
@@ -2689,6 +2852,16 @@
     let egoSearchResult = null;
     let photoDiagnosisResult = null;
     let selectedWorldviewCardPersonaKey = "";
+    let selectedWorldviewCardMode = "persona";
+    let customWorldviewCard = {
+      sourceImageDataUrl: "",
+      sourceImageName: "",
+      generatedImageDataUrl: "",
+      generatedStyleKey: "soft_handdrawn",
+      generatedCount: 0,
+      status: "idle",
+      message: ""
+    };
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -3496,11 +3669,27 @@
       });
     }
 
+    function activeWorldviewCardImage(personaKey = "") {
+      if (selectedWorldviewCardMode === "photo" && customWorldviewCard.sourceImageDataUrl) {
+        return customWorldviewCard.sourceImageDataUrl;
+      }
+      if (selectedWorldviewCardMode === "generated" && customWorldviewCard.generatedImageDataUrl) {
+        return customWorldviewCard.generatedImageDataUrl;
+      }
+      return PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
+    }
+
+    function activeWorldviewCardLabel() {
+      if (selectedWorldviewCardMode === "photo" && customWorldviewCard.sourceImageDataUrl) return "登録写真カード";
+      if (selectedWorldviewCardMode === "generated" && customWorldviewCard.generatedImageDataUrl) return "AI世界観カード";
+      return "βカード";
+    }
+
     function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
       const storeName = shareContext?.storeName || "このお店";
       const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
-      const cardImage = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
+      const cardImage = activeWorldviewCardImage(personaKey);
       const generatedAt = worldviewCardGeneratedAt();
 
       return `
@@ -3510,7 +3699,7 @@
               <h3>お客様.COMカードをプレゼントします</h3>
               <p>点数ではなく、お店の空気を1枚にした漂流型ショップカードです。LINEやSNSで「うちらしさ」を共有できます。</p>
             </div>
-            <span class="ok-card-badge">βカード</span>
+            <span class="ok-card-badge">${escapeHtml(activeWorldviewCardLabel())}</span>
           </div>
           <div class="ok-card-stage">
             <div class="ok-card-stack" aria-label="お客様.COMカードのプレビュー">
@@ -3863,11 +4052,16 @@
     function renderWorldviewCardPicker(recommendedPersonaKey, selectedPersonaKey) {
       if (isCardOnlyView) return "";
       const recommendedName = personaDisplayName(recommendedPersonaKey);
+      const recommendedImage = PERSONA_IMAGE_MAP[recommendedPersonaKey] || OKYAKUSAMA_CARD_IMAGE;
+      const photoSelected = selectedWorldviewCardMode === "photo";
+      const generatedSelected = selectedWorldviewCardMode === "generated";
+      const personaSelected = selectedWorldviewCardMode === "persona";
+      const generatedCanRetry = customWorldviewCard.generatedCount < 3;
       const choices = PERSONA_GALLERY_ORDER.map((personaKey) => {
         const meta = PERSONA_META[personaKey] || {};
         const image = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
         const label = meta.title || personaKey;
-        const isSelected = personaKey === selectedPersonaKey;
+        const isSelected = personaSelected && personaKey === selectedPersonaKey;
         const isRecommended = personaKey === recommendedPersonaKey;
         return `
           <button class="ok-card-choice${isSelected ? " is-selected" : ""}" type="button" onclick="selectWorldviewCardImage('${escapeHtml(personaKey)}')" aria-pressed="${isSelected ? "true" : "false"}">
@@ -3880,10 +4074,64 @@
         <div class="ok-card-picker">
           <div class="ok-card-picker-head">
             <div>
-              <h4>カード画像を選ぶ</h4>
-              <p>AI推奨は「${escapeHtml(recommendedName)}」です。お店のオーナーさんが「こちらの方がうちらしい」と感じる画像へ変更できます。</p>
+              <h4>世界観カードの表紙を選ぶ</h4>
+              <p>基本はAI推奨カードです。写真を使う場合は、来店前の安心材料ではなく「空気の名刺」として使います。</p>
             </div>
             <span class="ok-card-picker-recommended">AI推奨: ${escapeHtml(recommendedName)}</span>
+          </div>
+          <div class="ok-card-layers" aria-label="世界観カード表紙の4段選択">
+            <section class="ok-card-layer">
+              <div class="ok-card-layer-copy">
+                <span>1</span>
+                <strong>あなたのお店の写真をそのまま貼る</strong>
+                <p>外観・入口・店内など、お店の実写真をそのままショップカードに使います。まず無料で試せる軽い入口です。</p>
+                <input class="ok-card-file" type="file" accept="image/png,image/jpeg,image/webp" onchange="handleWorldviewPhotoUpload(this)">
+                <div class="ok-card-layer-actions">
+                  <button type="button" onclick="selectWorldviewCardPhoto()" ${customWorldviewCard.sourceImageDataUrl ? "" : "disabled"}>${photoSelected ? "採用中" : "この写真を採用"}</button>
+                </div>
+              </div>
+              <div class="ok-card-layer-preview${photoSelected ? " is-selected" : ""}">
+                ${customWorldviewCard.sourceImageDataUrl ? `<img src="${escapeHtml(customWorldviewCard.sourceImageDataUrl)}" alt="登録写真カード">` : `<span>写真を登録</span>`}
+              </div>
+            </section>
+            <section class="ok-card-layer">
+              <div class="ok-card-layer-copy">
+                <span>2</span>
+                <strong>あなたのお店から作った世界観カード</strong>
+                <p>登録写真をもとに、実写真ではないカード用イメージへ再構成します。初期参加店舗はβ、通常は100円スキン想定です。</p>
+                <div class="ok-card-style-row" role="group" aria-label="AI世界観カードのスタイル">
+                  ${renderWorldviewCardStyleOptions()}
+                </div>
+                <div class="ok-card-layer-actions">
+                  <button type="button" onclick="generateCustomWorldviewCard()" ${customWorldviewCard.sourceImageDataUrl && generatedCanRetry ? "" : "disabled"}>${customWorldviewCard.status === "generating" ? "生成中..." : `AI変換する ${customWorldviewCard.generatedCount}/3`}</button>
+                  <button type="button" onclick="selectGeneratedWorldviewCard()" ${customWorldviewCard.generatedImageDataUrl ? "" : "disabled"}>${generatedSelected ? "採用中" : "生成カードを採用"}</button>
+                </div>
+                <small class="ok-card-status">${escapeHtml(customWorldviewCard.message || "生成画像は実際の店舗写真ではなく、世界観カード用のイメージです。")}</small>
+              </div>
+              <div class="ok-card-layer-preview${generatedSelected ? " is-selected" : ""}">
+                ${customWorldviewCard.generatedImageDataUrl ? `<img src="${escapeHtml(customWorldviewCard.generatedImageDataUrl)}" alt="AI生成世界観カード">` : `<span>AI変換</span>`}
+              </div>
+            </section>
+            <section class="ok-card-layer compact">
+              <div class="ok-card-layer-copy">
+                <span>3</span>
+                <strong>おすすめされた36カード</strong>
+                <p>現在のデフォルトです。診断で選ばれた「${escapeHtml(recommendedName)}」をそのまま使います。</p>
+                <div class="ok-card-layer-actions">
+                  <button type="button" onclick="selectWorldviewCardImage('${escapeHtml(recommendedPersonaKey)}')">${personaSelected && selectedPersonaKey === recommendedPersonaKey ? "採用中" : "おすすめを採用"}</button>
+                </div>
+              </div>
+              <button class="ok-card-recommended-preview${personaSelected && selectedPersonaKey === recommendedPersonaKey ? " is-selected" : ""}" type="button" onclick="selectWorldviewCardImage('${escapeHtml(recommendedPersonaKey)}')">
+                <img src="${escapeHtml(recommendedImage)}" alt="${escapeHtml(recommendedName)}">
+              </button>
+            </section>
+            <section class="ok-card-layer full">
+              <div class="ok-card-layer-copy">
+                <span>4</span>
+                <strong>36枚から選ぶカード一覧</strong>
+                <p>オーナーさんが「うちらしい」と感じる画像へ変更できます。1や2を採用しても、診断上のおすすめは残します。</p>
+              </div>
+            </section>
           </div>
           <div class="ok-card-picker-grid" aria-label="36枚の世界観カード画像">
             ${choices}
@@ -3892,11 +4140,126 @@
       `;
     }
 
+    function renderWorldviewCardStyleOptions() {
+      const styles = [
+        ["soft_handdrawn", "手描き"],
+        ["evening_light", "夕方の灯り"],
+        ["quiet_postcard", "静かなカード"]
+      ];
+      return styles.map(([key, label]) => `
+        <label class="ok-card-style${customWorldviewCard.generatedStyleKey === key ? " is-selected" : ""}">
+          <input type="radio" name="worldview-card-style" value="${key}" ${customWorldviewCard.generatedStyleKey === key ? "checked" : ""} onchange="setWorldviewCardStyle('${key}')">
+          ${label}
+        </label>
+      `).join("");
+    }
+
     function selectWorldviewCardImage(personaKey) {
       const validKey = validPersonaImageKey(personaKey);
       if (!validKey) return;
+      selectedWorldviewCardMode = "persona";
       selectedWorldviewCardPersonaKey = validKey;
-      if (worldviewShareResult) worldviewShareResult.selectedPersonaKey = validKey;
+      if (worldviewShareResult) {
+        worldviewShareResult.selectedPersonaKey = validKey;
+        worldviewShareResult.cardMode = selectedWorldviewCardMode;
+      }
+      showWorldviewResult({ noScroll: true });
+    }
+
+    function setWorldviewCardStyle(styleKey) {
+      customWorldviewCard.generatedStyleKey = styleKey;
+      showWorldviewResult({ noScroll: true });
+    }
+
+    function selectWorldviewCardPhoto() {
+      if (!customWorldviewCard.sourceImageDataUrl) return;
+      selectedWorldviewCardMode = "photo";
+      if (worldviewShareResult) worldviewShareResult.cardMode = selectedWorldviewCardMode;
+      customWorldviewCard.message = "登録写真をそのままカード表紙に採用しました。";
+      showWorldviewResult({ noScroll: true });
+    }
+
+    function selectGeneratedWorldviewCard() {
+      if (!customWorldviewCard.generatedImageDataUrl) return;
+      selectedWorldviewCardMode = "generated";
+      if (worldviewShareResult) worldviewShareResult.cardMode = selectedWorldviewCardMode;
+      customWorldviewCard.message = "AI世界観カードを表紙に採用しました。";
+      showWorldviewResult({ noScroll: true });
+    }
+
+    function handleWorldviewPhotoUpload(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+        customWorldviewCard.message = "PNG / JPEG / WebPの写真を選んでください。";
+        showWorldviewResult({ noScroll: true });
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        customWorldviewCard.message = "写真が大きすぎます。5MB以下の画像でお試しください。";
+        showWorldviewResult({ noScroll: true });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        customWorldviewCard = {
+          ...customWorldviewCard,
+          sourceImageDataUrl: String(reader.result || ""),
+          sourceImageName: file.name,
+          generatedImageDataUrl: "",
+          generatedCount: 0,
+          status: "uploaded",
+          message: "写真を登録しました。そのまま採用するか、AI変換を試せます。"
+        };
+        showWorldviewResult({ noScroll: true });
+      };
+      reader.onerror = () => {
+        customWorldviewCard.message = "写真を読み込めませんでした。別の画像でお試しください。";
+        showWorldviewResult({ noScroll: true });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function generateCustomWorldviewCard() {
+      if (!customWorldviewCard.sourceImageDataUrl || customWorldviewCard.status === "generating") return;
+      if (customWorldviewCard.generatedCount >= 3) {
+        customWorldviewCard.message = "β版ではAI変換は3回までです。気に入った画像を採用してください。";
+        showWorldviewResult({ noScroll: true });
+        return;
+      }
+      customWorldviewCard.status = "generating";
+      customWorldviewCard.message = "お店の写真から世界観カードを生成しています...";
+      showWorldviewResult({ noScroll: true });
+      const { request = {} } = shareContext || {};
+      try {
+        const response = await fetch("/api/worldview-card", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            sourceImageDataUrl: customWorldviewCard.sourceImageDataUrl,
+            styleKey: customWorldviewCard.generatedStyleKey,
+            storeName: shareContext?.storeName || "",
+            area: request.area || "",
+            category: request.category || "",
+            worldviewType: worldviewShareResult?.typeTitle || ""
+          })
+        });
+        const data = await response.json();
+        customWorldviewCard.generatedCount += 1;
+        if (!data.ok || !data.imageDataUrl) {
+          customWorldviewCard.status = "failed";
+          customWorldviewCard.message = data.message || "画像生成に失敗しました。時間をおいて再度お試しください。";
+          showWorldviewResult({ noScroll: true });
+          return;
+        }
+        customWorldviewCard.status = "ready";
+        customWorldviewCard.generatedImageDataUrl = data.imageDataUrl;
+        customWorldviewCard.message = data.note || "AI世界観カードを生成しました。気に入ったら採用できます。";
+        selectedWorldviewCardMode = "generated";
+      } catch {
+        customWorldviewCard.status = "failed";
+        customWorldviewCard.message = "通信できませんでした。写真そのままカードか36カードをご利用ください。";
+      }
       showWorldviewResult({ noScroll: true });
     }
 
