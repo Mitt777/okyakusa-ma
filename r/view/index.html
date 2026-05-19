@@ -1925,6 +1925,88 @@
       font-weight: 800;
     }
 
+    .ok-card-picker {
+      margin-top: 16px;
+      border: 1px solid #ead8bd;
+      border-radius: 8px;
+      background: #fffaf2;
+      padding: 14px;
+    }
+
+    .ok-card-picker-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .ok-card-picker-head h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .ok-card-picker-head p {
+      margin: 0;
+      color: #5f5345;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ok-card-picker-recommended {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid #e6c99d;
+      background: #fff;
+      padding: 5px 9px;
+      color: #8a5f2f;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ok-card-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .ok-card-choice {
+      display: grid;
+      gap: 5px;
+      border: 1px solid rgba(216, 196, 166, .9);
+      border-radius: 8px;
+      background: #fff;
+      padding: 6px;
+      color: var(--ink);
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .ok-card-choice.is-selected {
+      border-color: #1f8a70;
+      box-shadow: 0 0 0 2px rgba(31, 138, 112, .16);
+    }
+
+    .ok-card-choice img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .ok-card-choice span {
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
     .worldview-disclaimer {
       margin-top: 12px;
       color: var(--muted);
@@ -2373,6 +2455,20 @@
         font-size: 21px;
       }
 
+      .ok-card-picker {
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+
+      .ok-card-picker-head {
+        display: grid;
+      }
+
+      .ok-card-picker-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: 520px;
+      }
+
       .persona-gallery-drift {
         gap: 32px;
         padding: 20px 16px 44px;
@@ -2592,6 +2688,7 @@
     let worldviewDeepResult = null;
     let egoSearchResult = null;
     let photoDiagnosisResult = null;
+    let selectedWorldviewCardPersonaKey = "";
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -2614,6 +2711,31 @@
       } catch {
         return fallback;
       }
+    }
+
+    function mergeAiDiagnosis(flat, raw) {
+      const merged = { ...(raw || {}), ...(flat || {}) };
+      const scores = raw?.scores || {};
+      [
+        "maps_score",
+        "review_score",
+        "meo_score",
+        "seo_score",
+        "geo_score",
+        "previsit_anxiety_score",
+        "entry_ease_score",
+        "save_score",
+        "plan_score",
+        "impulse_score",
+        "worldview_score",
+        "cx_score"
+      ].forEach((key) => {
+        if ((merged[key] === undefined || merged[key] === null || merged[key] === "") && scores[key] !== undefined) {
+          merged[key] = scores[key];
+        }
+      });
+      merged.entry_ease_diagnosis = parseJson(merged.entry_ease_diagnosis, merged.entry_ease_diagnosis || raw?.entry_ease_diagnosis || null);
+      return merged;
     }
 
     function list(target, items) {
@@ -3654,6 +3776,7 @@
       url.searchParams.delete("personas");
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
+      url.searchParams.delete("pc");
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
@@ -3668,6 +3791,11 @@
       url.searchParams.delete("pd");
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
+      }
+      if (worldviewShareResult?.selectedPersonaKey) {
+        url.searchParams.set("pc", worldviewShareResult.selectedPersonaKey);
+      } else {
+        url.searchParams.delete("pc");
       }
       return url.toString();
     }
@@ -3721,6 +3849,55 @@
           </div>
         </article>
       `;
+    }
+
+    function personaDisplayName(personaKey) {
+      const meta = PERSONA_META[personaKey] || {};
+      return meta.title || personaKey;
+    }
+
+    function validPersonaImageKey(personaKey) {
+      return personaKey && PERSONA_IMAGE_MAP[personaKey] ? personaKey : "";
+    }
+
+    function renderWorldviewCardPicker(recommendedPersonaKey, selectedPersonaKey) {
+      if (isCardOnlyView) return "";
+      const recommendedName = personaDisplayName(recommendedPersonaKey);
+      const choices = PERSONA_GALLERY_ORDER.map((personaKey) => {
+        const meta = PERSONA_META[personaKey] || {};
+        const image = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
+        const label = meta.title || personaKey;
+        const isSelected = personaKey === selectedPersonaKey;
+        const isRecommended = personaKey === recommendedPersonaKey;
+        return `
+          <button class="ok-card-choice${isSelected ? " is-selected" : ""}" type="button" onclick="selectWorldviewCardImage('${escapeHtml(personaKey)}')" aria-pressed="${isSelected ? "true" : "false"}">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(label)}">
+            <span>${escapeHtml(label)}${isRecommended ? " / 推奨" : ""}</span>
+          </button>
+        `;
+      }).join("");
+      return `
+        <div class="ok-card-picker">
+          <div class="ok-card-picker-head">
+            <div>
+              <h4>カード画像を選ぶ</h4>
+              <p>AI推奨は「${escapeHtml(recommendedName)}」です。お店のオーナーさんが「こちらの方がうちらしい」と感じる画像へ変更できます。</p>
+            </div>
+            <span class="ok-card-picker-recommended">AI推奨: ${escapeHtml(recommendedName)}</span>
+          </div>
+          <div class="ok-card-picker-grid" aria-label="36枚の世界観カード画像">
+            ${choices}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectWorldviewCardImage(personaKey) {
+      const validKey = validPersonaImageKey(personaKey);
+      if (!validKey) return;
+      selectedWorldviewCardPersonaKey = validKey;
+      if (worldviewShareResult) worldviewShareResult.selectedPersonaKey = validKey;
+      showWorldviewResult({ noScroll: true });
     }
 
     function personaGalleryUrl() {
@@ -3970,6 +4147,11 @@
       if (!isCardOnlyView) url.searchParams.delete("card");
       url.searchParams.delete("personas");
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
+      if (worldviewShareResult?.selectedPersonaKey) {
+        url.searchParams.set("pc", worldviewShareResult.selectedPersonaKey);
+      } else {
+        url.searchParams.delete("pc");
+      }
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
       window.history.replaceState({}, "", url.toString());
@@ -4075,6 +4257,13 @@
         rule.signal === personaSignalKey
       );
       const personaKey = personaRule?.personaKey || `${result.primaryKey}_${personaSignalKey}`;
+      const urlSelectedPersonaKey = validPersonaImageKey(new URLSearchParams(window.location.search).get("pc") || "");
+      const answerCode = answers.join("");
+      if (!options.noScroll && worldviewShareResult?.answerCode && worldviewShareResult.answerCode !== answerCode) {
+        selectedWorldviewCardPersonaKey = "";
+      }
+      const selectedPersonaKey = validPersonaImageKey(selectedWorldviewCardPersonaKey || urlSelectedPersonaKey) || personaKey;
+      selectedWorldviewCardPersonaKey = selectedPersonaKey;
       const personaGalleryLink = shouldShowPersonaGalleryLink
         ? `<div class="persona-gallery-link"><a href="${escapeHtml(personaGalleryUrl())}">36の世界観タイプを見たい方はこちら</a></div>`
         : "";
@@ -4101,7 +4290,9 @@
         primaryName: primary.name,
         secondaryName: secondary.name,
         personaKey,
-        answerCode: answers.join(""),
+        recommendedPersonaKey: personaKey,
+        selectedPersonaKey,
+        answerCode,
         scores: result.scores
       };
       const renderWorldviewTypeLead = (includeQuietLinks = false) => `
@@ -4116,7 +4307,8 @@
           </div>
         </div>
       `;
-      const okyakusamaCard = renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, personaKey);
+      const okyakusamaCard = renderOkyakusamaCard(result.primaryKey, result.secondaryKey, typeTitle, selectedPersonaKey);
+      const cardPicker = renderWorldviewCardPicker(personaKey, selectedPersonaKey);
       resultEl.innerHTML = isCardOnlyView ? `
         ${okyakusamaCard}
         ${personaQuietLinks}
@@ -4126,6 +4318,7 @@
         ${resultGrid}
         ${personaGalleryLink}
         ${okyakusamaCard}
+        ${cardPicker}
         <div class="worldview-actions">
           <button class="premium-hint" type="button" data-label="理想のお客様像・混み具合・発信方針を深掘り" aria-expanded="false" onclick="openWorldviewDeepDive()">さらに世界観を深掘りする</button>
         </div>
@@ -4136,7 +4329,7 @@
       renderPreEntryCheck();
       updateWorldviewUrl();
       updateShareLinks();
-      if (!options.skipScroll) {
+      if (!options.skipScroll && !options.noScroll) {
         resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
     }
@@ -4154,6 +4347,36 @@
     function renderPreEntryCheck() {
       if (!shareContext) return;
       const { request, maps, ai } = shareContext;
+      const aiEntryEase = parseJson(ai.entry_ease_diagnosis, ai.entry_ease_diagnosis || null);
+      if (aiEntryEase) {
+        const score = Number(aiEntryEase.score || ai.entry_ease_score || ai.previsit_anxiety_score || 0);
+        const reasons = parseJson(aiEntryEase.reasons, []).filter(Boolean);
+        const missingPhotos = parseJson(aiEntryEase.missing_photos, []).filter(Boolean);
+        const quickActions = parseJson(aiEntryEase.quick_actions, []).filter(Boolean);
+        const mapsCopy = text(aiEntryEase.maps_copy, "");
+        const el = document.querySelector("#pre-entry-check");
+        el.innerHTML = `
+          <div class="pre-entry-head">
+            <div>
+              <h3>${escapeHtml(aiEntryEase.title || "THE お店入りやすさ診断 Lite")}</h3>
+              <p>${escapeHtml(aiEntryEase.summary || "初めてのお客様が、行く前に不安なく入れそうかを確認します。")}</p>
+            </div>
+            <div class="pre-entry-score">
+              <span>入りやすさ</span>
+              <strong>${score || "--"}</strong>
+            </div>
+          </div>
+          <div class="pre-entry-grid">
+            ${preEntryItem("AIが見た判断理由", score >= 70, reasons.slice(0, 3).join(" / ") || "Google Maps、口コミ、SNS、来店前情報から判断しています。")}
+            ${preEntryItem("今すぐ撮るべき写真", missingPhotos.length <= 1, missingPhotos.slice(0, 3).join(" / ") || "外観・入口・席・代表メニューの写真は引き続き強化できます。")}
+            ${preEntryItem("明日できる改善", quickActions.length <= 1, quickActions.slice(0, 3).join(" / ") || "初めての方向けに、入口・駐車場・価格感の説明を整えます。")}
+            ${preEntryItem("Mapsに足す一文", Boolean(mapsCopy), mapsCopy || "初めての方が迷わないよう、入口・駐車場・席の雰囲気が分かる一文を足すと親切です。")}
+          </div>
+          <div class="pre-entry-suggestion">この診断は味や技術の評価ではなく、初めて見る人が「入れそう」と感じる材料が揃っているかを見るものです。</div>
+        `;
+        el.classList.add("is-open");
+        return;
+      }
       const checked = parseJson(maps.maps_checked_items, []);
       const missing = parseJson(maps.maps_missing_items, []);
       const checkedLabels = checked.map((item) => String(item.label || ""));
@@ -4184,11 +4407,11 @@
       el.innerHTML = `
         <div class="pre-entry-head">
           <div>
-            <h3>入る前の世界観チェック β</h3>
+            <h3>THE お店入りやすさ診断 Lite</h3>
             <p>${description}</p>
           </div>
           <div class="pre-entry-score">
-            <span>伝わり度</span>
+            <span>入りやすさ</span>
             <strong>${score}</strong>
           </div>
         </div>
@@ -4460,24 +4683,49 @@
       const base = Number(ai?.previsit_anxiety_score || maps?.maps_score || 60);
       const photoBonus = Math.min(16, count * 3);
       const score = Math.max(35, Math.min(92, Math.round(base * 0.74 + photoBonus)));
+      const precision = count >= 10 ? "高精度入口" : count >= 5 ? "ライト診断" : "仮診断";
       return {
         generated_by: "local_fallback",
-        title: `写真${count}枚から見る「入りやすさ」仮診断`,
+        title: `写真${count}枚から見る「入りやすさ」${precision}`,
         summary: `${storeName}の写真を、初めてのお客様が見る来店前情報として整理します。AI Vision未実行時も、写真枚数と既存診断から入口・駐車場・席・メニューの優先度を示します。`,
         items: [
           { label: "入りやすさ", value: `${score}点`, note: "外観・入口・店内・メニューが揃うほど上がります。" },
-          { label: "写真枚数", value: `${count}枚`, note: count <= 5 ? "無料診断の範囲です。" : "追加診断候補の枚数です。" },
+          { label: "診断段階", value: precision, note: count >= 10 ? "10枚以上あるため、導線・席・価格感まで見やすい段階です。" : "5枚以上でライト診断、10枚以上で高精度診断に近づきます。" },
           { label: "最優先写真", value: "入口・駐車場", note: "地方店では迷わないことが来店率に効きます。" },
           { label: "次に足す写真", value: "席・価格・人気商品", note: "一人客・子連れ・観光客の不安を減らします。" },
           { label: "メニュー見え方", value: count >= 8 ? "深掘り候補" : "追加余地あり", note: "価格と頼み方が見える写真が効きます。" },
           { label: "Maps掲載順", value: "外観→入口→席", note: "初めての人が順番に想像できる並びにします。" }
         ],
+        missing_photos: ["外観と看板", "入口から席まで", "価格が読める代表メニュー"],
+        maps_order: ["外観", "入口", "店内/席", "代表メニュー", "駐車場"],
         actions: [
           "入口の写真を1枚目候補にする",
           "駐車場から入口までを追加",
           "メニュー価格が読める写真を足す"
         ]
       };
+    }
+
+    function normalizePhotoDiagnosisResult(result) {
+      if (!result) return result;
+      const items = Array.isArray(result.items) ? [...result.items] : [];
+      const missingPhotos = parseJson(result.missing_photos, []).filter(Boolean);
+      const mapsOrder = parseJson(result.maps_order, []).filter(Boolean);
+      if (missingPhotos.length && !items.some((item) => item.label === "足りない写真")) {
+        items.push({
+          label: "足りない写真",
+          value: missingPhotos.slice(0, 3).join(" / "),
+          note: "初めてのお客様の不安を下げるために優先したい写真です。"
+        });
+      }
+      if (mapsOrder.length && !items.some((item) => item.label === "Maps掲載順")) {
+        items.push({
+          label: "Maps掲載順",
+          value: mapsOrder.slice(0, 5).join("→"),
+          note: "Google Mapsの写真は、初来店の人が順番に想像できる並びが理想です。"
+        });
+      }
+      return { ...result, items };
     }
 
     function readImageFile(file) {
@@ -4542,9 +4790,9 @@
           })
         });
         const data = await response.json();
-        photoDiagnosisResult = data.result || photoFallback(files);
+        photoDiagnosisResult = normalizePhotoDiagnosisResult(data.result || photoFallback(files));
       } catch {
-        photoDiagnosisResult = photoFallback(files);
+        photoDiagnosisResult = normalizePhotoDiagnosisResult(photoFallback(files));
       }
       photoDiagnosisResult = {
         ...photoDiagnosisResult,
@@ -4582,6 +4830,7 @@
         return;
       }
       photoDiagnosisResult = restored;
+      photoDiagnosisResult = normalizePhotoDiagnosisResult(photoDiagnosisResult);
       renderAiLabResult(
         "#photo-diagnosis-result",
         photoDiagnosisResult.title || "THE お店入りやすさ診断",
@@ -4867,10 +5116,10 @@ https://okyakusa-ma.com/
       const payload = data.report || {};
       const request = payload.request || {};
       const maps = payload.maps_observation || {};
-      const ai = payload.ai_diagnosis || {};
       const monthly = payload.monthly_report || {};
       const rawMaps = payload.raw?.maps_observation || {};
       const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
+      const ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
       const monthlyRaw = payload.raw?.monthly_report || {};
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");
@@ -4890,7 +5139,7 @@ https://okyakusa-ma.com/
         { label: "口コミ信頼", value: ai.review_score, color: "#f59e0b" },
         { label: "SEO", value: ai.seo_score, color: "#3b82f6" },
         { label: "AI検索/GEO", value: ai.geo_score, color: "#8b5cf6" },
-        { label: "入る前の世界観チェック β", value: ai.previsit_anxiety_score, color: "#ec4899" }
+        { label: "入りやすさ診断 β", value: ai.entry_ease_score || ai.previsit_anxiety_score, color: "#ec4899" }
       ];
       const topFixText = ai.top_fix || aiRaw.top_fix || monthly.this_month_focus || "Google MapsとSNSの来店前情報を整える";
       const monthlyFocusText = monthly.this_month_focus || ai.top_fix || "Google MapsとSNSの来店前情報を整える";

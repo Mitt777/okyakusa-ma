@@ -123,6 +123,7 @@ const SHEETS = {
     "seo_score",
     "geo_score",
     "previsit_anxiety_score",
+    "entry_ease_score",
     "save_score",
     "plan_score",
     "impulse_score",
@@ -132,6 +133,7 @@ const SHEETS = {
     "strengths",
     "weaknesses",
     "top_fix",
+    "entry_ease_diagnosis",
     "video_ideas",
     "raw_json"
   ],
@@ -335,31 +337,34 @@ function appendAiDiagnosis_(requestId, aiResult) {
   const diagnosis = aiResult.diagnosis || aiResult;
   const scores = diagnosis.scores || {};
   const sheet = getSheet_("ai_diagnoses", SHEETS.ai_diagnoses);
-  const row = [
-    requestId,
-    new Date(),
-    diagnosis.generated_by || aiResult.model || "",
-    diagnosis.store_name || "",
-    diagnosis.total_score || "",
-    scores.maps_score || "",
-    scores.review_score || "",
-    scores.meo_score || "",
-    scores.seo_score || "",
-    scores.geo_score || "",
-    scores.previsit_anxiety_score || "",
-    scores.save_score || "",
-    scores.plan_score || "",
-    scores.impulse_score || "",
-    scores.worldview_score || "",
-    scores.cx_score || "",
-    diagnosis.summary || "",
-    stringify_(diagnosis.strengths),
-    stringify_(diagnosis.weaknesses),
-    diagnosis.top_fix || "",
-    stringify_(diagnosis.video_ideas),
-    stringify_(aiResult)
-  ];
-  sheet.appendRow(row);
+  const headers = getHeaders_(sheet);
+  const record = {
+    request_id: requestId,
+    created_at: new Date(),
+    generated_by: diagnosis.generated_by || aiResult.model || "",
+    store_name: diagnosis.store_name || "",
+    total_score: diagnosis.total_score || "",
+    maps_score: scores.maps_score || "",
+    review_score: scores.review_score || "",
+    meo_score: scores.meo_score || "",
+    seo_score: scores.seo_score || "",
+    geo_score: scores.geo_score || "",
+    previsit_anxiety_score: scores.previsit_anxiety_score || "",
+    entry_ease_score: scores.entry_ease_score || "",
+    save_score: scores.save_score || "",
+    plan_score: scores.plan_score || "",
+    impulse_score: scores.impulse_score || "",
+    worldview_score: scores.worldview_score || "",
+    cx_score: scores.cx_score || "",
+    summary: diagnosis.summary || "",
+    strengths: stringify_(diagnosis.strengths),
+    weaknesses: stringify_(diagnosis.weaknesses),
+    top_fix: diagnosis.top_fix || "",
+    entry_ease_diagnosis: stringify_(diagnosis.entry_ease_diagnosis),
+    video_ideas: stringify_(diagnosis.video_ideas),
+    raw_json: stringify_(aiResult)
+  };
+  sheet.appendRow(headers.map((header) => record[header] || ""));
 }
 
 function appendMonthlyReport_(requestId, monthlyReport) {
