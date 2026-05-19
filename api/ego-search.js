@@ -1,5 +1,82 @@
 const { readJsonBody, sendJson } = require("./_lib/response");
 
+const SNS_CHANNELS = [
+  ["Instagram", "instagramUrl"],
+  ["YouTube", "youtubeUrl"],
+  ["TikTok", "tiktokUrl"],
+  ["X", "xUrl"],
+  ["Facebook", "facebookUrl"],
+  ["LINE", "lineUrl"]
+];
+
+function normalizeUrl(value) {
+  const url = String(value || "").trim();
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function parseSnsUrlLines(value) {
+  return String(value || "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const match = line.match(/^([^:：]+)[:：]\s*(https?:\/\/\S+)/i);
+      if (match) return { label: match[1].trim(), url: match[2].trim() };
+      return { label: detectSnsLabel(line), url: normalizeUrl(line) };
+    })
+    .filter((entry) => entry.url);
+}
+
+function detectSnsLabel(url) {
+  const lower = String(url || "").toLowerCase();
+  if (lower.includes("instagram.com")) return "Instagram";
+  if (lower.includes("youtube.com") || lower.includes("youtu.be")) return "YouTube";
+  if (lower.includes("tiktok.com")) return "TikTok";
+  if (lower.includes("x.com") || lower.includes("twitter.com")) return "X";
+  if (lower.includes("facebook.com") || lower.includes("fb.com")) return "Facebook";
+  if (lower.includes("lin.ee") || lower.includes("line.me")) return "LINE";
+  return "SNS";
+}
+
+function normalizeSocialLinks(body) {
+  const links = [];
+  const add = (label, url) => {
+    const normalized = normalizeUrl(url);
+    if (!normalized) return;
+    links.push({ label, url: normalized });
+  };
+
+  SNS_CHANNELS.forEach(([label, key]) => add(label, body[key]));
+  if (Array.isArray(body.socialLinks)) {
+    body.socialLinks.forEach((entry) => add(entry.label || detectSnsLabel(entry.url), entry.url));
+  }
+  parseSnsUrlLines(body.snsUrl || body.sns_url).forEach((entry) => add(entry.label, entry.url));
+
+  const seen = new Set();
+  return links.filter((entry) => {
+    const key = entry.url.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function socialSummary(socialLinks) {
+  if (!socialLinks.length) return "未確認";
+  return socialLinks.map((entry) => entry.label).join(" / ");
+}
+
+function socialReadinessNote(socialLinks) {
+  if (!socialLinks.length) {
+    return "AIが雰囲気・人柄・利用シーンを補足するSNS材料がまだ見えにくい状態です。";
+  }
+  const labels = new Set(socialLinks.map((entry) => entry.label));
+  if (labels.has("Instagram") || labels.has("TikTok") || labels.has("YouTube")) {
+    return "写真や動画から、空気感・入口・商品・人柄を補足できる可能性があります。";
+  }
+  return "プロフィール文や固定投稿を整えると、誰におすすめかを補足しやすくなります。";
+}
+
 function fallbackEgoSearch(body) {
   const storeName = body.storeName || "診断店舗";
   const area = body.area || "地域";
@@ -9,7 +86,7 @@ function fallbackEgoSearch(body) {
   const rating = maps.rating || "未判定";
   const reviews = maps.user_rating_count || "0";
   const hasWebsite = Boolean(body.websiteUrl);
-  const hasInstagram = Boolean(body.instagramUrl);
+  const socialLinks = normalizeSocialLinks(body);
   const geoScore = Number(ai.geo_score || 0);
 
   return {
@@ -20,7 +97,7 @@ function fallbackEgoSearch(body) {
       { label: "AIに見える店像", value: `${area}の${category}`, note: "地域名と業種から要約されやすい状態です。" },
       { label: "信頼材料", value: `${rating} / ${reviews}件`, note: "評価と口コミ数はAI要約の入口になります。" },
       { label: "Web導線", value: hasWebsite ? "公式サイトあり" : "公式サイト弱め", note: hasWebsite ? "ページ内の説明文を整える余地があります。" : "Maps説明文とSNSプロフィールが重要です。" },
-      { label: "SNS補助", value: hasInstagram ? "Instagramあり" : "未確認", note: "雰囲気や世界観の補助情報になります。" },
+      { label: "SNS補助", value: socialSummary(socialLinks), note: socialReadinessNote(socialLinks) },
       { label: "GEO状態", value: geoScore ? `${geoScore}点` : "未判定", note: "AIが推薦理由に使える材料の目安です。" },
       { label: "次の一手", value: "AI推薦文を作る", note: "そのまま引用されやすい1文を整えます。" }
     ],
@@ -44,6 +121,16 @@ function extractJson(text) {
 }
 
 function buildPrompt(body) {
+  const socialLinks = normalizeSocialLinks(body);
+  const promptBody = {
+    ...body,
+    socialLinks,
+    socialMaterialSummary: {
+      channels: socialSummary(socialLinks),
+      note: socialReadinessNote(socialLinks)
+    }
+  };
+
   return `
 あなたは「お客様どっと混む」のAI de 店エゴサーチ診断AIです。
 店舗オーナー向けに、Google検索・AI検索・Google Maps文脈でお店がどう見えそうかを、やさしく具体的に診断してください。
@@ -55,9 +142,12 @@ function buildPrompt(body) {
 - SEOは深掘りしすぎず、AI検索/GEOでの見え方を中心にする
 - Google Maps文脈では「周辺で探す人」「初めて向かう人」「観光客が地図で比較する時」の見え方を重視する
 - Google Maps由来の情報を使う場合は、結果内でGoogle Mapsソースに基づく見方であることが分かるようにする
+- socialLinksは、現時点では投稿本文の精読ではなく「AIが参照しに行ける入口・媒体の器」として扱う
+- SNSは媒体数の多さを褒めるのではなく、プロフィール、固定投稿、入口/駐車場/価格/店内/人柄が伝わるかの観点で見る
+- YouTube/TikTok/Instagramがある場合は、Save / Plan / Impulse / Driftのどれに効きそうかを短く示す
 
 入力:
-${JSON.stringify(body, null, 2)}
+${JSON.stringify(promptBody, null, 2)}
 
 次のJSONだけを返してください。
 {
@@ -68,8 +158,8 @@ ${JSON.stringify(body, null, 2)}
     {"label": "AIに見える店像", "value": "string", "note": "string"},
     {"label": "推薦されやすい人", "value": "string", "note": "string"},
     {"label": "Mapsで比較される点", "value": "string", "note": "string"},
-    {"label": "検索で足りない言葉", "value": "string", "note": "string"},
-    {"label": "誤解リスク", "value": "string", "note": "string"},
+    {"label": "SNSから補える材料", "value": "string", "note": "string"},
+    {"label": "AI検索で足りない言葉", "value": "string", "note": "string"},
     {"label": "次の一手", "value": "string", "note": "string"}
   ],
   "sources": [{"title": "string", "uri": "string", "provider": "Google Maps|Google Search"}],
@@ -161,7 +251,11 @@ module.exports = async function handler(request, response) {
       return sendJson(response, 405, { ok: false, message: "POSTのみ対応しています。" });
     }
     const body = await readJsonBody(request);
-    const result = await generateGroundedEgoSearch(body || {});
+    const normalizedBody = {
+      ...(body || {}),
+      socialLinks: normalizeSocialLinks(body || {})
+    };
+    const result = await generateGroundedEgoSearch(normalizedBody);
     return sendJson(response, 200, { ok: true, ...result });
   } catch (error) {
     return sendJson(response, 200, {

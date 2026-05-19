@@ -4618,7 +4618,7 @@
       const rating = Number(maps?.rating || 0);
       const reviews = Number(maps?.user_rating_count || 0);
       const hasWebsite = Boolean(request?.website_url);
-      const hasInstagram = Boolean(request?.instagram_url);
+      const socialLinks = requestSocialLinks(request);
       const planWeak = Number(ai?.plan_score || ai?.geo_score || 0) < 65;
       return {
         generated_by: "local_fallback",
@@ -4628,7 +4628,7 @@
           { label: "AIに見える店像", value: `${area}の${category}`, note: "現時点では地域名・業種・口コミから見え方が作られやすいです。" },
           { label: "信頼材料", value: `${text(maps?.rating)} / ${text(maps?.user_rating_count, "0")}件`, note: "評価と口コミ数はAI要約にも影響しやすい観測値です。" },
           { label: "Web導線", value: hasWebsite ? "あり" : "弱い", note: hasWebsite ? "公式サイトの説明文をAIが拾いやすくできます。" : "MapsとSNSのプロフィール文で補強します。" },
-          { label: "SNS補助", value: hasInstagram ? "Instagramあり" : "未確認", note: "世界観や写真の補助情報として使えます。" },
+          { label: "SNS補助", value: socialLinks.length ? socialLinks.map((link) => link.label).join(" / ") : "未確認", note: socialLinks.length ? "投稿そのものの精読前でも、雰囲気・人柄・利用シーンを補足する入口になります。" : "SNSがある場合は、プロフィールや固定投稿がAI検索の補助材料になります。" },
           { label: "弱点候補", value: planWeak ? "Plan情報" : "推薦理由", note: planWeak ? "駐車場・席・価格・入口の安心情報を増やします。" : "この店を選ぶ理由を1文で固定します。" },
           { label: "次の一手", value: "AI推薦文を作る", note: "AIがそのまま紹介しやすい短い店舗説明を整えます。" }
         ],
@@ -4640,11 +4640,31 @@
       };
     }
 
+    function requestSocialLinks(request = {}) {
+      const links = [
+        ["Instagram", request.instagram_url],
+        ["YouTube", request.youtube_url],
+        ["TikTok", request.tiktok_url],
+        ["X", request.x_url],
+        ["Facebook", request.facebook_url],
+        ["LINE", request.line_url],
+        ...parseSnsUrlLines(request.sns_url)
+      ].filter(([, value]) => value && String(value).trim());
+      const seen = new Set();
+      return links.filter(([, value]) => {
+        const key = String(value).trim().toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).map(([label, value]) => ({ label, url: String(value).trim() }));
+    }
+
     async function runEgoSearch() {
       const status = document.querySelector("#ego-search-status");
       if (!shareContext) return;
       status.textContent = "AIで見え方を確認しています...";
       const { storeName, request, maps, ai } = shareContext;
+      const socialLinks = requestSocialLinks(request);
       try {
         const response = await fetch("/api/ego-search", {
           method: "POST",
@@ -4656,6 +4676,13 @@
             websiteUrl: request.website_url,
             googleMapsUrl: request.google_maps_url,
             instagramUrl: request.instagram_url,
+            youtubeUrl: request.youtube_url,
+            tiktokUrl: request.tiktok_url,
+            xUrl: request.x_url,
+            facebookUrl: request.facebook_url,
+            lineUrl: request.line_url,
+            snsUrl: request.sns_url,
+            socialLinks,
             maps,
             ai
           })
