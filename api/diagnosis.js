@@ -84,7 +84,8 @@ module.exports = async function handler(request, response) {
   };
 
   let enrichment = {};
-  if (process.env.AUTO_ENRICH_DIAGNOSIS === "true") {
+  const shouldEnrich = !["false", "0", "off"].includes(String(process.env.AUTO_ENRICH_DIAGNOSIS || "true").toLowerCase());
+  if (shouldEnrich) {
     try {
       const places_observation = await fetchPlacesObservation(payload);
       const ai_diagnosis = await generateDiagnosisJson(payload, places_observation);
