@@ -84,7 +84,7 @@ module.exports = async function handler(request, response) {
   };
 
   let enrichment = {};
-  const shouldEnrich = String(process.env.AUTO_ENRICH_DIAGNOSIS || "").toLowerCase() === "true";
+  const shouldEnrich = !["false", "0", "off"].includes(String(process.env.AUTO_ENRICH_DIAGNOSIS || "true").toLowerCase());
   if (shouldEnrich) {
     try {
       const places_observation = await fetchPlacesObservation(payload);

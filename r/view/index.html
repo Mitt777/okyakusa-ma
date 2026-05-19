@@ -5628,7 +5628,7 @@ https://okyakusa-ma.com/
       const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
       const monthlyRaw = payload.raw?.monthly_report || {};
       let ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
-      if (!hasScoreData(ai, maps, monthly)) {
+      if (new URLSearchParams(window.location.search).get("fallback") === "1" && !hasScoreData(ai, maps, monthly)) {
         ai = mergeAiDiagnosis(buildLocalReportFallback(request, maps), aiRaw);
       }
 
