@@ -1436,6 +1436,102 @@
       font-weight: 900;
     }
 
+    .ok-card-cover-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .ok-card-cover-option {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 92px;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(215, 183, 123, .62);
+      border-radius: 8px;
+      background: rgba(255, 252, 245, .82);
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .ok-card-cover-option.compact {
+      display: block;
+    }
+
+    .ok-card-cover-option.is-selected {
+      border-color: #3f8f76;
+      background: #f0fbf6;
+      box-shadow: 0 0 0 2px rgba(63, 143, 118, .12);
+    }
+
+    .ok-card-cover-option strong {
+      display: block;
+      color: #25352d;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .ok-card-cover-option p {
+      margin: 5px 0 9px;
+      color: #5d4930;
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .ok-card-cover-option button {
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: #fffaf0;
+      color: #7d4d0c;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ok-card-cover-option button:disabled {
+      cursor: not-allowed;
+      opacity: .48;
+    }
+
+    .ok-card-cover-file {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      color: #5d4930;
+      font-size: 11px;
+    }
+
+    .ok-card-cover-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid rgba(95, 74, 44, .18);
+      border-radius: 8px;
+      background: #f7efe1;
+      color: #8a5a16;
+      aspect-ratio: 3 / 4;
+      min-width: 0;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .ok-card-cover-preview.as-button {
+      width: 100%;
+      border-radius: 8px;
+      padding: 0;
+      background: #f7efe1;
+    }
+
+    .ok-card-cover-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .card-only-referral {
       display: none;
       margin-top: 16px;
@@ -2464,6 +2560,14 @@
         display: grid;
       }
 
+      .ok-card-cover-options {
+        grid-template-columns: 1fr;
+      }
+
+      .ok-card-cover-option {
+        grid-template-columns: minmax(0, 1fr) 84px;
+      }
+
       .ok-card-picker-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         max-height: 520px;
@@ -2689,6 +2793,8 @@
     let egoSearchResult = null;
     let photoDiagnosisResult = null;
     let selectedWorldviewCardPersonaKey = "";
+    let selectedWorldviewCardMode = "persona";
+    let customWorldviewCardImage = "";
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -3496,11 +3602,18 @@
       });
     }
 
+    function activeWorldviewCardImage(personaKey = "") {
+      if (selectedWorldviewCardMode === "custom" && customWorldviewCardImage) {
+        return customWorldviewCardImage;
+      }
+      return PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
+    }
+
     function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
       const storeName = shareContext?.storeName || "このお店";
       const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
-      const cardImage = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
+      const cardImage = activeWorldviewCardImage(personaKey);
       const generatedAt = worldviewCardGeneratedAt();
 
       return `
@@ -3776,10 +3889,10 @@
       url.searchParams.delete("personas");
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
-      url.searchParams.delete("pc");
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
+      applyWorldviewCardUrlParams(url);
       return url.toString();
     }
 
@@ -3792,12 +3905,22 @@
       if (worldviewShareResult?.answerCode) {
         url.searchParams.set("wv", worldviewShareResult.answerCode);
       }
+      applyWorldviewCardUrlParams(url);
+      return url.toString();
+    }
+
+    function applyWorldviewCardUrlParams(url) {
+      url.searchParams.delete("cm");
+      url.searchParams.delete("ci");
+      url.searchParams.delete("pc");
+      if (worldviewShareResult?.cardMode === "custom" && customWorldviewCardImage) {
+        url.searchParams.set("cm", "custom");
+        url.searchParams.set("ci", encodeState({ v: 1, image: customWorldviewCardImage }));
+        return;
+      }
       if (worldviewShareResult?.selectedPersonaKey) {
         url.searchParams.set("pc", worldviewShareResult.selectedPersonaKey);
-      } else {
-        url.searchParams.delete("pc");
       }
-      return url.toString();
     }
 
     function bindPersonaGallerySettling(root) {
@@ -3863,11 +3986,14 @@
     function renderWorldviewCardPicker(recommendedPersonaKey, selectedPersonaKey) {
       if (isCardOnlyView) return "";
       const recommendedName = personaDisplayName(recommendedPersonaKey);
+      const recommendedImage = PERSONA_IMAGE_MAP[recommendedPersonaKey] || OKYAKUSAMA_CARD_IMAGE;
+      const isCustomSelected = selectedWorldviewCardMode === "custom" && Boolean(customWorldviewCardImage);
+      const isRecommendedSelected = selectedWorldviewCardMode === "persona" && selectedPersonaKey === recommendedPersonaKey;
       const choices = PERSONA_GALLERY_ORDER.map((personaKey) => {
         const meta = PERSONA_META[personaKey] || {};
         const image = PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
         const label = meta.title || personaKey;
-        const isSelected = personaKey === selectedPersonaKey;
+        const isSelected = selectedWorldviewCardMode === "persona" && personaKey === selectedPersonaKey;
         const isRecommended = personaKey === recommendedPersonaKey;
         return `
           <button class="ok-card-choice${isSelected ? " is-selected" : ""}" type="button" onclick="selectWorldviewCardImage('${escapeHtml(personaKey)}')" aria-pressed="${isSelected ? "true" : "false"}">
@@ -3881,9 +4007,38 @@
           <div class="ok-card-picker-head">
             <div>
               <h4>カード画像を選ぶ</h4>
-              <p>AI推奨は「${escapeHtml(recommendedName)}」です。お店のオーナーさんが「こちらの方がうちらしい」と感じる画像へ変更できます。</p>
+              <p>AI推奨は「${escapeHtml(recommendedName)}」です。お店の写真を表紙にするか、診断カードを使うか、36枚から選べます。</p>
             </div>
             <span class="ok-card-picker-recommended">AI推奨: ${escapeHtml(recommendedName)}</span>
+          </div>
+          <div class="ok-card-cover-options" aria-label="世界観カード表紙の選択">
+            <section class="ok-card-cover-option${isCustomSelected ? " is-selected" : ""}">
+              <div>
+                <strong>お店が登録した画像をTOPに使う</strong>
+                <p>外観・入口・店内など、実際のお店の写真をカード表紙にします。カード専用URLにも反映されます。</p>
+                <input class="ok-card-cover-file" type="file" accept="image/png,image/jpeg,image/webp" onchange="handleWorldviewCardImageUpload(this)">
+                <button type="button" onclick="selectCustomWorldviewCardImage()" ${customWorldviewCardImage ? "" : "disabled"}>${isCustomSelected ? "採用中" : "登録画像を採用"}</button>
+              </div>
+              <div class="ok-card-cover-preview">
+                ${customWorldviewCardImage ? `<img src="${escapeHtml(customWorldviewCardImage)}" alt="登録画像カード">` : `<span>画像登録</span>`}
+              </div>
+            </section>
+            <section class="ok-card-cover-option${isRecommendedSelected ? " is-selected" : ""}">
+              <div>
+                <strong>最初に診断された画像をそのまま使う</strong>
+                <p>診断でおすすめされた36カードを表紙にします。迷った時のデフォルトです。</p>
+                <button type="button" onclick="selectWorldviewCardImage('${escapeHtml(recommendedPersonaKey)}')">${isRecommendedSelected ? "採用中" : "診断カードを採用"}</button>
+              </div>
+              <button class="ok-card-cover-preview as-button" type="button" onclick="selectWorldviewCardImage('${escapeHtml(recommendedPersonaKey)}')">
+                <img src="${escapeHtml(recommendedImage)}" alt="${escapeHtml(recommendedName)}">
+              </button>
+            </section>
+            <section class="ok-card-cover-option compact">
+              <div>
+                <strong>36枚の中から自分で選ぶ</strong>
+                <p>下の一覧から、オーナーさんが「うちらしい」と感じるカードを選べます。</p>
+              </div>
+            </section>
           </div>
           <div class="ok-card-picker-grid" aria-label="36枚の世界観カード画像">
             ${choices}
@@ -3895,9 +4050,63 @@
     function selectWorldviewCardImage(personaKey) {
       const validKey = validPersonaImageKey(personaKey);
       if (!validKey) return;
+      selectedWorldviewCardMode = "persona";
       selectedWorldviewCardPersonaKey = validKey;
-      if (worldviewShareResult) worldviewShareResult.selectedPersonaKey = validKey;
+      if (worldviewShareResult) {
+        worldviewShareResult.selectedPersonaKey = validKey;
+        worldviewShareResult.cardMode = "persona";
+      }
       showWorldviewResult({ noScroll: true });
+    }
+
+    function selectCustomWorldviewCardImage() {
+      if (!customWorldviewCardImage) return;
+      selectedWorldviewCardMode = "custom";
+      if (worldviewShareResult) worldviewShareResult.cardMode = "custom";
+      showWorldviewResult({ noScroll: true });
+    }
+
+    function loadWorldviewCoverImage(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
+    }
+
+    async function compressWorldviewCoverImage(dataUrl) {
+      try {
+        const image = await loadWorldviewCoverImage(dataUrl);
+        const maxSide = 420;
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+        const scale = Math.min(1, maxSide / Math.max(sourceWidth, sourceHeight));
+        const width = Math.max(1, Math.round(sourceWidth * scale));
+        const height = Math.max(1, Math.round(sourceHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, width, height);
+        return canvas.toDataURL("image/jpeg", 0.58);
+      } catch {
+        return dataUrl;
+      }
+    }
+
+    function handleWorldviewCardImageUpload(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        customWorldviewCardImage = await compressWorldviewCoverImage(String(reader.result || ""));
+        selectedWorldviewCardMode = "custom";
+        if (worldviewShareResult) worldviewShareResult.cardMode = "custom";
+        showWorldviewResult({ noScroll: true });
+      };
+      reader.readAsDataURL(file);
     }
 
     function personaGalleryUrl() {
@@ -3907,6 +4116,9 @@
       url.searchParams.delete("wv");
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
+      url.searchParams.delete("pc");
+      url.searchParams.delete("cm");
+      url.searchParams.delete("ci");
       return url.toString();
     }
 
@@ -4147,11 +4359,7 @@
       if (!isCardOnlyView) url.searchParams.delete("card");
       url.searchParams.delete("personas");
       if (worldviewShareResult?.answerCode) url.searchParams.set("wv", worldviewShareResult.answerCode);
-      if (worldviewShareResult?.selectedPersonaKey) {
-        url.searchParams.set("pc", worldviewShareResult.selectedPersonaKey);
-      } else {
-        url.searchParams.delete("pc");
-      }
+      applyWorldviewCardUrlParams(url);
       url.searchParams.delete("wvd");
       url.searchParams.delete("pd");
       window.history.replaceState({}, "", url.toString());
@@ -4257,13 +4465,23 @@
         rule.signal === personaSignalKey
       );
       const personaKey = personaRule?.personaKey || `${result.primaryKey}_${personaSignalKey}`;
-      const urlSelectedPersonaKey = validPersonaImageKey(new URLSearchParams(window.location.search).get("pc") || "");
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlSelectedPersonaKey = validPersonaImageKey(urlParams.get("pc") || "");
+      const urlCustomImageState = decodeState(urlParams.get("ci") || "");
+      if (urlParams.get("cm") === "custom" && urlCustomImageState?.image && !customWorldviewCardImage) {
+        customWorldviewCardImage = String(urlCustomImageState.image);
+        selectedWorldviewCardMode = "custom";
+      }
       const answerCode = answers.join("");
       if (!options.noScroll && worldviewShareResult?.answerCode && worldviewShareResult.answerCode !== answerCode) {
         selectedWorldviewCardPersonaKey = "";
+        selectedWorldviewCardMode = customWorldviewCardImage ? selectedWorldviewCardMode : "persona";
       }
       const selectedPersonaKey = validPersonaImageKey(selectedWorldviewCardPersonaKey || urlSelectedPersonaKey) || personaKey;
       selectedWorldviewCardPersonaKey = selectedPersonaKey;
+      if (selectedWorldviewCardMode === "custom" && !customWorldviewCardImage) {
+        selectedWorldviewCardMode = "persona";
+      }
       const personaGalleryLink = shouldShowPersonaGalleryLink
         ? `<div class="persona-gallery-link"><a href="${escapeHtml(personaGalleryUrl())}">36の世界観タイプを見たい方はこちら</a></div>`
         : "";
@@ -4292,6 +4510,7 @@
         personaKey,
         recommendedPersonaKey: personaKey,
         selectedPersonaKey,
+        cardMode: selectedWorldviewCardMode,
         answerCode,
         scores: result.scores
       };
