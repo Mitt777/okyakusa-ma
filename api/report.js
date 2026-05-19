@@ -112,7 +112,20 @@ module.exports = async function handler(request, response) {
       return sendJson(response, data.statusCode || sheetResponse.status || 502, data);
     }
 
-    const report = await enrichMissingReportData(data.report || {});
+    let report = data.report || {};
+    if (process.env.REPAIR_REPORT_ON_READ === "true") {
+      try {
+        report = await enrichMissingReportData(report);
+      } catch (error) {
+        report = {
+          ...report,
+          repair_error: {
+            message: error.message,
+            created_at: new Date().toISOString()
+          }
+        };
+      }
+    }
     return sendJson(response, 200, { ...data, report });
   } catch (error) {
     return sendJson(response, 500, {
