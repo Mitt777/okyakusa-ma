@@ -2795,6 +2795,8 @@
     let selectedWorldviewCardPersonaKey = "";
     let selectedWorldviewCardMode = "persona";
     let customWorldviewCardImage = "";
+    let customWorldviewCardImageKey = "";
+    const WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX = "okyakusama_worldview_card_image:";
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -3609,6 +3611,31 @@
       return PERSONA_IMAGE_MAP[personaKey] || OKYAKUSAMA_CARD_IMAGE;
     }
 
+    function createWorldviewCardImageKey() {
+      const safeId = text(id || "report", "report").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40) || "report";
+      return `${safeId}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function saveCustomWorldviewCardImage() {
+      if (!customWorldviewCardImage) return "";
+      try {
+        if (!customWorldviewCardImageKey) customWorldviewCardImageKey = createWorldviewCardImageKey();
+        localStorage.setItem(`${WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX}${customWorldviewCardImageKey}`, customWorldviewCardImage);
+        return customWorldviewCardImageKey;
+      } catch {
+        return "";
+      }
+    }
+
+    function loadCustomWorldviewCardImage(imageKey) {
+      if (!imageKey) return "";
+      try {
+        return localStorage.getItem(`${WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX}${imageKey}`) || "";
+      } catch {
+        return "";
+      }
+    }
+
     function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
       const storeName = shareContext?.storeName || "このお店";
@@ -3914,8 +3941,14 @@
       url.searchParams.delete("ci");
       url.searchParams.delete("pc");
       if (worldviewShareResult?.cardMode === "custom" && customWorldviewCardImage) {
-        url.searchParams.set("cm", "custom");
-        url.searchParams.set("ci", encodeState({ v: 1, image: customWorldviewCardImage }));
+        const imageKey = saveCustomWorldviewCardImage();
+        if (imageKey) {
+          url.searchParams.set("cm", "custom");
+          url.searchParams.set("ci", imageKey);
+        }
+        if (worldviewShareResult?.selectedPersonaKey) {
+          url.searchParams.set("pc", worldviewShareResult.selectedPersonaKey);
+        }
         return;
       }
       if (worldviewShareResult?.selectedPersonaKey) {
@@ -4062,6 +4095,7 @@
     function selectCustomWorldviewCardImage() {
       if (!customWorldviewCardImage) return;
       selectedWorldviewCardMode = "custom";
+      saveCustomWorldviewCardImage();
       if (worldviewShareResult) worldviewShareResult.cardMode = "custom";
       showWorldviewResult({ noScroll: true });
     }
@@ -4102,6 +4136,8 @@
       const reader = new FileReader();
       reader.onload = async () => {
         customWorldviewCardImage = await compressWorldviewCoverImage(String(reader.result || ""));
+        customWorldviewCardImageKey = createWorldviewCardImageKey();
+        saveCustomWorldviewCardImage();
         selectedWorldviewCardMode = "custom";
         if (worldviewShareResult) worldviewShareResult.cardMode = "custom";
         showWorldviewResult({ noScroll: true });
@@ -4467,10 +4503,22 @@
       const personaKey = personaRule?.personaKey || `${result.primaryKey}_${personaSignalKey}`;
       const urlParams = new URLSearchParams(window.location.search);
       const urlSelectedPersonaKey = validPersonaImageKey(urlParams.get("pc") || "");
-      const urlCustomImageState = decodeState(urlParams.get("ci") || "");
-      if (urlParams.get("cm") === "custom" && urlCustomImageState?.image && !customWorldviewCardImage) {
-        customWorldviewCardImage = String(urlCustomImageState.image);
-        selectedWorldviewCardMode = "custom";
+      const urlCustomImageKey = urlParams.get("ci") || "";
+      if (urlParams.get("cm") === "custom" && urlCustomImageKey && !customWorldviewCardImage) {
+        const storedImage = loadCustomWorldviewCardImage(urlCustomImageKey);
+        if (storedImage) {
+          customWorldviewCardImage = storedImage;
+          customWorldviewCardImageKey = urlCustomImageKey;
+          selectedWorldviewCardMode = "custom";
+        } else {
+          const legacyImageState = decodeState(urlCustomImageKey);
+          if (legacyImageState?.image) {
+            customWorldviewCardImage = String(legacyImageState.image);
+            customWorldviewCardImageKey = createWorldviewCardImageKey();
+            saveCustomWorldviewCardImage();
+            selectedWorldviewCardMode = "custom";
+          }
+        }
       }
       const answerCode = answers.join("");
       if (!options.noScroll && worldviewShareResult?.answerCode && worldviewShareResult.answerCode !== answerCode) {
