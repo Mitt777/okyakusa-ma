@@ -4282,13 +4282,14 @@
             message: response.ok ? "画像生成APIの応答を読み取れませんでした。" : `画像生成APIに接続できませんでした。HTTP ${response.status}`
           };
         }
-        customWorldviewCard.generatedCount += 1;
         if (!data.ok || !data.imageDataUrl) {
           customWorldviewCard.status = "failed";
-          customWorldviewCard.message = data.message || "画像生成に失敗しました。時間をおいて再度お試しください。";
+          if (data.retryable !== false) customWorldviewCard.generatedCount += 1;
+          customWorldviewCard.message = [data.message, data.status ? `HTTP ${data.status}` : "", data.detail].filter(Boolean).join(" / ") || "画像生成に失敗しました。時間をおいて再度お試しください。";
           showWorldviewResult({ noScroll: true });
           return;
         }
+        customWorldviewCard.generatedCount += 1;
         customWorldviewCard.status = "ready";
         customWorldviewCard.generatedImageDataUrl = data.imageDataUrl;
         customWorldviewCard.message = data.note || "AI世界観カードを生成しました。気に入ったら採用できます。";

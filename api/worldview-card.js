@@ -63,6 +63,15 @@ function extractImagePart(data) {
   return parts.find((part) => part.inlineData?.data || part.inline_data?.data);
 }
 
+function extractGeminiErrorMessage(detail) {
+  try {
+    const data = JSON.parse(detail);
+    return data.error?.message || detail.slice(0, 240);
+  } catch {
+    return String(detail || "").slice(0, 240);
+  }
+}
+
 async function generateWorldviewCard(body) {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
   if (!apiKey) {
@@ -120,12 +129,15 @@ async function generateWorldviewCard(body) {
   });
 
   if (!response.ok) {
+    const detail = await response.text();
     return {
       ok: false,
       configured: true,
       model,
+      retryable: response.status >= 500 || response.status === 429,
+      status: response.status,
       message: "画像生成に失敗しました。",
-      detail: await response.text()
+      detail: extractGeminiErrorMessage(detail)
     };
   }
 
