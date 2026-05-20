@@ -1681,7 +1681,38 @@
     }
 
     function shareAirsText(item) {
-      return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}\n${location.origin}`;
+      const sourceLine = item.sourceUrl ? `\n${item.sourceUrl}` : "";
+      return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${sourceLine}\n${location.origin}`;
+    }
+
+    async function saveAirsToServer(item) {
+      try {
+        const response = await fetch("/api/airs", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            airId: item.id,
+            kind: item.kind,
+            storeName: item.storeName,
+            sourceUrl: item.sourceUrl,
+            officialCardUrl: item.sourceUrl,
+            personaKey: item.personaKey,
+            image: item.image,
+            comment: item.comment,
+            timeLabel: item.timeLabel
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) return item;
+        return {
+          ...item,
+          serverSaved: true,
+          serverUrl: data.url,
+          serverPathname: data.pathname
+        };
+      } catch {
+        return item;
+      }
     }
 
     function renderAirsPersonas() {
@@ -1723,6 +1754,7 @@
           <small>${item.kind === "official" ? "公式air-s" : "お客様air-s"} / ${item.timeLabel}</small>
           <b>${item.storeName}</b>
           <p>${item.comment || "この空気だった。"}</p>
+          <p>${item.serverSaved ? "サーバー保存済み。店舗側と紐づける準備ができています。" : "この端末内の仮保存です。"}</p>
           <div class="airs-share">
             <button type="button" data-airs-copy="${index}">共有文をコピー</button>
             <button type="button" data-airs-copy="${index}">Instagram</button>
@@ -1757,7 +1789,7 @@
       document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
       renderAirsPersonas();
       renderAirsLocker();
-      document.querySelector("#airs-save")?.addEventListener("click", () => {
+      document.querySelector("#airs-save")?.addEventListener("click", async () => {
         const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
         const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || "";
         const comment = document.querySelector("#airs-comment")?.value.trim() || "";
@@ -1774,7 +1806,10 @@
         };
         saveAirsItems([item, ...loadAirsItems()]);
         renderAirsLocker();
+        const savedItem = await saveAirsToServer(item);
+        saveAirsItems([savedItem, ...loadAirsItems().filter((entry) => entry.id !== item.id)]);
         location.hash = "airs-locker";
+        renderAirsLocker();
       });
     }
 

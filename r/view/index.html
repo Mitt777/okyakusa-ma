@@ -2803,6 +2803,7 @@
     let customWorldviewCardImageKey = "";
     let customWorldviewCardImageShared = false;
     let customWorldviewCardImageMessage = "";
+    let officialAirsMessage = "";
     const WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX = "okyakusama_worldview_card_image:";
 
     function text(value, fallback = "未判定") {
@@ -3665,6 +3666,7 @@
       const cardImage = activeWorldviewCardImage(personaKey);
       const generatedAt = worldviewCardGeneratedAt();
       const airsUrl = buildAirsPostUrl(storeName, personaKey);
+      const officialMessage = officialAirsMessage ? `<p>${escapeHtml(officialAirsMessage)}</p>` : "";
 
       return `
         <div class="ok-card-gift" id="okyakusama-card">
@@ -3701,8 +3703,9 @@
                 <button type="button" onclick="shareWorldviewCardLine()">お友達に世界観カードを送る</button>
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
                 <a href="${escapeHtml(airsUrl)}" target="_blank" rel="noopener">air-sする</a>
-                <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener">公式air-sとして使う</a>
+                <button type="button" onclick="claimOfficialAirs(this)">公式air-sとして受け取る</button>
               </div>
+              ${officialMessage}
             </div>
           </div>
           <div class="card-only-referral">
@@ -3974,6 +3977,47 @@
       const personaMatch = imagePath.match(/\/personas\/(\d{2})-1\.webp$/);
       if (personaMatch) url.searchParams.set("persona", personaMatch[1]);
       return url.toString();
+    }
+
+    async function claimOfficialAirs(button) {
+      if (!worldviewShareResult) return;
+      const original = button?.textContent || "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "公式air-s保存中...";
+      }
+      const personaKey = worldviewShareResult.selectedPersonaKey || worldviewShareResult.recommendedPersonaKey || "";
+      const image = activeWorldviewCardImage(personaKey);
+      const payload = {
+        airId: `official_${Date.now().toString(36)}`,
+        kind: "official",
+        storeName: shareContext?.storeName || "このお店",
+        requestId: id || "",
+        officialCardUrl: worldviewCardShareUrl(),
+        sourceUrl: worldviewCardShareUrl(),
+        personaKey,
+        image,
+        comment: `${worldviewShareResult.typeTitle || "世界観カード"}を公式air-s候補として受け取りました。`,
+        timeLabel: "公式カード候補"
+      };
+      try {
+        const response = await fetch("/api/airs", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "保存できませんでした。");
+        officialAirsMessage = "公式air-s候補として保存しました。今後、店舗側の受け取り一覧へつなげます。";
+        if (button) button.textContent = "公式air-s保存済み";
+      } catch (error) {
+        officialAirsMessage = error.message || "公式air-s保存に失敗しました。";
+        if (button) {
+          button.disabled = false;
+          button.textContent = original;
+        }
+      }
+      showWorldviewResult({ noScroll: true });
     }
 
     function applyWorldviewCardUrlParams(url) {
