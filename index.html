@@ -1221,6 +1221,42 @@
         grid-template-columns: 1fr;
       }
 
+      .airs-hero {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        padding: 28px 0 18px;
+      }
+
+      .airs-hero > div:first-child {
+        position: relative;
+        z-index: 1;
+      }
+
+      .airs-preview {
+        position: absolute;
+        top: 82px;
+        right: -28px;
+        z-index: 0;
+        width: min(42vw, 178px);
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        opacity: .18;
+        pointer-events: none;
+      }
+
+      .airs-preview img {
+        border: 0;
+        box-shadow: 0 20px 40px rgba(38, 55, 43, .22);
+      }
+
+      .airs-preview strong,
+      .airs-preview p {
+        display: none;
+      }
+
       .airs-persona-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
