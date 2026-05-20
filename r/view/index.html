@@ -1579,6 +1579,100 @@
       white-space: nowrap;
     }
 
+    .ok-card-qr {
+      margin-top: 14px;
+      border: 1px solid rgba(215, 183, 123, .68);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 252, 245, .94), rgba(238, 248, 242, .9));
+      padding: 14px;
+    }
+
+    .ok-card-qr h5 {
+      margin: 0 0 6px;
+      color: #26362d;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .ok-card-qr p {
+      margin: 0 0 10px;
+      color: #6a5a43;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .ok-card-qr-actions,
+    .ok-card-qr-downloads {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ok-card-qr button,
+    .ok-card-qr a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      background: #fffaf0;
+      color: #6a3d08;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .ok-card-qr button:first-child {
+      background: #2f8067;
+      border-color: #2f8067;
+      color: #fff;
+    }
+
+    .ok-card-qr button:disabled {
+      cursor: wait;
+      opacity: .62;
+    }
+
+    .ok-card-qr-preview {
+      display: none;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      border: 1px solid rgba(38, 54, 45, .12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 12px;
+    }
+
+    .ok-card-qr-preview.is-open {
+      display: grid;
+    }
+
+    .ok-card-qr-preview img {
+      width: 132px;
+      height: 132px;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+      border: 1px solid rgba(38, 54, 45, .12);
+    }
+
+    .ok-card-qr-downloads {
+      margin-top: 8px;
+    }
+
+    .ok-card-qr-message {
+      margin-top: 8px;
+      color: #7c4b11;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .card-only-floating-share {
       display: none;
       position: fixed;
@@ -2804,6 +2898,7 @@
     let customWorldviewCardImageShared = false;
     let customWorldviewCardImageMessage = "";
     let officialAirsMessage = "";
+    let worldviewQrData = null;
     const WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX = "okyakusama_worldview_card_image:";
 
     function text(value, fallback = "未判定") {
@@ -3706,6 +3801,24 @@
                 <button type="button" onclick="claimOfficialAirs(this)">公式air-sとして受け取る</button>
               </div>
               ${officialMessage}
+              <div class="ok-card-qr" id="worldview-qr-shelf">
+                <h5>この空気を、お店に置く</h5>
+                <p>この世界観カードへつながるQRコードを作れます。テーブル、レジ横、ショップカード、紙袋などに置ける小さな漂流札です。</p>
+                <div class="ok-card-qr-actions">
+                  <button type="button" onclick="generateWorldviewQr(this)">QRコードを生成</button>
+                </div>
+                <div class="ok-card-qr-preview" id="worldview-qr-preview" aria-live="polite">
+                  <img id="worldview-qr-image" alt="世界観カードQRコード">
+                  <div>
+                    <p>読み取ると、この世界観カード専用URLが開きます。GoogleレビューQRの隣に置くと、「評価」と「共鳴」の入口を分けられます。</p>
+                    <div class="ok-card-qr-downloads">
+                      <a id="worldview-qr-download" href="#" download="okyakusama-worldview-qr.png">QRコードをダウンロード</a>
+                      <button type="button" onclick="openWorldviewQrPrint()">印刷用の漂流札を開く</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="ok-card-qr-message" id="worldview-qr-message"></div>
+              </div>
             </div>
           </div>
           <div class="card-only-referral">
@@ -4515,6 +4628,172 @@
       const typeName = worldviewShareResult?.typeTitle || "お店世界観タイプ";
       const message = `「${storeName}」のお客様.COMカード\n${typeName}の空気を見てみませんか？\n${worldviewCardShareUrl()}`;
       window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`, "_blank", "noopener");
+    }
+
+    function setWorldviewQrMessage(message) {
+      const messageEl = document.querySelector("#worldview-qr-message");
+      if (messageEl) messageEl.textContent = message || "";
+    }
+
+    async function generateWorldviewQr(button) {
+      updateWorldviewUrl();
+      const original = button?.textContent || "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "QR生成中...";
+      }
+      setWorldviewQrMessage("");
+      try {
+        const cardUrl = worldviewCardShareUrl();
+        const response = await fetch("/api/qr", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ url: cardUrl })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "QRコードを生成できませんでした。");
+        const storeName = shareContext?.storeName || "このお店";
+        const fileStoreName = storeName.replace(/[\\/:*?"<>|]/g, "").trim() || "worldview-card";
+        worldviewQrData = {
+          url: data.url,
+          png: data.png,
+          storeName,
+          typeName: worldviewShareResult?.typeTitle || "世界観カード"
+        };
+        const preview = document.querySelector("#worldview-qr-preview");
+        const image = document.querySelector("#worldview-qr-image");
+        const download = document.querySelector("#worldview-qr-download");
+        if (image) image.src = data.png;
+        if (download) {
+          download.href = data.png;
+          download.download = `${fileStoreName}-worldview-qr.png`;
+        }
+        preview?.classList.add("is-open");
+        setWorldviewQrMessage("QRコードを生成しました。店内に置く漂流札として使えます。");
+      } catch (error) {
+        setWorldviewQrMessage(error.message || "QRコード生成に失敗しました。");
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = original;
+        }
+      }
+    }
+
+    function openWorldviewQrPrint() {
+      if (!worldviewQrData?.png) {
+        setWorldviewQrMessage("先にQRコードを生成してください。");
+        return;
+      }
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        setWorldviewQrMessage("印刷用画面を開けませんでした。ポップアップ許可をご確認ください。");
+        return;
+      }
+      const storeName = escapeHtml(worldviewQrData.storeName || "このお店");
+      const typeName = escapeHtml(worldviewQrData.typeName || "世界観カード");
+      const cardUrl = escapeHtml(worldviewQrData.url || "");
+      const png = escapeHtml(worldviewQrData.png || "");
+      printWindow.document.write(`<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${storeName}の漂流札</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #ece7dc;
+      color: #243228;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+    }
+    .sheet {
+      width: min(100%, 420px);
+      min-height: 594px;
+      margin: 24px auto;
+      background: #fffaf0;
+      border: 1px solid #dfcda8;
+      border-radius: 8px;
+      padding: 28px;
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      text-align: center;
+      box-shadow: 0 24px 70px rgba(58, 45, 28, .16);
+    }
+    .kicker {
+      display: inline-flex;
+      justify-self: center;
+      border-radius: 999px;
+      background: #eaf6ef;
+      color: #2f8067;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+    p {
+      margin: 0;
+      color: #5b655d;
+      font-size: 14px;
+      line-height: 1.85;
+    }
+    img {
+      width: 220px;
+      height: 220px;
+      justify-self: center;
+      background: #fff;
+      border: 1px solid #e1d6bf;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .url {
+      overflow-wrap: anywhere;
+      color: #6c5a3f;
+      font-size: 10px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    button {
+      border: 1px solid #2f8067;
+      border-radius: 999px;
+      background: #2f8067;
+      color: #fff;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    @media print {
+      body { background: #fff; }
+      .sheet { margin: 0 auto; box-shadow: none; }
+      .actions { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <span class="kicker">漂流するショップカード</span>
+    <h1>${storeName}<br>${typeName}</h1>
+    <p>レビューではなく、このお店の空気に触れる入口です。気になった方は、そっと読み取ってみてください。</p>
+    <img src="${png}" alt="世界観カードQRコード">
+    <p class="url">${cardUrl}</p>
+    <div class="actions">
+      <button type="button" onclick="window.print()">印刷する</button>
+    </div>
+  </main>
+</body>
+</html>`);
+      printWindow.document.close();
     }
 
     function updateWorldviewUrl() {
