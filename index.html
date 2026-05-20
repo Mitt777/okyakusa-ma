@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>お客様.COM | えらばれる店スコア診断</title>
+  <script>
+    if (location.hostname.replace(/^www\./, "") === "air-s.jp") {
+      document.documentElement.classList.add("airs-domain");
+    }
+  </script>
   <style>
     :root {
       --ink: #17202c;
@@ -32,6 +37,315 @@
 
     .site {
       min-height: 100vh;
+    }
+
+    .airs-home {
+      display: none;
+      min-height: 100vh;
+      color: #1f2520;
+      background:
+        linear-gradient(180deg, rgba(249, 248, 242, .96), rgba(232, 240, 235, .94)),
+        #f8f6ee;
+    }
+
+    .airs-domain .site {
+      display: none;
+    }
+
+    .airs-domain .airs-home {
+      display: block;
+    }
+
+    .airs-shell {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 22px 0 48px;
+    }
+
+    .airs-topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 10px 0 28px;
+    }
+
+    .airs-brand strong {
+      display: block;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .airs-brand span {
+      display: block;
+      color: #667065;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .airs-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .airs-nav a,
+    .airs-button,
+    .airs-card button,
+    .airs-share button,
+    .airs-share a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(58, 92, 73, .22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      color: #24463a;
+      padding: 9px 13px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .airs-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 28px;
+      align-items: center;
+      padding: 34px 0 20px;
+    }
+
+    .airs-kicker {
+      display: inline-flex;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      border: 1px solid #c6dfd0;
+      background: rgba(238, 249, 243, .86);
+      color: #27624d;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .airs-hero h1 {
+      margin: 0 0 14px;
+      max-width: 720px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    .airs-hero p {
+      margin: 0 0 22px;
+      color: #48544c;
+      font-size: 17px;
+      line-height: 1.9;
+    }
+
+    .airs-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .airs-button.primary {
+      background: #1f7a5e;
+      color: #fff;
+      border-color: #1f7a5e;
+      box-shadow: 0 16px 34px rgba(31, 122, 94, .18);
+    }
+
+    .airs-preview {
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 14px;
+      box-shadow: 0 24px 60px rgba(42, 52, 44, .12);
+    }
+
+    .airs-preview img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .9);
+    }
+
+    .airs-preview strong {
+      font-size: 18px;
+    }
+
+    .airs-section {
+      margin-top: 26px;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .68);
+      padding: 20px;
+    }
+
+    .airs-section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    .airs-section h2 {
+      margin: 0 0 4px;
+      font-size: 22px;
+    }
+
+    .airs-section p {
+      margin: 0;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .airs-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .airs-form-grid label {
+      display: grid;
+      gap: 5px;
+      color: #4d594f;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .airs-form-grid input,
+    .airs-form-grid textarea {
+      width: 100%;
+      border: 1px solid #cfd9d1;
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px 12px;
+      color: #1f2520;
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .airs-form-grid textarea {
+      grid-column: 1 / -1;
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .airs-persona-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+      max-height: 430px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .airs-persona {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: #fff;
+      padding: 6px;
+      text-align: left;
+    }
+
+    .airs-persona.is-selected {
+      border-color: #1f7a5e;
+      box-shadow: 0 0 0 2px rgba(31, 122, 94, .12);
+    }
+
+    .airs-persona img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .airs-persona span {
+      display: block;
+      margin-top: 4px;
+      color: #4d594f;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .airs-card {
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .9);
+      padding: 12px;
+    }
+
+    .airs-card img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .airs-card b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .airs-card small {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: #eef7f2;
+      color: #27624d;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-card p {
+      min-height: 44px;
+    }
+
+    .airs-share {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .airs-map-placeholder {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border: 1px dashed rgba(39, 98, 77, .38);
+      border-radius: 8px;
+      background: rgba(238, 249, 243, .54);
+      padding: 16px;
+    }
+
+    .airs-label {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #fff4df;
+      color: #8a5a16;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
     }
 
     header {
@@ -888,10 +1202,134 @@
       .lane {
         grid-template-columns: 1fr;
       }
+
+      .airs-topbar,
+      .airs-section-head,
+      .airs-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .airs-nav {
+        display: flex;
+      }
+
+      .airs-hero,
+      .airs-form-grid,
+      .airs-card-grid,
+      .airs-map-placeholder {
+        grid-template-columns: 1fr;
+      }
+
+      .airs-persona-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
   </style>
 </head>
 <body>
+  <section class="airs-home" aria-labelledby="airs-title">
+    <div class="airs-shell">
+      <div class="airs-topbar">
+        <div class="airs-brand">
+          <strong>air-s</strong>
+          <span>好きなお店の空気を、1枚のair-sに。</span>
+        </div>
+        <nav class="airs-nav" aria-label="air-sナビゲーション">
+          <a href="#airs-post">air-sする</a>
+          <a href="#airs-locker">Locker β</a>
+          <a href="#airs-map">世界観MAP β</a>
+          <a href="https://okyakusa-ma.com/">お店診断へ</a>
+        </nav>
+      </div>
+
+      <section class="airs-hero">
+        <div>
+          <span class="airs-kicker">air-s β / 入口だけの仮接続</span>
+          <h1 id="airs-title">始まりは、一枚のカードから。</h1>
+          <p>
+            あなたが見つけたお店の空気が、誰かの未来の居場所を少し変えるかもしれません。
+            レビューではなく、好きだから残したくなる世界観カードを、まずは軽く作れます。
+          </p>
+          <div class="airs-actions">
+            <a class="airs-button primary" href="#airs-post">air-sする</a>
+            <a class="airs-button" href="#airs-locker">自分のair-sを見る</a>
+            <a class="airs-button" href="#airs-map">世界観MAP β</a>
+          </div>
+        </div>
+        <div class="airs-preview">
+          <img id="airs-hero-image" src="/assets/worldview-cards/personas/01-1.webp" alt="air-sカードの例">
+          <strong>この空気だった。</strong>
+          <p>曜日と時間帯、36の世界観画像、一言だけで残す、小さな居場所の記録です。</p>
+        </div>
+      </section>
+
+      <section class="airs-section" id="airs-post">
+        <div class="airs-section-head">
+          <div>
+            <h2>air-sする</h2>
+            <p>会員登録なしの仮仕様です。36枚から1枚選び、「この空気だった」を残します。</p>
+          </div>
+          <span class="airs-label">お客様air-s β</span>
+        </div>
+        <div class="airs-form-grid">
+          <label>
+            お店の名前
+            <input id="airs-store-name" placeholder="例: リビングストン">
+          </label>
+          <label>
+            Google Maps / SNS / カードURL
+            <input id="airs-source-url" type="url" placeholder="https://...">
+          </label>
+          <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
+        </div>
+        <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
+        <div class="airs-actions" style="margin-top: 14px;">
+          <button class="airs-button primary" type="button" id="airs-save">この空気をair-sする</button>
+          <span class="airs-label">Pro / Map公開は将来機能</span>
+        </div>
+      </section>
+
+      <section class="airs-section" id="airs-locker">
+        <div class="airs-section-head">
+          <div>
+            <h2>air-s.Locker β</h2>
+            <p>今はこのブラウザにだけ保存します。自分の世界観MAPが少しずつ育つ入口です。</p>
+          </div>
+          <span class="airs-label">会員機能なし</span>
+        </div>
+        <div class="airs-card-grid" id="airs-locker-list"></div>
+      </section>
+
+      <section class="airs-section" id="airs-map">
+        <div class="airs-section-head">
+          <div>
+            <h2>世界観MAP β</h2>
+            <p>Google Maps API連携はまだ行わず、air-sされた店舗カードを一覧で眺める仮入口です。</p>
+          </div>
+          <span class="airs-label">MAP公開は準備中</span>
+        </div>
+        <div class="airs-map-placeholder">
+          <div>
+            <strong>ここに、あなたが残したair-sが並びます。</strong>
+            <p>保存されたカードが増えると、地域の空気の棚として見えてきます。地図化・公開範囲・Pro表示は次の段階で設計します。</p>
+          </div>
+          <a class="airs-button" href="#airs-locker">Lockerを見る</a>
+        </div>
+      </section>
+
+      <section class="airs-section">
+        <div class="airs-section-head">
+          <div>
+            <h2>お店の方へ</h2>
+            <p>お客様が感じた空気を、公式air-sとして受け取れるようにする予定です。まずはお店の見え方診断から始められます。</p>
+          </div>
+          <a class="airs-button primary" href="https://okyakusa-ma.com/">お客様.COMで診断する</a>
+        </div>
+      </section>
+    </div>
+  </section>
+
   <main class="site">
     <header>
       <div class="brand">
@@ -1208,6 +1646,140 @@
     </p>
   </main>
   <script>
+    const AIRS_STORAGE_KEY = "airs_locker_v1";
+    const AIRS_PERSONAS = Array.from({ length: 36 }, (_, index) => {
+      const number = String(index + 1).padStart(2, "0");
+      return {
+        key: number,
+        label: `${number}の空気`,
+        image: `/assets/worldview-cards/personas/${number}-1.webp`
+      };
+    });
+    let selectedAirsPersona = AIRS_PERSONAS[0];
+
+    function isAirsDomain() {
+      return location.hostname.replace(/^www\./, "") === "air-s.jp";
+    }
+
+    function airsTimeLabel(date = new Date()) {
+      const weekday = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
+      const hour = date.getHours();
+      const zone = hour < 5 ? "深夜" : hour < 11 ? "朝" : hour < 15 ? "昼" : hour < 18 ? "夕方" : hour < 22 ? "夜" : "深夜";
+      return `${weekday}曜・${zone}`;
+    }
+
+    function loadAirsItems() {
+      try {
+        return JSON.parse(localStorage.getItem(AIRS_STORAGE_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveAirsItems(items) {
+      localStorage.setItem(AIRS_STORAGE_KEY, JSON.stringify(items.slice(0, 36)));
+    }
+
+    function shareAirsText(item) {
+      return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}\n${location.origin}`;
+    }
+
+    function renderAirsPersonas() {
+      const grid = document.querySelector("#airs-persona-grid");
+      if (!grid) return;
+      grid.innerHTML = AIRS_PERSONAS.map((persona) => `
+        <button class="airs-persona${persona.key === selectedAirsPersona.key ? " is-selected" : ""}" type="button" data-airs-persona="${persona.key}">
+          <img src="${persona.image}" alt="${persona.label}">
+          <span>${persona.label}</span>
+        </button>
+      `).join("");
+      grid.querySelectorAll("[data-airs-persona]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedAirsPersona = AIRS_PERSONAS.find((persona) => persona.key === button.dataset.airsPersona) || AIRS_PERSONAS[0];
+          document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
+          renderAirsPersonas();
+        });
+      });
+    }
+
+    function renderAirsLocker() {
+      const list = document.querySelector("#airs-locker-list");
+      if (!list) return;
+      const items = loadAirsItems();
+      if (!items.length) {
+        list.innerHTML = `
+          <div class="airs-card">
+            <small>Locker β</small>
+            <b>まだair-sはありません</b>
+            <p>好きなお店の空気を1枚残すと、ここに少しずつ溜まります。</p>
+            <button type="button" onclick="location.hash='airs-post'">air-sする</button>
+          </div>
+        `;
+        return;
+      }
+      list.innerHTML = items.map((item, index) => `
+        <article class="airs-card">
+          <img src="${item.image}" alt="${item.storeName}">
+          <small>${item.kind === "official" ? "公式air-s" : "お客様air-s"} / ${item.timeLabel}</small>
+          <b>${item.storeName}</b>
+          <p>${item.comment || "この空気だった。"}</p>
+          <div class="airs-share">
+            <button type="button" data-airs-copy="${index}">共有文をコピー</button>
+            <button type="button" data-airs-copy="${index}">Instagram</button>
+            <button type="button" data-airs-copy="${index}">TikTok</button>
+            <a href="https://line.me/R/msg/text/?${encodeURIComponent(shareAirsText(item))}" target="_blank" rel="noopener">LINE</a>
+            <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAirsText(item))}" target="_blank" rel="noopener">X</a>
+          </div>
+        </article>
+      `).join("");
+      list.querySelectorAll("[data-airs-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = items[Number(button.dataset.airsCopy)];
+          try {
+            await navigator.clipboard.writeText(shareAirsText(item));
+            button.textContent = "コピーしました";
+          } catch {
+            window.prompt("共有文をコピーしてください", shareAirsText(item));
+          }
+        });
+      });
+    }
+
+    function initAirsHome() {
+      if (!isAirsDomain()) return;
+      const params = new URLSearchParams(location.search);
+      const storeNameInput = document.querySelector("#airs-store-name");
+      const sourceUrlInput = document.querySelector("#airs-source-url");
+      if (storeNameInput && params.get("store")) storeNameInput.value = params.get("store");
+      if (sourceUrlInput && params.get("source")) sourceUrlInput.value = params.get("source");
+      const personaFromUrl = AIRS_PERSONAS.find((persona) => persona.key === params.get("persona"));
+      if (personaFromUrl) selectedAirsPersona = personaFromUrl;
+      document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
+      renderAirsPersonas();
+      renderAirsLocker();
+      document.querySelector("#airs-save")?.addEventListener("click", () => {
+        const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
+        const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || "";
+        const comment = document.querySelector("#airs-comment")?.value.trim() || "";
+        const item = {
+          id: `airs_${Date.now().toString(36)}`,
+          kind: "customer",
+          storeName,
+          sourceUrl,
+          comment,
+          personaKey: selectedAirsPersona.key,
+          image: selectedAirsPersona.image,
+          timeLabel: airsTimeLabel(),
+          createdAt: Date.now()
+        };
+        saveAirsItems([item, ...loadAirsItems()]);
+        renderAirsLocker();
+        location.hash = "airs-locker";
+      });
+    }
+
+    initAirsHome();
+
     const form = document.querySelector("#diagnosis-form");
     const message = document.querySelector("#form-message");
     const urlHelpBox = document.querySelector("#url-help-box");

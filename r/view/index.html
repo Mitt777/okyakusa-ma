@@ -1425,7 +1425,11 @@
       gap: 10px;
     }
 
-    .ok-card-share button {
+    .ok-card-share button,
+    .ok-card-share a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid #d7b77b;
       border-radius: 999px;
       padding: 9px 13px;
@@ -1434,6 +1438,7 @@
       font: inherit;
       font-size: 12px;
       font-weight: 900;
+      text-decoration: none;
     }
 
     .ok-card-cover-options {
@@ -3659,6 +3664,7 @@
       const primaryLine = WORLDVIEW_CARD_LINES[primaryKey] || primary.description;
       const cardImage = activeWorldviewCardImage(personaKey);
       const generatedAt = worldviewCardGeneratedAt();
+      const airsUrl = buildAirsPostUrl(storeName, personaKey);
 
       return `
         <div class="ok-card-gift" id="okyakusama-card">
@@ -3667,7 +3673,7 @@
               <h3>お客様.COMカードをプレゼントします</h3>
               <p>点数ではなく、お店の空気を1枚にした漂流型ショップカードです。LINEやSNSで「うちらしさ」を共有できます。</p>
             </div>
-            <span class="ok-card-badge">βカード</span>
+            <span class="ok-card-badge">店舗公式カード候補 β</span>
           </div>
           <div class="ok-card-stage">
             <div class="ok-card-stack" aria-label="お客様.COMカードのプレビュー">
@@ -3694,6 +3700,8 @@
               <div class="ok-card-share">
                 <button type="button" onclick="shareWorldviewCardLine()">お友達に世界観カードを送る</button>
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
+                <a href="${escapeHtml(airsUrl)}" target="_blank" rel="noopener">air-sする</a>
+                <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener">公式air-sとして使う</a>
               </div>
             </div>
           </div>
@@ -3707,6 +3715,7 @@
           <div class="card-only-floating-share" aria-label="世界観カードの共有">
             <button type="button" onclick="shareWorldviewCardLine()">LINEで送る</button>
             <button type="button" onclick="copyWorldviewCardUrl(this)">このカードを保存</button>
+            <button type="button" onclick="location.href='${escapeHtml(airsUrl)}'">air-sする</button>
           </div>
         </div>
       `;
@@ -3953,6 +3962,17 @@
         url.searchParams.set("sn", concise(shareContext.storeName, 60));
       }
       applyWorldviewCardUrlParams(url);
+      return url.toString();
+    }
+
+    function buildAirsPostUrl(storeName = "", personaKey = "") {
+      const url = new URL("https://air-s.jp/");
+      url.hash = "airs-post";
+      url.searchParams.set("store", concise(storeName || "このお店", 60));
+      url.searchParams.set("source", worldviewCardShareUrl());
+      const imagePath = PERSONA_IMAGE_MAP[personaKey] || "";
+      const personaMatch = imagePath.match(/\/personas\/(\d{2})-1\.webp$/);
+      if (personaMatch) url.searchParams.set("persona", personaMatch[1]);
       return url.toString();
     }
 
