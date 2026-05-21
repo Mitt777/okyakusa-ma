@@ -1,4 +1,4 @@
-const REQUIRED_FIELDS = ["store_query", "area", "category", "owner_name", "email"];
+const REQUIRED_FIELDS = ["store_query", "owner_name", "email"];
 const { fetchPlacesObservation } = require("./_lib/places");
 const { generateDiagnosisJson } = require("./_lib/gemini");
 const { buildMonthlyReport } = require("./_lib/monthly");
@@ -92,8 +92,8 @@ module.exports = async function handler(request, response) {
     created_at: new Date().toISOString(),
     status: "受付",
     store_name: payload.store_query,
-    area: payload.area,
-    category: payload.category,
+    area: payload.area || "",
+    category: payload.category || "",
     google_maps_url: payload.google_maps_url || "",
     website_url: payload.website_url || "",
     target_keywords: payload.target_keywords || "",

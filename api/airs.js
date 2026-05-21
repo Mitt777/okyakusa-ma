@@ -2,6 +2,7 @@ const { readJsonBody, sendJson } = require("./_lib/response");
 
 const MAX_TEXT = 240;
 const ALLOWED_KINDS = new Set(["customer", "official"]);
+const ALLOWED_VISIBILITY = new Set(["private", "link", "public"]);
 
 function safeSegment(value, fallback = "airs") {
   return String(value || fallback)
@@ -28,10 +29,12 @@ function buildAirsRecord(body) {
   const storeName = cleanText(body.storeName || "好きなお店", 80);
   const requestId = cleanText(body.requestId, 80);
   const airId = safeSegment(body.airId, `airs_${Date.now().toString(36)}`);
+  const visibility = ALLOWED_VISIBILITY.has(body.visibility) ? body.visibility : "private";
   return {
     v: 1,
     airId,
     kind,
+    visibility,
     storeName,
     requestId,
     officialCardUrl: safeUrl(body.officialCardUrl || body.sourceUrl),

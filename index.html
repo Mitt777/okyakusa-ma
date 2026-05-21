@@ -320,6 +320,87 @@
       min-height: 44px;
     }
 
+    .airs-status {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(238, 249, 243, .72);
+      padding: 14px;
+    }
+
+    .airs-status strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #20382d;
+      font-size: 16px;
+    }
+
+    .airs-status p {
+      margin: 0;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .airs-count {
+      display: grid;
+      place-items: center;
+      min-width: 82px;
+      min-height: 82px;
+      border-radius: 999px;
+      background: #fff;
+      color: #1f7a5e;
+      border: 1px solid #c6dfd0;
+      font-size: 24px;
+      font-weight: 950;
+    }
+
+    .airs-count span {
+      display: block;
+      color: #6d766e;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .airs-milestones {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .airs-milestone {
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 10px;
+      color: #69736b;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .airs-milestone.is-active {
+      border-color: #88c0a8;
+      background: #eef9f3;
+      color: #22513f;
+    }
+
+    .airs-private-note {
+      display: inline-flex;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: #f2eadb;
+      color: #74501b;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
     .airs-share {
       display: flex;
       flex-wrap: wrap;
@@ -336,6 +417,53 @@
       border-radius: 8px;
       background: rgba(238, 249, 243, .54);
       padding: 16px;
+    }
+
+    .airs-map-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .airs-map-item {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      padding: 10px;
+    }
+
+    .airs-map-item img {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .airs-map-item b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .airs-map-item small {
+      color: #667065;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-map-pin {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: #1f7a5e;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 950;
     }
 
     .airs-label {
@@ -815,6 +943,7 @@
     }
 
     .intake-fields input,
+    .intake-fields select,
     .intake-fields textarea {
       width: 100%;
       border: 1px solid #cfd7e3;
@@ -1277,6 +1406,19 @@
       .airs-persona-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
+
+      .airs-status,
+      .airs-map-item {
+        grid-template-columns: 1fr;
+      }
+
+      .airs-count {
+        justify-self: start;
+      }
+
+      .airs-milestones {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
   </style>
 </head>
@@ -1321,25 +1463,25 @@
         <div class="airs-section-head">
           <div>
             <h2>air-sする</h2>
-            <p>会員登録なしの仮仕様です。36枚から1枚選び、「この空気だった」を残します。</p>
+            <p>まずは完全非公開で保存します。好きな場所を5つ置くと、最初のair-s Mapが開きます。</p>
           </div>
-          <span class="airs-label">お客様air-s β</span>
+          <span class="airs-label">完全非公開 β</span>
         </div>
         <div class="airs-form-grid">
           <label>
-            お店の名前
-            <input id="airs-store-name" placeholder="例: リビングストン">
+            場所やお店の名前
+            <input id="airs-store-name" placeholder="例: リビングストン / 静かな本屋 / 旅先の海辺">
           </label>
           <label>
-            Google Maps / SNS / カードURL
-            <input id="airs-source-url" type="url" placeholder="https://...">
+            Google Maps / SNS / カードURL（任意）
+            <input id="airs-source-url" type="url" placeholder="わかる場合だけ https://...">
           </label>
           <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
         </div>
         <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
         <div class="airs-actions" style="margin-top: 14px;">
           <button class="airs-button primary" type="button" id="airs-save">この空気をair-sする</button>
-          <span class="airs-label">Pro / Map公開は将来機能</span>
+          <span class="airs-label">30件までは公開設定なし</span>
         </div>
       </section>
 
@@ -1351,6 +1493,7 @@
           </div>
           <span class="airs-label">会員機能なし</span>
         </div>
+        <div id="airs-locker-status"></div>
         <div class="airs-card-grid" id="airs-locker-list"></div>
       </section>
 
@@ -1362,13 +1505,7 @@
           </div>
           <span class="airs-label">MAP公開は準備中</span>
         </div>
-        <div class="airs-map-placeholder">
-          <div>
-            <strong>ここに、あなたが残したair-sが並びます。</strong>
-            <p>保存されたカードが増えると、地域の空気の棚として見えてきます。地図化・公開範囲・Pro表示は次の段階で設計します。</p>
-          </div>
-          <a class="airs-button" href="#airs-locker">Lockerを見る</a>
-        </div>
+        <div id="airs-map-body"></div>
       </section>
 
       <section class="airs-section">
@@ -1422,36 +1559,36 @@
 
       <div class="search-stage" aria-label="無料診断申込フォーム">
         <div class="step-line">
-          <span>Step 1 / 5　まずは店舗名と地域だけで候補を特定します</span>
+          <span>AI問診入口　まずは分かる範囲だけでお店を特定します</span>
           <div class="progress" aria-label="入力進捗 20%"><span></span></div>
         </div>
 
         <div class="search-main">
           <div class="prompt">
-            <strong>診断したいお店を入力してください</strong>
-            <span>例: 森の入口カフェ　那須町 / 黒磯 ランチ / 大田原 美容室</span>
+            <strong>診断したいお店を教えてください</strong>
+            <span>店名、地域名、Google Maps URL、公式サイトURLのどれでも始められます。</span>
           </div>
           <form id="diagnosis-form" action="/api/diagnosis" method="post">
             <div class="search-box">
-              <input name="store_query" value="" placeholder="店舗名・地域・業種を入力" required>
-              <button type="submit">無料で診断する</button>
+              <input name="store_query" value="" placeholder="例: リビングストン 黒磯 / 森の入口カフェ 那須 / https://..." required>
+              <button type="submit">AI問診で診断する</button>
             </div>
             <div class="intake-fields">
               <label>
-                エリア・住所
-                <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市" required>
+                エリア・住所（わかる範囲）
+                <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市">
               </label>
               <label>
-                業種
-                <input name="category" placeholder="例: カフェ / ランチ / 美容室" required>
+                業種（わかる範囲）
+                <input name="category" placeholder="例: カフェ / ランチ / 美容室">
               </label>
               <label>
-                <span class="field-label">Google Maps URL <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
-                <input name="google_maps_url" type="url" placeholder="https://maps.google.com/...">
+                <span class="field-label">Google Maps URL（任意） <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
+                <input name="google_maps_url" type="url" placeholder="わかる場合だけ https://maps.google.com/...">
               </label>
               <label>
-                公式サイトURL
-                <input name="website_url" type="url" placeholder="https://example.com">
+                公式サイトURL（任意）
+                <input name="website_url" type="url" placeholder="わかる場合だけ https://example.com">
               </label>
               <label>
                 <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
@@ -1490,6 +1627,17 @@
               <input name="sns_url" type="hidden">
               <div class="url-help-box" id="url-help-box" hidden></div>
               <label>
+                お店との関係
+                <select name="owner_relation">
+                  <option value="">選択してください</option>
+                  <option value="owner">オーナー・スタッフ</option>
+                  <option value="supporter">支援者・知人</option>
+                  <option value="customer">お客様</option>
+                  <option value="marketer">ウェブマーケター・制作支援者</option>
+                  <option value="trial">まず試している</option>
+                </select>
+              </label>
+              <label>
                 お名前
                 <input name="owner_name" placeholder="診断結果を受け取る方" required>
               </label>
@@ -1498,8 +1646,8 @@
                 <input name="email" type="email" placeholder="name@example.com" required>
               </label>
               <label class="field-wide">
-                来てほしいお客様・今困っていること
-                <textarea name="current_problem" placeholder="例: 観光客に見つけてほしい / Instagramは頑張っているが来店につながっているかわからない"></textarea>
+                今の気持ち・気になっていること
+                <textarea name="current_problem" placeholder="例: 初めての人に入りやすく見えるか知りたい / SNSは頑張っているが来店につながっているかわからない"></textarea>
               </label>
               <label class="hp">
                 入力しないでください
@@ -1507,7 +1655,7 @@
               </label>
             </div>
             <div class="submit-row">
-              <p>送信後、受付IDを発行します。診断結果は後日 `/r/xxxx` の短いURLで共有できます。</p>
+              <p>住所やカテゴリは、Google Mapsから取得できる範囲で補います。まずは最低限で大丈夫です。</p>
               <button type="submit" class="search-submit">無料診断を申し込む</button>
             </div>
             <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
@@ -1738,6 +1886,78 @@
       return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${sourceLine}\n${location.origin}`;
     }
 
+    function airsMilestoneMessage(count) {
+      if (count >= 30) {
+        return {
+          title: "30件のair-sが集まりました。",
+          body: "この地図の一部を、誰かに見せる準備ができました。公開設定βはここから開く設計です。"
+        };
+      }
+      if (count >= 10) {
+        return {
+          title: "近い空気が、少し見えはじめる頃です。",
+          body: "参考になりそうなair-sは、精度を見ながら7〜10件以降にそっと出していきます。"
+        };
+      }
+      if (count >= 5) {
+        return {
+          title: "最初のair-s Mapができました。",
+          body: "あなたが大切にしてきた場所が、少しずつ地図になっています。"
+        };
+      }
+      if (count >= 3) {
+        return {
+          title: "少しだけ、空気の傾向が見えてきました。",
+          body: "まだ断定はしません。残せた気持ちよさと、見返せることを大切にします。"
+        };
+      }
+      return {
+        title: "まずは最初の5つを置いてみましょう。",
+        body: "フレンドではなく、好きな場所から始めます。すべて非公開でLockerに保存されます。"
+      };
+    }
+
+    function renderAirsMilestones(count) {
+      const milestones = [
+        [3, "3件", "傾向の気配"],
+        [5, "5件", "Map β"],
+        [10, "10件", "近い空気"],
+        [30, "30件", "公開設定β"]
+      ];
+      return `
+        <div class="airs-milestones" aria-label="air-sの節目">
+          ${milestones.map(([target, label, text]) => `
+            <div class="airs-milestone${count >= target ? " is-active" : ""}">
+              ${label}<br>${text}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderAirsStatus(items) {
+      const target = 5;
+      const count = items.length;
+      const progress = Math.min(count, target);
+      const message = airsMilestoneMessage(count);
+      return `
+        <div class="airs-status">
+          <div>
+            <strong>${message.title}</strong>
+            <p>${message.body}</p>
+            <span class="airs-private-note">現在は完全非公開です。30件たまるまで公開設定は出しません。</span>
+          </div>
+          <div class="airs-count">${progress}/${target}<span>first map</span></div>
+        </div>
+        ${renderAirsMilestones(count)}
+      `;
+    }
+
+    function mapsLinkForAirs(item) {
+      if (item.sourceUrl && /^https?:\/\//.test(item.sourceUrl)) return item.sourceUrl;
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.storeName || "好きな場所")}`;
+    }
+
     async function saveAirsToServer(item) {
       try {
         const response = await fetch("/api/airs", {
@@ -1752,7 +1972,8 @@
             personaKey: item.personaKey,
             image: item.image,
             comment: item.comment,
-            timeLabel: item.timeLabel
+            timeLabel: item.timeLabel,
+            visibility: item.visibility || "private"
           })
         });
         const data = await response.json();
@@ -1790,25 +2011,29 @@
       const list = document.querySelector("#airs-locker-list");
       if (!list) return;
       const items = loadAirsItems();
+      const status = document.querySelector("#airs-locker-status");
+      if (status) status.innerHTML = renderAirsStatus(items);
       if (!items.length) {
         list.innerHTML = `
           <div class="airs-card">
             <small>Locker β</small>
             <b>まだair-sはありません</b>
-            <p>好きなお店の空気を1枚残すと、ここに少しずつ溜まります。</p>
+            <p>好きな場所の空気を1枚残すと、ここに少しずつ溜まります。最初は誰にも見えません。</p>
             <button type="button" onclick="location.hash='airs-post'">air-sする</button>
           </div>
         `;
+        renderAirsMap(items);
         return;
       }
       list.innerHTML = items.map((item, index) => `
         <article class="airs-card">
           <img src="${item.image}" alt="${item.storeName}">
-          <small>${item.kind === "official" ? "公式air-s" : "お客様air-s"} / ${item.timeLabel}</small>
+          <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${item.timeLabel}</small>
           <b>${item.storeName}</b>
           <p>${item.comment || "この空気だった。"}</p>
-          <p>${item.serverSaved ? "サーバー保存済み。店舗側と紐づける準備ができています。" : "この端末内の仮保存です。"}</p>
+          <p>${item.serverSaved ? "サーバー保存済み。ただし表示はまだ自分だけの扱いです。" : "この端末内の仮保存です。"}</p>
           <div class="airs-share">
+            <a href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">Google Mapsで開く</a>
             <button type="button" data-airs-copy="${index}">共有文をコピー</button>
             <button type="button" data-airs-copy="${index}">Instagram</button>
             <button type="button" data-airs-copy="${index}">TikTok</button>
@@ -1828,6 +2053,46 @@
           }
         });
       });
+      renderAirsMap(items);
+    }
+
+    function renderAirsMap(items = loadAirsItems()) {
+      const mapBody = document.querySelector("#airs-map-body");
+      if (!mapBody) return;
+      if (!items.length) {
+        mapBody.innerHTML = `
+          <div class="airs-map-placeholder">
+            <div>
+              <strong>ここに、あなたが残したair-sが並びます。</strong>
+              <p>まずは非公開で5つ置いてみましょう。地図はまだ仮ですが、あなたの場所記憶の棚がここから育ちます。</p>
+            </div>
+            <a class="airs-button" href="#airs-post">最初のair-sを置く</a>
+          </div>
+        `;
+        return;
+      }
+      const isUnlocked = items.length >= 5;
+      mapBody.innerHTML = `
+        <div class="airs-map-placeholder">
+          <div>
+            <strong>${isUnlocked ? "あなたの最初のair-s Mapができました。" : `あと${5 - items.length}件で、最初のair-s Mapが開きます。`}</strong>
+            <p>${isUnlocked ? "本格地図の前に、まずは場所カード一覧として表示します。すべて非公開のままです。" : "今はまだLockerの中で育てる時間です。公開やフレンドは急ぎません。"}</p>
+          </div>
+          <a class="airs-button" href="#airs-post">もう1件置く</a>
+        </div>
+        <div class="airs-map-list">
+          ${items.slice(0, 12).map((item, index) => `
+            <article class="airs-map-item">
+              <img src="${item.image}" alt="${item.storeName}">
+              <div>
+                <b>${item.storeName}</b>
+                <small>${item.timeLabel} / 非公開 / ${item.comment || "この空気だった。"}</small>
+              </div>
+              <a class="airs-map-pin" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">${index + 1}</a>
+            </article>
+          `).join("")}
+        </div>
+      `;
     }
 
     function initAirsHome() {
@@ -1854,6 +2119,7 @@
           comment,
           personaKey: selectedAirsPersona.key,
           image: selectedAirsPersona.image,
+          visibility: "private",
           timeLabel: airsTimeLabel(),
           createdAt: Date.now()
         };
