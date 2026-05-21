@@ -2385,9 +2385,10 @@
       if (!item?.storeName && !item?.placeId) return null;
       try {
         const params = new URLSearchParams();
+        params.set("action", "official");
         if (item.storeName) params.set("store", item.storeName);
         if (item.placeId) params.set("placeId", item.placeId);
-        const response = await fetch(`/api/official-air?${params.toString()}`);
+        const response = await fetch(`/api/airs?${params.toString()}`);
         const data = await response.json();
         if (!response.ok || !data.ok) return null;
         return data.official || null;
@@ -2425,7 +2426,7 @@
         button.textContent = "申請中...";
       }
       try {
-        const response = await fetch("/api/air-connection", {
+        const response = await fetch("/api/airs?action=connect", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
