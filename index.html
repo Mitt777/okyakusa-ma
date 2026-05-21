@@ -2398,20 +2398,33 @@
     }
 
     async function hydrateOfficialAirs(items) {
-      const targets = items.filter((item) => !item.officialChecked).slice(0, 8);
+      const now = Date.now();
+      const recheckAfter = 10 * 60 * 1000;
+      const targets = items.filter((item) => (
+        !item.official
+        && (!item.officialCheckedAt || now - Number(item.officialCheckedAt) > recheckAfter)
+      )).slice(0, 8);
       if (!targets.length) return;
       let changed = false;
       for (const item of targets) {
         const official = await lookupOfficialAirs(item);
         item.official = official || null;
         item.officialChecked = true;
+        item.officialCheckedAt = now;
         changed = true;
       }
       if (changed) {
         const current = loadAirsItems();
         const hydrated = current.map((item) => {
           const updated = targets.find((target) => target.id === item.id);
-          return updated ? { ...item, official: updated.official, officialChecked: true } : item;
+          return updated
+            ? {
+                ...item,
+                official: updated.official,
+                officialChecked: true,
+                officialCheckedAt: updated.officialCheckedAt
+              }
+            : item;
         });
         saveAirsItems(hydrated);
         renderAirsLocker();
