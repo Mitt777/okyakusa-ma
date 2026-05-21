@@ -1692,6 +1692,43 @@
       white-space: nowrap;
     }
 
+    .card-language-note {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid rgba(63, 138, 109, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .78);
+      padding: 12px;
+    }
+
+    .card-language-note small {
+      display: block;
+      color: #6a5a43;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .card-language-note strong {
+      display: block;
+      margin-top: 4px;
+      color: #19382e;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .card-language-note p {
+      margin: 5px 0 0;
+      color: #4e6056;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+
+    .card-only-view .card-language-note {
+      display: block;
+    }
+
     .ok-card-qr {
       margin-top: 14px;
       border: 1px solid rgba(215, 183, 123, .68);
@@ -3045,6 +3082,28 @@
     const params = new URLSearchParams(window.location.search);
     const isCardOnlyView = params.get("card") === "1";
     document.documentElement.classList.toggle("card-only-view", isCardOnlyView);
+    const CARD_I18N = {
+      ja: {
+        label: "多言語カード β",
+        title: "このカードは、お店の空気を伝えるショップカードです。",
+        body: "今は短い案内だけを端末の言語に合わせます。本文翻訳は次の段階で育てます。"
+      },
+      en: {
+        label: "Multilingual card beta",
+        title: "This is a small card that shares the mood of this place.",
+        body: "For now, only this guide follows your browser language. Full translation will grow step by step."
+      },
+      ko: {
+        label: "다국어 카드 beta",
+        title: "이 카드는 가게의 분위기를 전하는 작은 카드입니다.",
+        body: "지금은 짧은 안내만 브라우저 언어에 맞춥니다. 본문 번역은 다음 단계에서 확장합니다."
+      },
+      zh: {
+        label: "多语言卡片 beta",
+        title: "这是一张用来传达店铺氛围的小卡片。",
+        body: "现在先根据浏览器语言显示简短说明。完整翻译会在下一阶段继续完善。"
+      }
+    };
     const id = params.get("id") || params.get("request_id");
     const loading = document.querySelector("#loading");
     const errorBox = document.querySelector("#error");
@@ -3995,6 +4054,7 @@
             </div>
             <a href="/">無料で試す</a>
           </div>
+          ${renderCardLanguageNote()}
           <div class="card-only-floating-share" aria-label="世界観カードの共有">
             <button type="button" onclick="shareWorldviewCardLine()">LINEで送る</button>
             <button type="button" onclick="copyWorldviewCardUrl(this)">このカードを保存</button>
@@ -4264,6 +4324,26 @@
       if (storeName) url.searchParams.set("store", concise(storeName, 60));
       if (id) url.searchParams.set("requestId", id);
       return url.toString();
+    }
+
+    function cardLanguageKey() {
+      const explicit = (params.get("lang") || "").toLowerCase();
+      const language = explicit || (navigator.language || "ja").toLowerCase();
+      if (language.startsWith("ko")) return "ko";
+      if (language.startsWith("zh")) return "zh";
+      if (language.startsWith("en")) return "en";
+      return "ja";
+    }
+
+    function renderCardLanguageNote() {
+      const copy = CARD_I18N[cardLanguageKey()] || CARD_I18N.ja;
+      return `
+        <div class="card-language-note">
+          <small>${escapeHtml(copy.label)}</small>
+          <strong>${escapeHtml(copy.title)}</strong>
+          <p>${escapeHtml(copy.body)}</p>
+        </div>
+      `;
     }
 
     function entryPhotoSlotLabel(slot) {
