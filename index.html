@@ -1112,7 +1112,8 @@
       margin-top: -2px;
     }
 
-    .sns-extra-fields {
+    .sns-extra-fields,
+    .optional-intake-fields {
       grid-column: 1 / -1;
       border: 1px solid #d9e2ee;
       border-radius: 8px;
@@ -1120,7 +1121,8 @@
       background: rgba(255, 255, 255, .72);
     }
 
-    .sns-extra-fields summary {
+    .sns-extra-fields summary,
+    .optional-intake-fields summary {
       color: #1f6f5c;
       font-size: 13px;
       font-weight: 900;
@@ -1128,21 +1130,25 @@
       list-style: none;
     }
 
-    .sns-extra-fields summary::-webkit-details-marker {
+    .sns-extra-fields summary::-webkit-details-marker,
+    .optional-intake-fields summary::-webkit-details-marker {
       display: none;
     }
 
-    .sns-extra-fields summary::after {
+    .sns-extra-fields summary::after,
+    .optional-intake-fields summary::after {
       content: "＋";
       float: right;
       color: #667085;
     }
 
-    .sns-extra-fields[open] summary::after {
+    .sns-extra-fields[open] summary::after,
+    .optional-intake-fields[open] summary::after {
       content: "－";
     }
 
-    .sns-extra-grid {
+    .sns-extra-grid,
+    .optional-intake-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
@@ -1493,7 +1499,8 @@
         grid-template-columns: 1fr;
       }
 
-      .sns-extra-grid {
+      .sns-extra-grid,
+      .optional-intake-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1554,6 +1561,11 @@
 
       .airs-nav {
         display: flex;
+      }
+
+      .airs-nav a:nth-child(2),
+      .airs-nav a:nth-child(3) {
+        display: none;
       }
 
       .airs-topbar {
@@ -1788,7 +1800,7 @@
         <div class="search-main">
           <div class="prompt">
             <strong>診断したいお店を教えてください</strong>
-            <span>店名、地域名、Google Maps URL、公式サイトURLのどれでも始められます。</span>
+            <span>まずは店名だけでも大丈夫です。地域名やURLがあると、候補確認がより正確になります。</span>
           </div>
           <form id="diagnosis-form" action="/api/diagnosis" method="post">
             <div class="search-box">
@@ -1797,41 +1809,41 @@
             </div>
             <div class="place-candidates" id="place-candidates" aria-live="polite"></div>
             <div class="form-step-hint" id="form-step-hint">
-              <strong>おすすめ:</strong> まず候補を確認してお店を選び、公式SNS・お名前・メールを足したら、下の「無料診断を申し込む」へ進んでください。
+              <strong>店名だけでも始められます。</strong> 候補を確認してお店を選び、お名前・メールを足したら、下の「無料診断を申し込む」へ進んでください。
             </div>
             <div class="intake-fields">
-              <label>
-                エリア・住所（わかる範囲）
-                <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市">
-              </label>
-              <label>
-                業種（わかる範囲）
-                <input name="category" placeholder="例: カフェ / ランチ / 美容室">
-              </label>
-              <label>
-                <span class="field-label">Google Maps URL（任意） <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
-                <input name="google_maps_url" type="url" placeholder="わかる場合だけ https://maps.google.com/...">
-              </label>
-              <label>
-                公式サイトURL（任意）
-                <input name="website_url" type="url" placeholder="わかる場合だけ https://example.com">
-              </label>
-              <label>
-                <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
-                <span class="url-help-inline">
-                  <button class="url-help-link" type="button" data-url-help="x">Xの場合</button>
-                  <button class="url-help-link" type="button" data-url-help="tiktok">TikTokの場合</button>
-                  <button class="url-help-link" type="button" data-url-help="facebook">Facebookの場合</button>
-                </span>
-                <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
-              </label>
-              <label>
-                <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
-                <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
-              </label>
-              <details class="sns-extra-fields">
-                <summary>Facebook・LINEなども追加する</summary>
-                <div class="sns-extra-grid">
+              <details class="optional-intake-fields">
+                <summary>詳しく入力する（Google Maps・公式サイト・SNS）</summary>
+                <div class="optional-intake-grid">
+                  <label>
+                    エリア・住所（わかる範囲）
+                    <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市">
+                  </label>
+                  <label>
+                    業種（わかる範囲）
+                    <input name="category" placeholder="例: カフェ / ランチ / 美容室">
+                  </label>
+                  <label>
+                    <span class="field-label">Google Maps URL（任意） <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
+                    <input name="google_maps_url" type="url" placeholder="わかる場合だけ https://maps.google.com/...">
+                  </label>
+                  <label>
+                    公式サイトURL（任意）
+                    <input name="website_url" type="url" placeholder="わかる場合だけ https://example.com">
+                  </label>
+                  <label>
+                    <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
+                    <span class="url-help-inline">
+                      <button class="url-help-link" type="button" data-url-help="x">Xの場合</button>
+                      <button class="url-help-link" type="button" data-url-help="tiktok">TikTokの場合</button>
+                      <button class="url-help-link" type="button" data-url-help="facebook">Facebookの場合</button>
+                    </span>
+                    <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
+                  </label>
+                  <label>
+                    <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
+                    <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
+                  </label>
                   <label>
                     Facebook URL
                     <input name="facebook_url" type="url" placeholder="https://www.facebook.com/...">
@@ -1848,10 +1860,10 @@
                     TikTok URL
                     <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/...">
                   </label>
+                  <input name="sns_url" type="hidden">
+                  <div class="url-help-box" id="url-help-box" hidden></div>
                 </div>
               </details>
-              <input name="sns_url" type="hidden">
-              <div class="url-help-box" id="url-help-box" hidden></div>
               <label>
                 お店との関係
                 <select name="owner_relation">
@@ -2658,7 +2670,7 @@
           setInputValue("website_url", candidate.website_url, false);
           message.textContent = "お店候補を反映しました。公式SNSや今の気持ちを足して、下のボタンから診断できます。";
           if (formStepHint) {
-            formStepHint.innerHTML = "<strong>次にやること:</strong> 公式SNS、お名前、メールを足してください。わからない項目は空欄で大丈夫です。最後に緑の「無料診断を申し込む」へ進みます。";
+            formStepHint.innerHTML = "<strong>次にやること:</strong> お名前とメールを足してください。公式SNSやURLは、必要な時だけ「詳しく入力する」から追加できます。最後に緑の「無料診断を申し込む」へ進みます。";
           }
           placeCandidates.querySelectorAll("[data-place-index]").forEach((item) => {
             item.textContent = item === button ? "選択しました" : "このお店で診断する";
