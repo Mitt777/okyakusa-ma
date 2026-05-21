@@ -41,6 +41,7 @@ function buildAirsRecord(body) {
     address: cleanText(body.address, 180),
     category: cleanText(body.category, 80),
     rating: Number.isFinite(Number(body.rating)) ? Number(body.rating) : null,
+    ownerEmail: cleanText(body.ownerEmail || body.email, 160),
     officialCardUrl: safeUrl(body.officialCardUrl || body.sourceUrl),
     sourceUrl: safeUrl(body.sourceUrl || body.officialCardUrl),
     personaKey: cleanText(body.personaKey, 32),

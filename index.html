@@ -507,6 +507,29 @@
       margin-top: 10px;
     }
 
+    .airs-official-link {
+      margin-top: 10px;
+      border: 1px solid rgba(215, 183, 123, .58);
+      border-radius: 8px;
+      background: #fffaf0;
+      padding: 10px;
+    }
+
+    .airs-official-link strong {
+      display: block;
+      color: #6a3d08;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .airs-official-link p {
+      min-height: 0;
+      margin: 4px 0 8px;
+      color: #6a5a43;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
     .airs-map-placeholder {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -522,6 +545,81 @@
       display: grid;
       gap: 10px;
       margin-top: 12px;
+    }
+
+    .airs-map-canvas {
+      position: relative;
+      min-height: 320px;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(238, 249, 243, .92), rgba(255, 250, 240, .88)),
+        radial-gradient(circle at 18% 28%, rgba(31, 122, 94, .16), transparent 26%),
+        radial-gradient(circle at 76% 34%, rgba(215, 183, 123, .24), transparent 28%),
+        radial-gradient(circle at 42% 78%, rgba(84, 135, 182, .15), transparent 30%);
+    }
+
+    .airs-map-canvas::before,
+    .airs-map-canvas::after {
+      content: "";
+      position: absolute;
+      inset: 42px -20px auto;
+      height: 1px;
+      background: rgba(58, 92, 73, .14);
+      transform: rotate(-8deg);
+    }
+
+    .airs-map-canvas::after {
+      inset: auto -16px 76px;
+      transform: rotate(11deg);
+    }
+
+    .airs-map-pin-card {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      display: grid;
+      gap: 4px;
+      min-width: 112px;
+      max-width: 150px;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .88);
+      padding: 8px;
+      color: #24463a;
+      text-decoration: none;
+      box-shadow: 0 12px 28px rgba(42, 52, 44, .12);
+    }
+
+    .airs-map-pin-card span {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #1f7a5e;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .airs-map-pin-card b {
+      overflow: hidden;
+      color: #20382d;
+      font-size: 12px;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .airs-map-pin-card small {
+      color: #667065;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.35;
     }
 
     .airs-map-item {
@@ -2251,6 +2349,108 @@
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.storeName || "好きな場所")}`;
     }
 
+    function hashNumber(value) {
+      return String(value || "").split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    }
+
+    function mapPointForAirs(item, index) {
+      const seed = hashNumber(`${item.placeId || item.storeName}-${index}`);
+      return {
+        x: 14 + (seed % 72),
+        y: 16 + ((seed * 7) % 68)
+      };
+    }
+
+    async function lookupOfficialAirs(item) {
+      if (!item?.storeName && !item?.placeId) return null;
+      try {
+        const params = new URLSearchParams();
+        if (item.storeName) params.set("store", item.storeName);
+        if (item.placeId) params.set("placeId", item.placeId);
+        const response = await fetch(`/api/official-air?${params.toString()}`);
+        const data = await response.json();
+        if (!response.ok || !data.ok) return null;
+        return data.official || null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function hydrateOfficialAirs(items) {
+      const targets = items.filter((item) => !item.officialChecked).slice(0, 8);
+      if (!targets.length) return;
+      let changed = false;
+      for (const item of targets) {
+        const official = await lookupOfficialAirs(item);
+        item.official = official || null;
+        item.officialChecked = true;
+        changed = true;
+      }
+      if (changed) {
+        const current = loadAirsItems();
+        const hydrated = current.map((item) => {
+          const updated = targets.find((target) => target.id === item.id);
+          return updated ? { ...item, official: updated.official, officialChecked: true } : item;
+        });
+        saveAirsItems(hydrated);
+        renderAirsLocker();
+      }
+    }
+
+    async function requestAirsConnection(item, button) {
+      if (!item?.official) return;
+      const original = button?.textContent || "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "申請中...";
+      }
+      try {
+        const response = await fetch("/api/air-connection", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            connectionId: `conn_${Date.now().toString(36)}`,
+            officialAirId: item.official.airId,
+            officialRequestId: item.official.requestId,
+            officialCardUrl: item.official.officialCardUrl,
+            customerAirId: item.id,
+            storeName: item.storeName,
+            comment: item.comment || "この空気だった。"
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "申請できませんでした。");
+        const items = loadAirsItems().map((entry) => (
+          entry.id === item.id
+            ? { ...entry, connectionRequested: true, connectionPathname: data.pathname }
+            : entry
+        ));
+        saveAirsItems(items);
+        renderAirsLocker();
+      } catch (error) {
+        if (button) {
+          button.disabled = false;
+          button.textContent = original;
+        }
+        window.alert(error.message || "つながり申請に失敗しました。");
+      }
+    }
+
+    function renderAirsOfficialLink(item, index) {
+      if (!item.official) return "";
+      const officialUrl = item.official.officialCardUrl || "#";
+      return `
+        <div class="airs-official-link">
+          <strong>公式ページがあります</strong>
+          <p>${escapeHtml(item.storeName)}の公式世界観カードへ移動できます。つながり申請βは、今は申請記録を残す段階です。</p>
+          <div class="airs-share">
+            <a href="${escapeHtml(officialUrl)}" target="_blank" rel="noopener">公式ページ</a>
+            <button type="button" data-airs-connect="${index}" ${item.connectionRequested ? "disabled" : ""}>${item.connectionRequested ? "申請済み" : "つながり申請β"}</button>
+          </div>
+        </div>
+      `;
+    }
+
     async function saveAirsToServer(item) {
       try {
         const response = await fetch("/api/airs", {
@@ -2337,6 +2537,7 @@
             <a href="https://line.me/R/msg/text/?${encodeURIComponent(shareAirsText(item))}" target="_blank" rel="noopener">LINE</a>
             <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAirsText(item))}" target="_blank" rel="noopener">X</a>
           </div>
+          ${renderAirsOfficialLink(item, index)}
         </article>
       `).join("");
       list.querySelectorAll("[data-airs-copy]").forEach((button) => {
@@ -2350,7 +2551,14 @@
           }
         });
       });
+      list.querySelectorAll("[data-airs-connect]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = items[Number(button.dataset.airsConnect)];
+          await requestAirsConnection(item, button);
+        });
+      });
       renderAirsMap(items);
+      hydrateOfficialAirs(items);
     }
 
     function renderAirsMap(items = loadAirsItems()) {
@@ -2369,16 +2577,31 @@
         return;
       }
       const isUnlocked = items.length >= 5;
+      const mapItems = items.slice(0, 12);
       mapBody.innerHTML = `
         <div class="airs-map-placeholder">
           <div>
             <strong>${isUnlocked ? "あなたの最初のair-s Mapができました。" : `あと${5 - items.length}件で、最初のair-s Mapが開きます。`}</strong>
-            <p>${isUnlocked ? "本格地図の前に、まずは場所カード一覧として表示します。すべて非公開のままです。" : "今はまだLockerの中で育てる時間です。公開やフレンドは急ぎません。"}</p>
+            <p>${isUnlocked ? "本格地図の前に、まずは軽いピン地図として表示します。すべて非公開のまま、各ピンからGoogle Mapsへ移動できます。" : "今はまだLockerの中で育てる時間です。公開やフレンドは急ぎません。"}</p>
           </div>
           <a class="airs-button" href="#airs-post">もう1件置く</a>
         </div>
+        ${isUnlocked ? `
+          <div class="airs-map-canvas" aria-label="あなたのair-s Map β">
+            ${mapItems.map((item, index) => {
+              const point = mapPointForAirs(item, index);
+              return `
+                <a class="airs-map-pin-card" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener" style="--x:${point.x}%; --y:${point.y}%;">
+                  <span>${index + 1}</span>
+                  <b>${escapeHtml(item.storeName)}</b>
+                  <small>${escapeHtml(item.timeLabel || "air-s")}</small>
+                </a>
+              `;
+            }).join("")}
+          </div>
+        ` : ""}
         <div class="airs-map-list">
-          ${items.slice(0, 12).map((item, index) => `
+          ${mapItems.map((item, index) => `
             <article class="airs-map-item">
               <img src="${item.image}" alt="${item.storeName}">
               <div>

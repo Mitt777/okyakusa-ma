@@ -3840,7 +3840,7 @@
                 <button type="button" onclick="shareWorldviewCardLine()">お友達に世界観カードを送る</button>
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
                 <a href="${escapeHtml(airsUrl)}" target="_blank" rel="noopener">air-sする</a>
-                <button type="button" onclick="claimOfficialAirs(this)">公式air-sとして受け取る</button>
+                <button type="button" onclick="claimOfficialAirs(this)">公式ページとして公開β</button>
               </div>
               ${officialMessage}
               <div class="ok-card-qr" id="worldview-qr-shelf">
@@ -4139,7 +4139,7 @@
       const original = button?.textContent || "";
       if (button) {
         button.disabled = true;
-        button.textContent = "公式air-s保存中...";
+        button.textContent = "公式ページ保存中...";
       }
       const personaKey = worldviewShareResult.selectedPersonaKey || worldviewShareResult.recommendedPersonaKey || "";
       const image = activeWorldviewCardImage(personaKey);
@@ -4150,10 +4150,11 @@
         requestId: id || "",
         officialCardUrl: worldviewCardShareUrl(),
         sourceUrl: worldviewCardShareUrl(),
+        ownerEmail: shareContext?.request?.email || "",
         personaKey,
         image,
-        comment: `${worldviewShareResult.typeTitle || "世界観カード"}を公式air-s候補として受け取りました。`,
-        timeLabel: "公式カード候補"
+        comment: `${worldviewShareResult.typeTitle || "世界観カード"}を公式ページβとして保存しました。`,
+        timeLabel: "公式ページβ"
       };
       try {
         const response = await fetch("/api/airs", {
@@ -4163,8 +4164,8 @@
         });
         const data = await response.json();
         if (!response.ok || !data.ok) throw new Error(data.message || "保存できませんでした。");
-        officialAirsMessage = "公式air-s候補として保存しました。今後、店舗側の受け取り一覧へつなげます。";
-        if (button) button.textContent = "公式air-s保存済み";
+        officialAirsMessage = "公式ページβとして保存しました。air-s側で同じお店が登録された時に、公式ページへの入口を出せるようになります。";
+        if (button) button.textContent = "公式ページ保存済み";
       } catch (error) {
         officialAirsMessage = error.message || "公式air-s保存に失敗しました。";
         if (button) {
