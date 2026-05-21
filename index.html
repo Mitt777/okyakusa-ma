@@ -240,6 +240,25 @@
       resize: vertical;
     }
 
+    .airs-place-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .airs-place-tools span {
+      color: #667065;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .airs-place-candidates {
+      border-color: rgba(58, 92, 73, .18);
+      background: rgba(249, 252, 247, .82);
+    }
+
     .airs-persona-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1360,7 +1379,11 @@
         grid-template-columns: 1fr;
       }
 
-      .search-box button {
+        .search-box button {
+          width: 100%;
+        }
+
+      .airs-place-tools .airs-button {
         width: 100%;
       }
 
@@ -1570,6 +1593,11 @@
           </label>
           <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
         </div>
+        <div class="airs-place-tools">
+          <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
+          <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
+        </div>
+        <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
         <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
         <div class="airs-actions" style="margin-top: 14px;">
           <button class="airs-button primary" type="button" id="airs-save">この空気をair-sする</button>
@@ -2062,6 +2090,10 @@
             storeName: item.storeName,
             sourceUrl: item.sourceUrl,
             officialCardUrl: item.sourceUrl,
+            placeId: item.placeId,
+            address: item.address,
+            category: item.category,
+            rating: item.rating,
             personaKey: item.personaKey,
             image: item.image,
             comment: item.comment,
@@ -2193,6 +2225,9 @@
       const params = new URLSearchParams(location.search);
       const storeNameInput = document.querySelector("#airs-store-name");
       const sourceUrlInput = document.querySelector("#airs-source-url");
+      const placeSearchButton = document.querySelector("#airs-place-search-button");
+      const placeCandidatesBox = document.querySelector("#airs-place-candidates");
+      let selectedAirsPlace = null;
       if (storeNameInput && params.get("store")) storeNameInput.value = params.get("store");
       if (sourceUrlInput && params.get("source")) sourceUrlInput.value = params.get("source");
       const personaFromUrl = AIRS_PERSONAS.find((persona) => persona.key === params.get("persona"));
@@ -2200,15 +2235,96 @@
       document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
       renderAirsPersonas();
       renderAirsLocker();
+      function renderAirsPlaceCandidates(candidates) {
+        if (!placeCandidatesBox) return;
+        placeCandidatesBox.classList.add("is-open");
+        if (!candidates.length) {
+          placeCandidatesBox.innerHTML = `
+            <strong>候補が見つかりませんでした</strong>
+            <p>店名に地域名を足すと見つかりやすくなります。例: リビングストン 那須</p>
+          `;
+          return;
+        }
+        placeCandidatesBox.innerHTML = `
+          <strong>この場所でair-sしますか？</strong>
+          <p>候補を選ぶと、Google Maps URLまで自動で入ります。公開はまだされません。</p>
+          <div class="place-candidate-list">
+            ${candidates.map((candidate, index) => `
+              <article class="place-candidate">
+                <div>
+                  <b>${escapeHtml(candidate.name || "名称未取得")}</b>
+                  <span>${escapeHtml(candidate.address || "住所未取得")}</span>
+                  <small>${escapeHtml(candidateMeta(candidate) || "Google Maps候補")}</small>
+                  ${candidate.google_maps_url ? `<div><a href="${escapeHtml(candidate.google_maps_url)}" target="_blank" rel="noopener">Google Mapsで開く</a></div>` : ""}
+                </div>
+                <button type="button" data-airs-place-index="${index}">この場所でair-s</button>
+              </article>
+            `).join("")}
+          </div>
+        `;
+        placeCandidatesBox.querySelectorAll("[data-airs-place-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const candidate = candidates[Number(button.dataset.airsPlaceIndex)];
+            if (!candidate) return;
+            selectedAirsPlace = candidate;
+            if (storeNameInput) storeNameInput.value = candidate.name || storeNameInput.value;
+            if (sourceUrlInput && candidate.google_maps_url) sourceUrlInput.value = candidate.google_maps_url;
+            placeCandidatesBox.innerHTML = `
+              <strong>場所を反映しました</strong>
+              <p>${escapeHtml(candidate.name || "この場所")}を、完全非公開のair-sとして残せます。あとは空気に近い画像と一言を選ぶだけです。</p>
+            `;
+          });
+        });
+      }
+      placeSearchButton?.addEventListener("click", async () => {
+        const query = storeNameInput?.value.trim() || sourceUrlInput?.value.trim() || "";
+        if (!query) {
+          if (placeCandidatesBox) {
+            placeCandidatesBox.classList.add("is-open");
+            placeCandidatesBox.innerHTML = `
+              <strong>場所名を入れてください</strong>
+              <p>店名、地域名、Google Maps URLのどれかがあると候補を探せます。</p>
+            `;
+          }
+          return;
+        }
+        placeSearchButton.textContent = "候補を確認中...";
+        placeSearchButton.disabled = true;
+        try {
+          const response = await fetch("/api/place-search", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ store_query: query })
+          });
+          const result = await response.json();
+          if (!response.ok || !result.ok) throw new Error(result.message || "候補を取得できませんでした。");
+          renderAirsPlaceCandidates(result.candidates || []);
+        } catch (error) {
+          if (placeCandidatesBox) {
+            placeCandidatesBox.classList.add("is-open");
+            placeCandidatesBox.innerHTML = `
+              <strong>候補確認ができませんでした</strong>
+              <p>${escapeHtml(error.message || "少し時間をおいて再度お試しください。")}</p>
+            `;
+          }
+        } finally {
+          placeSearchButton.textContent = "場所候補を確認";
+          placeSearchButton.disabled = false;
+        }
+      });
       document.querySelector("#airs-save")?.addEventListener("click", async () => {
         const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
-        const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || "";
+        const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || selectedAirsPlace?.google_maps_url || "";
         const comment = document.querySelector("#airs-comment")?.value.trim() || "";
         const item = {
           id: `airs_${Date.now().toString(36)}`,
           kind: "customer",
           storeName,
           sourceUrl,
+          placeId: selectedAirsPlace?.place_id || "",
+          address: selectedAirsPlace?.address || "",
+          category: selectedAirsPlace?.category || "",
+          rating: selectedAirsPlace?.rating || null,
           comment,
           personaKey: selectedAirsPersona.key,
           image: selectedAirsPersona.image,
