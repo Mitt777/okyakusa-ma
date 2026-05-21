@@ -454,6 +454,51 @@
       line-height: 1.8;
     }
 
+    .airs-phase4-panel {
+      margin-top: 12px;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .7);
+      padding: 14px;
+    }
+
+    .airs-phase4-panel strong {
+      display: block;
+      color: #26362d;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .airs-phase4-panel p {
+      margin-top: 4px;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .airs-layer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .airs-layer-chip {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background: rgba(238, 249, 243, .68);
+      color: #24463a;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
+    .airs-layer-chip.is-locked {
+      background: #f7f4ed;
+      color: #89765a;
+    }
+
     .airs-share {
       display: flex;
       flex-wrap: wrap;
@@ -1568,6 +1613,10 @@
       .airs-milestones {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .airs-layer-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -2118,6 +2167,31 @@
       `;
     }
 
+    function renderAirsPhase4Panel(items) {
+      const count = items.length;
+      const unlocked = count >= 30;
+      const title = unlocked
+        ? "公開設定βの入口が開きました。"
+        : `公開設定βは、あと${Math.max(30 - count, 0)}件で開きます。`;
+      const body = unlocked
+        ? "今はまだ軽い入口です。非公開を基本に、リンク限定、公開、店舗へ届ける、Friends予定の見せ方をここから選べる設計に育てます。"
+        : "最初は誰かに見せるためではなく、自分の場所記憶を育てる時間です。30件までは完全非公開を基本にします。";
+      return `
+        <div class="airs-phase4-panel">
+          <strong>${title}</strong>
+          <p>${body}</p>
+          <div class="airs-layer-grid">
+            <div class="airs-layer-chip">非公開<br>自分だけのLocker</div>
+            <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">リンク限定<br>${unlocked ? "準備OK" : "30件から"}</div>
+            <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">公開 / Friends<br>${unlocked ? "入口β" : "準備中"}</div>
+            <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">店舗に届ける<br>${unlocked ? "店舗接続β" : "準備中"}</div>
+            <div class="airs-layer-chip is-locked">店舗公式air-s<br>管理画面予定</div>
+            <div class="airs-layer-chip is-locked">空気のお便り<br>通知ON/OFF予定</div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderAirsStatus(items) {
       const target = 5;
       const count = items.length;
@@ -2134,6 +2208,7 @@
         </div>
         ${renderAirsMilestones(count)}
         ${renderAirsInsight(items)}
+        ${renderAirsPhase4Panel(items)}
       `;
     }
 
