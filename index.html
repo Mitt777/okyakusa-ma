@@ -862,6 +862,94 @@
       white-space: nowrap;
     }
 
+    .place-candidates {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #cdd8e5;
+      border-radius: 8px;
+      background: #f9fbfd;
+      padding: 14px;
+    }
+
+    .place-candidates.is-open {
+      display: block;
+    }
+
+    .place-candidates > strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .place-candidates > p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .place-candidate-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .place-candidate {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid #dbe3ee;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .place-candidate b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .place-candidate span {
+      display: block;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .place-candidate small {
+      display: inline-flex;
+      margin-top: 6px;
+      border-radius: 999px;
+      background: #eef7f2;
+      color: #27624d;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .place-candidate button {
+      border: 1px solid var(--green);
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .place-candidate a {
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
     .intake-fields {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1276,6 +1364,10 @@
         width: 100%;
       }
 
+      .place-candidate {
+        grid-template-columns: 1fr;
+      }
+
       .intake-fields {
         grid-template-columns: 1fr;
       }
@@ -1571,8 +1663,9 @@
           <form id="diagnosis-form" action="/api/diagnosis" method="post">
             <div class="search-box">
               <input name="store_query" value="" placeholder="例: リビングストン 黒磯 / 森の入口カフェ 那須 / https://..." required>
-              <button type="submit">AI問診で診断する</button>
+              <button type="button" id="place-search-button">お店候補を確認</button>
             </div>
+            <div class="place-candidates" id="place-candidates" aria-live="polite"></div>
             <div class="intake-fields">
               <label>
                 エリア・住所（わかる範囲）
@@ -2137,6 +2230,17 @@
     const form = document.querySelector("#diagnosis-form");
     const message = document.querySelector("#form-message");
     const urlHelpBox = document.querySelector("#url-help-box");
+    const placeSearchButton = document.querySelector("#place-search-button");
+    const placeCandidates = document.querySelector("#place-candidates");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
     const urlHelp = {
       maps: {
         title: "Google Maps URLの調べかた",
@@ -2220,6 +2324,101 @@
       ].filter(([, value]) => value && value.trim());
       hidden.value = sources.map(([label, value]) => `${label}: ${value.trim()}`).join("\n");
     }
+
+    function setInputValue(name, value, overwrite = true) {
+      const input = form?.querySelector(`[name="${name}"]`);
+      if (!input || !value) return;
+      if (!overwrite && input.value.trim()) return;
+      input.value = value;
+    }
+
+    function candidateMeta(candidate) {
+      const parts = [];
+      if (candidate.category) parts.push(candidate.category);
+      if (typeof candidate.rating === "number") {
+        parts.push(`評価 ${candidate.rating}${candidate.user_rating_count ? ` / 口コミ ${candidate.user_rating_count}件` : ""}`);
+      }
+      if (candidate.website_url) parts.push("公式サイトあり");
+      return parts.join("・");
+    }
+
+    function renderPlaceCandidates(candidates) {
+      if (!placeCandidates) return;
+      if (!candidates.length) {
+        placeCandidates.classList.add("is-open");
+        placeCandidates.innerHTML = `
+          <strong>候補が見つかりませんでした</strong>
+          <p>店名に地域名を足すか、Google Maps URLが分かる場合は貼ってください。このまま下の項目を埋めて診断することもできます。</p>
+        `;
+        return;
+      }
+      placeCandidates.classList.add("is-open");
+      placeCandidates.innerHTML = `
+        <strong>Google Maps上では、こちらのお店で合っていますか？</strong>
+        <p>公式HPはGoogle Mapsに登録されている場合だけ自動で入ります。InstagramなどSNSは必要に応じて下に貼ってください。</p>
+        <div class="place-candidate-list">
+          ${candidates.map((candidate, index) => `
+            <article class="place-candidate">
+              <div>
+                <b>${escapeHtml(candidate.name || "名称未取得")}</b>
+                <span>${escapeHtml(candidate.address || "住所未取得")}</span>
+                <small>${escapeHtml(candidateMeta(candidate) || "Google Maps候補")}</small>
+                ${candidate.google_maps_url ? `<div><a href="${escapeHtml(candidate.google_maps_url)}" target="_blank" rel="noopener">Google Mapsで開く</a></div>` : ""}
+              </div>
+              <button type="button" data-place-index="${index}">このお店で診断する</button>
+            </article>
+          `).join("")}
+        </div>
+      `;
+      placeCandidates.querySelectorAll("[data-place-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const candidate = candidates[Number(button.dataset.placeIndex)];
+          if (!candidate) return;
+          setInputValue("store_query", candidate.name);
+          setInputValue("area", candidate.address);
+          setInputValue("category", candidate.category);
+          setInputValue("google_maps_url", candidate.google_maps_url);
+          setInputValue("website_url", candidate.website_url, false);
+          message.textContent = "お店候補を反映しました。公式SNSや今の気持ちを足して、下のボタンから診断できます。";
+          placeCandidates.querySelectorAll("[data-place-index]").forEach((item) => {
+            item.textContent = item === button ? "選択しました" : "このお店で診断する";
+          });
+        });
+      });
+    }
+
+    placeSearchButton?.addEventListener("click", async () => {
+      if (!form || !placeCandidates) return;
+      const storeQuery = form.querySelector('[name="store_query"]')?.value.trim() || "";
+      const area = form.querySelector('[name="area"]')?.value.trim() || "";
+      const category = form.querySelector('[name="category"]')?.value.trim() || "";
+      if (!storeQuery && !area) {
+        message.textContent = "店名、地域名、Google Maps URLなどを入力してください。";
+        return;
+      }
+      placeSearchButton.disabled = true;
+      placeSearchButton.textContent = "候補を確認中...";
+      message.textContent = "";
+      try {
+        const response = await fetch("/api/place-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ store_query: storeQuery, area, category })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || "候補を取得できませんでした。");
+        renderPlaceCandidates(result.candidates || []);
+      } catch (error) {
+        placeCandidates.classList.add("is-open");
+        placeCandidates.innerHTML = `
+          <strong>候補確認ができませんでした</strong>
+          <p>${escapeHtml(error.message || "時間をおいて再度お試しください。")} Google Maps URLが分かる場合は貼って、このまま診断できます。</p>
+        `;
+      } finally {
+        placeSearchButton.disabled = false;
+        placeSearchButton.textContent = "お店候補を確認";
+      }
+    });
 
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
