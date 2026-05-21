@@ -724,6 +724,65 @@
       font-weight: 950;
     }
 
+    .airs-map-share {
+      margin-top: 12px;
+      border: 1px solid rgba(215, 183, 123, .5);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fffdf5 0%, #f6fbf6 100%);
+      padding: 14px;
+    }
+
+    .airs-map-share small {
+      display: block;
+      color: #8a5a16;
+      font-size: 11px;
+      font-weight: 950;
+      line-height: 1.5;
+    }
+
+    .airs-map-share strong {
+      display: block;
+      margin-top: 4px;
+      color: #20382d;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .airs-map-share p {
+      min-height: 0;
+      margin: 7px 0 0;
+      color: #5f6b61;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .airs-map-share-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-map-share-actions button,
+    .airs-map-share-actions a {
+      min-height: 40px;
+      border: 1px solid rgba(58, 92, 73, .2);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 950;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .airs-map-share-actions button:first-child {
+      border-color: #1f7a5e;
+      background: #1f7a5e;
+      color: #fff;
+    }
+
     .airs-label {
       display: inline-flex;
       border-radius: 999px;
@@ -1738,6 +1797,19 @@
         grid-template-columns: 1fr;
       }
 
+      .airs-map-share-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .airs-map-share-actions button,
+      .airs-map-share-actions a {
+        width: 100%;
+        min-height: 46px;
+        font-size: 14px;
+        text-align: center;
+      }
+
       .airs-hero {
         position: relative;
         display: block;
@@ -2283,6 +2355,39 @@
       return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${sourceLine}\n${location.origin}`;
     }
 
+    function shareAirsMapText(items = loadAirsItems()) {
+      const targets = items.slice(0, 5);
+      const names = targets.map((item, index) => `${index + 1}. ${item.storeName}`).join("\n");
+      const title = targets.length >= 2
+        ? `私の最初のair-s Map`
+        : `私のair-s Map`;
+      return `${title}\n好きだった場所の空気を、少しだけ束ねました。\n\n${names}\n\n${location.origin}`;
+    }
+
+    async function shareAirsMap(channel = "copy") {
+      const items = loadAirsItems();
+      const text = shareAirsMapText(items);
+      if (channel === "native" && navigator.share) {
+        try {
+          await navigator.share({ title: "air-s Map β", text, url: location.origin });
+          return;
+        } catch {
+          // Fall back to copy prompt below.
+        }
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        const target = document.querySelector(`[data-airs-map-share="${channel}"]`);
+        if (target) {
+          const original = target.textContent;
+          target.textContent = "コピーしました";
+          setTimeout(() => { target.textContent = original; }, 1400);
+        }
+      } catch {
+        window.prompt("共有文をコピーしてください", text);
+      }
+    }
+
     function airsMilestoneMessage(count) {
       if (count >= 30) {
         return {
@@ -2705,6 +2810,21 @@
             </article>
           `).join("")}
         </div>
+        ${isUnlocked ? `
+          <div class="airs-map-share">
+            <small>Map共有 β / まずは共有文だけ</small>
+            <strong>この場所記憶を、1枚のMapとして外へ出す準備ができました。</strong>
+            <p>今はまだ完全非公開のLockerを基本にします。共有したい時だけ、最初の5件を束ねた文章をコピーして、Instagram、TikTok、LINE、Xなどへ持ち出せます。</p>
+            <div class="airs-map-share-actions">
+              <button type="button" data-airs-map-share="native" onclick="shareAirsMap('native')">スマホで共有</button>
+              <button type="button" data-airs-map-share="instagram" onclick="shareAirsMap('instagram')">Instagram用にコピー</button>
+              <button type="button" data-airs-map-share="tiktok" onclick="shareAirsMap('tiktok')">TikTok用にコピー</button>
+              <a href="https://line.me/R/msg/text/?${encodeURIComponent(shareAirsMapText(items))}" target="_blank" rel="noopener">LINEで送る</a>
+              <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAirsMapText(items))}" target="_blank" rel="noopener">Xへ投稿</a>
+              <button type="button" data-airs-map-share="copy" onclick="shareAirsMap('copy')">共有文をコピー</button>
+            </div>
+          </div>
+        ` : ""}
       `;
     }
 
