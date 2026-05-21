@@ -7,6 +7,7 @@
   <script>
     if (location.hostname.replace(/^www\./, "") === "air-s.jp") {
       document.documentElement.classList.add("airs-domain");
+      document.title = "air-s | 好きなお店の空気を、1枚のair-sに。";
     }
   </script>
   <style>
@@ -1236,9 +1237,7 @@
     }
 
     .hp {
-      position: absolute;
-      left: -9999px;
-      opacity: 0;
+      display: none !important;
     }
 
     .next-questions {
@@ -1658,11 +1657,11 @@
 
       <section class="airs-hero">
         <div>
-          <span class="airs-kicker">air-s β / 入口だけの仮接続</span>
+          <span class="airs-kicker">air-s β</span>
           <h1 id="airs-title">始まりは、一枚のカードから。</h1>
           <p>
             あなたが見つけたお店の空気が、誰かの未来の居場所を少し変えるかもしれません。
-            レビューではなく、好きだから残したくなる世界観カードを、まずは軽く作れます。
+            レビューではなく、好きだから残したくなる世界観カードを、まずは自分だけのLockerに残せます。
           </p>
           <div class="airs-actions">
             <a class="airs-button primary" href="#airs-post">air-sする</a>
@@ -1673,7 +1672,7 @@
         <div class="airs-preview">
           <img id="airs-hero-image" src="/assets/worldview-cards/personas/21-1.webp" alt="air-sカードの例">
           <strong>この空気だった。</strong>
-          <p>曜日と時間帯、36の世界観画像、一言だけで残す、小さな居場所の記録です。</p>
+          <p>保存すると、曜日と時間帯、選んだ画像、一言コメントが非公開のLockerに残ります。</p>
         </div>
       </section>
 
@@ -1757,7 +1756,7 @@
     </header>
 
     <section class="hero" aria-labelledby="main-title">
-      <div class="eyebrow">無料診断 v0.1 / 那須・栃木の店舗向け</div>
+      <div class="eyebrow">無料診断 β / 店舗向け</div>
       <h1 id="main-title">お店の見え方を、まず1つの診断窓から。</h1>
       <p class="lead">
         Google Maps診断、簡易SEO診断、口コミ、公式サイト、Instagram、SNS動画、来店前不安をまとめて確認し、
@@ -1775,7 +1774,7 @@
         </div>
         <div class="worldview-card-teaser-copy">
           <span>お客様.COMカード β</span>
-          <strong>お店の世界観カード、ゲットしよう。</strong>
+          <strong>お店の世界観カードを作れます。</strong>
           <p>診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
         </div>
       </div>
@@ -1876,8 +1875,8 @@
                 今の気持ち・気になっていること
                 <textarea name="current_problem" placeholder="例: 初めての人に入りやすく見えるか知りたい / SNSは頑張っているが来店につながっているかわからない"></textarea>
               </label>
-              <label class="hp">
-                入力しないでください
+              <label class="hp" aria-hidden="true">
+                空欄
                 <input name="okm_hp_guard" tabindex="-1" autocomplete="new-password" aria-hidden="true">
               </label>
             </div>
