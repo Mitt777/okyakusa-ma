@@ -576,6 +576,26 @@
       transform: rotate(11deg);
     }
 
+    .airs-map-canvas.is-preview {
+      min-height: 240px;
+      opacity: .82;
+    }
+
+    .airs-map-preview-note {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .88);
+      color: #27624d;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(42, 52, 44, .1);
+    }
+
     .airs-map-pin-card {
       position: absolute;
       left: var(--x);
@@ -2586,8 +2606,7 @@
           </div>
           <a class="airs-button" href="#airs-post">もう1件置く</a>
         </div>
-        ${isUnlocked ? `
-          <div class="airs-map-canvas" aria-label="あなたのair-s Map β">
+        <div class="airs-map-canvas${isUnlocked ? "" : " is-preview"}" aria-label="あなたのair-s Map β">
             ${mapItems.map((item, index) => {
               const point = mapPointForAirs(item, index);
               return `
@@ -2598,8 +2617,8 @@
                 </a>
               `;
             }).join("")}
-          </div>
-        ` : ""}
+            ${isUnlocked ? "" : `<div class="airs-map-preview-note">5件で、このピン地図が開きます。</div>`}
+        </div>
         <div class="airs-map-list">
           ${mapItems.map((item, index) => `
             <article class="airs-map-item">
