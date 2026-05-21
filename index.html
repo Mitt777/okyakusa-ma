@@ -455,6 +455,41 @@
       line-height: 1.8;
     }
 
+    .airs-drift-panel {
+      margin-top: 12px;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 14% 22%, rgba(255, 255, 255, .94), rgba(255, 255, 255, 0) 34%),
+        linear-gradient(135deg, rgba(238, 249, 243, .84), rgba(255, 250, 240, .78));
+      padding: 14px;
+    }
+
+    .airs-drift-panel small {
+      display: inline-flex;
+      margin-bottom: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      color: #27624d;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-drift-panel strong {
+      display: block;
+      color: #26362d;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .airs-drift-panel p {
+      margin-top: 5px;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
     .airs-phase4-panel {
       margin-top: 12px;
       border: 1px solid rgba(58, 92, 73, .16);
@@ -498,6 +533,12 @@
     .airs-layer-chip.is-locked {
       background: #f7f4ed;
       color: #89765a;
+    }
+
+    .airs-layer-chip.is-drift {
+      border-color: rgba(58, 92, 73, .3);
+      background: linear-gradient(135deg, #eef9f3, #fff7e7);
+      color: #24463a;
     }
 
     .airs-share {
@@ -2319,6 +2360,24 @@
       `;
     }
 
+    function renderAirsDriftPanel(items) {
+      const count = items.length;
+      const remaining = Math.max(7 - count, 0);
+      const title = count >= 7
+        ? "近い空気が、いつか漂着する準備ができています。"
+        : `あと${remaining}件ほどで、近い空気の入口が見えはじめます。`;
+      const body = count >= 7
+        ? "まだ誰かを表示する段階ではありません。あなたのLockerに残った空気をもとに、将来は「近い空気を残しているカード」がそっと流れてくる設計にします。"
+        : "最初は交流よりも、自分の場所記憶を安心して残すことを優先します。人ではなく、カード同士がいつか静かにすれ違うための準備です。";
+      return `
+        <div class="airs-drift-panel">
+          <small>近い空気 β</small>
+          <strong>${title}</strong>
+          <p>${body}</p>
+        </div>
+      `;
+    }
+
     function renderAirsPhase4Panel(items) {
       const count = items.length;
       const unlocked = count >= 30;
@@ -2335,10 +2394,10 @@
           <div class="airs-layer-grid">
             <div class="airs-layer-chip">非公開<br>自分だけのLocker</div>
             <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">リンク限定<br>${unlocked ? "準備OK" : "30件から"}</div>
-            <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">公開 / Friends<br>${unlocked ? "入口β" : "準備中"}</div>
+            <div class="airs-layer-chip${unlocked ? " is-drift" : " is-locked"}">近い空気へ漂流<br>${unlocked ? "入口β" : "30件から"}</div>
             <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">店舗に届ける<br>${unlocked ? "店舗接続β" : "準備中"}</div>
+            <div class="airs-layer-chip${unlocked ? "" : " is-locked"}">公開 / Friends<br>${unlocked ? "入口β" : "準備中"}</div>
             <div class="airs-layer-chip is-locked">店舗公式air-s<br>管理画面予定</div>
-            <div class="airs-layer-chip is-locked">空気のお便り<br>通知ON/OFF予定</div>
           </div>
         </div>
       `;
@@ -2360,6 +2419,7 @@
         </div>
         ${renderAirsMilestones(count)}
         ${renderAirsInsight(items)}
+        ${renderAirsDriftPanel(items)}
         ${renderAirsPhase4Panel(items)}
       `;
     }
@@ -2562,7 +2622,7 @@
           <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${item.timeLabel}</small>
           <b>${item.storeName}</b>
           <p>${item.comment || "この空気だった。"}</p>
-          <p>${item.serverSaved ? "サーバー保存済み。ただし表示はまだ自分だけの扱いです。" : "この端末内の仮保存です。"}</p>
+          <p>${item.serverSaved ? "このair-sは保存されています。今はまだ自分だけのLockerに置かれています。" : "この端末内の仮保存です。公開や交流はまだ行いません。"}</p>
           <div class="airs-share">
             <a href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">Google Mapsで開く</a>
             <button type="button" data-airs-copy="${index}">共有文をコピー</button>
