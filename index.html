@@ -948,16 +948,20 @@
     }
 
     .search-box button {
-      border: 0;
+      border: 1px solid #d7b77b;
       border-radius: 6px;
       padding: 14px 20px;
-      background: var(--green);
-      color: #fff;
+      background: #fff8e8;
+      color: #7b4e13;
       font: inherit;
       font-size: 15px;
       font-weight: 850;
       cursor: default;
       white-space: nowrap;
+    }
+
+    .search-box button:hover {
+      background: #fff1d2;
     }
 
     .place-candidates {
@@ -1046,6 +1050,22 @@
       font-weight: 850;
       text-decoration: underline;
       text-underline-offset: 3px;
+    }
+
+    .form-step-hint {
+      margin-top: 10px;
+      border: 1px solid #dce7e0;
+      border-radius: 8px;
+      background: #f5fbf8;
+      color: #365449;
+      padding: 11px 12px;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.75;
+    }
+
+    .form-step-hint strong {
+      color: var(--green-dark);
     }
 
     .intake-fields {
@@ -1458,9 +1478,9 @@
         grid-template-columns: 1fr;
       }
 
-        .search-box button {
-          width: 100%;
-        }
+      .search-box button {
+        width: 100%;
+      }
 
       .airs-place-tools .airs-button {
         width: 100%;
@@ -1777,6 +1797,9 @@
               <button type="button" id="place-search-button">お店候補を確認</button>
             </div>
             <div class="place-candidates" id="place-candidates" aria-live="polite"></div>
+            <div class="form-step-hint" id="form-step-hint">
+              <strong>おすすめ:</strong> まず候補を確認してお店を選び、公式SNS・お名前・メールを足したら、下の「無料診断を申し込む」へ進んでください。
+            </div>
             <div class="intake-fields">
               <label>
                 エリア・住所（わかる範囲）
@@ -2486,6 +2509,7 @@
     const urlHelpBox = document.querySelector("#url-help-box");
     const placeSearchButton = document.querySelector("#place-search-button");
     const placeCandidates = document.querySelector("#place-candidates");
+    const formStepHint = document.querySelector("#form-step-hint");
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -2634,6 +2658,9 @@
           setInputValue("google_maps_url", candidate.google_maps_url);
           setInputValue("website_url", candidate.website_url, false);
           message.textContent = "お店候補を反映しました。公式SNSや今の気持ちを足して、下のボタンから診断できます。";
+          if (formStepHint) {
+            formStepHint.innerHTML = "<strong>次にやること:</strong> 公式SNS、お名前、メールを足してください。わからない項目は空欄で大丈夫です。最後に緑の「無料診断を申し込む」へ進みます。";
+          }
           placeCandidates.querySelectorAll("[data-place-index]").forEach((item) => {
             item.textContent = item === button ? "選択しました" : "このお店で診断する";
           });
