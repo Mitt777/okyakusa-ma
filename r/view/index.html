@@ -1301,6 +1301,68 @@
       white-space: nowrap;
     }
 
+    .ok-entry-photos {
+      margin-top: 14px;
+      border: 1px solid rgba(63, 138, 109, .2);
+      border-radius: 10px;
+      background: rgba(238, 248, 242, .72);
+      padding: 12px;
+    }
+
+    .ok-entry-photos h5 {
+      margin: 0 0 5px;
+      color: #23463a;
+      font-size: 14px;
+    }
+
+    .ok-entry-photos > p {
+      margin: 0 0 10px;
+      color: #5b675f;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .ok-entry-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .ok-entry-photo {
+      overflow: hidden;
+      border: 1px solid rgba(63, 138, 109, .18);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .ok-entry-photo img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: #f6f0e8;
+    }
+
+    .ok-entry-photo div {
+      padding: 8px;
+    }
+
+    .ok-entry-photo strong {
+      display: block;
+      color: #243b31;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .ok-entry-photo span {
+      display: block;
+      margin-top: 3px;
+      color: #6a5d49;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
     .ok-card-stage {
       display: grid;
       grid-template-columns: minmax(260px, 420px) 1fr;
@@ -2547,6 +2609,10 @@
       .ok-card-qr-preview > div {
         width: 100%;
         min-width: 0;
+      }
+
+      .ok-entry-photo-grid {
+        grid-template-columns: 1fr;
       }
 
       .card-only-floating-share {
@@ -3845,6 +3911,7 @@
                 <a href="${escapeHtml(adminUrl)}" target="_blank" rel="noopener">管理画面βを開く</a>
               </div>
               ${officialMessage}
+              <div class="ok-entry-photos" id="entry-photo-shelf" hidden></div>
               <div class="ok-card-qr" id="worldview-qr-shelf">
                 <h5>この空気を、お店に置く</h5>
                 <p>この世界観カードへつながるQRコードを作れます。テーブル、レジ横、ショップカード、紙袋などに置ける小さな漂流札です。</p>
@@ -4141,6 +4208,49 @@
       if (storeName) url.searchParams.set("store", concise(storeName, 60));
       if (id) url.searchParams.set("requestId", id);
       return url.toString();
+    }
+
+    function entryPhotoSlotLabel(slot) {
+      return {
+        exterior: "外観",
+        entrance: "入口",
+        access: "駐車場 / 導線"
+      }[slot] || "初めての方へ";
+    }
+
+    async function loadEntryPhotoShelf(storeName = "") {
+      const shelf = document.querySelector("#entry-photo-shelf");
+      if (!shelf) return;
+      try {
+        const params = new URLSearchParams({ action: "entry-photos" });
+        if (storeName) params.set("store", storeName);
+        if (id) params.set("requestId", id);
+        const response = await fetch(`/api/airs?${params.toString()}`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !(data.entryPhotos || []).length) {
+          shelf.hidden = true;
+          return;
+        }
+        const photos = (data.entryPhotos || []).slice(0, 3);
+        shelf.innerHTML = `
+          <h5>初めての方へ</h5>
+          <p>外観、入口、駐車場や導線など、来店前に見ておくと安心できる写真です。</p>
+          <div class="ok-entry-photo-grid">
+            ${photos.map((photo) => `
+              <article class="ok-entry-photo">
+                <img src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(entryPhotoSlotLabel(photo.slot))}">
+                <div>
+                  <strong>${escapeHtml(entryPhotoSlotLabel(photo.slot))}</strong>
+                  <span>${escapeHtml(photo.caption || "初めての方が迷わないための写真です。")}</span>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+        shelf.hidden = false;
+      } catch {
+        shelf.hidden = true;
+      }
     }
 
     async function claimOfficialAirs(button) {
@@ -5060,6 +5170,7 @@
       `;
       resultEl.classList.add("is-open");
       bindPersonaGallerySettling(resultEl);
+      loadEntryPhotoShelf(storeName);
       document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
       updateWorldviewUrl();

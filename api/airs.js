@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const MAX_TEXT = 240;
 const ALLOWED_KINDS = new Set(["customer", "official"]);
 const ALLOWED_VISIBILITY = new Set(["private", "link", "public"]);
+const ENTRY_PHOTO_SLOTS = new Set(["exterior", "entrance", "access"]);
 
 function safeSegment(value, fallback = "airs") {
   return String(value || fallback)
@@ -116,6 +117,43 @@ function buildConnectionRecord(body) {
   };
 }
 
+function parseImageDataUrl(value) {
+  const match = String(value || "").match(/^data:(image\/(?:jpeg|jpg|png|webp));base64,([a-zA-Z0-9+/=]+)$/);
+  if (!match) return null;
+  const mimeType = match[1] === "image/jpg" ? "image/jpeg" : match[1];
+  const bytes = Buffer.from(match[2], "base64");
+  if (!bytes.length || bytes.length > 1_400_000) return null;
+  const ext = mimeType === "image/webp" ? "webp" : mimeType === "image/png" ? "png" : "jpg";
+  return { bytes, mimeType, ext };
+}
+
+function buildEntryPhotoRecord(body, imageUrl, pathname) {
+  const createdAt = new Date().toISOString();
+  const slot = ENTRY_PHOTO_SLOTS.has(body.slot) ? body.slot : "exterior";
+  const storeName = cleanText(body.storeName || "このお店", 100);
+  const requestId = cleanText(body.requestId, 80);
+  const baseRecord = {
+    v: 1,
+    kind: "entry_photo",
+    slot,
+    storeName,
+    requestId,
+    title: cleanText(body.title || "", 40),
+    caption: cleanText(body.caption || "", 140),
+    imageUrl,
+    imagePathname: pathname,
+    visibility: "public_card",
+    createdAt,
+    version: 1,
+    editionType: "entry_ease_photo",
+    editionLabel: "入りやすさ写真β"
+  };
+  return {
+    ...baseRecord,
+    contentHash: stableHash(baseRecord)
+  };
+}
+
 async function handleOfficialLookup(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 200, { ok: true, official: null, configured: false });
@@ -164,6 +202,37 @@ async function fetchBlobRecord(blob) {
   return blobResponse.json();
 }
 
+async function listEntryPhotos({ storeName, requestId, limit = 150 }) {
+  const { list } = await import("@vercel/blob");
+  const result = await list({ prefix: "airs/entry-photos/", limit });
+  const blobs = result.blobs || [];
+  const photos = [];
+  for (const blob of blobs) {
+    if (!blob.pathname.endsWith(".json")) continue;
+    try {
+      const record = await fetchBlobRecord(blob);
+      if (matchesAdminRecord(record, storeName, requestId)) {
+        photos.push({
+          slot: record.slot || "",
+          storeName: record.storeName || storeName,
+          requestId: record.requestId || "",
+          title: record.title || "",
+          caption: record.caption || "",
+          imageUrl: record.imageUrl || "",
+          createdAt: record.createdAt || "",
+          contentHash: record.contentHash || "",
+          pathname: blob.pathname,
+          url: blob.url
+        });
+      }
+    } catch {
+      // Ignore malformed beta records.
+    }
+  }
+  const slotOrder = { exterior: 1, entrance: 2, access: 3 };
+  return photos.sort((a, b) => (slotOrder[a.slot] || 9) - (slotOrder[b.slot] || 9));
+}
+
 function matchesAdminRecord(record, storeName, requestId) {
   if (requestId && compact(record.requestId || record.officialRequestId) === requestId) return true;
   return isLikelyMatch(record, storeName, "");
@@ -175,7 +244,8 @@ async function handleAdminLookup(request, response) {
       ok: true,
       configured: false,
       officials: [],
-      connections: []
+      connections: [],
+      entryPhotos: []
     });
   }
 
@@ -248,15 +318,73 @@ async function handleAdminLookup(request, response) {
     }
   }
 
+  const entryPhotos = await listEntryPhotos({ storeName, requestId });
+
   return sendJson(response, 200, {
     ok: true,
     configured: true,
     officials,
     connections,
+    entryPhotos,
     counts: {
       officials: officials.length,
-      connections: connections.length
+      connections: connections.length,
+      entryPhotos: entryPhotos.length
     }
+  });
+}
+
+async function handleEntryPhotosLookup(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 200, { ok: true, configured: false, entryPhotos: [] });
+  }
+  const storeName = compact(request.query?.store || request.query?.storeName);
+  const requestId = compact(request.query?.requestId || request.query?.id);
+  if (!storeName && !requestId) {
+    return sendJson(response, 400, { ok: false, message: "storeまたはrequestIdが必要です。" });
+  }
+  const entryPhotos = await listEntryPhotos({ storeName, requestId, limit: 120 });
+  return sendJson(response, 200, { ok: true, configured: true, entryPhotos });
+}
+
+async function handleEntryPhotoSave(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+
+  const body = await readJsonBody(request);
+  const image = parseImageDataUrl(body.imageDataUrl);
+  if (!image) {
+    return sendJson(response, 400, { ok: false, message: "画像を1.4MB以下のJPEG/PNG/WebPで送信してください。" });
+  }
+
+  const { put } = await import("@vercel/blob");
+  const slot = ENTRY_PHOTO_SLOTS.has(body.slot) ? body.slot : "exterior";
+  const storeSegment = safeSegment(body.requestId || body.storeName, "store");
+  const stamp = Date.now().toString(36);
+  const imagePathname = `airs/entry-photos/${storeSegment}/${slot}-${stamp}.${image.ext}`;
+  const imageBlob = await put(imagePathname, image.bytes, {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: image.mimeType
+  });
+  const record = buildEntryPhotoRecord(body || {}, imageBlob.url, imageBlob.pathname);
+  const recordPathname = `airs/entry-photos/${storeSegment}/${slot}.json`;
+  const recordBlob = await put(recordPathname, JSON.stringify(record, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json; charset=utf-8"
+  });
+
+  return sendJson(response, 200, {
+    ok: true,
+    record,
+    url: recordBlob.url,
+    pathname: recordBlob.pathname
   });
 }
 
@@ -325,8 +453,14 @@ module.exports = async function handler(request, response) {
     if (request.method === "GET" && action === "admin") {
       return handleAdminLookup(request, response);
     }
+    if (request.method === "GET" && action === "entry-photos") {
+      return handleEntryPhotosLookup(request, response);
+    }
     if (request.method === "POST" && action === "connect") {
       return handleConnectionRequest(request, response);
+    }
+    if (request.method === "POST" && action === "entry-photo") {
+      return handleEntryPhotoSave(request, response);
     }
     if (request.method === "POST") return handleAirsSave(request, response);
     return sendJson(response, 405, { ok: false, message: "対応していないメソッドです。" });

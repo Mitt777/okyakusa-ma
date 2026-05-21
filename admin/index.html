@@ -79,6 +79,11 @@
       color: #fff;
     }
 
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .62;
+    }
+
     .hero,
     .panel {
       border: 1px solid var(--line);
@@ -131,7 +136,9 @@
       font-weight: 900;
     }
 
-    input {
+    input,
+    textarea,
+    select {
       width: 100%;
       min-height: 46px;
       border: 1px solid #cfddd2;
@@ -140,6 +147,19 @@
       color: var(--ink);
       padding: 10px 12px;
       font-weight: 800;
+    }
+
+    textarea {
+      min-height: 78px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    input[type="file"] {
+      min-height: auto;
+      padding: 9px;
+      background: #fff;
+      font-size: 12px;
     }
 
     .status {
@@ -288,6 +308,42 @@
       gap: 10px;
     }
 
+    .entry-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .entry-photo-slot {
+      display: grid;
+      gap: 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .entry-photo-slot img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f4efe5;
+    }
+
+    .entry-photo-slot b {
+      display: block;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .entry-photo-slot small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
     .placeholder {
       min-height: 116px;
       border: 1px dashed rgba(63, 138, 109, .36);
@@ -336,6 +392,7 @@
       .hero,
       .grid,
       .cards,
+      .entry-photo-grid,
       .placeholder-grid {
         grid-template-columns: 1fr;
       }
@@ -390,8 +447,8 @@
         <strong id="connection-count">0</strong>
       </div>
       <div class="metric">
-        <span>次に整えること</span>
-        <strong>3</strong>
+        <span>入りやすさ写真</span>
+        <strong id="entry-photo-count">0</strong>
       </div>
     </section>
 
@@ -419,6 +476,17 @@
       <div class="cards" id="connection-list">
         <div class="empty">まだ届いたair-sを読み込んでいません。</div>
       </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>入りやすさ写真3枚</h2>
+          <p>外観、入口、駐車場または店内導線。初めて来る人が「ここなら入れそう」と思える写真を3枚だけ置きます。</p>
+        </div>
+        <span class="badge">自動圧縮 β</span>
+      </div>
+      <div class="entry-photo-grid" id="entry-photo-list"></div>
     </section>
 
     <section class="panel">
@@ -454,6 +522,14 @@
     const connectionList = document.querySelector("#connection-list");
     const officialCount = document.querySelector("#official-count");
     const connectionCount = document.querySelector("#connection-count");
+    const entryPhotoCount = document.querySelector("#entry-photo-count");
+    const entryPhotoList = document.querySelector("#entry-photo-list");
+
+    const ENTRY_PHOTO_SLOTS = [
+      { key: "exterior", title: "外観", hint: "道から見た時の外観。初めての人が見つけやすくなります。" },
+      { key: "entrance", title: "入口", hint: "扉、看板、入口まわり。入る直前の不安を減らします。" },
+      { key: "access", title: "駐車場 / 導線", hint: "駐車場、階段、店内への進み方。迷いやすい場所を補います。" }
+    ];
 
     storeInput.value = params.get("store") || "";
     requestInput.value = params.get("requestId") || "";
@@ -531,14 +607,151 @@
       `).join("");
     }
 
-    async function loadBackroom() {
+    function entryPhotoBySlot(items, slot) {
+      return (items || []).find((item) => item.slot === slot) || null;
+    }
+
+    function renderEntryPhotos(items = []) {
+      entryPhotoCount.textContent = `${Math.min(items.length, 3)}/3`;
+      entryPhotoList.innerHTML = ENTRY_PHOTO_SLOTS.map((slot) => {
+        const photo = entryPhotoBySlot(items, slot.key);
+        return `
+          <form class="entry-photo-slot" data-entry-slot="${slot.key}">
+            <b>${slot.title}</b>
+            <small>${slot.hint}</small>
+            <img src="${escapeHtml(photo?.imageUrl || "/assets/worldview-cards/personas/21-1.webp")}" alt="">
+            <label>
+              一言
+              <textarea name="caption" maxlength="140" placeholder="${slot.title}について、初めての人に伝えたい一言">${escapeHtml(photo?.caption || "")}</textarea>
+            </label>
+            <label>
+              写真
+              <input name="photo" type="file" accept="image/*">
+            </label>
+            <button type="submit">この写真を保存</button>
+            <small>${photo ? `保存済み / ${formatDate(photo.createdAt)}` : "未登録"}</small>
+          </form>
+        `;
+      }).join("");
+
+      entryPhotoList.querySelectorAll("[data-entry-slot]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          await saveEntryPhoto(form);
+        });
+      });
+    }
+
+    function canvasToBlob(canvas, quality) {
+      return new Promise((resolve) => {
+        canvas.toBlob(resolve, "image/jpeg", quality);
+      });
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function loadImageForCanvas(file) {
+      if (window.createImageBitmap) return createImageBitmap(file);
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(image);
+        };
+        image.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("画像を読み込めませんでした。"));
+        };
+        image.src = url;
+      });
+    }
+
+    async function compressImage(file) {
+      if (!file) throw new Error("写真を選んでください。");
+      const bitmap = await loadImageForCanvas(file);
+      const maxSide = 1200;
+      const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+      const width = Math.max(1, Math.round(bitmap.width * scale));
+      const height = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      context.drawImage(bitmap, 0, 0, width, height);
+      let quality = .82;
+      let blob = await canvasToBlob(canvas, quality);
+      while (blob && blob.size > 950000 && quality > .52) {
+        quality -= .1;
+        blob = await canvasToBlob(canvas, quality);
+      }
+      if (!blob || blob.size > 1_400_000) throw new Error("画像が大きすぎます。少し小さい写真を選んでください。");
+      return {
+        dataUrl: await blobToDataUrl(blob),
+        size: blob.size,
+        width,
+        height
+      };
+    }
+
+    async function saveEntryPhoto(form) {
+      const slot = form.dataset.entrySlot;
+      const button = form.querySelector("button");
+      const file = form.elements.photo.files[0];
+      const caption = form.elements.caption.value.trim();
+      const store = storeInput.value.trim();
+      const requestId = requestInput.value.trim();
+      if (!store && !requestId) {
+        statusBox.textContent = "先に店名または受付IDを入力してください。";
+        return;
+      }
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "圧縮中...";
+      try {
+        const image = await compressImage(file);
+        button.textContent = "保存中...";
+        const slotMeta = ENTRY_PHOTO_SLOTS.find((item) => item.key === slot);
+        const response = await fetch("/api/airs?action=entry-photo", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            slot,
+            title: slotMeta?.title || "",
+            storeName: store,
+            requestId,
+            caption,
+            imageDataUrl: image.dataUrl
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "保存できませんでした。");
+        statusBox.textContent = `${slotMeta?.title || "写真"}を保存しました。`;
+        form.elements.photo.value = "";
+        await loadBackroom({ silent: true });
+      } catch (error) {
+        statusBox.textContent = error.message || "写真を保存できませんでした。";
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
+    async function loadBackroom(options = {}) {
       const store = storeInput.value.trim();
       const requestId = requestInput.value.trim();
       if (!store && !requestId) {
         statusBox.textContent = "店名または受付IDを入力してください。";
         return;
       }
-      statusBox.textContent = "受信箱を確認しています...";
+      if (!options.silent) statusBox.textContent = "受信箱を確認しています...";
       const query = new URLSearchParams({ action: "admin" });
       if (store) query.set("store", store);
       if (requestId) query.set("requestId", requestId);
@@ -549,6 +762,7 @@
         if (!response.ok || !data.ok) throw new Error(data.message || "読み込めませんでした。");
         renderOfficials(data.officials || []);
         renderConnections(data.connections || []);
+        renderEntryPhotos(data.entryPhotos || []);
         statusBox.textContent = data.configured === false
           ? "Vercel Blobが未設定です。"
           : "受信箱を更新しました。";
@@ -563,6 +777,7 @@
     });
 
     if (storeInput.value || requestInput.value) loadBackroom();
+    else renderEntryPhotos([]);
   </script>
 </body>
 </html>
