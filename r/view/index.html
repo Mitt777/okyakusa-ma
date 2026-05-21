@@ -2507,6 +2507,48 @@
         grid-template-columns: 1fr;
       }
 
+      .ok-card-qr {
+        padding: 12px;
+      }
+
+      .ok-card-qr p {
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .ok-card-qr-actions,
+      .ok-card-qr-downloads {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .ok-card-qr button,
+      .ok-card-qr a {
+        width: 100%;
+        min-height: 46px;
+        font-size: 14px;
+        line-height: 1.45;
+        text-align: center;
+        white-space: normal;
+      }
+
+      .ok-card-qr-preview {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 14px;
+      }
+
+      .ok-card-qr-preview img {
+        width: min(100%, 220px);
+        height: auto;
+        aspect-ratio: 1 / 1;
+      }
+
+      .ok-card-qr-preview > div {
+        width: 100%;
+        min-width: 0;
+      }
+
       .card-only-floating-share {
         left: 12px;
         right: 12px;
