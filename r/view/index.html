@@ -3803,6 +3803,7 @@
       const cardImage = activeWorldviewCardImage(personaKey);
       const generatedAt = worldviewCardGeneratedAt();
       const airsUrl = buildAirsPostUrl(storeName, personaKey);
+      const adminUrl = buildBackroomUrl(storeName);
       const officialMessage = officialAirsMessage ? `<p>${escapeHtml(officialAirsMessage)}</p>` : "";
 
       return `
@@ -3841,6 +3842,7 @@
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
                 <a href="${escapeHtml(airsUrl)}" target="_blank" rel="noopener">air-sする</a>
                 <button type="button" onclick="claimOfficialAirs(this)">公式ページとして公開β</button>
+                <a href="${escapeHtml(adminUrl)}" target="_blank" rel="noopener">管理画面βを開く</a>
               </div>
               ${officialMessage}
               <div class="ok-card-qr" id="worldview-qr-shelf">
@@ -4131,6 +4133,13 @@
       const imagePath = PERSONA_IMAGE_MAP[personaKey] || "";
       const personaMatch = imagePath.match(/\/personas\/(\d{2})-1\.webp$/);
       if (personaMatch) url.searchParams.set("persona", personaMatch[1]);
+      return url.toString();
+    }
+
+    function buildBackroomUrl(storeName = "") {
+      const url = new URL("/admin/", window.location.origin);
+      if (storeName) url.searchParams.set("store", concise(storeName, 60));
+      if (id) url.searchParams.set("requestId", id);
       return url.toString();
     }
 
