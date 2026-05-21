@@ -1,5 +1,13 @@
 const { sendJson } = require("./_lib/response");
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function looksLikeJson(text) {
+  return /^\s*[\[{]/.test(String(text || ""));
+}
+
 module.exports = async function handler(request, response) {
   try {
     if (request.method !== "GET") {
@@ -21,19 +29,27 @@ module.exports = async function handler(request, response) {
     url.searchParams.set("request_id", id);
     url.searchParams.set("secret", process.env.GOOGLE_SCRIPT_SECRET || "");
 
-    const sheetResponse = await fetch(url.toString(), {
-      method: "GET",
-      headers: { "accept": "application/json" }
-    });
+    let sheetResponse;
+    let text = "";
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      sheetResponse = await fetch(url.toString(), {
+        method: "GET",
+        headers: { "accept": "application/json" }
+      });
+      text = await sheetResponse.text();
+      if (looksLikeJson(text)) break;
+      if (attempt < 2) await sleep(450 * (attempt + 1));
+    }
 
-    const text = await sheetResponse.text();
     let data;
     try {
       data = JSON.parse(text);
     } catch {
       return sendJson(response, 502, {
         ok: false,
-        message: "Apps Scriptの応答をJSONとして読み取れませんでした。",
+        message: "Apps Scriptが一時的に診断結果を返せませんでした。少し待って再読み込みしてください。",
+        code: "apps_script_non_json",
+        status: sheetResponse?.status || 502,
         detail: text.slice(0, 500)
       });
     }
