@@ -2649,6 +2649,17 @@
       document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
       renderAirsPersonas();
       renderAirsLocker();
+      function clearAirsPostForm() {
+        if (storeNameInput) storeNameInput.value = "";
+        if (sourceUrlInput) sourceUrlInput.value = "";
+        const commentInput = document.querySelector("#airs-comment");
+        if (commentInput) commentInput.value = "";
+        selectedAirsPlace = null;
+        if (placeCandidatesBox) {
+          placeCandidatesBox.classList.remove("is-open");
+          placeCandidatesBox.innerHTML = "";
+        }
+      }
       function renderAirsPlaceCandidates(candidates) {
         if (!placeCandidatesBox) return;
         placeCandidatesBox.classList.add("is-open");
@@ -2750,6 +2761,7 @@
         renderAirsLocker();
         const savedItem = await saveAirsToServer(item);
         saveAirsItems([savedItem, ...loadAirsItems().filter((entry) => entry.id !== item.id)]);
+        clearAirsPostForm();
         location.hash = "airs-locker";
         renderAirsLocker();
       });
