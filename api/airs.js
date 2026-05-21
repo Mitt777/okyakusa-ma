@@ -5,6 +5,7 @@ const MAX_TEXT = 240;
 const ALLOWED_KINDS = new Set(["customer", "official"]);
 const ALLOWED_VISIBILITY = new Set(["private", "link", "public"]);
 const ENTRY_PHOTO_SLOTS = new Set(["exterior", "entrance", "access"]);
+const CONNECTION_STATUSES = new Set(["requested", "approved", "published", "hidden"]);
 
 function safeSegment(value, fallback = "airs") {
   return String(value || fallback)
@@ -115,6 +116,10 @@ function buildConnectionRecord(body) {
     status: "requested",
     createdAt
   };
+}
+
+function normalizeConnectionStatus(value) {
+  return CONNECTION_STATUSES.has(value) ? value : "requested";
 }
 
 function parseImageDataUrl(value) {
@@ -334,6 +339,60 @@ async function handleAdminLookup(request, response) {
   });
 }
 
+async function listConnections({ storeName, requestId, statuses = null, limit = 150 }) {
+  const { list } = await import("@vercel/blob");
+  const result = await list({ prefix: "airs/connections/", limit });
+  const blobs = result.blobs || [];
+  const connections = [];
+  for (const blob of blobs) {
+    try {
+      const record = await fetchBlobRecord(blob);
+      const status = normalizeConnectionStatus(record.status);
+      const statusMatch = !statuses || statuses.has(status);
+      if (statusMatch && matchesAdminRecord(record, storeName, requestId)) {
+        connections.push({
+          connectionId: record.connectionId || "",
+          officialAirId: record.officialAirId || "",
+          officialRequestId: record.officialRequestId || "",
+          officialCardUrl: record.officialCardUrl || "",
+          customerAirId: record.customerAirId || "",
+          storeName: record.storeName || storeName,
+          customerLabel: record.customerLabel || "air-sユーザー",
+          comment: record.comment || "",
+          status,
+          createdAt: record.createdAt || "",
+          approvedAt: record.approvedAt || "",
+          publishedAt: record.publishedAt || "",
+          contentHash: record.contentHash || "",
+          pathname: blob.pathname,
+          url: blob.url
+        });
+      }
+    } catch {
+      // Ignore malformed beta records.
+    }
+  }
+  return connections.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+
+async function handlePublishedConnectionsLookup(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 200, { ok: true, configured: false, connections: [] });
+  }
+  const storeName = compact(request.query?.store || request.query?.storeName);
+  const requestId = compact(request.query?.requestId || request.query?.id);
+  if (!storeName && !requestId) {
+    return sendJson(response, 400, { ok: false, message: "storeまたはrequestIdが必要です。" });
+  }
+  const connections = await listConnections({
+    storeName,
+    requestId,
+    statuses: new Set(["approved", "published"]),
+    limit: 150
+  });
+  return sendJson(response, 200, { ok: true, configured: true, connections });
+}
+
 async function handleEntryPhotosLookup(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 200, { ok: true, configured: false, entryPhotos: [] });
@@ -415,6 +474,58 @@ async function handleConnectionRequest(request, response) {
   });
 }
 
+async function handleConnectionStatusUpdate(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+
+  const body = await readJsonBody(request);
+  const connectionId = safeSegment(body.connectionId, "");
+  const pathname = String(body.pathname || "");
+  const nextStatus = normalizeConnectionStatus(body.status);
+  if (!connectionId && !pathname) {
+    return sendJson(response, 400, { ok: false, message: "connectionIdが必要です。" });
+  }
+
+  const { list, put } = await import("@vercel/blob");
+  const result = await list({ prefix: "airs/connections/", limit: 200 });
+  const target = (result.blobs || []).find((blob) => {
+    if (pathname && blob.pathname === pathname) return true;
+    return connectionId && blob.pathname.endsWith(`/${connectionId}.json`);
+  });
+  if (!target) {
+    return sendJson(response, 404, { ok: false, message: "つながり申請が見つかりませんでした。" });
+  }
+
+  const existing = await fetchBlobRecord(target);
+  const updatedAt = new Date().toISOString();
+  const updated = {
+    ...existing,
+    status: nextStatus,
+    updatedAt,
+    approvedAt: ["approved", "published"].includes(nextStatus) ? (existing.approvedAt || updatedAt) : existing.approvedAt || "",
+    publishedAt: nextStatus === "published" ? (existing.publishedAt || updatedAt) : existing.publishedAt || ""
+  };
+  updated.contentHash = stableHash(updated);
+
+  const blob = await put(target.pathname, JSON.stringify(updated, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json; charset=utf-8"
+  });
+
+  return sendJson(response, 200, {
+    ok: true,
+    record: updated,
+    url: blob.url,
+    pathname: blob.pathname
+  });
+}
+
 async function handleAirsSave(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 503, {
@@ -456,8 +567,14 @@ module.exports = async function handler(request, response) {
     if (request.method === "GET" && action === "entry-photos") {
       return handleEntryPhotosLookup(request, response);
     }
+    if (request.method === "GET" && action === "published-connections") {
+      return handlePublishedConnectionsLookup(request, response);
+    }
     if (request.method === "POST" && action === "connect") {
       return handleConnectionRequest(request, response);
+    }
+    if (request.method === "POST" && action === "connection-status") {
+      return handleConnectionStatusUpdate(request, response);
     }
     if (request.method === "POST" && action === "entry-photo") {
       return handleEntryPhotoSave(request, response);

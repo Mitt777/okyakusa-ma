@@ -298,8 +298,24 @@
       text-decoration: none;
     }
 
+    .actions button.publish {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .actions button.quiet {
+      background: #fbfaf6;
+      color: #6b5630;
+    }
+
     .letter {
       grid-template-columns: 1fr;
+    }
+
+    .letter.is-published {
+      border-color: rgba(63, 138, 109, .45);
+      background: linear-gradient(180deg, #ffffff 0%, #f2fbf5 100%);
     }
 
     .placeholder-grid {
@@ -469,7 +485,7 @@
       <div class="panel-head">
         <div>
           <h2>届いたair-s / つながり申請β</h2>
-          <p>お客様側のair-sから届いた小さな便りです。今は確認だけ。明日以降、承認・掲載・返信へ育てます。</p>
+          <p>お客様側のair-sから届いた小さな便りです。店主さんが「これは嬉しい」と思ったものだけ、公式カード側へそっと掲載できます。</p>
         </div>
         <span class="badge">静かな受信箱</span>
       </div>
@@ -503,7 +519,7 @@
         </div>
         <div class="placeholder">
           <strong>掲載したいair-s</strong>
-          <span>口コミではなく、お店に届いた共鳴の便りとして公式カードへ載せます。</span>
+          <span>口コミではなく、お店に届いた共鳴の便りとして公式カードへ載せます。まずは掲載/非表示だけの軽い入口です。</span>
         </div>
         <div class="placeholder">
           <strong>多言語カード</strong>
@@ -590,21 +606,31 @@
         connectionList.innerHTML = '<div class="empty">届いたair-sはまだありません。air-s側で同じお店が登録され、つながり申請βが押されるとここに表示されます。</div>';
         return;
       }
-      connectionList.innerHTML = items.map((item) => `
-        <article class="card letter">
+      connectionList.innerHTML = items.map((item) => {
+        const status = item.status || "requested";
+        const isPublished = status === "published" || status === "approved";
+        return `
+        <article class="card letter${isPublished ? " is-published" : ""}">
           <div>
-            <small>${escapeHtml(item.status || "requested")} / ${formatDate(item.createdAt)}</small>
+            <small>${escapeHtml(status)} / ${formatDate(item.createdAt)}</small>
             <b>${escapeHtml(item.storeName || "このお店")}</b>
             <p>${escapeHtml(item.comment || "このお店の空気を残しました。")}</p>
             <p>差出人: ${escapeHtml(item.customerLabel || "air-sユーザー")}<br>申請ID: ${escapeHtml(item.connectionId || "未記録")}</p>
             <div class="actions">
               ${item.officialCardUrl ? `<a href="${escapeHtml(item.officialCardUrl)}" target="_blank" rel="noopener">公式カード</a>` : ""}
-              <button type="button" disabled>承認は次フェーズ</button>
-              <button type="button" disabled>掲載候補は次フェーズ</button>
+              <button class="publish" type="button" data-connection-status="published" data-connection-id="${escapeHtml(item.connectionId || "")}" data-connection-pathname="${escapeHtml(item.pathname || "")}" ${isPublished ? "disabled" : ""}>${isPublished ? "掲載中" : "公式カードへ載せる"}</button>
+              <button class="quiet" type="button" data-connection-status="hidden" data-connection-id="${escapeHtml(item.connectionId || "")}" data-connection-pathname="${escapeHtml(item.pathname || "")}" ${status === "hidden" ? "disabled" : ""}>非表示</button>
             </div>
           </div>
         </article>
-      `).join("");
+      `;
+      }).join("");
+
+      connectionList.querySelectorAll("[data-connection-status]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await updateConnectionStatus(button);
+        });
+      });
     }
 
     function entryPhotoBySlot(items, slot) {
@@ -739,6 +765,33 @@
       } catch (error) {
         statusBox.textContent = error.message || "写真を保存できませんでした。";
       } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
+    async function updateConnectionStatus(button) {
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "更新中...";
+      try {
+        const response = await fetch("/api/airs?action=connection-status", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            connectionId: button.dataset.connectionId,
+            pathname: button.dataset.connectionPathname,
+            status: button.dataset.connectionStatus
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "更新できませんでした。");
+        statusBox.textContent = button.dataset.connectionStatus === "published"
+          ? "公式カードへ載せるair-sとして保存しました。"
+          : "このair-sを非表示にしました。";
+        await loadBackroom({ silent: true });
+      } catch (error) {
+        statusBox.textContent = error.message || "更新できませんでした。";
         button.disabled = false;
         button.textContent = original;
       }

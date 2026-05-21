@@ -1363,6 +1363,57 @@
       line-height: 1.55;
     }
 
+    .ok-air-s-letters {
+      margin-top: 14px;
+      border: 1px solid rgba(215, 183, 123, .5);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #fffdf5 0%, #f7fbf5 100%);
+      padding: 12px;
+    }
+
+    .ok-air-s-letters h5 {
+      margin: 0 0 5px;
+      color: #4e3a1f;
+      font-size: 14px;
+    }
+
+    .ok-air-s-letters > p {
+      margin: 0 0 10px;
+      color: #655846;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .ok-air-s-letter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .ok-air-s-letter {
+      border: 1px solid rgba(63, 138, 109, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .86);
+      padding: 10px;
+    }
+
+    .ok-air-s-letter blockquote {
+      margin: 0;
+      color: #2b3a31;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.75;
+    }
+
+    .ok-air-s-letter small {
+      display: block;
+      margin-top: 7px;
+      color: #806335;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
     .ok-card-stage {
       display: grid;
       grid-template-columns: minmax(260px, 420px) 1fr;
@@ -2612,6 +2663,10 @@
       }
 
       .ok-entry-photo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ok-air-s-letter-grid {
         grid-template-columns: 1fr;
       }
 
@@ -3912,6 +3967,7 @@
               </div>
               ${officialMessage}
               <div class="ok-entry-photos" id="entry-photo-shelf" hidden></div>
+              <div class="ok-air-s-letters" id="air-s-letter-shelf" hidden></div>
               <div class="ok-card-qr" id="worldview-qr-shelf">
                 <h5>この空気を、お店に置く</h5>
                 <p>この世界観カードへつながるQRコードを作れます。テーブル、レジ横、ショップカード、紙袋などに置ける小さな漂流札です。</p>
@@ -4243,6 +4299,38 @@
                   <strong>${escapeHtml(entryPhotoSlotLabel(photo.slot))}</strong>
                   <span>${escapeHtml(photo.caption || "初めての方が迷わないための写真です。")}</span>
                 </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+        shelf.hidden = false;
+      } catch {
+        shelf.hidden = true;
+      }
+    }
+
+    async function loadAirSLetterShelf(storeName = "") {
+      const shelf = document.querySelector("#air-s-letter-shelf");
+      if (!shelf) return;
+      try {
+        const params = new URLSearchParams({ action: "published-connections" });
+        if (storeName) params.set("store", storeName);
+        if (id) params.set("requestId", id);
+        const response = await fetch(`/api/airs?${params.toString()}`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !(data.connections || []).length) {
+          shelf.hidden = true;
+          return;
+        }
+        const letters = (data.connections || []).slice(0, 4);
+        shelf.innerHTML = `
+          <h5>届いたair-s</h5>
+          <p>店主さんが「この空気をここに置きたい」と選んだ、お客様からの小さな便りです。</p>
+          <div class="ok-air-s-letter-grid">
+            ${letters.map((letter) => `
+              <article class="ok-air-s-letter">
+                <blockquote>${escapeHtml(letter.comment || "このお店の空気を残しました。")}</blockquote>
+                <small>${escapeHtml(letter.customerLabel || "air-sユーザー")} / ${escapeHtml(letter.status || "published")}</small>
               </article>
             `).join("")}
           </div>
@@ -5171,6 +5259,7 @@
       resultEl.classList.add("is-open");
       bindPersonaGallerySettling(resultEl);
       loadEntryPhotoShelf(storeName);
+      loadAirSLetterShelf(storeName);
       document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
       updateWorldviewUrl();
