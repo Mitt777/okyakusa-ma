@@ -420,6 +420,40 @@
       font-weight: 900;
     }
 
+    .airs-insight {
+      margin-top: 12px;
+      border: 1px solid rgba(215, 183, 123, .54);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 250, 240, .88), rgba(238, 249, 243, .72));
+      padding: 14px;
+    }
+
+    .airs-insight small {
+      display: inline-flex;
+      margin-bottom: 7px;
+      border-radius: 999px;
+      background: rgba(238, 249, 243, .92);
+      color: #27624d;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-insight strong {
+      display: block;
+      color: #26362d;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .airs-insight p {
+      margin-top: 5px;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
     .airs-share {
       display: flex;
       flex-wrap: wrap;
@@ -2056,6 +2090,34 @@
       `;
     }
 
+    function renderAirsInsight(items) {
+      if (items.length < 3) return "";
+      const counts = items.reduce((acc, item) => {
+        const key = item.personaKey || "21";
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const [topKey, topCount] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] || ["21", 0];
+      const topPersona = AIRS_PERSONAS.find((persona) => persona.key === topKey) || AIRS_PERSONAS[20];
+      const recentPlaces = items.slice(0, 5).map((item) => item.storeName).filter(Boolean);
+      const title = items.length >= 7
+        ? "あなたが残す空気の輪郭が、少し見えてきました。"
+        : "少しだけ、空気の傾向が見えてきました。";
+      const body = items.length >= 5
+        ? `${topPersona.label}が${topCount}件あります。${recentPlaces.length ? `最近は「${recentPlaces.slice(0, 3).join("」「")}」のような場所が並んでいます。` : ""}まだ断定せず、Lockerに残った空気の偏りとして見ます。`
+        : `${topPersona.label}が少し多めです。まだ3件なので、分析よりも「残せた場所」を見返せることを大切にします。`;
+      const note = items.length >= 10
+        ? "7〜10件以降の入口 β"
+        : "自己認識 β";
+      return `
+        <div class="airs-insight">
+          <small>${note}</small>
+          <strong>${title}</strong>
+          <p>${escapeHtml(body)}</p>
+        </div>
+      `;
+    }
+
     function renderAirsStatus(items) {
       const target = 5;
       const count = items.length;
@@ -2071,6 +2133,7 @@
           <div class="airs-count">${progress}/${target}<span>first map</span></div>
         </div>
         ${renderAirsMilestones(count)}
+        ${renderAirsInsight(items)}
       `;
     }
 
