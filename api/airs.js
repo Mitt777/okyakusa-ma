@@ -84,6 +84,9 @@ function buildAirsRecord(body) {
     sourceUrl: safeUrl(body.sourceUrl || body.officialCardUrl),
     personaKey: cleanText(body.personaKey, 32),
     image: safeUrl(body.image) || cleanText(body.image, 180),
+    photoUrl: safeUrl(body.photoUrl),
+    photoPathname: cleanText(body.photoPathname, 180),
+    photoVisibility: ALLOWED_VISIBILITY.has(body.photoVisibility) ? body.photoVisibility : "private",
     comment: cleanText(body.comment, MAX_TEXT),
     timeLabel: cleanText(body.timeLabel, 40),
     createdAt,
@@ -447,6 +450,38 @@ async function handleEntryPhotoSave(request, response) {
   });
 }
 
+async function handleAirsPhotoSave(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+
+  const body = await readJsonBody(request);
+  const image = parseImageDataUrl(body.imageDataUrl);
+  if (!image) {
+    return sendJson(response, 400, { ok: false, message: "画像を1.4MB以下のJPEG/PNG/WebPで送信してください。" });
+  }
+
+  const { put } = await import("@vercel/blob");
+  const airId = safeSegment(body.airId, `airs_${Date.now().toString(36)}`);
+  const storeSegment = safeSegment(body.storeName, "store");
+  const pathname = `airs/photos/${storeSegment}/${airId}.${image.ext}`;
+  const blob = await put(pathname, image.bytes, {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: image.mimeType
+  });
+
+  return sendJson(response, 200, {
+    ok: true,
+    photoUrl: blob.url,
+    photoPathname: blob.pathname
+  });
+}
+
 async function handleConnectionRequest(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 503, {
@@ -578,6 +613,9 @@ module.exports = async function handler(request, response) {
     }
     if (request.method === "POST" && action === "entry-photo") {
       return handleEntryPhotoSave(request, response);
+    }
+    if (request.method === "POST" && action === "photo") {
+      return handleAirsPhotoSave(request, response);
     }
     if (request.method === "POST") return handleAirsSave(request, response);
     return sendJson(response, 405, { ok: false, message: "対応していないメソッドです。" });

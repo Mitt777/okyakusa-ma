@@ -255,6 +255,59 @@
       font-weight: 800;
     }
 
+    .airs-photo-field {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 96px;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      border: 1px dashed rgba(58, 92, 73, .24);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .74);
+      padding: 10px;
+    }
+
+    .airs-photo-field label {
+      display: grid;
+      gap: 5px;
+      color: #31483d;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .airs-photo-field input {
+      min-height: auto;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .airs-photo-field span {
+      color: #667065;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .airs-photo-preview {
+      width: 96px;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background: #f7f4ed;
+    }
+
+    .airs-photo-preview img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .airs-photo-preview.has-image img {
+      display: block;
+    }
+
     .airs-place-candidates {
       border-color: rgba(58, 92, 73, .18);
       background: rgba(249, 252, 247, .82);
@@ -1792,9 +1845,15 @@
 
       .airs-hero,
       .airs-form-grid,
+      .airs-photo-field,
       .airs-card-grid,
       .airs-map-placeholder {
         grid-template-columns: 1fr;
+      }
+
+      .airs-photo-preview {
+        width: 100%;
+        aspect-ratio: 16 / 9;
       }
 
       .airs-map-share-actions {
@@ -1937,6 +1996,16 @@
             <input id="airs-source-url" type="url" placeholder="わかる場合だけ https://...">
           </label>
           <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
+        </div>
+        <div class="airs-photo-field">
+          <label>
+            その時の写真（任意・1枚）
+            <input id="airs-photo" type="file" accept="image/*">
+            <span>公開はまだしません。まずは自分の記憶として、軽く圧縮して保存します。</span>
+          </label>
+          <div class="airs-photo-preview" id="airs-photo-preview" aria-hidden="true">
+            <img alt="">
+          </div>
         </div>
         <div class="airs-place-tools">
           <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
@@ -2388,6 +2457,86 @@
       }
     }
 
+    function canvasToJpegBlob(canvas, quality) {
+      return new Promise((resolve) => {
+        canvas.toBlob(resolve, "image/jpeg", quality);
+      });
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function loadImageForAirsPhoto(file) {
+      if (window.createImageBitmap) return createImageBitmap(file);
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(image);
+        };
+        image.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("写真を読み込めませんでした。"));
+        };
+        image.src = url;
+      });
+    }
+
+    async function compressAirsPhoto(file) {
+      if (!file) return null;
+      const bitmap = await loadImageForAirsPhoto(file);
+      const maxSide = 1200;
+      const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+      const width = Math.max(1, Math.round(bitmap.width * scale));
+      const height = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      context.drawImage(bitmap, 0, 0, width, height);
+      let quality = .82;
+      let blob = await canvasToJpegBlob(canvas, quality);
+      while (blob && blob.size > 950000 && quality > .52) {
+        quality -= .1;
+        blob = await canvasToJpegBlob(canvas, quality);
+      }
+      if (!blob || blob.size > 1_400_000) throw new Error("写真が大きすぎます。少し小さい写真を選んでください。");
+      return {
+        dataUrl: await blobToDataUrl(blob),
+        width,
+        height,
+        size: blob.size
+      };
+    }
+
+    async function uploadAirsPhoto({ airId, storeName, file }) {
+      const image = await compressAirsPhoto(file);
+      if (!image) return null;
+      const response = await fetch("/api/airs?action=photo", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          airId,
+          storeName,
+          imageDataUrl: image.dataUrl
+        })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.message || "写真を保存できませんでした。");
+      return {
+        photoUrl: data.photoUrl,
+        photoPathname: data.photoPathname,
+        photoVisibility: "private"
+      };
+    }
+
     function airsMilestoneMessage(count) {
       if (count >= 30) {
         return {
@@ -2667,6 +2816,9 @@
             rating: item.rating,
             personaKey: item.personaKey,
             image: item.image,
+            photoUrl: item.photoUrl,
+            photoPathname: item.photoPathname,
+            photoVisibility: item.photoVisibility || "private",
             comment: item.comment,
             timeLabel: item.timeLabel,
             visibility: item.visibility || "private"
@@ -2727,6 +2879,7 @@
           <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${item.timeLabel}</small>
           <b>${item.storeName}</b>
           <p>${item.comment || "この空気だった。"}</p>
+          ${item.photoUrl ? `<p><img src="${escapeHtml(item.photoUrl)}" alt="${escapeHtml(item.storeName)}の記憶写真" style="aspect-ratio: 16 / 9;"></p>` : ""}
           <p>${item.serverSaved ? "このair-sは保存されています。今はまだ自分だけのLockerに置かれています。" : "この端末内の仮保存です。公開や交流はまだ行いません。"}</p>
           <div class="airs-share">
             <a href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">Google Mapsで開く</a>
@@ -2801,7 +2954,7 @@
         <div class="airs-map-list">
           ${mapItems.map((item, index) => `
             <article class="airs-map-item">
-              <img src="${item.image}" alt="${item.storeName}">
+              <img src="${escapeHtml(item.photoUrl || item.image)}" alt="${escapeHtml(item.storeName)}">
               <div>
                 <b>${item.storeName}</b>
                 <small>${item.timeLabel} / 非公開 / ${item.comment || "この空気だった。"}</small>
@@ -2833,6 +2986,8 @@
       const params = new URLSearchParams(location.search);
       const storeNameInput = document.querySelector("#airs-store-name");
       const sourceUrlInput = document.querySelector("#airs-source-url");
+      const photoInput = document.querySelector("#airs-photo");
+      const photoPreview = document.querySelector("#airs-photo-preview");
       const placeSearchButton = document.querySelector("#airs-place-search-button");
       const placeCandidatesBox = document.querySelector("#airs-place-candidates");
       let selectedAirsPlace = null;
@@ -2848,12 +3003,32 @@
         if (sourceUrlInput) sourceUrlInput.value = "";
         const commentInput = document.querySelector("#airs-comment");
         if (commentInput) commentInput.value = "";
+        if (photoInput) photoInput.value = "";
+        if (photoPreview) {
+          photoPreview.classList.remove("has-image");
+          const image = photoPreview.querySelector("img");
+          if (image) image.removeAttribute("src");
+        }
         selectedAirsPlace = null;
         if (placeCandidatesBox) {
           placeCandidatesBox.classList.remove("is-open");
           placeCandidatesBox.innerHTML = "";
         }
       }
+      photoInput?.addEventListener("change", () => {
+        const file = photoInput.files?.[0];
+        const image = photoPreview?.querySelector("img");
+        if (!photoPreview || !image) return;
+        if (!file) {
+          photoPreview.classList.remove("has-image");
+          image.removeAttribute("src");
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        image.onload = () => URL.revokeObjectURL(url);
+        image.src = url;
+        photoPreview.classList.add("has-image");
+      });
       function renderAirsPlaceCandidates(candidates) {
         if (!placeCandidatesBox) return;
         placeCandidatesBox.classList.add("is-open");
@@ -2932,11 +3107,28 @@
         }
       });
       document.querySelector("#airs-save")?.addEventListener("click", async () => {
+        const saveButton = document.querySelector("#airs-save");
+        const originalLabel = saveButton?.textContent || "この空気をair-sする";
         const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
         const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || selectedAirsPlace?.google_maps_url || "";
         const comment = document.querySelector("#airs-comment")?.value.trim() || "";
+        const airId = `airs_${Date.now().toString(36)}`;
+        let photoRecord = null;
+        if (saveButton) {
+          saveButton.disabled = true;
+          saveButton.textContent = photoInput?.files?.[0] ? "写真を保存中..." : "保存中...";
+        }
+        try {
+          photoRecord = await uploadAirsPhoto({
+            airId,
+            storeName,
+            file: photoInput?.files?.[0]
+          });
+        } catch (error) {
+          window.alert(error.message || "写真を保存できませんでした。写真なしでair-sを残します。");
+        }
         const item = {
-          id: `airs_${Date.now().toString(36)}`,
+          id: airId,
           kind: "customer",
           storeName,
           sourceUrl,
@@ -2947,6 +3139,9 @@
           comment,
           personaKey: selectedAirsPersona.key,
           image: selectedAirsPersona.image,
+          photoUrl: photoRecord?.photoUrl || "",
+          photoPathname: photoRecord?.photoPathname || "",
+          photoVisibility: photoRecord?.photoVisibility || "private",
           visibility: "private",
           timeLabel: airsTimeLabel(),
           createdAt: Date.now()
@@ -2958,6 +3153,10 @@
         clearAirsPostForm();
         location.hash = "airs-locker";
         renderAirsLocker();
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.textContent = originalLabel;
+        }
       });
     }
 
