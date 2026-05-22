@@ -903,6 +903,54 @@
       font-weight: 800;
     }
 
+    .airs-map-history {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-map-history article {
+      display: grid;
+      gap: 8px;
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 10px;
+    }
+
+    .airs-map-history b {
+      color: #1d3027;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .airs-map-history small {
+      color: #667065;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .airs-map-history-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .airs-map-history-actions a,
+    .airs-map-history-actions button {
+      min-height: 34px;
+      border: 1px solid rgba(58, 92, 73, .2);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 7px 11px;
+      font-size: 11px;
+      font-weight: 950;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
     .airs-label {
       display: inline-flex;
       border-radius: 999px;
@@ -2465,6 +2513,7 @@
   </main>
   <script>
     const AIRS_STORAGE_KEY = "airs_locker_v1";
+    const AIRS_MAP_HISTORY_KEY = "airs_map_history_v1";
     const AIRS_PERSONAS = Array.from({ length: 36 }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
       return {
@@ -2496,6 +2545,34 @@
 
     function saveAirsItems(items) {
       localStorage.setItem(AIRS_STORAGE_KEY, JSON.stringify(items.slice(0, 36)));
+    }
+
+    function loadAirsMapHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(AIRS_MAP_HISTORY_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveAirsMapHistory(history) {
+      localStorage.setItem(AIRS_MAP_HISTORY_KEY, JSON.stringify(history.slice(0, 12)));
+    }
+
+    function rememberAirsMap(map, shareUrl, selectedItems = []) {
+      const history = loadAirsMapHistory();
+      const record = {
+        mapId: map.mapId,
+        url: shareUrl,
+        title: map.title || airsMapTitle(),
+        note: map.note || airsMapNote(),
+        itemCount: selectedItems.length || map.itemCount || 0,
+        createdAt: new Date().toISOString()
+      };
+      saveAirsMapHistory([
+        record,
+        ...history.filter((entry) => entry.mapId !== record.mapId)
+      ]);
     }
 
     function shareAirsText(item) {
@@ -2575,6 +2652,7 @@
         const data = await response.json();
         if (!response.ok || !data.ok) throw new Error(data.message || "Map URLを作れませんでした。");
         const shareUrl = buildAirsMapShareUrl(data.map.mapId);
+        rememberAirsMap(data.map, shareUrl, selectedItems);
         const result = document.querySelector("#airs-map-link-result");
         if (result) {
           result.classList.add("is-open");
@@ -2585,6 +2663,11 @@
           `;
           const input = result.querySelector("input");
           input?.select();
+        }
+        const historyHost = document.querySelector("#airs-map-history-host");
+        if (historyHost) {
+          historyHost.innerHTML = renderAirsMapHistory();
+          bindAirsMapHistoryActions();
         }
         try {
           await navigator.clipboard.writeText(shareUrl);
@@ -2603,6 +2686,63 @@
           }, 1400);
         }
       }
+    }
+
+    async function copyAirsMapHistoryUrl(index, button) {
+      const history = loadAirsMapHistory();
+      const entry = history[Number(index)];
+      if (!entry?.url) return;
+      const original = button?.textContent || "";
+      try {
+        await navigator.clipboard.writeText(entry.url);
+        if (button) button.textContent = "コピーしました";
+      } catch {
+        window.prompt("Map URLをコピーしてください", entry.url);
+      } finally {
+        if (button) setTimeout(() => { button.textContent = original; }, 1400);
+      }
+    }
+
+    function formatAirsMapDate(value) {
+      const date = value ? new Date(value) : new Date();
+      if (Number.isNaN(date.getTime())) return "発信履歴";
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+      return `${month}/${day} ${hour}:${minute}`;
+    }
+
+    function renderAirsMapHistory() {
+      const history = loadAirsMapHistory();
+      if (!history.length) return "";
+      return `
+        <div class="airs-map-share">
+          <small>発信履歴 β / 外へ流したMap</small>
+          <strong>作ったリンク限定Mapは、ここに残ります。</strong>
+          <p>あとから開き直したり、もう一度URLをコピーできます。公開設定ではなく、まずは自分が流した記憶の控えです。</p>
+          <div class="airs-map-history">
+            ${history.slice(0, 5).map((entry, index) => `
+              <article>
+                <b>${escapeHtml(entry.title || "air-s Map")}</b>
+                <small>${escapeHtml(entry.itemCount || 0)}件 / ${escapeHtml(formatAirsMapDate(entry.createdAt))}</small>
+                <div class="airs-map-history-actions">
+                  <a href="${escapeHtml(entry.url)}" target="_blank" rel="noopener">Mapを開く</a>
+                  <button type="button" data-airs-map-history-copy="${index}">URLをコピー</button>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function bindAirsMapHistoryActions() {
+      document.querySelectorAll("[data-airs-map-history-copy]").forEach((button) => {
+        button.addEventListener("click", () => {
+          copyAirsMapHistoryUrl(button.dataset.airsMapHistoryCopy, button);
+        });
+      });
     }
 
     async function shareAirsMap(channel = "copy") {
@@ -3357,7 +3497,9 @@
             <div class="airs-map-link-result" id="airs-map-link-result"></div>
           </div>
         ` : ""}
+        <div id="airs-map-history-host">${renderAirsMapHistory()}</div>
       `;
+      bindAirsMapHistoryActions();
     }
 
     function initAirsHome() {
