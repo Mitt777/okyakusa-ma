@@ -6,6 +6,7 @@ const ALLOWED_KINDS = new Set(["customer", "official"]);
 const ALLOWED_VISIBILITY = new Set(["private", "link", "public"]);
 const ENTRY_PHOTO_SLOTS = new Set(["exterior", "entrance", "access"]);
 const CONNECTION_STATUSES = new Set(["requested", "approved", "published", "hidden"]);
+const EGO_NOTE_STATUSES = new Set(["draft", "published", "hidden"]);
 
 function safeSegment(value, fallback = "airs") {
   return String(value || fallback)
@@ -68,6 +69,7 @@ function buildAirsRecord(body) {
   const requestId = cleanText(body.requestId, 80);
   const airId = safeSegment(body.airId, `airs_${Date.now().toString(36)}`);
   const visibility = ALLOWED_VISIBILITY.has(body.visibility) ? body.visibility : "private";
+  const serial = cleanText(body.cardSerial, 80) || cardSerial(kind, storeName, createdAt);
   const baseRecord = {
     v: 1,
     airId,
@@ -90,15 +92,40 @@ function buildAirsRecord(body) {
     comment: cleanText(body.comment, MAX_TEXT),
     timeLabel: cleanText(body.timeLabel, 40),
     createdAt,
+    created_at: createdAt,
     firstPublishedAt: kind === "official" ? createdAt : "",
+    first_published_at: kind === "official" ? createdAt : "",
+    officialVerifiedAt: kind === "official" ? cleanText(body.officialVerifiedAt || createdAt, 40) : "",
+    official_verified_at: kind === "official" ? cleanText(body.officialVerifiedAt || createdAt, 40) : "",
     version: 1,
     editionType: cleanText(body.editionType || (kind === "official" ? "official_beta" : "memory_beta"), 40),
+    edition_type: cleanText(body.editionType || (kind === "official" ? "official_beta" : "memory_beta"), 40),
     editionLabel: cleanText(body.editionLabel || (kind === "official" ? "公式ページβ" : "air-s β"), 80),
-    cardSerial: cleanText(body.cardSerial, 80) || cardSerial(kind, storeName, createdAt)
+    edition_label: cleanText(body.editionLabel || (kind === "official" ? "公式ページβ" : "air-s β"), 80),
+    sourceSnapshot: {
+      sourceUrl: safeUrl(body.sourceUrl || body.officialCardUrl),
+      officialCardUrl: safeUrl(body.officialCardUrl || body.sourceUrl),
+      storeName,
+      requestId,
+      placeId: cleanText(body.placeId, 120),
+      capturedAt: createdAt
+    },
+    source_snapshot: {
+      sourceUrl: safeUrl(body.sourceUrl || body.officialCardUrl),
+      officialCardUrl: safeUrl(body.officialCardUrl || body.sourceUrl),
+      storeName,
+      requestId,
+      placeId: cleanText(body.placeId, 120),
+      capturedAt: createdAt
+    },
+    cardSerial: serial,
+    card_serial: serial
   };
+  const contentHash = stableHash(baseRecord);
   return {
     ...baseRecord,
-    contentHash: stableHash(baseRecord)
+    contentHash,
+    content_hash: contentHash
   };
 }
 
@@ -152,13 +179,32 @@ function buildEntryPhotoRecord(body, imageUrl, pathname) {
     imagePathname: pathname,
     visibility: "public_card",
     createdAt,
+    created_at: createdAt,
+    firstPublishedAt: createdAt,
+    first_published_at: createdAt,
     version: 1,
     editionType: "entry_ease_photo",
-    editionLabel: "入りやすさ写真β"
+    edition_type: "entry_ease_photo",
+    editionLabel: "入りやすさ写真β",
+    edition_label: "入りやすさ写真β",
+    sourceSnapshot: {
+      storeName,
+      requestId,
+      slot,
+      capturedAt: createdAt
+    },
+    source_snapshot: {
+      storeName,
+      requestId,
+      slot,
+      capturedAt: createdAt
+    }
   };
+  const contentHash = stableHash(baseRecord);
   return {
     ...baseRecord,
-    contentHash: stableHash(baseRecord)
+    contentHash,
+    content_hash: contentHash
   };
 }
 
@@ -178,6 +224,7 @@ function buildAirsMapRecord(body) {
     cardSerial: cleanText(item.cardSerial, 80)
   }));
   const mapId = safeSegment(body.mapId, `map_${Date.now().toString(36)}`);
+  const serial = cleanText(body.cardSerial, 80) || cardSerial("customer", body.title || "airs-map", createdAt);
   const baseRecord = {
     v: 1,
     kind: "airs_map",
@@ -187,14 +234,88 @@ function buildAirsMapRecord(body) {
     note: cleanText(body.note || "好きだった場所の空気を、少しだけ束ねました。", 180),
     items: safeItems,
     createdAt,
+    created_at: createdAt,
+    firstPublishedAt: createdAt,
+    first_published_at: createdAt,
     version: 1,
     editionType: "airs_map_link_beta",
+    edition_type: "airs_map_link_beta",
     editionLabel: "リンク限定Map β",
-    cardSerial: cleanText(body.cardSerial, 80) || cardSerial("customer", body.title || "airs-map", createdAt)
+    edition_label: "リンク限定Map β",
+    sourceSnapshot: {
+      itemCount: safeItems.length,
+      title: cleanText(body.title || "私のair-s Map", 80),
+      capturedAt: createdAt
+    },
+    source_snapshot: {
+      itemCount: safeItems.length,
+      title: cleanText(body.title || "私のair-s Map", 80),
+      capturedAt: createdAt
+    },
+    cardSerial: serial,
+    card_serial: serial
   };
+  const contentHash = stableHash(baseRecord);
   return {
     ...baseRecord,
-    contentHash: stableHash(baseRecord)
+    contentHash,
+    content_hash: contentHash
+  };
+}
+
+function normalizeEgoNoteStatus(value) {
+  return EGO_NOTE_STATUSES.has(value) ? value : "draft";
+}
+
+function buildEgoNoteRecord(body) {
+  const createdAt = new Date().toISOString();
+  const storeName = cleanText(body.storeName || "このお店", 100);
+  const requestId = cleanText(body.requestId, 80);
+  const noteId = safeSegment(body.noteId, `ego_${Date.now().toString(36)}`);
+  const status = normalizeEgoNoteStatus(body.status);
+  const serial = cleanText(body.cardSerial, 80) || cardSerial("official", storeName || "ego-note", createdAt);
+  const baseRecord = {
+    v: 1,
+    kind: "ego_note",
+    noteId,
+    storeName,
+    requestId,
+    sourceType: cleanText(body.sourceType || "manual", 40),
+    sourceUrl: safeUrl(body.sourceUrl),
+    phrase: cleanText(body.phrase || "今週見つかった言葉", 160),
+    summary: cleanText(body.summary || "", 220),
+    aiSummary: cleanText(body.aiSummary || body.summary || "", 220),
+    status,
+    visibility: status === "published" ? "public_card" : "private",
+    createdAt,
+    created_at: createdAt,
+    firstPublishedAt: status === "published" ? createdAt : "",
+    first_published_at: status === "published" ? createdAt : "",
+    version: 1,
+    editionType: "ego_reflection_beta",
+    edition_type: "ego_reflection_beta",
+    editionLabel: "エゴサーチ反映β",
+    edition_label: "エゴサーチ反映β",
+    sourceSnapshot: {
+      sourceType: cleanText(body.sourceType || "manual", 40),
+      sourceUrl: safeUrl(body.sourceUrl),
+      phrase: cleanText(body.phrase || "", 160),
+      capturedAt: createdAt
+    },
+    source_snapshot: {
+      sourceType: cleanText(body.sourceType || "manual", 40),
+      sourceUrl: safeUrl(body.sourceUrl),
+      phrase: cleanText(body.phrase || "", 160),
+      capturedAt: createdAt
+    },
+    cardSerial: serial,
+    card_serial: serial
+  };
+  const contentHash = stableHash(baseRecord);
+  return {
+    ...baseRecord,
+    contentHash,
+    content_hash: contentHash
   };
 }
 
@@ -277,6 +398,45 @@ async function listEntryPhotos({ storeName, requestId, limit = 150 }) {
   return photos.sort((a, b) => (slotOrder[a.slot] || 9) - (slotOrder[b.slot] || 9));
 }
 
+async function listEgoNotes({ storeName, requestId, statuses, limit = 150 }) {
+  const { list } = await import("@vercel/blob");
+  const result = await list({ prefix: "airs/ego-notes/", limit });
+  const blobs = result.blobs || [];
+  const notes = [];
+  for (const blob of blobs) {
+    if (!blob.pathname.endsWith(".json")) continue;
+    try {
+      const record = await fetchBlobRecord(blob);
+      if (!matchesAdminRecord(record, storeName, requestId)) continue;
+      const status = normalizeEgoNoteStatus(record.status);
+      if (statuses && !statuses.has(status)) continue;
+      notes.push({
+        noteId: record.noteId || "",
+        storeName: record.storeName || storeName,
+        requestId: record.requestId || "",
+        sourceType: record.sourceType || "manual",
+        sourceUrl: record.sourceUrl || "",
+        phrase: record.phrase || "",
+        summary: record.summary || "",
+        aiSummary: record.aiSummary || record.summary || "",
+        status,
+        createdAt: record.createdAt || "",
+        firstPublishedAt: record.firstPublishedAt || "",
+        editionType: record.editionType || "",
+        editionLabel: record.editionLabel || "",
+        cardSerial: record.cardSerial || "",
+        contentHash: record.contentHash || "",
+        sourceSnapshot: record.sourceSnapshot || null,
+        pathname: blob.pathname,
+        url: blob.url
+      });
+    } catch {
+      // Ignore malformed beta records.
+    }
+  }
+  return notes.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+
 function matchesAdminRecord(record, storeName, requestId) {
   if (requestId && compact(record.requestId || record.officialRequestId) === requestId) return true;
   return isLikelyMatch(record, storeName, "");
@@ -289,7 +449,8 @@ async function handleAdminLookup(request, response) {
       configured: false,
       officials: [],
       connections: [],
-      entryPhotos: []
+      entryPhotos: [],
+      egoNotes: []
     });
   }
 
@@ -363,6 +524,7 @@ async function handleAdminLookup(request, response) {
   }
 
   const entryPhotos = await listEntryPhotos({ storeName, requestId });
+  const egoNotes = await listEgoNotes({ storeName, requestId });
 
   return sendJson(response, 200, {
     ok: true,
@@ -370,10 +532,12 @@ async function handleAdminLookup(request, response) {
     officials,
     connections,
     entryPhotos,
+    egoNotes,
     counts: {
       officials: officials.length,
       connections: connections.length,
-      entryPhotos: entryPhotos.length
+      entryPhotos: entryPhotos.length,
+      egoNotes: egoNotes.length
     }
   });
 }
@@ -445,6 +609,25 @@ async function handleEntryPhotosLookup(request, response) {
   return sendJson(response, 200, { ok: true, configured: true, entryPhotos });
 }
 
+async function handleEgoNotesLookup(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 200, { ok: true, configured: false, egoNotes: [] });
+  }
+  const storeName = compact(request.query?.store || request.query?.storeName);
+  const requestId = compact(request.query?.requestId || request.query?.id);
+  if (!storeName && !requestId) {
+    return sendJson(response, 400, { ok: false, message: "storeまたはrequestIdが必要です。" });
+  }
+  const onlyPublished = String(request.query?.published || "") === "1";
+  const egoNotes = await listEgoNotes({
+    storeName,
+    requestId,
+    limit: 120,
+    statuses: onlyPublished ? new Set(["published"]) : undefined
+  });
+  return sendJson(response, 200, { ok: true, configured: true, egoNotes });
+}
+
 async function handleEntryPhotoSave(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 503, {
@@ -483,6 +666,87 @@ async function handleEntryPhotoSave(request, response) {
     record,
     url: recordBlob.url,
     pathname: recordBlob.pathname
+  });
+}
+
+async function handleEgoNoteSave(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+  const body = await readJsonBody(request);
+  if (!cleanText(body?.phrase, 160) && !cleanText(body?.summary || body?.aiSummary, 220)) {
+    return sendJson(response, 400, { ok: false, message: "掲載候補の言葉を入力してください。" });
+  }
+  const record = buildEgoNoteRecord(body || {});
+  if (!record.storeName && !record.requestId) {
+    return sendJson(response, 400, { ok: false, message: "店名または受付IDが必要です。" });
+  }
+  const { put } = await import("@vercel/blob");
+  const storeSegment = safeSegment(record.requestId || record.storeName, "store");
+  const pathname = `airs/ego-notes/${storeSegment}/${record.noteId}.json`;
+  const blob = await put(pathname, JSON.stringify(record, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json; charset=utf-8"
+  });
+  return sendJson(response, 200, {
+    ok: true,
+    record,
+    url: blob.url,
+    pathname: blob.pathname
+  });
+}
+
+async function handleEgoNoteStatusUpdate(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+  const body = await readJsonBody(request);
+  const noteId = safeSegment(body.noteId, "");
+  const pathname = String(body.pathname || "");
+  const nextStatus = normalizeEgoNoteStatus(body.status);
+  if (!noteId && !pathname) {
+    return sendJson(response, 400, { ok: false, message: "noteIdが必要です。" });
+  }
+  const { list, put } = await import("@vercel/blob");
+  const result = await list({ prefix: "airs/ego-notes/", limit: 200 });
+  const target = (result.blobs || []).find((blob) => {
+    if (pathname && blob.pathname === pathname) return true;
+    return noteId && blob.pathname.endsWith(`/${noteId}.json`);
+  });
+  if (!target) {
+    return sendJson(response, 404, { ok: false, message: "掲載候補が見つかりませんでした。" });
+  }
+  const existing = await fetchBlobRecord(target);
+  const updatedAt = new Date().toISOString();
+  const updated = {
+    ...existing,
+    status: nextStatus,
+    visibility: nextStatus === "published" ? "public_card" : "private",
+    updatedAt,
+    firstPublishedAt: nextStatus === "published" ? (existing.firstPublishedAt || updatedAt) : existing.firstPublishedAt || "",
+    first_published_at: nextStatus === "published" ? (existing.first_published_at || existing.firstPublishedAt || updatedAt) : existing.first_published_at || existing.firstPublishedAt || ""
+  };
+  updated.contentHash = stableHash(updated);
+  updated.content_hash = updated.contentHash;
+  const blob = await put(target.pathname, JSON.stringify(updated, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json; charset=utf-8"
+  });
+  return sendJson(response, 200, {
+    ok: true,
+    record: updated,
+    url: blob.url,
+    pathname: blob.pathname
   });
 }
 
@@ -626,6 +890,7 @@ async function handleConnectionStatusUpdate(request, response) {
     publishedAt: nextStatus === "published" ? (existing.publishedAt || updatedAt) : existing.publishedAt || ""
   };
   updated.contentHash = stableHash(updated);
+  updated.content_hash = updated.contentHash;
 
   const blob = await put(target.pathname, JSON.stringify(updated, null, 2), {
     access: "public",
@@ -682,6 +947,9 @@ module.exports = async function handler(request, response) {
     if (request.method === "GET" && action === "entry-photos") {
       return handleEntryPhotosLookup(request, response);
     }
+    if (request.method === "GET" && action === "ego-notes") {
+      return handleEgoNotesLookup(request, response);
+    }
     if (request.method === "GET" && action === "published-connections") {
       return handlePublishedConnectionsLookup(request, response);
     }
@@ -694,8 +962,14 @@ module.exports = async function handler(request, response) {
     if (request.method === "POST" && action === "connection-status") {
       return handleConnectionStatusUpdate(request, response);
     }
+    if (request.method === "POST" && action === "ego-note-status") {
+      return handleEgoNoteStatusUpdate(request, response);
+    }
     if (request.method === "POST" && action === "entry-photo") {
       return handleEntryPhotoSave(request, response);
+    }
+    if (request.method === "POST" && action === "ego-note") {
+      return handleEgoNoteSave(request, response);
     }
     if (request.method === "POST" && action === "photo") {
       return handleAirsPhotoSave(request, response);

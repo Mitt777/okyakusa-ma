@@ -466,6 +466,10 @@
         <span>入りやすさ写真</span>
         <strong id="entry-photo-count">0</strong>
       </div>
+      <div class="metric">
+        <span>今週見つかった言葉</span>
+        <strong id="ego-note-count">0</strong>
+      </div>
     </section>
 
     <section class="panel">
@@ -508,6 +512,52 @@
     <section class="panel">
       <div class="panel-head">
         <div>
+          <h2>エゴサーチ反映欄 β</h2>
+          <p>Instagram、TikTok、X、Web、店頭で見つかった良い言葉を手で控えます。店主さんが選んだものだけ、公式カード下部に掲載します。</p>
+        </div>
+        <span class="badge">生きているカードβ</span>
+      </div>
+      <form class="lookup" id="ego-note-form">
+        <label>
+          見つかった言葉
+          <input id="ego-phrase" maxlength="160" placeholder="例: 静かで落ち着く、また行きたい">
+        </label>
+        <label>
+          AI用の短い要約 / 店主メモ
+          <textarea id="ego-summary" maxlength="220" placeholder="例: 初めての人にも安心感が伝わる反応。カード下部に載せたい。"></textarea>
+        </label>
+        <label>
+          URL
+          <input id="ego-source-url" placeholder="Instagram / TikTok / X / Web のURLがあれば">
+        </label>
+        <label>
+          媒体
+          <select id="ego-source-type">
+            <option value="manual">手入力</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="x">X</option>
+            <option value="web">Web</option>
+            <option value="store">店頭</option>
+          </select>
+        </label>
+        <label>
+          掲載状態
+          <select id="ego-status">
+            <option value="published">公式カードに掲載</option>
+            <option value="draft">控えだけ</option>
+          </select>
+        </label>
+        <button class="primary" type="submit">この言葉を保存</button>
+      </form>
+      <div class="cards" id="ego-note-list">
+        <div class="empty">まだ掲載候補を読み込んでいません。</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
           <h2>次に育てる3つの場所</h2>
           <p>今日は入口だけです。重い管理画面ではなく、お店の空気を少しずつ整える場所にします。</p>
         </div>
@@ -540,6 +590,9 @@
     const connectionCount = document.querySelector("#connection-count");
     const entryPhotoCount = document.querySelector("#entry-photo-count");
     const entryPhotoList = document.querySelector("#entry-photo-list");
+    const egoNoteCount = document.querySelector("#ego-note-count");
+    const egoNoteList = document.querySelector("#ego-note-list");
+    const egoNoteForm = document.querySelector("#ego-note-form");
 
     const ENTRY_PHOTO_SLOTS = [
       { key: "exterior", title: "外観", hint: "道から見た時の外観。初めての人が見つけやすくなります。" },
@@ -668,6 +721,39 @@
       });
     }
 
+    function renderEgoNotes(items = []) {
+      egoNoteCount.textContent = items.length;
+      if (!items.length) {
+        egoNoteList.innerHTML = '<div class="empty">まだ言葉はありません。SNSや店頭で見つかった良い反応を、まずは手で1つ控えてみてください。</div>';
+        return;
+      }
+      egoNoteList.innerHTML = items.map((item) => {
+        const status = item.status || "draft";
+        const isPublished = status === "published";
+        return `
+          <article class="card letter${isPublished ? " is-published" : ""}">
+            <div>
+              <small>${escapeHtml(item.editionLabel || "エゴサーチ反映β")} / ${escapeHtml(status)} / ${formatDate(item.createdAt)}</small>
+              <b>${escapeHtml(item.phrase || "今週見つかった言葉")}</b>
+              <p>${escapeHtml(item.aiSummary || item.summary || "このお店に届いた良い反応です。")}</p>
+              <p>媒体: ${escapeHtml(item.sourceType || "manual")}<br>Serial: ${escapeHtml(item.cardSerial || "未生成")}<br>Hash: ${escapeHtml(shortHash(item.contentHash))}</p>
+              <div class="actions">
+                ${item.sourceUrl ? `<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener">元URL</a>` : ""}
+                <button class="publish" type="button" data-ego-status="published" data-ego-id="${escapeHtml(item.noteId || "")}" data-ego-pathname="${escapeHtml(item.pathname || "")}" ${isPublished ? "disabled" : ""}>${isPublished ? "掲載中" : "公式カードへ載せる"}</button>
+                <button class="quiet" type="button" data-ego-status="hidden" data-ego-id="${escapeHtml(item.noteId || "")}" data-ego-pathname="${escapeHtml(item.pathname || "")}" ${status === "hidden" ? "disabled" : ""}>非表示</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      egoNoteList.querySelectorAll("[data-ego-status]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await updateEgoNoteStatus(button);
+        });
+      });
+    }
+
     function canvasToBlob(canvas, quality) {
       return new Promise((resolve) => {
         canvas.toBlob(resolve, "image/jpeg", quality);
@@ -770,6 +856,47 @@
       }
     }
 
+    async function saveEgoNote(event) {
+      event.preventDefault();
+      const store = storeInput.value.trim();
+      const requestId = requestInput.value.trim();
+      if (!store && !requestId) {
+        statusBox.textContent = "先に店名または受付IDを入力してください。";
+        return;
+      }
+      const button = egoNoteForm.querySelector("button");
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "保存中...";
+      try {
+        const response = await fetch("/api/airs?action=ego-note", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            noteId: `ego_${Date.now().toString(36)}`,
+            storeName: store,
+            requestId,
+            phrase: document.querySelector("#ego-phrase").value.trim(),
+            summary: document.querySelector("#ego-summary").value.trim(),
+            sourceUrl: document.querySelector("#ego-source-url").value.trim(),
+            sourceType: document.querySelector("#ego-source-type").value,
+            status: document.querySelector("#ego-status").value
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "保存できませんでした。");
+        statusBox.textContent = "今週見つかった言葉を保存しました。";
+        egoNoteForm.reset();
+        document.querySelector("#ego-status").value = "published";
+        await loadBackroom({ silent: true });
+      } catch (error) {
+        statusBox.textContent = error.message || "保存できませんでした。";
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
     async function updateConnectionStatus(button) {
       const original = button.textContent;
       button.disabled = true;
@@ -797,6 +924,33 @@
       }
     }
 
+    async function updateEgoNoteStatus(button) {
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "更新中...";
+      try {
+        const response = await fetch("/api/airs?action=ego-note-status", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            noteId: button.dataset.egoId,
+            pathname: button.dataset.egoPathname,
+            status: button.dataset.egoStatus
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "更新できませんでした。");
+        statusBox.textContent = button.dataset.egoStatus === "published"
+          ? "公式カードへ載せる言葉として保存しました。"
+          : "この言葉を非表示にしました。";
+        await loadBackroom({ silent: true });
+      } catch (error) {
+        statusBox.textContent = error.message || "更新できませんでした。";
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
     async function loadBackroom(options = {}) {
       const store = storeInput.value.trim();
       const requestId = requestInput.value.trim();
@@ -816,6 +970,7 @@
         renderOfficials(data.officials || []);
         renderConnections(data.connections || []);
         renderEntryPhotos(data.entryPhotos || []);
+        renderEgoNotes(data.egoNotes || []);
         statusBox.textContent = data.configured === false
           ? "Vercel Blobが未設定です。"
           : "受信箱を更新しました。";
@@ -828,9 +983,13 @@
       event.preventDefault();
       loadBackroom();
     });
+    egoNoteForm.addEventListener("submit", saveEgoNote);
 
     if (storeInput.value || requestInput.value) loadBackroom();
-    else renderEntryPhotos([]);
+    else {
+      renderEntryPhotos([]);
+      renderEgoNotes([]);
+    }
   </script>
 </body>
 </html>

@@ -1371,15 +1371,36 @@
       padding: 12px;
     }
 
+    .ok-ego-notes {
+      margin-top: 14px;
+      border: 1px solid rgba(63, 138, 109, .24);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #f7fbf5 0%, #fffdf5 100%);
+      padding: 12px;
+    }
+
     .ok-air-s-letters h5 {
       margin: 0 0 5px;
       color: #4e3a1f;
       font-size: 14px;
     }
 
+    .ok-ego-notes h5 {
+      margin: 0 0 5px;
+      color: #24463a;
+      font-size: 14px;
+    }
+
     .ok-air-s-letters > p {
       margin: 0 0 10px;
       color: #655846;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .ok-ego-notes > p {
+      margin: 0 0 10px;
+      color: #56685e;
       font-size: 12px;
       line-height: 1.7;
     }
@@ -1412,6 +1433,10 @@
       font-size: 11px;
       font-weight: 900;
       line-height: 1.5;
+    }
+
+    .ok-ego-note-source {
+      color: #2f8064;
     }
 
     .ok-card-stage {
@@ -4027,6 +4052,7 @@
               ${officialMessage}
               <div class="ok-entry-photos" id="entry-photo-shelf" hidden></div>
               <div class="ok-air-s-letters" id="air-s-letter-shelf" hidden></div>
+              <div class="ok-ego-notes" id="ego-note-shelf" hidden></div>
               <div class="ok-card-qr" id="worldview-qr-shelf">
                 <h5>この空気を、お店に置く</h5>
                 <p>この世界観カードへつながるQRコードを作れます。テーブル、レジ横、ショップカード、紙袋などに置ける小さな漂流札です。</p>
@@ -4411,6 +4437,38 @@
               <article class="ok-air-s-letter">
                 <blockquote>${escapeHtml(letter.comment || "このお店の空気を残しました。")}</blockquote>
                 <small>${escapeHtml(letter.customerLabel || "air-sユーザー")} / ${escapeHtml(letter.status || "published")}</small>
+              </article>
+            `).join("")}
+          </div>
+        `;
+        shelf.hidden = false;
+      } catch {
+        shelf.hidden = true;
+      }
+    }
+
+    async function loadEgoNoteShelf(storeName = "") {
+      const shelf = document.querySelector("#ego-note-shelf");
+      if (!shelf) return;
+      try {
+        const params = new URLSearchParams({ action: "ego-notes", published: "1" });
+        if (storeName) params.set("store", storeName);
+        if (id) params.set("requestId", id);
+        const response = await fetch(`/api/airs?${params.toString()}`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !(data.egoNotes || []).length) {
+          shelf.hidden = true;
+          return;
+        }
+        const notes = (data.egoNotes || []).slice(0, 4);
+        shelf.innerHTML = `
+          <h5>今週見つかった言葉</h5>
+          <p>店主さんが「この空気をカードに置きたい」と選んだ、SNSや店頭で見つかった良い反応です。</p>
+          <div class="ok-air-s-letter-grid">
+            ${notes.map((note) => `
+              <article class="ok-air-s-letter">
+                <blockquote>${escapeHtml(note.phrase || note.aiSummary || "このお店に届いた良い反応です。")}</blockquote>
+                <small><span class="ok-ego-note-source">${escapeHtml(note.sourceType || "manual")}</span> / ${escapeHtml(note.editionLabel || "エゴサーチ反映β")}</small>
               </article>
             `).join("")}
           </div>
@@ -5340,6 +5398,7 @@
       bindPersonaGallerySettling(resultEl);
       loadEntryPhotoShelf(storeName);
       loadAirSLetterShelf(storeName);
+      loadEgoNoteShelf(storeName);
       document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
       updateWorldviewUrl();
