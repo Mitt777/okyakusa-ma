@@ -162,6 +162,42 @@ function buildEntryPhotoRecord(body, imageUrl, pathname) {
   };
 }
 
+function buildAirsMapRecord(body) {
+  const createdAt = new Date().toISOString();
+  const items = Array.isArray(body.items) ? body.items.slice(0, 12) : [];
+  const safeItems = items.map((item, index) => ({
+    order: index + 1,
+    storeName: cleanText(item.storeName || "好きな場所", 80),
+    sourceUrl: safeUrl(item.sourceUrl),
+    image: safeUrl(item.image) || cleanText(item.image, 180),
+    photoUrl: item.includePhoto ? safeUrl(item.photoUrl) : "",
+    comment: cleanText(item.comment || "この空気だった。", 180),
+    timeLabel: cleanText(item.timeLabel, 40),
+    personaKey: cleanText(item.personaKey, 32),
+    placeId: cleanText(item.placeId, 120),
+    cardSerial: cleanText(item.cardSerial, 80)
+  }));
+  const mapId = safeSegment(body.mapId, `map_${Date.now().toString(36)}`);
+  const baseRecord = {
+    v: 1,
+    kind: "airs_map",
+    mapId,
+    visibility: "link",
+    title: cleanText(body.title || "私のair-s Map", 80),
+    note: cleanText(body.note || "好きだった場所の空気を、少しだけ束ねました。", 180),
+    items: safeItems,
+    createdAt,
+    version: 1,
+    editionType: "airs_map_link_beta",
+    editionLabel: "リンク限定Map β",
+    cardSerial: cleanText(body.cardSerial, 80) || cardSerial("customer", body.title || "airs-map", createdAt)
+  };
+  return {
+    ...baseRecord,
+    contentHash: stableHash(baseRecord)
+  };
+}
+
 async function handleOfficialLookup(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 200, { ok: true, official: null, configured: false });
@@ -482,6 +518,50 @@ async function handleAirsPhotoSave(request, response) {
   });
 }
 
+async function handleAirsMapLookup(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 200, { ok: true, configured: false, map: null });
+  }
+  const mapId = safeSegment(request.query?.mapId || request.query?.id, "");
+  if (!mapId) {
+    return sendJson(response, 400, { ok: false, message: "mapIdが必要です。" });
+  }
+  const { list } = await import("@vercel/blob");
+  const result = await list({ prefix: `airs/maps/${mapId}.json`, limit: 1 });
+  const blob = (result.blobs || [])[0];
+  if (!blob) return sendJson(response, 404, { ok: false, message: "Mapが見つかりませんでした。" });
+  const map = await fetchBlobRecord(blob);
+  return sendJson(response, 200, { ok: true, configured: true, map });
+}
+
+async function handleAirsMapSave(request, response) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return sendJson(response, 503, {
+      ok: false,
+      code: "blob_not_configured",
+      message: "Vercel Blobが未設定です。"
+    });
+  }
+  const body = await readJsonBody(request);
+  const record = buildAirsMapRecord(body || {});
+  if (!record.items.length) {
+    return sendJson(response, 400, { ok: false, message: "Mapにするair-sが必要です。" });
+  }
+  const { put } = await import("@vercel/blob");
+  const pathname = `airs/maps/${record.mapId}.json`;
+  const blob = await put(pathname, JSON.stringify(record, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json; charset=utf-8"
+  });
+  return sendJson(response, 200, {
+    ok: true,
+    map: record,
+    url: blob.url,
+    pathname: blob.pathname
+  });
+}
+
 async function handleConnectionRequest(request, response) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return sendJson(response, 503, {
@@ -605,6 +685,9 @@ module.exports = async function handler(request, response) {
     if (request.method === "GET" && action === "published-connections") {
       return handlePublishedConnectionsLookup(request, response);
     }
+    if (request.method === "GET" && action === "map") {
+      return handleAirsMapLookup(request, response);
+    }
     if (request.method === "POST" && action === "connect") {
       return handleConnectionRequest(request, response);
     }
@@ -616,6 +699,9 @@ module.exports = async function handler(request, response) {
     }
     if (request.method === "POST" && action === "photo") {
       return handleAirsPhotoSave(request, response);
+    }
+    if (request.method === "POST" && action === "map") {
+      return handleAirsMapSave(request, response);
     }
     if (request.method === "POST") return handleAirsSave(request, response);
     return sendJson(response, 405, { ok: false, message: "対応していないメソッドです。" });

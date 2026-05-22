@@ -836,6 +836,31 @@
       color: #fff;
     }
 
+    .airs-map-link-result {
+      display: none;
+      margin-top: 10px;
+      border: 1px solid rgba(31, 122, 94, .2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .8);
+      padding: 10px;
+    }
+
+    .airs-map-link-result.is-open {
+      display: block;
+    }
+
+    .airs-map-link-result input {
+      width: 100%;
+      margin-top: 8px;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: #20382d;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .airs-label {
       display: inline-flex;
       border-radius: 999px;
@@ -1957,6 +1982,18 @@
         </nav>
       </div>
 
+      <section class="airs-section" id="airs-map-public" hidden>
+        <div class="airs-section-head">
+          <div>
+            <span class="airs-label">リンク限定Map β</span>
+            <h2 id="airs-map-public-title">air-s Map</h2>
+            <p id="airs-map-public-note">好きだった場所の空気を、少しだけ束ねたMapです。</p>
+          </div>
+          <a class="airs-button" href="https://air-s.jp/">air-sを作る</a>
+        </div>
+        <div id="airs-map-public-body"></div>
+      </section>
+
       <section class="airs-hero">
         <div>
           <span class="airs-kicker">air-s β</span>
@@ -2433,6 +2470,79 @@
       return `${title}\n好きだった場所の空気を、少しだけ束ねました。\n\n${names}\n\n${location.origin}`;
     }
 
+    function sanitizeAirsMapItems(items = loadAirsItems()) {
+      return items.slice(0, 12).map((item) => ({
+        storeName: item.storeName,
+        sourceUrl: item.sourceUrl,
+        image: item.image,
+        photoUrl: item.photoUrl,
+        includePhoto: false,
+        comment: item.comment,
+        timeLabel: item.timeLabel,
+        personaKey: item.personaKey,
+        placeId: item.placeId,
+        cardSerial: item.cardSerial
+      }));
+    }
+
+    function buildAirsMapShareUrl(mapId) {
+      const url = new URL(location.origin);
+      url.searchParams.set("map", mapId);
+      return url.toString();
+    }
+
+    async function publishAirsMap(button) {
+      const items = loadAirsItems();
+      if (items.length < 5) return;
+      const original = button?.textContent || "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Map URLを作成中...";
+      }
+      try {
+        const response = await fetch("/api/airs?action=map", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            mapId: `map_${Date.now().toString(36)}`,
+            title: "私の最初のair-s Map",
+            note: "好きだった場所の空気を、少しだけ束ねました。",
+            items: sanitizeAirsMapItems(items)
+          })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || "Map URLを作れませんでした。");
+        const shareUrl = buildAirsMapShareUrl(data.map.mapId);
+        const result = document.querySelector("#airs-map-link-result");
+        if (result) {
+          result.classList.add("is-open");
+          result.innerHTML = `
+            <small>リンク限定Mapを作成しました</small>
+            <strong>このURLを知っている人だけが見られます。</strong>
+            <input readonly value="${escapeHtml(shareUrl)}" aria-label="air-s Map共有URL">
+          `;
+          const input = result.querySelector("input");
+          input?.select();
+        }
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          if (button) button.textContent = "URLをコピーしました";
+        } catch {
+          if (button) button.textContent = "URLを作成しました";
+        }
+      } catch (error) {
+        window.alert(error.message || "Map URLを作れませんでした。");
+        if (button) button.textContent = original;
+      } finally {
+        if (button) {
+          setTimeout(() => {
+            button.disabled = false;
+            button.textContent = original;
+          }, 1400);
+        }
+      }
+    }
+
     async function shareAirsMap(channel = "copy") {
       const items = loadAirsItems();
       const text = shareAirsMapText(items);
@@ -2695,6 +2805,79 @@
       };
     }
 
+    function renderAirsMapCanvas(items = [], options = {}) {
+      const isUnlocked = options.unlocked ?? items.length >= 5;
+      const mapItems = items.slice(0, 12);
+      return `
+        <div class="airs-map-canvas${isUnlocked ? "" : " is-preview"}" aria-label="air-s Map β">
+          ${mapItems.map((item, index) => {
+            const point = mapPointForAirs(item, index);
+            return `
+              <a class="airs-map-pin-card" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener" style="--x:${point.x}%; --y:${point.y}%;">
+                <span>${index + 1}</span>
+                <b>${escapeHtml(item.storeName)}</b>
+                <small>${escapeHtml(item.timeLabel || "air-s")}</small>
+              </a>
+            `;
+          }).join("")}
+          ${isUnlocked ? "" : `<div class="airs-map-preview-note">5件で、このピン地図が開きます。</div>`}
+        </div>
+      `;
+    }
+
+    function renderAirsMapList(items = []) {
+      return `
+        <div class="airs-map-list">
+          ${items.slice(0, 12).map((item, index) => `
+            <article class="airs-map-item">
+              <img src="${escapeHtml(item.photoUrl || item.image || "/assets/worldview-cards/personas/21-1.webp")}" alt="${escapeHtml(item.storeName)}">
+              <div>
+                <b>${escapeHtml(item.storeName)}</b>
+                <small>${escapeHtml(item.timeLabel || "air-s")} / ${escapeHtml(item.comment || "この空気だった。")}</small>
+              </div>
+              <a class="airs-map-pin" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">${index + 1}</a>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    async function loadPublicAirsMap(mapId) {
+      const section = document.querySelector("#airs-map-public");
+      const title = document.querySelector("#airs-map-public-title");
+      const note = document.querySelector("#airs-map-public-note");
+      const body = document.querySelector("#airs-map-public-body");
+      if (!section || !body || !mapId) return false;
+      try {
+        const response = await fetch(`/api/airs?action=map&id=${encodeURIComponent(mapId)}`);
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.map) throw new Error(data.message || "Mapを読み込めませんでした。");
+        const map = data.map;
+        const items = map.items || [];
+        title.textContent = map.title || "air-s Map";
+        note.textContent = map.note || "好きだった場所の空気を、少しだけ束ねたMapです。";
+        body.innerHTML = `
+          ${renderAirsMapCanvas(items, { unlocked: true })}
+          ${renderAirsMapList(items)}
+          <div class="airs-map-share">
+            <small>${escapeHtml(map.editionLabel || "リンク限定Map β")}</small>
+            <strong>このMapは、URLを知っている人だけが見られるβ版です。</strong>
+            <p>コメントと場所の空気を束ねたものです。レビューではなく、誰かが残した場所の記憶として眺めてください。</p>
+          </div>
+        `;
+        section.hidden = false;
+        document.querySelector(".airs-hero")?.setAttribute("hidden", "");
+        document.querySelector("#airs-post")?.setAttribute("hidden", "");
+        document.querySelector("#airs-locker")?.setAttribute("hidden", "");
+        document.querySelector("#airs-map")?.setAttribute("hidden", "");
+        return true;
+      } catch (error) {
+        body.innerHTML = `<div class="airs-map-placeholder"><strong>Mapを読み込めませんでした。</strong><p>${escapeHtml(error.message || "時間をおいて再度お試しください。")}</p></div>`;
+        section.hidden = false;
+        return false;
+      }
+    }
+
     async function lookupOfficialAirs(item) {
       if (!item?.storeName && !item?.placeId) return null;
       try {
@@ -2938,37 +3121,15 @@
           </div>
           <a class="airs-button" href="#airs-post">もう1件置く</a>
         </div>
-        <div class="airs-map-canvas${isUnlocked ? "" : " is-preview"}" aria-label="あなたのair-s Map β">
-            ${mapItems.map((item, index) => {
-              const point = mapPointForAirs(item, index);
-              return `
-                <a class="airs-map-pin-card" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener" style="--x:${point.x}%; --y:${point.y}%;">
-                  <span>${index + 1}</span>
-                  <b>${escapeHtml(item.storeName)}</b>
-                  <small>${escapeHtml(item.timeLabel || "air-s")}</small>
-                </a>
-              `;
-            }).join("")}
-            ${isUnlocked ? "" : `<div class="airs-map-preview-note">5件で、このピン地図が開きます。</div>`}
-        </div>
-        <div class="airs-map-list">
-          ${mapItems.map((item, index) => `
-            <article class="airs-map-item">
-              <img src="${escapeHtml(item.photoUrl || item.image)}" alt="${escapeHtml(item.storeName)}">
-              <div>
-                <b>${item.storeName}</b>
-                <small>${item.timeLabel} / 非公開 / ${item.comment || "この空気だった。"}</small>
-              </div>
-              <a class="airs-map-pin" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">${index + 1}</a>
-            </article>
-          `).join("")}
-        </div>
+        ${renderAirsMapCanvas(mapItems, { unlocked: isUnlocked })}
+        ${renderAirsMapList(mapItems)}
         ${isUnlocked ? `
           <div class="airs-map-share">
             <small>Map共有 β / まずは共有文だけ</small>
             <strong>この場所記憶を、1枚のMapとして外へ出す準備ができました。</strong>
             <p>今はまだ完全非公開のLockerを基本にします。共有したい時だけ、最初の5件を束ねた文章をコピーして、Instagram、TikTok、LINE、Xなどへ持ち出せます。</p>
             <div class="airs-map-share-actions">
+              <button type="button" onclick="publishAirsMap(this)">リンク限定Map URLを作る</button>
               <button type="button" data-airs-map-share="native" onclick="shareAirsMap('native')">スマホで共有</button>
               <button type="button" data-airs-map-share="instagram" onclick="shareAirsMap('instagram')">Instagram用にコピー</button>
               <button type="button" data-airs-map-share="tiktok" onclick="shareAirsMap('tiktok')">TikTok用にコピー</button>
@@ -2976,6 +3137,7 @@
               <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAirsMapText(items))}" target="_blank" rel="noopener">Xへ投稿</a>
               <button type="button" data-airs-map-share="copy" onclick="shareAirsMap('copy')">共有文をコピー</button>
             </div>
+            <div class="airs-map-link-result" id="airs-map-link-result"></div>
           </div>
         ` : ""}
       `;
@@ -2984,6 +3146,7 @@
     function initAirsHome() {
       if (!isAirsDomain()) return;
       const params = new URLSearchParams(location.search);
+      const publicMapId = params.get("map");
       const storeNameInput = document.querySelector("#airs-store-name");
       const sourceUrlInput = document.querySelector("#airs-source-url");
       const photoInput = document.querySelector("#airs-photo");
@@ -2996,6 +3159,10 @@
       const personaFromUrl = AIRS_PERSONAS.find((persona) => persona.key === params.get("persona"));
       if (personaFromUrl) selectedAirsPersona = personaFromUrl;
       document.querySelector("#airs-hero-image")?.setAttribute("src", selectedAirsPersona.image);
+      if (publicMapId) {
+        loadPublicAirsMap(publicMapId);
+        return;
+      }
       renderAirsPersonas();
       renderAirsLocker();
       function clearAirsPostForm() {
