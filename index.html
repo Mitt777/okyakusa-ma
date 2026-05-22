@@ -809,6 +809,31 @@
       line-height: 1.75;
     }
 
+    .airs-map-share-fields {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-map-share-fields input,
+    .airs-map-share-fields textarea {
+      width: 100%;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .9);
+      color: #20382d;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .airs-map-share-fields textarea {
+      min-height: 76px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
     .airs-map-share-actions {
       display: flex;
       flex-wrap: wrap;
@@ -2478,13 +2503,21 @@
       return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${sourceLine}\n${location.origin}`;
     }
 
+    function airsMapTitle() {
+      const input = document.querySelector("#airs-map-title-input");
+      return (input?.value || "").trim() || "私の最初のair-s Map";
+    }
+
+    function airsMapNote() {
+      const input = document.querySelector("#airs-map-note-input");
+      return (input?.value || "").trim() || "好きだった場所の空気を、少しだけ束ねました。";
+    }
+
     function shareAirsMapText(items = loadAirsItems()) {
       const targets = items.slice(0, 5);
       const names = targets.map((item, index) => `${index + 1}. ${item.storeName}`).join("\n");
-      const title = targets.length >= 2
-        ? `私の最初のair-s Map`
-        : `私のair-s Map`;
-      return `${title}\n好きだった場所の空気を、少しだけ束ねました。\n\n${names}\n\n${location.origin}`;
+      const title = targets.length >= 2 ? airsMapTitle() : "私のair-s Map";
+      return `${title}\n${airsMapNote()}\n\n${names}\n\n${location.origin}`;
     }
 
     function sanitizeAirsMapItems(items = loadAirsItems()) {
@@ -2534,8 +2567,8 @@
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
             mapId: `map_${Date.now().toString(36)}`,
-            title: "私の最初のair-s Map",
-            note: "好きだった場所の空気を、少しだけ束ねました。",
+            title: airsMapTitle(),
+            note: airsMapNote(),
             items: sanitizeAirsMapItems(selectedItems)
           })
         });
@@ -2666,10 +2699,10 @@
 
         ctx.fillStyle = "#183126";
         ctx.font = "900 78px system-ui, -apple-system, sans-serif";
-        ctx.fillText("私のair-s Map", 86, 150);
+        drawWrappedText(ctx, airsMapTitle(), 86, 140, 880, 88, 1);
         ctx.font = "700 34px system-ui, -apple-system, sans-serif";
         ctx.fillStyle = "#5b6b61";
-        drawWrappedText(ctx, "好きだった場所の空気を、少しだけ束ねました。", 90, 210, 880, 48, 2);
+        drawWrappedText(ctx, airsMapNote(), 90, 230, 880, 48, 2);
 
         ctx.fillStyle = "rgba(255, 255, 255, .76)";
         ctx.strokeStyle = "rgba(31, 122, 94, .18)";
@@ -2714,7 +2747,7 @@
         if (!blob) throw new Error("画像を作成できませんでした。");
         const file = new File([blob], "airs-map.jpg", { type: "image/jpeg" });
         if (navigator.canShare?.({ files: [file] }) && navigator.share) {
-          await navigator.share({ title: "私のair-s Map", text: "好きだった場所の空気を、少しだけ束ねました。", files: [file] });
+          await navigator.share({ title: airsMapTitle(), text: airsMapNote(), files: [file] });
           if (button) button.textContent = "共有しました";
         } else {
           const url = URL.createObjectURL(blob);
@@ -3307,6 +3340,10 @@
             <small>Map共有 β / チェックした場所だけ</small>
             <strong>この場所記憶を、1枚のMapとして外へ出す準備ができました。</strong>
             <p>今はまだ完全非公開のLockerを基本にします。共有したい場所だけチェックして、リンク限定Mapや共有文として外へ持ち出せます。</p>
+            <div class="airs-map-share-fields">
+              <input id="airs-map-title-input" value="私の最初のair-s Map" aria-label="air-s Mapのタイトル">
+              <textarea id="airs-map-note-input" aria-label="air-s Mapのひとこと">好きだった場所の空気を、少しだけ束ねました。</textarea>
+            </div>
             <div class="airs-map-share-actions">
               <button type="button" onclick="publishAirsMap(this)">リンク限定Map URLを作る</button>
               <button type="button" data-airs-map-share="native" onclick="shareAirsMap('native')">スマホで共有</button>
