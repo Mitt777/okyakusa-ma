@@ -836,6 +836,23 @@
       color: #fff;
     }
 
+    .airs-map-select {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: #2b5d4c;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .airs-map-select input {
+      width: 16px;
+      height: 16px;
+      accent-color: #1f7a5e;
+    }
+
     .airs-map-link-result {
       display: none;
       margin-top: 10px;
@@ -2485,6 +2502,16 @@
       }));
     }
 
+    function selectedAirsMapItems(items = loadAirsItems()) {
+      const boxes = Array.from(document.querySelectorAll("[data-airs-map-select]"));
+      if (!boxes.length) return items.slice(0, 12);
+      const selected = boxes
+        .filter((box) => box.checked)
+        .map((box) => items[Number(box.dataset.airsMapSelect)])
+        .filter(Boolean);
+      return (selected.length ? selected : items.slice(0, 5)).slice(0, 12);
+    }
+
     function buildAirsMapShareUrl(mapId) {
       const url = new URL(location.origin);
       url.searchParams.set("map", mapId);
@@ -2494,6 +2521,8 @@
     async function publishAirsMap(button) {
       const items = loadAirsItems();
       if (items.length < 5) return;
+      const selectedItems = selectedAirsMapItems(items);
+      if (!selectedItems.length) return;
       const original = button?.textContent || "";
       if (button) {
         button.disabled = true;
@@ -2507,7 +2536,7 @@
             mapId: `map_${Date.now().toString(36)}`,
             title: "私の最初のair-s Map",
             note: "好きだった場所の空気を、少しだけ束ねました。",
-            items: sanitizeAirsMapItems(items)
+            items: sanitizeAirsMapItems(selectedItems)
           })
         });
         const data = await response.json();
@@ -2545,7 +2574,8 @@
 
     async function shareAirsMap(channel = "copy") {
       const items = loadAirsItems();
-      const text = shareAirsMapText(items);
+      const selectedItems = selectedAirsMapItems(items);
+      const text = shareAirsMapText(selectedItems);
       if (channel === "native" && navigator.share) {
         try {
           await navigator.share({ title: "air-s Map β", text, url: location.origin });
@@ -2564,6 +2594,147 @@
         }
       } catch {
         window.prompt("共有文をコピーしてください", text);
+      }
+    }
+
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+      const words = String(text || "").split("");
+      let line = "";
+      let lines = [];
+      words.forEach((char) => {
+        const testLine = line + char;
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          lines.push(line);
+          line = char;
+        } else {
+          line = testLine;
+        }
+      });
+      if (line) lines.push(line);
+      lines = lines.slice(0, maxLines);
+      lines.forEach((entry, index) => {
+        ctx.fillText(entry, x, y + (index * lineHeight));
+      });
+      return y + (lines.length * lineHeight);
+    }
+
+    function fillRoundedRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + width - r, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+      ctx.lineTo(x + width, y + height - r);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+      ctx.lineTo(x + r, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    async function saveAirsMapImage(button) {
+      const items = selectedAirsMapItems(loadAirsItems()).slice(0, 8);
+      if (!items.length) return;
+      const original = button?.textContent || "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "画像を作成中...";
+      }
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1080;
+        canvas.height = 1350;
+        const ctx = canvas.getContext("2d");
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, "#f5fbf5");
+        gradient.addColorStop(.55, "#fffdf4");
+        gradient.addColorStop(1, "#eef7f0");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = "rgba(31, 122, 94, .14)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(90, 610);
+        ctx.lineTo(990, 450);
+        ctx.moveTo(90, 760);
+        ctx.lineTo(990, 1020);
+        ctx.stroke();
+
+        ctx.fillStyle = "#183126";
+        ctx.font = "900 78px system-ui, -apple-system, sans-serif";
+        ctx.fillText("私のair-s Map", 86, 150);
+        ctx.font = "700 34px system-ui, -apple-system, sans-serif";
+        ctx.fillStyle = "#5b6b61";
+        drawWrappedText(ctx, "好きだった場所の空気を、少しだけ束ねました。", 90, 210, 880, 48, 2);
+
+        ctx.fillStyle = "rgba(255, 255, 255, .76)";
+        ctx.strokeStyle = "rgba(31, 122, 94, .18)";
+        ctx.lineWidth = 3;
+        fillRoundedRect(ctx, 70, 320, 940, 710, 34);
+
+        items.forEach((item, index) => {
+          const point = mapPointForAirs(item, index);
+          const x = 110 + (point.x / 100) * 840;
+          const y = 360 + (point.y / 100) * 620;
+          ctx.fillStyle = "#2f8064";
+          ctx.beginPath();
+          ctx.arc(x, y, 34, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.font = "900 28px system-ui, -apple-system, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(String(index + 1), x, y + 10);
+          ctx.textAlign = "left";
+          ctx.fillStyle = "rgba(255, 255, 255, .92)";
+          ctx.strokeStyle = "rgba(58, 92, 73, .14)";
+          ctx.lineWidth = 2;
+          const cardX = Math.min(x + 18, 760);
+          const cardY = Math.min(y + 12, 930);
+          fillRoundedRect(ctx, cardX, cardY, 250, 92, 16);
+          ctx.fillStyle = "#1d3027";
+          ctx.font = "900 25px system-ui, -apple-system, sans-serif";
+          drawWrappedText(ctx, item.storeName, cardX + 20, cardY + 38, 210, 29, 1);
+          ctx.fillStyle = "#667065";
+          ctx.font = "800 20px system-ui, -apple-system, sans-serif";
+          ctx.fillText(item.timeLabel || "air-s", cardX + 20, cardY + 72);
+        });
+
+        ctx.fillStyle = "#1d3027";
+        ctx.font = "900 42px system-ui, -apple-system, sans-serif";
+        ctx.fillText("air-s.jp", 86, 1122);
+        ctx.fillStyle = "#5b6b61";
+        ctx.font = "700 28px system-ui, -apple-system, sans-serif";
+        drawWrappedText(ctx, "レビューではなく、好きだった場所の空気を残す小さなMapです。", 90, 1176, 850, 42, 3);
+
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", .9));
+        if (!blob) throw new Error("画像を作成できませんでした。");
+        const file = new File([blob], "airs-map.jpg", { type: "image/jpeg" });
+        if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+          await navigator.share({ title: "私のair-s Map", text: "好きだった場所の空気を、少しだけ束ねました。", files: [file] });
+          if (button) button.textContent = "共有しました";
+        } else {
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "airs-map.jpg";
+          anchor.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1200);
+          if (button) button.textContent = "画像を保存しました";
+        }
+      } catch (error) {
+        window.alert(error.message || "画像を作成できませんでした。");
+        if (button) button.textContent = original;
+      } finally {
+        if (button) {
+          setTimeout(() => {
+            button.disabled = false;
+            button.textContent = original;
+          }, 1400);
+        }
       }
     }
 
@@ -2825,7 +2996,8 @@
       `;
     }
 
-    function renderAirsMapList(items = []) {
+    function renderAirsMapList(items = [], options = {}) {
+      const isSelectable = Boolean(options.selectable);
       return `
         <div class="airs-map-list">
           ${items.slice(0, 12).map((item, index) => `
@@ -2834,6 +3006,12 @@
               <div>
                 <b>${escapeHtml(item.storeName)}</b>
                 <small>${escapeHtml(item.timeLabel || "air-s")} / ${escapeHtml(item.comment || "この空気だった。")}</small>
+                ${isSelectable ? `
+                  <label class="airs-map-select">
+                    <input type="checkbox" data-airs-map-select="${index}" checked>
+                    Mapに入れる
+                  </label>
+                ` : ""}
               </div>
               <a class="airs-map-pin" href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">${index + 1}</a>
             </article>
@@ -3123,20 +3301,21 @@
           <a class="airs-button" href="#airs-post">もう1件置く</a>
         </div>
         ${renderAirsMapCanvas(mapItems, { unlocked: isUnlocked })}
-        ${renderAirsMapList(mapItems)}
+        ${renderAirsMapList(mapItems, { selectable: isUnlocked })}
         ${isUnlocked ? `
           <div class="airs-map-share">
-            <small>Map共有 β / まずは共有文だけ</small>
+            <small>Map共有 β / チェックした場所だけ</small>
             <strong>この場所記憶を、1枚のMapとして外へ出す準備ができました。</strong>
-            <p>今はまだ完全非公開のLockerを基本にします。共有したい時だけ、最初の5件を束ねた文章をコピーして、Instagram、TikTok、LINE、Xなどへ持ち出せます。</p>
+            <p>今はまだ完全非公開のLockerを基本にします。共有したい場所だけチェックして、リンク限定Mapや共有文として外へ持ち出せます。</p>
             <div class="airs-map-share-actions">
               <button type="button" onclick="publishAirsMap(this)">リンク限定Map URLを作る</button>
               <button type="button" data-airs-map-share="native" onclick="shareAirsMap('native')">スマホで共有</button>
               <button type="button" data-airs-map-share="instagram" onclick="shareAirsMap('instagram')">Instagram用にコピー</button>
               <button type="button" data-airs-map-share="tiktok" onclick="shareAirsMap('tiktok')">TikTok用にコピー</button>
-              <a href="https://line.me/R/msg/text/?${encodeURIComponent(shareAirsMapText(items))}" target="_blank" rel="noopener">LINEで送る</a>
-              <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareAirsMapText(items))}" target="_blank" rel="noopener">Xへ投稿</a>
+              <button type="button" data-airs-map-share="line" onclick="shareAirsMap('line')">LINE用にコピー</button>
+              <button type="button" data-airs-map-share="x" onclick="shareAirsMap('x')">X用にコピー</button>
               <button type="button" data-airs-map-share="copy" onclick="shareAirsMap('copy')">共有文をコピー</button>
+              <button type="button" onclick="saveAirsMapImage(this)">発信用画像を保存</button>
             </div>
             <div class="airs-map-link-result" id="airs-map-link-result"></div>
           </div>
