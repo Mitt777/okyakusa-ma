@@ -2863,6 +2863,7 @@
             <small>${escapeHtml(map.editionLabel || "リンク限定Map β")}</small>
             <strong>このMapは、URLを知っている人だけが見られるβ版です。</strong>
             <p>コメントと場所の空気を束ねたものです。レビューではなく、誰かが残した場所の記憶として眺めてください。</p>
+            <p>Serial: ${escapeHtml(map.cardSerial || "AIR-MAP-BETA")} / Hash: ${escapeHtml(String(map.contentHash || "").slice(0, 8) || "pending")}</p>
           </div>
         `;
         section.hidden = false;
