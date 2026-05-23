@@ -246,7 +246,15 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
+      grid-column: 1 / -1;
       margin-top: 10px;
+    }
+
+    #airs-place-search-button {
+      border-color: #1f7a5e;
+      background: #1f7a5e;
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(31, 122, 94, .16);
     }
 
     .airs-place-tools span {
@@ -314,6 +322,7 @@
     }
 
     .airs-place-candidates {
+      grid-column: 1 / -1;
       border-color: rgba(58, 92, 73, .18);
       background: rgba(249, 252, 247, .82);
     }
@@ -346,6 +355,41 @@
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 12px;
+    }
+
+    .airs-recovery-details {
+      margin-top: 12px;
+    }
+
+    .airs-recovery-details summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(58, 92, 73, .2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .86);
+      color: #24463a;
+      padding: 10px 13px;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .airs-recovery-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .airs-recovery-details summary::after {
+      content: "開く";
+      color: #6a5a43;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .airs-recovery-details[open] summary::after {
+      content: "閉じる";
     }
 
     .airs-recovery-button {
@@ -2189,15 +2233,16 @@
             場所やお店の名前
             <input id="airs-store-name" placeholder="例: リビングストン / 静かな本屋 / 旅先の海辺">
           </label>
+          <div class="airs-place-tools">
+            <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
+            <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
+          </div>
+          <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
           <label>
             Google Maps / SNS / カードURL（任意）
             <input id="airs-source-url" type="url" placeholder="わかる場合だけ https://...">
           </label>
           <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
-        </div>
-        <div class="airs-place-tools">
-          <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
-          <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
         </div>
         <div class="airs-photo-field">
           <label>
@@ -2209,11 +2254,13 @@
             <img alt="">
           </div>
         </div>
-        <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
         <div class="airs-recovery-panel" aria-labelledby="airs-recovery-title">
           <strong id="airs-recovery-title">この場所で、何が少し戻りましたか？</strong>
           <p>これは評価ではありません。その場所で、あなたの中に少し戻ったものを残すだけです。</p>
-          <div class="airs-recovery-buttons" id="airs-recovery-buttons"></div>
+          <details class="airs-recovery-details" id="airs-recovery-details">
+            <summary><span id="airs-recovery-summary">コメント候補から選ぶ</span></summary>
+            <div class="airs-recovery-buttons" id="airs-recovery-buttons"></div>
+          </details>
           <span class="airs-recovery-note" id="airs-recovery-note">未選択でも保存できます。</span>
         </div>
         <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
@@ -3491,12 +3538,17 @@
     function renderAirsRecoveryButtons() {
       const host = document.querySelector("#airs-recovery-buttons");
       const note = document.querySelector("#airs-recovery-note");
+      const summary = document.querySelector("#airs-recovery-summary");
+      const details = document.querySelector("#airs-recovery-details");
       if (!host) return;
       host.innerHTML = AIRS_FEELING_BUTTONS.map((button) => `
         <button class="airs-recovery-button${selectedAirsFeeling?.key === button.key ? " is-selected" : ""}" type="button" data-airs-feeling="${button.key}">
           ${button.label}
         </button>
       `).join("");
+      if (summary) {
+        summary.textContent = selectedAirsFeeling ? selectedAirsFeeling.label : "コメント候補から選ぶ";
+      }
       if (note) {
         note.textContent = selectedAirsFeeling
           ? `${selectedAirsFeeling.feelingLabel} / ${recoveryCoreLabel(selectedAirsFeeling.core)}`
@@ -3505,6 +3557,7 @@
       host.querySelectorAll("[data-airs-feeling]").forEach((button) => {
         button.addEventListener("click", () => {
           selectedAirsFeeling = AIRS_FEELING_BUTTONS.find((item) => item.key === button.dataset.airsFeeling) || null;
+          if (details) details.open = false;
           renderAirsRecoveryButtons();
         });
       });
