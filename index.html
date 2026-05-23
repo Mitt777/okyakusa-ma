@@ -289,12 +289,17 @@
     }
 
     .airs-photo-preview {
+      display: none;
       width: 96px;
       aspect-ratio: 1 / 1;
       overflow: hidden;
       border: 1px solid rgba(58, 92, 73, .18);
       border-radius: 8px;
       background: #f7f4ed;
+    }
+
+    .airs-photo-preview.has-image {
+      display: block;
     }
 
     .airs-photo-preview img {
@@ -2190,6 +2195,10 @@
           </label>
           <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
         </div>
+        <div class="airs-place-tools">
+          <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
+          <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
+        </div>
         <div class="airs-photo-field">
           <label>
             その時の写真（任意・1枚）
@@ -2199,10 +2208,6 @@
           <div class="airs-photo-preview" id="airs-photo-preview" aria-hidden="true">
             <img alt="">
           </div>
-        </div>
-        <div class="airs-place-tools">
-          <button class="airs-button" type="button" id="airs-place-search-button">場所候補を確認</button>
-          <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
         </div>
         <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
         <div class="airs-recovery-panel" aria-labelledby="airs-recovery-title">
@@ -2605,18 +2610,19 @@
       return: { label: "帰着", before: "居場所喪失", after: "戻れる" }
     };
     const AIRS_FEELING_BUTTONS = [
-      { key: "unwind", label: "疲れをほどきたい", core: "rest", feelingLabel: "この場所で、少し呼吸が戻った" },
-      { key: "safe", label: "安心したい", core: "safety", feelingLabel: "ここなら大丈夫だと感じた" },
-      { key: "presence", label: "誰かの気配が欲しい", core: "resonance", feelingLabel: "人や空気と静かにつながれた" },
-      { key: "alone", label: "一人になりたい", core: "drift", feelingLabel: "自分の時間に戻れた" },
-      { key: "tomorrow", label: "また明日頑張りたい", core: "reset", feelingLabel: "また明日へ戻る力が少し戻った" },
-      { key: "adventure", label: "少し冒険したい", core: "activation", feelingLabel: "小さく動き出したくなった" },
-      { key: "escape", label: "現実から離れたい", core: "drift", feelingLabel: "現実の重さが少しほどけた" },
-      { key: "focus", label: "深く集中したい", core: "immersion", feelingLabel: "静かに深く入れた" },
-      { key: "home", label: "帰ってきた感じがした", core: "return", feelingLabel: "ただいま、と感じられた" },
-      { key: "beauty", label: "美しいものに触れたい", core: "immersion", feelingLabel: "美しい空気に触れた" },
-      { key: "blank", label: "無になりたい", core: "rest", feelingLabel: "余計なものが静かに抜けた" },
-      { key: "play", label: "遊ぶように楽しみたい", core: "activation", feelingLabel: "遊ぶような軽さが戻った" }
+      { key: "unwind", label: "来て、疲れがほどけた", core: "rest", feelingLabel: "来て、疲れがほどけた" },
+      { key: "safe", label: "とても安心できた空間だった", core: "safety", feelingLabel: "とても安心できた空間だった" },
+      { key: "presence", label: "気を遣ってもらってうれしかった", core: "resonance", feelingLabel: "気を遣ってもらってうれしかった" },
+      { key: "alone", label: "一人になりたい時に最適だった", core: "drift", feelingLabel: "一人になりたい時に最適だった" },
+      { key: "tomorrow", label: "また明日頑張れる力がもらえた", core: "reset", feelingLabel: "また明日頑張れる力がもらえた" },
+      { key: "adventure", label: "少し冒険したい気持ちになれた", core: "activation", feelingLabel: "少し冒険したい気持ちになれた" },
+      { key: "escape", label: "現実から離れたい時に最適だった", core: "drift", feelingLabel: "現実から離れたい時に最適だった" },
+      { key: "focus", label: "深く集中することができた", core: "immersion", feelingLabel: "深く集中することができた" },
+      { key: "home", label: "懐かしい場所に帰ってきた感じがした", core: "return", feelingLabel: "懐かしい場所に帰ってきた感じがした" },
+      { key: "beauty", label: "美しいものに触れた感じがした", core: "immersion", feelingLabel: "美しいものに触れた感じがした" },
+      { key: "blank", label: "無になりたい時にとても良かった", core: "rest", feelingLabel: "無になりたい時にとても良かった" },
+      { key: "play", label: "遊ぶように楽しめる空間だった", core: "activation", feelingLabel: "遊ぶように楽しめる空間だった" },
+      { key: "taste", label: "味を再び感じたくなる場所だった", core: "return", feelingLabel: "味を再び感じたくなる場所だった" }
     ];
     let selectedAirsPersona = AIRS_PERSONAS[20];
     let selectedAirsFeeling = null;
