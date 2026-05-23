@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Positive UI / 回復UIとは何か | air-s / お客様.COM</title>
+  <style>
+    :root {
+      --ink: #202820;
+      --muted: #5f6b61;
+      --line: #d8e2dc;
+      --paper: #fffdf8;
+      --soft: #eef8f2;
+      --green: #1f7a5e;
+      --amber: #8a5a16;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(238, 249, 243, .9), transparent 30%),
+        linear-gradient(180deg, #fbfaf4 0%, #eef6f0 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.85;
+    }
+
+    .shell {
+      width: min(920px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 42px;
+    }
+
+    .brand {
+      color: #24463a;
+      font-weight: 950;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    nav a,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(58, 92, 73, .2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      color: #24463a;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(238, 249, 243, .74));
+      padding: 34px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      background: #eef9f3;
+      color: #27624d;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(34px, 6vw, 62px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: #405047;
+      font-size: 18px;
+    }
+
+    section {
+      margin-top: 18px;
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .7);
+      padding: 26px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.2em;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef8f2;
+      color: #24463a;
+      font-weight: 950;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .feeling-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .feeling-grid span {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .note {
+      border-color: rgba(215, 183, 123, .5);
+      background: linear-gradient(135deg, #fffaf0, #f3fbf5);
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--amber);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .button.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero,
+      section {
+        padding: 20px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <a class="brand" href="https://air-s.jp/">air-s / お客様.COM</a>
+      <nav aria-label="関連ページ">
+        <a href="https://air-s.jp/">air-sへ</a>
+        <a href="https://okyakusa-ma.com/">お客様.COMへ</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <span class="kicker">Positive UI / 回復UI</span>
+      <h1>人は、なぜ場所へ行くのか</h1>
+      <p class="lead">
+        air-s / お客様.COM が扱うのは、店舗の評価ではありません。
+        その場所で、人の何が少し戻ったのか。その場所が、人にどんな回復や変化を与えたのか。
+      </p>
+      <div class="actions">
+        <a class="button primary" href="https://air-s.jp/#airs-post">air-sしてみる</a>
+        <a class="button" href="https://okyakusa-ma.com/">お店の見え方を診断する</a>
+      </div>
+    </div>
+
+    <section>
+      <h2>感情分類ではなく、回復原型</h2>
+      <p>
+        air-s は、喜怒哀楽を細かく分類するサービスではありません。
+        また、性格診断やレビュー投稿でもありません。
+      </p>
+      <p>
+        大切なのは、「その場所に行く前の自分」と、「その場所を出た後の自分」が、どう変わったかです。
+        静かな喫茶店で呼吸が戻る。朝のパン屋で一日が始まる。深夜の食堂で少し救われる。
+        air-s は、こうした場所による状態変化を、やさしく記録するための仕組みです。
+      </p>
+    </section>
+
+    <section>
+      <h2>8つの回復原型</h2>
+      <table>
+        <thead>
+          <tr><th>原型</th><th>Before</th><th>After</th><th>意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>休息</td><td>疲弊</td><td>呼吸が戻る</td><td>疲れがゆるみ、少し休める</td></tr>
+          <tr><td>安心</td><td>不安</td><td>怖くなくなる</td><td>初めてでも大丈夫だと感じる</td></tr>
+          <tr><td>共鳴</td><td>孤独</td><td>つながる</td><td>人や空気と静かにつながる</td></tr>
+          <tr><td>再起動</td><td>乱れ</td><td>整う</td><td>また明日へ戻れる</td></tr>
+          <tr><td>漂流</td><td>現実疲れ</td><td>ほどける</td><td>どこにも属さず、少し自由になる</td></tr>
+          <tr><td>没入</td><td>ノイズ</td><td>深く入る</td><td>世界を忘れて集中できる</td></tr>
+          <tr><td>活性</td><td>停滞</td><td>動き出す</td><td>熱量やきっかけが戻る</td></tr>
+          <tr><td>帰着</td><td>居場所喪失</td><td>戻れる</td><td>「ただいま」と感じる</td></tr>
+        </tbody>
+      </table>
+      <p>
+        これは、店のジャンル分けではありません。カフェ、パン屋、ラーメン屋、温泉、本屋、美容室、宿。
+        どんな業種でも、人がその場所で受け取る回復はあります。
+      </p>
+    </section>
+
+    <section>
+      <h2>UIでは、もっと人間の言葉にする</h2>
+      <p>
+        ユーザーにいきなり「8原型」を選ばせる必要はありません。
+        表側は、人間の言葉。裏側は、整理された回復OS。この二層構造で、自分の感覚に近い言葉を選べます。
+      </p>
+      <div class="feeling-grid" aria-label="感覚ボタン例">
+        <span>疲れをほどきたい</span>
+        <span>安心したい</span>
+        <span>誰かの気配が欲しい</span>
+        <span>一人になりたい</span>
+        <span>また明日頑張りたい</span>
+        <span>少し冒険したい</span>
+        <span>現実から離れたい</span>
+        <span>深く集中したい</span>
+        <span>帰ってきた感じがした</span>
+        <span>美しいものに触れたい</span>
+        <span>無になりたい</span>
+        <span>遊ぶように楽しみたい</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>学問横断的な背景</h2>
+      <p>
+        心理学では、人は不安や疲労を調整するために行動すると考えます。
+        環境心理学では、自然や光、音、空間が人の回復に影響すると考えます。
+        UX/HCIでは、使う人の負担を減らし、穏やかな体験を設計します。
+        サードプレース論では、家でも職場でもない第三の居場所が人に必要だと考えます。
+      </p>
+      <p>
+        air-s / お客様.COM は、単なる雰囲気論ではありません。
+        人間が場所によって回復し、変化する構造を、やさしくUI化する試みです。
+      </p>
+    </section>
+
+    <section>
+      <h2>サードプレースから、チェンジプレースへ</h2>
+      <p>
+        サードプレースは、家でも職場でもない第三の居場所です。
+        しかし air-s が見ているのは、さらにその先です。
+      </p>
+      <p>
+        その場所に行くことで、自分の状態が少し変わる。呼吸が戻る。安心できる。また明日へ戻れる。
+        私たちは、こうした場所を「チェンジプレース」と考えます。
+      </p>
+    </section>
+
+    <section class="note">
+      <strong>レビューではなく、場所へのラブレター</strong>
+      <p>
+        air-s は、星をつける場所ではありません。不満を書く場所でもありません。
+        「この場所で、自分は少し戻れた」「この空気を、忘れたくない」「この店に、ありがとうを残したい」
+        という気持ちを、1枚のカードとして残す仕組みです。
+      </p>
+      <p>
+        お客様.COM は、お店がどんな回復を人に与えているのかを見える化する。
+        air-s は、人がどんな場所で少し戻れたのかを記録する。
+        この2つがつながることで、お店の空気と、人の記憶が、静かに循環していきます。
+      </p>
+    </section>
+  </main>
+</body>
+</html>

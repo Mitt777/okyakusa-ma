@@ -313,6 +313,66 @@
       background: rgba(249, 252, 247, .82);
     }
 
+    .airs-recovery-panel {
+      margin-top: 14px;
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(238, 249, 243, .78), rgba(255, 250, 240, .74));
+      padding: 14px;
+    }
+
+    .airs-recovery-panel strong {
+      display: block;
+      color: #20382d;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .airs-recovery-panel p {
+      margin: 5px 0 0;
+      color: #5a665d;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .airs-recovery-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-recovery-button {
+      border: 1px solid rgba(58, 92, 73, .2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .86);
+      color: #24463a;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .airs-recovery-button.is-selected {
+      border-color: #1f7a5e;
+      background: #1f7a5e;
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(31, 122, 94, .18);
+    }
+
+    .airs-recovery-note {
+      display: inline-flex;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      color: #6a5a43;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
     .airs-persona-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -387,6 +447,11 @@
       padding: 4px 8px;
       font-size: 11px;
       font-weight: 900;
+    }
+
+    .airs-card .airs-card-recovery {
+      background: #fff4df;
+      color: #8a5a16;
     }
 
     .airs-card p {
@@ -2068,6 +2133,7 @@
           <a href="#airs-post">air-sする</a>
           <a href="#airs-locker">Locker β</a>
           <a href="#airs-map">世界観MAP β</a>
+          <a href="/positive-ui/">回復UI</a>
           <a href="https://okyakusa-ma.com/">お店診断へ</a>
         </nav>
       </div>
@@ -2139,6 +2205,12 @@
           <span>店名や地域名だけでも、Google Maps候補から選べます。</span>
         </div>
         <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
+        <div class="airs-recovery-panel" aria-labelledby="airs-recovery-title">
+          <strong id="airs-recovery-title">この場所で、何が少し戻りましたか？</strong>
+          <p>これは評価ではありません。その場所で、あなたの中に少し戻ったものを残すだけです。</p>
+          <div class="airs-recovery-buttons" id="airs-recovery-buttons"></div>
+          <span class="airs-recovery-note" id="airs-recovery-note">未選択でも保存できます。</span>
+        </div>
         <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
         <div class="airs-actions" style="margin-top: 14px;">
           <button class="airs-button primary" type="button" id="airs-save">この空気をair-sする</button>
@@ -2522,7 +2594,32 @@
         image: `/assets/worldview-cards/personas/${number}-1.webp`
       };
     });
+    const AIRS_RECOVERY_CORES = {
+      rest: { label: "休息", before: "疲弊", after: "呼吸が戻る" },
+      safety: { label: "安心", before: "不安", after: "怖くなくなる" },
+      resonance: { label: "共鳴", before: "孤独", after: "つながる" },
+      reset: { label: "再起動", before: "乱れ", after: "整う" },
+      drift: { label: "漂流", before: "現実疲れ", after: "ほどける" },
+      immersion: { label: "没入", before: "ノイズ", after: "深く入る" },
+      activation: { label: "活性", before: "停滞", after: "動き出す" },
+      return: { label: "帰着", before: "居場所喪失", after: "戻れる" }
+    };
+    const AIRS_FEELING_BUTTONS = [
+      { key: "unwind", label: "疲れをほどきたい", core: "rest", feelingLabel: "この場所で、少し呼吸が戻った" },
+      { key: "safe", label: "安心したい", core: "safety", feelingLabel: "ここなら大丈夫だと感じた" },
+      { key: "presence", label: "誰かの気配が欲しい", core: "resonance", feelingLabel: "人や空気と静かにつながれた" },
+      { key: "alone", label: "一人になりたい", core: "drift", feelingLabel: "自分の時間に戻れた" },
+      { key: "tomorrow", label: "また明日頑張りたい", core: "reset", feelingLabel: "また明日へ戻る力が少し戻った" },
+      { key: "adventure", label: "少し冒険したい", core: "activation", feelingLabel: "小さく動き出したくなった" },
+      { key: "escape", label: "現実から離れたい", core: "drift", feelingLabel: "現実の重さが少しほどけた" },
+      { key: "focus", label: "深く集中したい", core: "immersion", feelingLabel: "静かに深く入れた" },
+      { key: "home", label: "帰ってきた感じがした", core: "return", feelingLabel: "ただいま、と感じられた" },
+      { key: "beauty", label: "美しいものに触れたい", core: "immersion", feelingLabel: "美しい空気に触れた" },
+      { key: "blank", label: "無になりたい", core: "rest", feelingLabel: "余計なものが静かに抜けた" },
+      { key: "play", label: "遊ぶように楽しみたい", core: "activation", feelingLabel: "遊ぶような軽さが戻った" }
+    ];
     let selectedAirsPersona = AIRS_PERSONAS[20];
+    let selectedAirsFeeling = null;
 
     function isAirsDomain() {
       return location.hostname.replace(/^www\./, "") === "air-s.jp";
@@ -2606,6 +2703,9 @@
         includePhoto: false,
         comment: item.comment,
         timeLabel: item.timeLabel,
+        recoveryCore: item.recoveryCore || "",
+        feelingButton: item.feelingButton || "",
+        feelingLabel: item.feelingLabel || "",
         personaKey: item.personaKey,
         placeId: item.placeId,
         cardSerial: item.cardSerial
@@ -3178,7 +3278,7 @@
               <img src="${escapeHtml(item.photoUrl || item.image || "/assets/worldview-cards/personas/21-1.webp")}" alt="${escapeHtml(item.storeName)}">
               <div>
                 <b>${escapeHtml(item.storeName)}</b>
-                <small>${escapeHtml(item.timeLabel || "air-s")} / ${escapeHtml(item.comment || "この空気だった。")}</small>
+                <small>${escapeHtml(item.timeLabel || "air-s")} / ${escapeHtml(item.feelingLabel || item.comment || "この空気だった。")}</small>
                 ${isSelectable ? `
                   <label class="airs-map-select">
                     <input type="checkbox" data-airs-map-select="${index}" checked>
@@ -3356,6 +3456,12 @@
             photoVisibility: item.photoVisibility || "private",
             comment: item.comment,
             timeLabel: item.timeLabel,
+            recoveryCore: item.recoveryCore,
+            feelingButton: item.feelingButton,
+            feelingLabel: item.feelingLabel,
+            cardStyleSource: item.cardStyleSource,
+            industrySkin: item.industrySkin,
+            moodTime: item.moodTime,
             visibility: item.visibility || "private"
           })
         });
@@ -3370,6 +3476,32 @@
       } catch {
         return item;
       }
+    }
+
+    function recoveryCoreLabel(coreKey) {
+      return AIRS_RECOVERY_CORES[coreKey]?.label || "";
+    }
+
+    function renderAirsRecoveryButtons() {
+      const host = document.querySelector("#airs-recovery-buttons");
+      const note = document.querySelector("#airs-recovery-note");
+      if (!host) return;
+      host.innerHTML = AIRS_FEELING_BUTTONS.map((button) => `
+        <button class="airs-recovery-button${selectedAirsFeeling?.key === button.key ? " is-selected" : ""}" type="button" data-airs-feeling="${button.key}">
+          ${button.label}
+        </button>
+      `).join("");
+      if (note) {
+        note.textContent = selectedAirsFeeling
+          ? `${selectedAirsFeeling.feelingLabel} / ${recoveryCoreLabel(selectedAirsFeeling.core)}`
+          : "未選択でも保存できます。";
+      }
+      host.querySelectorAll("[data-airs-feeling]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedAirsFeeling = AIRS_FEELING_BUTTONS.find((item) => item.key === button.dataset.airsFeeling) || null;
+          renderAirsRecoveryButtons();
+        });
+      });
     }
 
     function renderAirsPersonas() {
@@ -3413,6 +3545,7 @@
           <img src="${item.image}" alt="${item.storeName}">
           <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${item.timeLabel}</small>
           <b>${item.storeName}</b>
+          ${item.feelingLabel ? `<small class="airs-card-recovery">${escapeHtml(item.feelingLabel)}</small>` : ""}
           <p>${item.comment || "この空気だった。"}</p>
           ${item.photoUrl ? `<p><img src="${escapeHtml(item.photoUrl)}" alt="${escapeHtml(item.storeName)}の記憶写真" style="aspect-ratio: 16 / 9;"></p>` : ""}
           <p>${item.serverSaved ? "このair-sは保存されています。今はまだ自分だけのLockerに置かれています。" : "この端末内の仮保存です。公開や交流はまだ行いません。"}</p>
@@ -3522,6 +3655,7 @@
         loadPublicAirsMap(publicMapId);
         return;
       }
+      renderAirsRecoveryButtons();
       renderAirsPersonas();
       renderAirsLocker();
       function clearAirsPostForm() {
@@ -3536,6 +3670,8 @@
           if (image) image.removeAttribute("src");
         }
         selectedAirsPlace = null;
+        selectedAirsFeeling = null;
+        renderAirsRecoveryButtons();
         if (placeCandidatesBox) {
           placeCandidatesBox.classList.remove("is-open");
           placeCandidatesBox.innerHTML = "";
@@ -3638,6 +3774,8 @@
         const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
         const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || selectedAirsPlace?.google_maps_url || "";
         const comment = document.querySelector("#airs-comment")?.value.trim() || "";
+        const feeling = selectedAirsFeeling;
+        const recoveryCore = feeling?.core || "";
         const airId = `airs_${Date.now().toString(36)}`;
         let photoRecord = null;
         if (saveButton) {
@@ -3669,6 +3807,18 @@
           photoPathname: photoRecord?.photoPathname || "",
           photoVisibility: photoRecord?.photoVisibility || "private",
           visibility: "private",
+          recoveryCore,
+          recovery_core: recoveryCore,
+          feelingButton: feeling?.key || "",
+          feeling_button: feeling?.key || "",
+          feelingLabel: feeling?.feelingLabel || "",
+          feeling_label: feeling?.feelingLabel || "",
+          cardStyleSource: "selected",
+          card_style_source: "selected",
+          industrySkin: "",
+          industry_skin: "",
+          moodTime: "",
+          mood_time: "",
           timeLabel: airsTimeLabel(),
           createdAt: Date.now()
         };
