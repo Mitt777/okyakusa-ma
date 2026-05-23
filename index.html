@@ -223,6 +223,17 @@
       font-weight: 900;
     }
 
+    .airs-field-title {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .airs-form-grid label.airs-field-wide {
+      grid-column: 1 / -1;
+    }
+
     .airs-form-grid input,
     .airs-form-grid textarea {
       width: 100%;
@@ -1610,8 +1621,39 @@
     .field-label {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .field-label .url-help-link {
+      margin-left: auto;
+    }
+
+    .field-required,
+    .field-optional {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .field-required {
+      border: 1px solid #b9dfd1;
+      background: #e6f4ef;
+      color: #12614e;
+    }
+
+    .field-optional {
+      border: 1px solid #d7dde6;
+      background: #f4f7fb;
+      color: #667085;
     }
 
     .url-help-link {
@@ -2253,7 +2295,7 @@
         </div>
         <div class="airs-form-grid">
           <label>
-            場所やお店の名前
+            <span class="airs-field-title">場所やお店の名前 <span class="field-required">必須</span></span>
             <input id="airs-store-name" placeholder="例: リビングストン / 静かな本屋 / 旅先の海辺">
           </label>
           <div class="airs-place-tools">
@@ -2262,14 +2304,17 @@
           </div>
           <div class="place-candidates airs-place-candidates" id="airs-place-candidates" aria-live="polite"></div>
           <label>
-            Google Maps / SNS / カードURL（任意）
+            <span class="airs-field-title">Google Maps / SNS / カードURL <span class="field-optional">任意</span></span>
             <input id="airs-source-url" type="url" placeholder="わかる場合だけ https://...">
           </label>
-          <textarea id="airs-comment" placeholder="任意で一言。例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
+          <label class="airs-field-wide">
+            <span class="airs-field-title">一言コメント <span class="field-optional">任意</span></span>
+            <textarea id="airs-comment" placeholder="例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
+          </label>
         </div>
         <div class="airs-photo-field">
           <label>
-            その時の写真（任意・1枚）
+            <span class="airs-field-title">その時の写真 <span class="field-optional">任意・1枚</span></span>
             <input id="airs-photo" type="file" accept="image/*">
             <span>公開はまだしません。まずは自分の記憶として、軽く圧縮して保存します。</span>
           </label>
@@ -2278,7 +2323,7 @@
           </div>
         </div>
         <div class="airs-recovery-panel" aria-labelledby="airs-recovery-title">
-          <strong id="airs-recovery-title">この場所で、何が少し戻りましたか？</strong>
+          <strong id="airs-recovery-title">この場所で、何が少し戻りましたか？ <span class="field-optional">任意</span></strong>
           <p>これは評価ではありません。その場所で、あなたの中に少し戻ったものを残すだけです。</p>
           <details class="airs-recovery-details" id="airs-recovery-details">
             <summary><span id="airs-recovery-summary">コメント候補から選ぶ</span></summary>
@@ -2287,7 +2332,7 @@
           <span class="airs-recovery-note" id="airs-recovery-note">未選択でも保存できます。</span>
         </div>
         <div class="airs-persona-intro">
-          <strong>お店の空気感に近い画像をお選びください</strong>
+          <strong>お店の空気感に近い画像をお選びください <span class="field-optional">選び直し任意</span></strong>
           <p>1枚は自動で選ばれています。近いものがあれば、36枚の中から選び直してください。</p>
         </div>
         <div class="airs-persona-grid" id="airs-persona-grid" aria-label="36世界観画像から選ぶ"></div>
@@ -2377,7 +2422,7 @@
 
         <div class="search-main">
           <div class="prompt">
-            <strong>診断したいお店を教えてください</strong>
+            <strong>診断したいお店を教えてください <span class="field-required">必須</span></strong>
             <span>まずは店名だけでも大丈夫です。地域名やURLがあると、候補確認がより正確になります。</span>
           </div>
           <form id="diagnosis-form" action="/api/diagnosis" method="post">
@@ -2391,26 +2436,26 @@
             </div>
             <div class="intake-fields">
               <details class="optional-intake-fields">
-                <summary>詳しく入力する（Google Maps・公式サイト・SNS）</summary>
+                <summary>詳しく入力する（任意: Google Maps・公式サイト・SNS）</summary>
                 <div class="optional-intake-grid">
                   <label>
-                    エリア・住所（わかる範囲）
+                    <span class="field-label">エリア・住所 <span class="field-optional">任意</span></span>
                     <input name="area" placeholder="例: 那須町 / 黒磯 / 栃木県那須塩原市">
                   </label>
                   <label>
-                    業種（わかる範囲）
+                    <span class="field-label">業種 <span class="field-optional">任意</span></span>
                     <input name="category" placeholder="例: カフェ / ランチ / 美容室">
                   </label>
                   <label>
-                    <span class="field-label">Google Maps URL（任意） <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
+                    <span class="field-label">Google Maps URL <span class="field-optional">任意</span> <button class="url-help-link" type="button" data-url-help="maps">※URLの調べかた</button></span>
                     <input name="google_maps_url" type="url" placeholder="わかる場合だけ https://maps.google.com/...">
                   </label>
                   <label>
-                    公式サイトURL（任意）
+                    <span class="field-label">公式サイトURL <span class="field-optional">任意</span></span>
                     <input name="website_url" type="url" placeholder="わかる場合だけ https://example.com">
                   </label>
                   <label>
-                    <span class="field-label">Instagram URL <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
+                    <span class="field-label">Instagram URL <span class="field-optional">任意</span> <button class="url-help-link" type="button" data-url-help="instagram">※URLの調べかた</button></span>
                     <span class="url-help-inline">
                       <button class="url-help-link" type="button" data-url-help="x">Xの場合</button>
                       <button class="url-help-link" type="button" data-url-help="tiktok">TikTokの場合</button>
@@ -2419,23 +2464,23 @@
                     <input name="instagram_url" type="url" placeholder="https://www.instagram.com/...">
                   </label>
                   <label>
-                    <span class="field-label">YouTube URL <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
+                    <span class="field-label">YouTube URL <span class="field-optional">任意</span> <button class="url-help-link" type="button" data-url-help="youtube">※URLの調べかた</button></span>
                     <input name="youtube_url" type="url" placeholder="https://www.youtube.com/...">
                   </label>
                   <label>
-                    Facebook URL
+                    <span class="field-label">Facebook URL <span class="field-optional">任意</span></span>
                     <input name="facebook_url" type="url" placeholder="https://www.facebook.com/...">
                   </label>
                   <label>
-                    LINE URL
+                    <span class="field-label">LINE URL <span class="field-optional">任意</span></span>
                     <input name="line_url" type="url" placeholder="https://lin.ee/...">
                   </label>
                   <label>
-                    X URL
+                    <span class="field-label">X URL <span class="field-optional">任意</span></span>
                     <input name="x_url" type="url" placeholder="https://x.com/...">
                   </label>
                   <label>
-                    TikTok URL
+                    <span class="field-label">TikTok URL <span class="field-optional">任意</span></span>
                     <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/...">
                   </label>
                   <input name="sns_url" type="hidden">
@@ -2443,7 +2488,7 @@
                 </div>
               </details>
               <label>
-                お店との関係
+                <span class="field-label">お店との関係 <span class="field-optional">任意</span></span>
                 <select name="owner_relation">
                   <option value="">選択してください</option>
                   <option value="owner">オーナー・スタッフ</option>
@@ -2454,15 +2499,15 @@
                 </select>
               </label>
               <label>
-                お名前
+                <span class="field-label">お名前 <span class="field-required">必須</span></span>
                 <input name="owner_name" placeholder="診断結果を受け取る方" required>
               </label>
               <label>
-                メールアドレス
+                <span class="field-label">メールアドレス <span class="field-required">必須</span></span>
                 <input name="email" type="email" placeholder="name@example.com" required>
               </label>
               <label class="field-wide">
-                今の気持ち・気になっていること
+                <span class="field-label">今の気持ち・気になっていること <span class="field-optional">任意</span></span>
                 <textarea name="current_problem" placeholder="例: 初めての人に入りやすく見えるか知りたい / SNSは頑張っているが来店につながっているかわからない"></textarea>
               </label>
               <label class="hp" aria-hidden="true">
