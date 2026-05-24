@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>お客様.COM | えらばれる店スコア診断</title>
   <script>
-    if (location.hostname.replace(/^www\./, "") === "air-s.jp") {
+    const currentHost = location.hostname.replace(/^www\./, "");
+    if (currentHost === "air-s.jp") {
       document.documentElement.classList.add("airs-domain");
       document.title = "air-s | 好きなお店の空気を、1枚のair-sに。";
+    }
+    if (currentHost === "map-s.site" || location.search.includes("maps-preview=1")) {
+      document.documentElement.classList.add("maps-domain");
+      document.title = "map-s | Google Mapsリンクだけで、きれいな店舗MAPを。";
     }
   </script>
   <style>
@@ -49,12 +54,395 @@
         #f8f6ee;
     }
 
-    .airs-domain .site {
+    .maps-home {
+      display: none;
+      min-height: 100vh;
+      color: #1e2933;
+      background: #f7fbfe;
+    }
+
+    .airs-domain .site,
+    .maps-domain .site {
       display: none;
     }
 
     .airs-domain .airs-home {
       display: block;
+    }
+
+    .maps-domain .maps-home {
+      display: block;
+    }
+
+    .maps-shell {
+      width: min(1160px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 0 0 64px;
+    }
+
+    .maps-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+      background: rgba(247, 251, 254, .94);
+      border-bottom: 1px solid rgba(49, 120, 180, .18);
+      backdrop-filter: blur(12px);
+    }
+
+    .maps-brand strong {
+      display: block;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+
+    .maps-brand span {
+      display: block;
+      color: #557082;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .maps-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .maps-nav a,
+    .maps-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(30, 83, 130, .18);
+      border-radius: 8px;
+      background: #fff;
+      color: #1d4f78;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 8px 22px rgba(45, 96, 132, .08);
+    }
+
+    .maps-button.primary {
+      border-color: #ffdc4b;
+      background: #ffe75f;
+      color: #263238;
+    }
+
+    .maps-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 460px;
+      gap: 42px;
+      align-items: center;
+      padding: 64px 0 54px;
+    }
+
+    .maps-kicker,
+    .maps-pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 999px;
+      background: rgba(47, 129, 187, .1);
+      color: #24608a;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .maps-hero h1 {
+      margin: 18px 0 18px;
+      max-width: 760px;
+      font-size: clamp(36px, 5.6vw, 68px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .maps-lead {
+      margin: 0 0 26px;
+      max-width: 760px;
+      color: #4e6473;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 760;
+    }
+
+    .maps-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 22px 0 0;
+    }
+
+    .maps-note {
+      margin-top: 16px;
+      color: #5b7080;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .maps-demo {
+      border: 1px solid rgba(40, 91, 132, .16);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 26px 70px rgba(43, 87, 124, .16);
+      overflow: hidden;
+    }
+
+    .maps-demo-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #e1edf5;
+      background: #fbfdff;
+    }
+
+    .maps-demo-head strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .maps-demo-head span {
+      display: block;
+      color: #6b7b86;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .maps-demo-map {
+      position: relative;
+      min-height: 250px;
+      background:
+        linear-gradient(18deg, transparent 48%, rgba(85, 138, 167, .16) 49%, rgba(85, 138, 167, .16) 50%, transparent 51%),
+        linear-gradient(150deg, transparent 44%, rgba(85, 138, 167, .13) 45%, rgba(85, 138, 167, .13) 46%, transparent 47%),
+        radial-gradient(circle at 22% 35%, rgba(91, 170, 130, .16), transparent 26%),
+        radial-gradient(circle at 78% 48%, rgba(255, 212, 89, .18), transparent 24%),
+        #f3f9f7;
+    }
+
+    .maps-demo-pin {
+      position: absolute;
+      width: 150px;
+      border: 1px solid rgba(43, 92, 117, .14);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .9);
+      padding: 10px;
+      box-shadow: 0 18px 36px rgba(37, 62, 76, .13);
+    }
+
+    .maps-demo-pin:nth-child(1) { left: 9%; top: 48%; }
+    .maps-demo-pin:nth-child(2) { left: 42%; top: 28%; }
+    .maps-demo-pin:nth-child(3) { right: 9%; top: 52%; }
+
+    .maps-demo-pin b {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      background: #2d7a5f;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .maps-demo-pin strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .maps-demo-pin span {
+      color: #667780;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .maps-demo-list {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .maps-demo-list div {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid #e2edf3;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .maps-demo-list img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .maps-demo-list strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .maps-demo-list span {
+      color: #6b7b86;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .maps-section {
+      margin: 22px 0;
+      border: 1px solid #dbe8f0;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .86);
+      padding: clamp(22px, 4vw, 38px);
+      box-shadow: 0 12px 34px rgba(40, 79, 111, .08);
+    }
+
+    .maps-section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .maps-section h2 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 3.8vw, 42px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .maps-section p {
+      margin: 0;
+      color: #5d6f7c;
+      font-weight: 720;
+    }
+
+    .maps-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .maps-feature {
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 18px;
+    }
+
+    .maps-feature b {
+      display: block;
+      margin-bottom: 8px;
+      color: #24608a;
+      font-size: 14px;
+    }
+
+    .maps-feature strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .maps-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      counter-reset: maps-step;
+    }
+
+    .maps-step {
+      position: relative;
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 52px 16px 16px;
+    }
+
+    .maps-step::before {
+      counter-increment: maps-step;
+      content: counter(maps-step);
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: #2d7a5f;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .maps-pricing {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .maps-price {
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 22px;
+    }
+
+    .maps-price.recommended {
+      border-color: #79bee8;
+      box-shadow: 0 0 0 4px rgba(121, 190, 232, .14);
+    }
+
+    .maps-price h3 {
+      margin: 0 0 8px;
+      color: #24608a;
+      font-size: 24px;
+    }
+
+    .maps-price strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 28px;
+    }
+
+    .maps-price ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #526572;
+      font-weight: 760;
+    }
+
+    .maps-seo-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .maps-seo-list span {
+      border: 1px solid #dce9f0;
+      border-radius: 999px;
+      background: #fff;
+      padding: 9px 12px;
+      color: #315d73;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .airs-shell {
@@ -2232,10 +2620,279 @@
       .airs-layer-grid {
         grid-template-columns: 1fr;
       }
+
+      .maps-shell {
+        width: min(100% - 28px, 680px);
+      }
+
+      .maps-topbar,
+      .maps-section-head,
+      .maps-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .maps-nav {
+        justify-content: flex-start;
+      }
+
+      .maps-nav a:nth-child(2),
+      .maps-nav a:nth-child(3) {
+        display: none;
+      }
+
+      .maps-hero,
+      .maps-grid-3,
+      .maps-steps,
+      .maps-pricing,
+      .maps-seo-list {
+        grid-template-columns: 1fr;
+      }
+
+      .maps-hero {
+        gap: 24px;
+        padding-top: 28px;
+      }
+
+      .maps-demo-pin {
+        width: 132px;
+      }
+
+      .maps-demo-list div {
+        grid-template-columns: 38px 1fr;
+      }
+
+      .maps-demo-list .maps-pill {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
     }
   </style>
 </head>
 <body>
+  <section class="maps-home" aria-labelledby="maps-title">
+    <div class="maps-shell">
+      <div class="maps-topbar">
+        <div class="maps-brand">
+          <strong>map-s</strong>
+          <span>Google MapsのURLを貼るだけで、きれいな店舗MAPを。</span>
+        </div>
+        <nav class="maps-nav" aria-label="map-sナビゲーション">
+          <a href="#maps-how">作り方</a>
+          <a href="#maps-seo">SEO導線</a>
+          <a href="#maps-pricing">料金</a>
+          <a class="maps-button primary" href="#maps-beta">βを相談する</a>
+        </nav>
+      </div>
+
+      <section class="maps-hero">
+        <div>
+          <span class="maps-kicker">map-s.site β / Form Mailer型の軽いMap作成</span>
+          <h1 id="maps-title">Google MapsのURLを貼るだけで、きれいな店舗MAPページを。</h1>
+          <p class="maps-lead">
+            3分で、店舗一覧、商店街MAP、観光MAP、チェーン店MAPを専門知識なしで作成。
+            公開URL、サイト埋め込み、QRまで、まずは軽くつなぎます。
+          </p>
+          <div class="maps-actions">
+            <a class="maps-button primary" href="#maps-beta">無料βで相談する</a>
+            <a class="maps-button" href="#maps-sample">サンプルを見る</a>
+          </div>
+          <p class="maps-note">
+            air-sの場所検索・軽量Map表示・QR生成の土台を使い、業務向けの「公開・埋め込み」レイヤーとして設計します。
+          </p>
+        </div>
+
+        <div class="maps-demo" id="maps-sample" aria-label="map-sサンプル">
+          <div class="maps-demo-head">
+            <div>
+              <strong>那須の静かなカフェMAP</strong>
+              <span>公開URL / iframe / QR 対応予定</span>
+            </div>
+            <span class="maps-pill">Preview</span>
+          </div>
+          <div class="maps-demo-map">
+            <div class="maps-demo-pin"><b>1</b><strong>森のカフェ</strong><span>朝・静か</span></div>
+            <div class="maps-demo-pin"><b>2</b><strong>黒磯の本屋</strong><span>雨の日</span></div>
+            <div class="maps-demo-pin"><b>3</b><strong>小さな食堂</strong><span>夜・安心</span></div>
+          </div>
+          <div class="maps-demo-list">
+            <div>
+              <img src="/assets/worldview-cards/personas/21-1.webp" alt="">
+              <span><strong>Google Mapsへ案内</strong>店舗カードとリストを同時表示</span>
+              <span class="maps-pill">MAP</span>
+            </div>
+            <div>
+              <img src="/assets/worldview-cards/personas/34-1.webp" alt="">
+              <span><strong>サイトに埋め込み</strong>WordPressにもHTMLで貼り付け</span>
+              <span class="maps-pill">Embed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">誰に向けたサービスか</span>
+            <h2>店舗・地域・Web管理者のための、軽いMap公開ツール。</h2>
+            <p>Googleマイマップより見た目を整えやすく、重い開発より早く公開できることを目指します。</p>
+          </div>
+        </div>
+        <div class="maps-grid-3">
+          <div class="maps-feature">
+            <b>Store</b>
+            <strong>店舗・チェーン店</strong>
+            <p>複数店舗、駐車場、系列店、イベント会場などを、1つの見やすいMAPに整理します。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Area</b>
+            <strong>商店街・観光協会</strong>
+            <p>地域のおすすめ店、雨の日、犬OK、子連れ向けなど、用途別MAPを作れます。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Web</b>
+            <strong>制作会社・管理代行</strong>
+            <p>WordPressや既存サイトに、iframeやリンクで設置できるMAPを短時間で納品します。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section" id="maps-how">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">作る → 公開する → 貼る</span>
+            <h2>Form Mailerのように、Mapをすぐ公開できる流れへ。</h2>
+            <p>最初のβは、高機能化より「迷わず公開できること」を優先します。</p>
+          </div>
+        </div>
+        <div class="maps-steps">
+          <div class="maps-step"><strong>Map名を書く</strong><p>例：那須カフェMAP、全国店舗一覧、黒磯散歩MAP。</p></div>
+          <div class="maps-step"><strong>お店を追加</strong><p>Google Maps URL、または店名検索から候補を選びます。</p></div>
+          <div class="maps-step"><strong>公開URLを発行</strong><p>専用ページとして公開し、SNSやLINEで共有できます。</p></div>
+          <div class="maps-step"><strong>サイトに貼る</strong><p>iframeコードとQRを発行し、WordPressにも設置できます。</p></div>
+        </div>
+      </section>
+
+      <section class="maps-section">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">用途テンプレ</span>
+            <h2>空白から作らず、使い道から始められるMapへ。</h2>
+            <p>Form Mailerのテンプレートのように、最初に用途を選べるだけで作成ハードルが下がります。</p>
+          </div>
+        </div>
+        <div class="maps-grid-3">
+          <div class="maps-feature">
+            <b>Cafe</b>
+            <strong>カフェMAP</strong>
+            <p>地域のカフェ、静かな店、雨の日向け、作業向けなどをまとめます。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Area</b>
+            <strong>商店街・観光MAP</strong>
+            <p>商店街、観光協会、イベント回遊、犬OK、子連れ向けのMAPに使えます。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Store</b>
+            <strong>系列店・駐車場MAP</strong>
+            <p>複数店舗、駐車場、会場案内、周辺施設をサイトに貼れる形で整理します。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section" id="maps-seo">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">SEO動線</span>
+            <h2>作られたMap自体を、検索される地域ページに。</h2>
+            <p>単なる埋め込み部品ではなく、公開MapページがSEO資産になる設計にします。</p>
+          </div>
+        </div>
+        <div class="maps-seo-list" aria-label="SEO想定キーワード">
+          <span>Google Maps 埋め込み</span>
+          <span>店舗マップ 作成</span>
+          <span>WordPress Googleマップ 店舗一覧</span>
+          <span>商店街 マップ 作成</span>
+          <span>観光マップ 作成</span>
+          <span>複数店舗 マップ</span>
+          <span>駐車場マップ 作成</span>
+          <span>イベント会場 マップ</span>
+          <span>那須 カフェMAP</span>
+          <span>地域名 + 業種 + MAP</span>
+        </div>
+      </section>
+
+      <section class="maps-section" id="maps-pricing">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">料金イメージ</span>
+            <h2>無料で試せて、埋め込みから月額へ。</h2>
+            <p>まずは検証用です。正式価格は、実利用の反応を見ながら決めます。</p>
+          </div>
+        </div>
+        <div class="maps-pricing">
+          <div class="maps-price">
+            <h3>Free</h3>
+            <strong>0円</strong>
+            <ul>
+              <li>1Map</li>
+              <li>5店舗まで</li>
+              <li>公開URL</li>
+              <li>QR生成</li>
+            </ul>
+          </div>
+          <div class="maps-price recommended">
+            <h3>Lite</h3>
+            <strong>月980円〜</strong>
+            <ul>
+              <li>複数Map</li>
+              <li>20店舗まで</li>
+              <li>iframe埋め込み</li>
+              <li>簡易テーマ</li>
+            </ul>
+          </div>
+          <div class="maps-price">
+            <h3>Pro</h3>
+            <strong>月2,980円〜</strong>
+            <ul>
+              <li>100店舗まで</li>
+              <li>CSV取り込み</li>
+              <li>制作代行向け</li>
+              <li>SEO公開ページ強化</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section" id="maps-beta">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">AIレビューの入れどころ</span>
+            <h2>LPを作ったあと、3人のAIにレビューしてもらう順番。</h2>
+            <p>最初から全員に投げるより、仮LPと仕様が見えた段階でレビューすると精度が上がります。</p>
+          </div>
+        </div>
+        <div class="maps-grid-3">
+          <div class="maps-feature">
+            <b>Step 1</b>
+            <strong>CodexでLPとβ仕様を作る</strong>
+            <p>実装前提で、画面・SEO・データ構造が破綻しない形に整えます。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Step 2</b>
+            <strong>ChatGPT / Gemini / Grokへレビュー</strong>
+            <p>LPコピー、SEOキーワード、競合との差別化、料金感を見てもらいます。</p>
+          </div>
+          <div class="maps-feature">
+            <b>Step 3</b>
+            <strong>β実装へ進む</strong>
+            <p>反応が良ければ、Mapプロジェクト保存・公開URL・埋め込み生成へ進みます。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
   <section class="airs-home" aria-labelledby="airs-title">
     <div class="airs-shell">
       <div class="airs-topbar">
