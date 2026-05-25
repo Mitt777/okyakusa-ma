@@ -744,6 +744,60 @@
       z-index: 1;
     }
 
+    .maps-builder-map-geo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .maps-builder-map-region {
+      fill: color-mix(in srgb, var(--maps-pin) 9%, transparent);
+      stroke: color-mix(in srgb, var(--maps-pin) 22%, transparent);
+      stroke-width: 1.5;
+    }
+
+    .maps-builder-map-route {
+      fill: none;
+      stroke: color-mix(in srgb, var(--maps-pin) 28%, transparent);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 3.4;
+    }
+
+    .maps-builder-map-road {
+      fill: none;
+      stroke: rgba(120, 145, 150, .16);
+      stroke-linecap: round;
+      stroke-width: 2.2;
+    }
+
+    .maps-builder-anchor {
+      position: absolute;
+      left: var(--maps-anchor-left, 50%);
+      top: var(--maps-anchor-top, 50%);
+      display: grid;
+      width: 12px;
+      height: 12px;
+      place-items: center;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      background: var(--maps-pin);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--maps-pin) 18%, transparent);
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+    .maps-builder-anchor::after {
+      content: "";
+      width: 3px;
+      height: 3px;
+      border-radius: 999px;
+      background: #fff;
+    }
+
     .maps-builder-pin {
       position: absolute;
       left: clamp(84px, var(--maps-pin-left, 50%), calc(100% - 84px));
@@ -757,7 +811,7 @@
       padding: 11px 12px 12px 44px;
       box-sizing: border-box;
       transform: translate(-50%, -50%);
-      z-index: 1;
+      z-index: 3;
       color: inherit;
       text-decoration: none;
     }
@@ -879,6 +933,10 @@
 
     .maps-builder-map.is-dense .maps-builder-pin span,
     .maps-builder-map.is-dense .maps-builder-pin em {
+      display: none;
+    }
+
+    .maps-builder-map.is-dense .maps-builder-anchor {
       display: none;
     }
 
@@ -5771,24 +5829,43 @@
       return address.length > 34 ? `${address.slice(0, 34)}...` : address;
     }
 
-    function mapsBuilderPoint(store, index, stores = mapsBuilderStores) {
-      const locatedStores = stores.filter((item) =>
+    function mapsBuilderLocatedStores(stores = mapsBuilderStores) {
+      return stores.filter((item) =>
         Number.isFinite(item.lat) && Number.isFinite(item.lng)
       );
-      if (locatedStores.length >= 2 && Number.isFinite(store.lat) && Number.isFinite(store.lng)) {
-        const latValues = locatedStores.map((item) => item.lat);
-        const lngValues = locatedStores.map((item) => item.lng);
-        const minLat = Math.min(...latValues);
-        const maxLat = Math.max(...latValues);
-        const minLng = Math.min(...lngValues);
-        const maxLng = Math.max(...lngValues);
-        const latRange = Math.max(maxLat - minLat, 0.0001);
-        const lngRange = Math.max(maxLng - minLng, 0.0001);
-        return {
-          left: 34 + ((store.lng - minLng) / lngRange) * 32,
-          top: 18 + ((maxLat - store.lat) / latRange) * 64
-        };
-      }
+    }
+
+    function mapsBuilderGeoBounds(stores = mapsBuilderStores) {
+      const locatedStores = mapsBuilderLocatedStores(stores);
+      if (locatedStores.length < 2) return null;
+      const latValues = locatedStores.map((item) => item.lat);
+      const lngValues = locatedStores.map((item) => item.lng);
+      const minLat = Math.min(...latValues);
+      const maxLat = Math.max(...latValues);
+      const minLng = Math.min(...lngValues);
+      const maxLng = Math.max(...lngValues);
+      return {
+        minLat,
+        maxLat,
+        minLng,
+        maxLng,
+        latRange: Math.max(maxLat - minLat, 0.0001),
+        lngRange: Math.max(maxLng - minLng, 0.0001)
+      };
+    }
+
+    function mapsBuilderGeoPoint(store, stores = mapsBuilderStores) {
+      const bounds = mapsBuilderGeoBounds(stores);
+      if (!bounds || !Number.isFinite(store.lat) || !Number.isFinite(store.lng)) return null;
+      return {
+        left: 12 + ((store.lng - bounds.minLng) / bounds.lngRange) * 76,
+        top: 12 + ((bounds.maxLat - store.lat) / bounds.latRange) * 76
+      };
+    }
+
+    function mapsBuilderPoint(store, index, stores = mapsBuilderStores) {
+      const geoPoint = mapsBuilderGeoPoint(store, stores);
+      if (geoPoint) return geoPoint;
       const seed = mapsHashNumber(`${store.name}-${store.address}`, index + 7);
       return {
         left: 34 + (seed % 33),
@@ -5805,7 +5882,13 @@
 
     function mapsBuilderLayoutPoints(stores) {
       const dense = stores.length >= 6;
-      const minGap = dense ? 17 : 20;
+      const hasGeoBounds = Boolean(mapsBuilderGeoBounds(stores));
+      if (dense && hasGeoBounds) {
+        return stores.map((store, index) =>
+          mapsBuilderClampPoint(mapsBuilderPoint(store, index, stores))
+        );
+      }
+      const minGap = dense ? 15 : 18;
       const offsets = [[0, 0]];
       for (let ring = 1; ring <= 4; ring += 1) {
         const radius = minGap * ring * .72;
@@ -5840,6 +5923,45 @@
         points.push(chosen);
       });
       return points;
+    }
+
+    function mapsBuilderGeoLayer(stores, labelPoints) {
+      const locatedStores = stores
+        .map((store, index) => ({
+          store,
+          index,
+          anchor: mapsBuilderGeoPoint(store, stores),
+          label: labelPoints[index]
+        }))
+        .filter((item) => item.anchor);
+      if (locatedStores.length < 2) return "";
+      const routePoints = locatedStores
+        .slice()
+        .sort((a, b) => (a.store.lng - b.store.lng) || (b.store.lat - a.store.lat));
+      const route = routePoints.map((item) => `${item.anchor.left.toFixed(2)},${item.anchor.top.toFixed(2)}`).join(" ");
+      const region = locatedStores.length >= 3
+        ? locatedStores
+            .slice()
+            .sort((a, b) => Math.atan2(a.anchor.top - 50, a.anchor.left - 50) - Math.atan2(b.anchor.top - 50, b.anchor.left - 50))
+            .map((item) => `${item.anchor.left.toFixed(2)},${item.anchor.top.toFixed(2)}`)
+            .join(" ")
+        : "";
+      const guideLines = locatedStores.map((item) => {
+        const distance = Math.hypot(item.anchor.left - item.label.left, item.anchor.top - item.label.top);
+        if (distance < 7) return "";
+        return `<line class="maps-builder-map-road" x1="${item.anchor.left.toFixed(2)}" y1="${item.anchor.top.toFixed(2)}" x2="${item.label.left.toFixed(2)}" y2="${item.label.top.toFixed(2)}"></line>`;
+      }).join("");
+      const anchors = locatedStores.map((item) => `
+        <span class="maps-builder-anchor" data-maps-store-id="${mapsEscapeHtml(item.store.id)}" style="--maps-anchor-left:${item.anchor.left}%;--maps-anchor-top:${item.anchor.top}%;" aria-hidden="true"></span>
+      `).join("");
+      return `
+        <svg class="maps-builder-map-geo" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          ${region ? `<polygon class="maps-builder-map-region" points="${region}"></polygon>` : ""}
+          <polyline class="maps-builder-map-route" points="${route}"></polyline>
+          ${guideLines}
+        </svg>
+        ${anchors}
+      `;
     }
 
     function mapsBuilderProjectUrls() {
@@ -5918,7 +6040,7 @@
         map.classList.toggle("is-dense", denseMap);
         if (output) output.classList.toggle("is-dense", denseMap);
         const pinPoints = mapsBuilderLayoutPoints(mapsBuilderStores);
-        map.innerHTML = mapsBuilderStores.map((store, index) => {
+        map.innerHTML = mapsBuilderGeoLayer(mapsBuilderStores, pinPoints) + mapsBuilderStores.map((store, index) => {
           const point = pinPoints[index];
           const shortAddress = mapsBuilderShortAddress(store);
           const pinTag = store.mapsUrl ? "a" : "div";
