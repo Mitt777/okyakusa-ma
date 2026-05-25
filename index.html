@@ -5967,7 +5967,7 @@
     }
 
     function mapsBuilderLayoutPoints(stores) {
-      const dense = stores.length >= 6;
+      const dense = stores.length >= 5;
       const hasGeoBounds = Boolean(mapsBuilderGeoBounds(stores));
       if (dense && hasGeoBounds) {
         return stores.map((store, index) =>
@@ -6140,7 +6140,7 @@
         map.innerHTML = '<div class="maps-builder-map-empty">店舗を追加すると、ここに軽いピン地図が表示されます。</div>';
         list.innerHTML = '<div class="maps-builder-store"><div><strong>まだ店舗がありません</strong><span>左の入力欄から、Google Maps URLまたは店名で追加できます。</span></div></div>';
       } else {
-        const denseMap = mapsBuilderStores.length >= 6;
+        const denseMap = mapsBuilderStores.length >= 5;
         map.classList.toggle("is-dense", denseMap);
         if (output) output.classList.toggle("is-dense", denseMap);
         const pinPoints = mapsBuilderLayoutPoints(mapsBuilderStores);
