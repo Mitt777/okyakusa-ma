@@ -1067,6 +1067,18 @@
       white-space: pre;
     }
 
+    .maps-public-actions {
+      display: none;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: -4px 0 14px;
+    }
+
+    .maps-public-actions .maps-button {
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
     .maps-builder-store-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1127,6 +1139,10 @@
       margin-top: 18px;
     }
 
+    .maps-public-mode .maps-public-actions {
+      display: flex;
+    }
+
     .maps-public-mode .maps-builder-layout {
       display: block;
     }
@@ -1152,6 +1168,10 @@
       border: 0;
       border-radius: 0;
       box-shadow: none;
+    }
+
+    .maps-embed-mode .maps-public-actions {
+      display: none;
     }
 
     .maps-embed-mode .maps-builder-preview-head {
@@ -3675,6 +3695,11 @@
               </div>
               <span class="maps-pill" id="maps-builder-count">0 stores</span>
             </div>
+            <div class="maps-public-actions" aria-label="公開MAPの共有">
+              <button class="maps-button primary" id="maps-public-copy-url" type="button">URLをコピー</button>
+              <a class="maps-button" id="maps-public-line" href="#" target="_blank" rel="noopener">LINE</a>
+              <a class="maps-button" id="maps-public-x" href="#" target="_blank" rel="noopener">X</a>
+            </div>
 
             <div class="maps-builder-output">
               <div class="maps-builder-map" id="maps-builder-map">
@@ -6127,6 +6152,8 @@
       const embedCode = document.querySelector("#maps-builder-embed-code");
       const qrImage = document.querySelector("#maps-builder-qr");
       const installNote = document.querySelector("#maps-builder-install-note");
+      const publicLine = document.querySelector("#maps-public-line");
+      const publicX = document.querySelector("#maps-public-x");
       if (!titleInput || !descriptionInput || !map || !list) return;
 
       const currentSignature = mapsBuilderProjectSignature();
@@ -6202,6 +6229,12 @@
         qrImage.alt = `${title} の公開URL QRコード`;
       }
       if (installNote) installNote.textContent = mapsBuilderInstallNote(urls);
+      if (publicLine) {
+        publicLine.href = `https://line.me/R/msg/text/?${encodeURIComponent(`${title}\n${urls.publicUrl}`)}`;
+      }
+      if (publicX) {
+        publicX.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(urls.publicUrl)}`;
+      }
       mapsBuilderSetActiveStore();
       mapsBuilderSave();
     }
@@ -6461,6 +6494,9 @@
       });
       document.querySelector("#maps-builder-copy-install")?.addEventListener("click", () => {
         mapsBuilderCopy(mapsBuilderInstallNote(mapsBuilderProjectUrls()), "設置メモをコピーしました。");
+      });
+      document.querySelector("#maps-public-copy-url")?.addEventListener("click", () => {
+        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URLをコピーしました。");
       });
       document.querySelector("#maps-builder-publish")?.addEventListener("click", mapsBuilderPublish);
       mapsBuilderRender();
