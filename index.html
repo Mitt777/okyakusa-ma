@@ -654,6 +654,78 @@
       min-width: 0;
     }
 
+    .maps-builder-google-card {
+      display: none;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid #dce9f0;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 18px 36px rgba(60, 82, 96, .08);
+    }
+
+    .maps-builder-output.is-single-shop .maps-builder-google-card {
+      display: grid;
+      gap: 0;
+    }
+
+    .maps-builder-output.is-single-shop {
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+    }
+
+    .maps-builder-output.is-single-shop .maps-builder-map {
+      display: none;
+    }
+
+    .maps-builder-google-frame {
+      width: 100%;
+      height: clamp(260px, 34vw, 380px);
+      border: 0;
+      background: #eef5f5;
+    }
+
+    .maps-builder-google-body {
+      display: grid;
+      gap: 8px;
+      padding: 12px 14px;
+    }
+
+    .maps-builder-google-body strong {
+      color: #1d2a33;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .maps-builder-google-body span {
+      color: #5c6f78;
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.55;
+    }
+
+    .maps-builder-google-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .maps-builder-google-meta span {
+      border: 1px solid #dce9f0;
+      border-radius: 999px;
+      background: #f7fbfc;
+      padding: 4px 8px;
+      color: #3a5969;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .maps-builder-google-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     .maps-builder-map {
       --maps-paper: #fbfaf4;
       --maps-grid: rgba(31, 85, 94, .045);
@@ -1160,6 +1232,10 @@
 
     .maps-public-mode .maps-builder-output {
       grid-template-columns: 1fr;
+    }
+
+    .maps-public-mode .maps-builder-output.is-single-shop {
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
     }
 
     .maps-public-mode .maps-builder-map {
@@ -3513,6 +3589,14 @@
         grid-template-columns: 1fr;
       }
 
+      .maps-builder-output.is-single-shop {
+        grid-template-columns: 1fr;
+      }
+
+      .maps-public-mode .maps-builder-output.is-single-shop {
+        grid-template-columns: 1fr;
+      }
+
       .maps-hero {
         gap: 24px;
         padding-top: 28px;
@@ -3709,6 +3793,7 @@
             </div>
 
             <div class="maps-builder-output">
+              <div class="maps-builder-google-card" id="maps-builder-google-card" aria-label="Google Maps店舗表示"></div>
               <div class="maps-builder-map" id="maps-builder-map">
                 <div class="maps-builder-map-empty">店舗を追加すると、ここに軽いピン地図が表示されます。</div>
               </div>
@@ -6096,6 +6181,16 @@
       return address.length > 34 ? `${address.slice(0, 34)}...` : address;
     }
 
+    function mapsBuilderGoogleEmbedUrl(store) {
+      const lat = mapsBuilderNumber(store?.lat);
+      const lng = mapsBuilderNumber(store?.lng);
+      const query = lat !== null && lng !== null
+        ? `${lat},${lng}`
+        : [store?.name, store?.address].filter(Boolean).join(" ");
+      if (!query) return "";
+      return `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=16&output=embed`;
+    }
+
     function mapsBuilderLocatedStores(stores = mapsBuilderStores) {
       return stores.filter((item) =>
         Number.isFinite(item.lat) && Number.isFinite(item.lng)
@@ -6311,6 +6406,7 @@
       const previewTitle = document.querySelector("#maps-builder-preview-title");
       const previewDescription = document.querySelector("#maps-builder-preview-description");
       const count = document.querySelector("#maps-builder-count");
+      const googleCard = document.querySelector("#maps-builder-google-card");
       const map = document.querySelector("#maps-builder-map");
       const list = document.querySelector("#maps-builder-list");
       const output = document.querySelector(".maps-builder-output");
@@ -6340,14 +6436,43 @@
 
       if (!mapsBuilderStores.length) {
         map.classList.remove("is-dense");
-        if (output) output.classList.remove("is-dense");
+        if (output) {
+          output.classList.remove("is-dense");
+          output.classList.remove("is-single-shop");
+        }
+        if (googleCard) googleCard.innerHTML = "";
         map.innerHTML = '<div class="maps-builder-map-empty">店舗を追加すると、ここに軽いピン地図が表示されます。</div>';
         list.innerHTML = '<div class="maps-builder-store"><div><strong>まだ店舗がありません</strong><span>左の入力欄から、Google Maps URLまたは店名で追加できます。</span></div></div>';
       } else {
         const denseMap = mapsBuilderStores.length >= 5;
+        const singleShop = mapsBuilderStores.length === 1;
         map.classList.toggle("is-dense", denseMap);
-        if (output) output.classList.toggle("is-dense", denseMap);
+        if (output) {
+          output.classList.toggle("is-dense", denseMap);
+          output.classList.toggle("is-single-shop", singleShop);
+        }
         const pinPoints = mapsBuilderLayoutPoints(mapsBuilderStores);
+        if (googleCard) {
+          const store = mapsBuilderStores[0];
+          const embedSrc = singleShop ? mapsBuilderGoogleEmbedUrl(store) : "";
+          const mapsLink = store?.mapsUrl
+            ? `<a class="maps-button primary" href="${mapsEscapeHtml(store.mapsUrl)}" target="_blank" rel="noopener">Google Mapsで見る</a>`
+            : "";
+          const websiteLink = store?.websiteUrl
+            ? `<a class="maps-button" href="${mapsEscapeHtml(store.websiteUrl)}" target="_blank" rel="noopener">公式サイト</a>`
+            : "";
+          const categoryMeta = store?.category ? `<span>${mapsEscapeHtml(store.category)}</span>` : "";
+          const ratingMeta = store?.rating ? `<span>rating ${mapsEscapeHtml(store.rating)}</span>` : "";
+          googleCard.innerHTML = singleShop ? `
+            ${embedSrc ? `<iframe class="maps-builder-google-frame" src="${mapsEscapeHtml(embedSrc)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${mapsEscapeHtml(store.name)} Google Maps"></iframe>` : ""}
+            <div class="maps-builder-google-body">
+              <strong>${mapsEscapeHtml(store.name)}</strong>
+              <span>${mapsEscapeHtml(store.address || store.category || "Google Maps情報をもとに表示しています。")}</span>
+              <div class="maps-builder-google-meta">${categoryMeta}${ratingMeta}</div>
+              <div class="maps-builder-google-actions">${mapsLink}${websiteLink}</div>
+            </div>
+          ` : "";
+        }
         map.innerHTML = mapsBuilderGeoLayer(mapsBuilderStores, pinPoints) + mapsBuilderStores.map((store, index) => {
           const point = pinPoints[index];
           const shortAddress = mapsBuilderShortAddress(store);
@@ -6372,11 +6497,13 @@
           const websiteLink = store.websiteUrl
             ? `<a class="maps-button" href="${mapsEscapeHtml(store.websiteUrl)}" target="_blank" rel="noopener">公式サイト</a>`
             : "";
+          const storeMeta = [store.category, store.rating ? `rating ${store.rating}` : ""].filter(Boolean).join(" / ");
+          const storeSub = [store.address, storeMeta].filter(Boolean).join(" / ") || "住所情報は公開時に確認";
           return `
             <div class="maps-builder-store" data-maps-store-id="${mapsEscapeHtml(store.id)}" tabindex="0">
               <div>
                 <strong>${index + 1}. ${mapsEscapeHtml(store.name)}</strong>
-                <span>${mapsEscapeHtml(store.address || store.category || "住所情報は公開時に確認")}</span>
+                <span>${mapsEscapeHtml(storeSub)}</span>
               </div>
               <div class="maps-builder-store-actions">
                 ${mapsLink}
