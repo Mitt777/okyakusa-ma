@@ -46,7 +46,7 @@ function normalizeStore(store) {
   const id = safeSegment(store?.id || store?.place_id) || `store_${crypto.randomBytes(4).toString("hex")}`;
   return {
     id,
-    placeId: text(store?.place_id || store?.placeId || "", 160),
+    placeId: text(store?.place_id || store?.placeId || (/^maps_store_/.test(id) ? "" : id), 160),
     name,
     address,
     category,
@@ -54,6 +54,7 @@ function normalizeStore(store) {
     mapsUrl,
     rating: store?.rating || null,
     userRatingCount: safeNumber(store?.userRatingCount ?? store?.user_rating_count),
+    businessStatus: text(store?.businessStatus || store?.business_status || "", 60),
     weekdayDescriptions: Array.isArray(store?.weekdayDescriptions || store?.weekday_descriptions)
       ? (store.weekdayDescriptions || store.weekday_descriptions).slice(0, 7).map((item) => text(item, 120)).filter(Boolean)
       : [],

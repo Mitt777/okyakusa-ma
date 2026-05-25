@@ -784,6 +784,41 @@
       white-space: pre-line;
     }
 
+    .maps-builder-hours {
+      display: grid;
+      gap: 5px;
+    }
+
+    .maps-builder-hours span {
+      display: grid;
+      grid-template-columns: 4.5em minmax(0, 1fr);
+      gap: 8px;
+      white-space: normal;
+    }
+
+    .maps-builder-hours i {
+      color: #647383;
+      font-style: normal;
+      font-weight: 860;
+    }
+
+    .maps-builder-visit-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .maps-builder-visit-chips span {
+      border: 1px solid rgba(47, 127, 100, .16);
+      border-radius: 999px;
+      background: rgba(47, 127, 100, .07);
+      padding: 5px 8px;
+      color: #2f6d59;
+      font-size: 12px;
+      line-height: 1.2;
+      white-space: normal;
+    }
+
     .maps-builder-visit-note p {
       margin: 0;
       color: #526572;
@@ -6225,6 +6260,7 @@
         : "";
       return {
         id: input.place_id || input.id || `maps_store_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        placeId: input.place_id || input.placeId || "",
         name,
         address,
         category: input.category || input.primaryType || "",
@@ -6232,6 +6268,7 @@
         mapsUrl: input.google_maps_url || input.mapsUrl || input.maps_url || input.url || fallbackMapsUrl,
         rating: input.rating || null,
         userRatingCount: mapsBuilderNumber(input.userRatingCount ?? input.user_rating_count),
+        businessStatus: input.businessStatus || input.business_status || "",
         weekdayDescriptions: Array.isArray(input.weekdayDescriptions || input.weekday_descriptions)
           ? (input.weekdayDescriptions || input.weekday_descriptions).slice(0, 7)
           : [],
@@ -6277,6 +6314,16 @@
       return keys.map((key) => labels[key]).filter(Boolean);
     }
 
+    function mapsBuilderHourRows(hours) {
+      return hours.map((line) => {
+        const text = String(line || "").trim();
+        const match = text.match(/^([^:：]+)[:：]\s*(.+)$/);
+        return match
+          ? { day: match[1].trim(), time: match[2].trim() }
+          : { day: "", time: text };
+      }).filter((row) => row.time);
+    }
+
     function mapsBuilderVisitNoteItems(store) {
       const items = [];
       if (store.address) {
@@ -6289,7 +6336,7 @@
       }
       const hours = Array.isArray(store.weekdayDescriptions) ? store.weekdayDescriptions.filter(Boolean) : [];
       if (hours.length) {
-        items.push({ label: "営業時間", value: hours.slice(0, 7).join("\n") });
+        items.push({ label: "営業時間", value: mapsBuilderHourRows(hours.slice(0, 7)), kind: "hours" });
       }
       const parking = mapsBuilderOptionLabels(mapsBuilderTrueKeys(store.parkingOptions), {
         freeParkingLot: "無料駐車場",
@@ -6301,7 +6348,7 @@
         paidGarageParking: "有料ガレージ"
       });
       if (parking.length) {
-        items.push({ label: "駐車場", value: parking.join(" / ") });
+        items.push({ label: "駐車場", value: parking, kind: "chips" });
       }
       const payment = mapsBuilderOptionLabels(mapsBuilderTrueKeys(store.paymentOptions), {
         acceptsCreditCards: "クレジットカード",
@@ -6310,7 +6357,28 @@
         acceptsNfc: "タッチ決済"
       });
       if (payment.length) {
-        items.push({ label: "現金以外の支払い", value: payment.join(" / ") });
+        items.push({ label: "現金以外の支払い", value: payment, kind: "chips" });
+      }
+      const service = mapsBuilderOptionLabels(mapsBuilderTrueKeys(store.serviceOptions), {
+        dine_in: "店内利用",
+        takeout: "テイクアウト",
+        delivery: "デリバリー",
+        reservable: "予約可",
+        restroom: "トイレ",
+        outdoor_seating: "テラス席",
+        allows_dogs: "犬同伴可",
+        good_for_children: "子ども向け",
+        good_for_groups: "グループ向け",
+        serves_coffee: "コーヒー",
+        serves_breakfast: "朝食",
+        serves_brunch: "ブランチ",
+        serves_lunch: "ランチ",
+        serves_dinner: "ディナー",
+        serves_dessert: "デザート",
+        serves_vegetarian_food: "ベジタリアン対応"
+      });
+      if (service.length) {
+        items.push({ label: "店内・サービス", value: service.slice(0, 8), kind: "chips" });
       }
       if (store.category) {
         items.push({ label: "カテゴリ", value: store.category });
@@ -6319,6 +6387,26 @@
         items.push({ label: "Google Maps要約", value: store.reviewSummary || store.editorialSummary });
       }
       return items.slice(0, 7);
+    }
+
+    function mapsBuilderVisitValueHtml(item) {
+      if (item.kind === "hours" && Array.isArray(item.value)) {
+        return `
+          <div class="maps-builder-hours">
+            ${item.value.map((row) => `
+              <span>${row.day ? `<i>${mapsEscapeHtml(row.day)}</i>` : ""}${mapsEscapeHtml(row.time)}</span>
+            `).join("")}
+          </div>
+        `;
+      }
+      if (item.kind === "chips" && Array.isArray(item.value)) {
+        return `
+          <div class="maps-builder-visit-chips">
+            ${item.value.map((value) => `<span>${mapsEscapeHtml(value)}</span>`).join("")}
+          </div>
+        `;
+      }
+      return `<span>${mapsEscapeHtml(item.value)}</span>`;
     }
 
     function mapsBuilderVisitNoteHtml(store) {
@@ -6331,7 +6419,7 @@
             ${items.map((item) => `
               <div class="maps-builder-visit-item">
                 <b>${mapsEscapeHtml(item.label)}</b>
-                <span>${mapsEscapeHtml(item.value)}</span>
+                ${mapsBuilderVisitValueHtml(item)}
               </div>
             `).join("")}
           </div>
