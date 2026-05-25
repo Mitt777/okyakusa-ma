@@ -5530,6 +5530,10 @@
       return /^\/m\//.test(location.pathname);
     }
 
+    function mapsBuilderShouldSyncMeta() {
+      return mapsBuilderIsEmbed() || mapsBuilderIsPublicPage();
+    }
+
     function mapsBuilderIsActive() {
       const host = (location.hostname || "").replace(/^www\./, "");
       return host === "map-s.site" || location.search.includes("maps-preview=1") || /^\/(?:m|embed)\//.test(location.pathname);
@@ -5564,6 +5568,16 @@
 
     function mapsBuilderNormalizeTheme(value) {
       return ["cafe", "clean", "travel"].includes(value) ? value : "cafe";
+    }
+
+    function mapsBuilderSyncDocumentMeta(title, description) {
+      if (!mapsBuilderShouldSyncMeta()) return;
+      const cleanTitle = title || "店舗MAP";
+      const cleanDescription = description || "Google Maps由来の店舗情報を、軽い公開MAPとしてまとめました。";
+      document.title = `${cleanTitle} | map-s`;
+      setMeta("description", cleanDescription);
+      setMeta("og:title", `${cleanTitle} | map-s`, "property");
+      setMeta("og:description", cleanDescription, "property");
     }
 
     function mapsBuilderSampleStores() {
@@ -5866,6 +5880,7 @@
       const description = descriptionInput.value.trim() || "Google Mapsリンクから作る、軽い店舗MAPです。";
       if (previewTitle) previewTitle.textContent = title;
       if (previewDescription) previewDescription.textContent = description;
+      mapsBuilderSyncDocumentMeta(title, description);
       if (count) count.textContent = `${mapsBuilderStores.length} stores`;
       mapsBuilderApplyTheme(map);
 
