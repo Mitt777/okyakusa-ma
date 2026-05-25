@@ -367,6 +367,7 @@
 
     .maps-showcase-shot {
       position: relative;
+      display: block;
       overflow: hidden;
       border: 1px solid #dce9f0;
       border-radius: 8px;
@@ -391,6 +392,11 @@
     .maps-showcase-mini {
       display: grid;
       gap: 8px;
+      min-width: 0;
+    }
+
+    .maps-showcase-mini a {
+      display: block;
       min-width: 0;
     }
 
@@ -3773,11 +3779,46 @@
       .maps-steps,
       .maps-pricing,
       .maps-seo-list,
-      .maps-showcase-grid,
-      .maps-showcase-detail,
       .maps-builder-layout,
       .maps-builder-output {
         grid-template-columns: 1fr;
+      }
+
+      .maps-showcase-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .maps-showcase-detail {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .maps-showcase-card {
+        gap: 8px;
+        padding: 8px;
+      }
+
+      .maps-showcase-card h3 {
+        font-size: 14px;
+      }
+
+      .maps-showcase-card p {
+        display: none;
+      }
+
+      .maps-showcase-card .maps-pill {
+        width: fit-content;
+        padding: 5px 8px;
+        font-size: 10px;
+      }
+
+      .maps-showcase-mini {
+        gap: 6px;
+      }
+
+      .maps-showcase-mini span {
+        font-size: 10px;
       }
 
       .maps-builder-output.is-single-shop {
@@ -3944,9 +3985,9 @@
               <h3>1店舗ページ</h3>
               <p>Google Mapsの地図を見せながら、営業時間・口コミ・駐車場・決済などを「来店前メモ」として整理します。</p>
             </div>
-            <div class="maps-showcase-shot">
+            <a class="maps-showcase-shot" href="/assets/map-s-showcase/single-shop-map.jpg" target="_blank" rel="noopener">
               <img src="/assets/map-s-showcase/single-shop-map.jpg" alt="1店舗ページのGoogle Maps表示例" loading="lazy">
-            </div>
+            </a>
           </article>
 
           <article class="maps-showcase-card">
@@ -3955,23 +3996,29 @@
               <h3>複数店舗MAP</h3>
               <p>地域のカフェ、系列店、商店街、イベント会場などを、軽い雑誌MAP風のページとして公開できます。</p>
             </div>
-            <div class="maps-showcase-shot">
+            <a class="maps-showcase-shot" href="/assets/map-s-showcase/multi-map-mobile.jpg" target="_blank" rel="noopener">
               <img src="/assets/map-s-showcase/multi-map-mobile.jpg" alt="複数店舗MAPのスマホ表示例" loading="lazy">
-            </div>
+            </a>
           </article>
         </div>
 
         <div class="maps-showcase-detail" aria-label="map-s表示例の詳細">
           <div class="maps-showcase-mini">
-            <img src="/assets/map-s-showcase/single-shop-hours.jpg" alt="来店前メモの営業時間表示例" loading="lazy">
+            <a href="/assets/map-s-showcase/single-shop-hours.jpg" target="_blank" rel="noopener">
+              <img src="/assets/map-s-showcase/single-shop-hours.jpg" alt="来店前メモの営業時間表示例" loading="lazy">
+            </a>
             <span>営業時間を曜日ごとに整列</span>
           </div>
           <div class="maps-showcase-mini">
-            <img src="/assets/map-s-showcase/single-shop-note.jpg" alt="駐車場や決済情報の表示例" loading="lazy">
+            <a href="/assets/map-s-showcase/single-shop-note.jpg" target="_blank" rel="noopener">
+              <img src="/assets/map-s-showcase/single-shop-note.jpg" alt="駐車場や決済情報の表示例" loading="lazy">
+            </a>
             <span>駐車場・決済・サービスを整理</span>
           </div>
           <div class="maps-showcase-mini">
-            <img src="/assets/map-s-showcase/multi-store-list.jpg" alt="複数店舗リストの表示例" loading="lazy">
+            <a href="/assets/map-s-showcase/multi-store-list.jpg" target="_blank" rel="noopener">
+              <img src="/assets/map-s-showcase/multi-store-list.jpg" alt="複数店舗リストの表示例" loading="lazy">
+            </a>
             <span>複数店舗はリスト化して表示</span>
           </div>
         </div>
