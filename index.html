@@ -3640,7 +3640,7 @@
             </div>
           </div>
           <div class="maps-demo-actions">
-            <a class="maps-button primary" href="#maps-builder">このサンプルを編集する</a>
+            <a class="maps-button primary" id="maps-demo-sample" href="#maps-builder">このサンプルMAPをもとに作る</a>
             <a class="maps-button" href="#maps-how">作り方を見る</a>
           </div>
         </div>
@@ -5886,6 +5886,18 @@
       };
     }
 
+    function mapsBuilderUseSampleProject(titleInput, descriptionInput, message = "サンプルMAPを入れました。公開前に店名や説明を編集できます。") {
+      const sample = mapsBuilderSampleProject();
+      mapsBuilderTheme = sample.theme;
+      mapsBuilderStores = sample.stores.map(mapsBuilderNormalizeStore);
+      if (titleInput) titleInput.value = sample.title;
+      if (descriptionInput) descriptionInput.value = sample.description;
+      mapsBuilderPublishedUrls = null;
+      mapsBuilderPublishedSignature = "";
+      mapsBuilderSetStatus(message);
+      mapsBuilderRender();
+    }
+
     function mapsBuilderProjectSnapshot() {
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
@@ -6524,15 +6536,10 @@
         if (added) queryInput.value = "";
       });
       document.querySelector("#maps-builder-sample")?.addEventListener("click", () => {
-        const sample = mapsBuilderSampleProject();
-        mapsBuilderTheme = sample.theme;
-        mapsBuilderStores = sample.stores.map(mapsBuilderNormalizeStore);
-        titleInput.value = sample.title;
-        descriptionInput.value = sample.description;
-        mapsBuilderPublishedUrls = null;
-        mapsBuilderPublishedSignature = "";
-        mapsBuilderSetStatus("サンプルMAPを入れました。公開前に店名や説明を編集できます。");
-        mapsBuilderRender();
+        mapsBuilderUseSampleProject(titleInput, descriptionInput);
+      });
+      document.querySelector("#maps-demo-sample")?.addEventListener("click", () => {
+        mapsBuilderUseSampleProject(titleInput, descriptionInput, "サンプルMAPを読み込みました。ここから編集して公開できます。");
       });
       document.querySelector("#maps-builder-theme")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-maps-theme]");
