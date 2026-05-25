@@ -3085,14 +3085,15 @@
             </div>
 
             <div class="maps-builder-code">
-              <strong>公開URL β Preview</strong>
+              <strong>公開URL</strong>
               <code id="maps-builder-public-url">https://map-s.site/?maps-preview=1#maps-builder</code>
             </div>
             <div class="maps-builder-code">
-              <strong>iframeコード β Preview</strong>
+              <strong>iframeコード</strong>
               <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder"&gt;&lt;/iframe&gt;</code>
             </div>
             <div class="maps-builder-copy-actions">
+              <button class="maps-button primary" id="maps-builder-publish" type="button">公開URLを発行</button>
               <button class="maps-button primary" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
               <button class="maps-button" id="maps-builder-copy-embed" type="button">埋め込みコードをコピー</button>
             </div>
@@ -4999,10 +5000,40 @@
 
     const MAPS_BUILDER_KEY = "maps_builder_beta_v1";
     let mapsBuilderStores = [];
+    let mapsBuilderPublishedUrls = null;
+    let mapsBuilderPublishedSignature = "";
+
+    function mapsBuilderPathMapId() {
+      const match = location.pathname.match(/^\/(?:m|embed)\/([^/?#]+)/);
+      if (!match) return "";
+      try {
+        return decodeURIComponent(match[1]);
+      } catch (error) {
+        return match[1];
+      }
+    }
+
+    function mapsBuilderRemoteMapId() {
+      try {
+        const params = new URLSearchParams(location.search);
+        return params.get("mapId") || mapsBuilderPathMapId();
+      } catch (error) {
+        return mapsBuilderPathMapId();
+      }
+    }
+
+    function mapsBuilderIsEmbed() {
+      try {
+        const params = new URLSearchParams(location.search);
+        return params.get("embed") === "1" || /^\/embed\//.test(location.pathname);
+      } catch (error) {
+        return /^\/embed\//.test(location.pathname);
+      }
+    }
 
     function mapsBuilderIsActive() {
       const host = (location.hostname || "").replace(/^www\./, "");
-      return host === "map-s.site" || location.search.includes("maps-preview=1");
+      return host === "map-s.site" || location.search.includes("maps-preview=1") || /^\/(?:m|embed)\//.test(location.pathname);
     }
 
     function mapsEscapeHtml(value) {
@@ -5052,6 +5083,10 @@
       } catch (error) {
         return "";
       }
+    }
+
+    function mapsBuilderProjectSignature() {
+      return mapsBuilderEncodeProject(mapsBuilderProjectSnapshot());
     }
 
     function mapsBuilderDecodeProject(value) {
@@ -5142,6 +5177,10 @@
     }
 
     function mapsBuilderProjectUrls() {
+      const signature = mapsBuilderProjectSignature();
+      if (mapsBuilderPublishedUrls && mapsBuilderPublishedSignature === signature) {
+        return mapsBuilderPublishedUrls;
+      }
       const origin = location.hostname ? location.origin : "https://map-s.site";
       const project = mapsBuilderProjectSnapshot();
       const encodedProject = mapsBuilderEncodeProject(project);
@@ -5169,6 +5208,12 @@
       const publicUrl = document.querySelector("#maps-builder-public-url");
       const embedCode = document.querySelector("#maps-builder-embed-code");
       if (!titleInput || !descriptionInput || !map || !list) return;
+
+      const currentSignature = mapsBuilderProjectSignature();
+      if (mapsBuilderPublishedUrls && mapsBuilderPublishedSignature !== currentSignature) {
+        mapsBuilderPublishedUrls = null;
+        mapsBuilderPublishedSignature = "";
+      }
 
       const title = titleInput.value.trim() || "店舗MAP Preview";
       const description = descriptionInput.value.trim() || "Google Mapsリンクから作る、軽い店舗MAPです。";
@@ -5219,9 +5264,81 @@
       mapsBuilderSave();
     }
 
+    function mapsBuilderApplyProject(project) {
+      const titleInput = document.querySelector("#maps-builder-title");
+      const descriptionInput = document.querySelector("#maps-builder-description");
+      if (titleInput) titleInput.value = project?.title || "";
+      if (descriptionInput) descriptionInput.value = project?.description || "";
+      mapsBuilderStores = Array.isArray(project?.stores)
+        ? project.stores.slice(0, 100).map(mapsBuilderNormalizeStore)
+        : [];
+    }
+
     function mapsBuilderSetStatus(message) {
       const status = document.querySelector("#maps-builder-status");
       if (status) status.textContent = message;
+    }
+
+    async function mapsBuilderLoadRemoteProject() {
+      const mapId = mapsBuilderRemoteMapId();
+      if (!mapId) return;
+      mapsBuilderSetStatus("公開MAPを読み込んでいます...");
+      try {
+        const response = await fetch(`/api/maps?mapId=${encodeURIComponent(mapId)}`);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data?.ok === false) {
+          throw new Error(data?.error || "公開MAPを読み込めませんでした。");
+        }
+        mapsBuilderApplyProject(data.project || {});
+        const origin = location.hostname ? location.origin : "https://map-s.site";
+        mapsBuilderPublishedSignature = mapsBuilderProjectSignature();
+        mapsBuilderPublishedUrls = {
+          publicUrl: `${origin}/m/${encodeURIComponent(mapId)}`,
+          embedCode: `<iframe src="${origin}/embed/${encodeURIComponent(mapId)}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
+        };
+        mapsBuilderRender();
+        mapsBuilderSetStatus("公開MAPを表示しています。");
+      } catch (error) {
+        mapsBuilderSetStatus(`公開MAPを読み込めませんでした。 / ${error.message}`);
+      }
+    }
+
+    async function mapsBuilderPublish() {
+      if (!mapsBuilderStores.length) {
+        mapsBuilderSetStatus("公開URLを発行するには、店舗を1件以上追加してください。");
+        return;
+      }
+      const button = document.querySelector("#maps-builder-publish");
+      const originalLabel = button?.textContent || "公開URLを発行";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "発行中...";
+      }
+      try {
+        const response = await fetch("/api/maps", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(mapsBuilderProjectSnapshot())
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data?.ok === false) {
+          throw new Error(data?.error || "公開URLを発行できませんでした。");
+        }
+        mapsBuilderPublishedSignature = mapsBuilderProjectSignature();
+        mapsBuilderPublishedUrls = {
+          publicUrl: data.publicUrl,
+          embedCode: data.embedCode
+        };
+        mapsBuilderRender();
+        mapsBuilderSetStatus("公開URLを発行しました。コピーして共有できます。");
+      } catch (error) {
+        mapsBuilderSetStatus(`公開URLの発行に失敗しました。β Preview URLをご利用ください。 / ${error.message}`);
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalLabel;
+        }
+      }
     }
 
     function mapsBuilderAddStore(store) {
@@ -5301,12 +5418,8 @@
 
     function initMapsBuilder() {
       if (!mapsBuilderIsActive()) return;
-      try {
-        if (new URLSearchParams(location.search).get("embed") === "1") {
-          document.documentElement.classList.add("maps-embed-mode");
-        }
-      } catch (error) {
-        // URLSearchParamsが使えない環境では通常表示にします。
+      if (mapsBuilderIsEmbed()) {
+        document.documentElement.classList.add("maps-embed-mode");
       }
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
@@ -5349,12 +5462,14 @@
         mapsBuilderRender();
       });
       document.querySelector("#maps-builder-copy-url")?.addEventListener("click", () => {
-        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URL β Previewをコピーしました。");
+        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URLをコピーしました。");
       });
       document.querySelector("#maps-builder-copy-embed")?.addEventListener("click", () => {
-        mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコード β Previewをコピーしました。");
+        mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコードをコピーしました。");
       });
+      document.querySelector("#maps-builder-publish")?.addEventListener("click", mapsBuilderPublish);
       mapsBuilderRender();
+      mapsBuilderLoadRemoteProject();
     }
 
     initMapsBuilder();

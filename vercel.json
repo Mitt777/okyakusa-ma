@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/m/:mapId",
+      "destination": "/?maps-preview=1&mapId=:mapId"
+    },
+    {
+      "source": "/embed/:mapId",
+      "destination": "/?maps-preview=1&embed=1&mapId=:mapId"
+    }
+  ]
+}
