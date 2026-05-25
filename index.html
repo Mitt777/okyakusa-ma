@@ -4527,10 +4527,14 @@
         moodTime: item.moodTime || "",
         revisitReason: item.revisitReason || "",
         personaKey: item.personaKey,
-        placeId: item.placeId,
-        cardSerial: item.cardSerial
-      }));
-    }
+          placeId: item.placeId,
+          address: item.address || "",
+          category: item.category || "",
+          lat: item.lat ?? null,
+          lng: item.lng ?? null,
+          cardSerial: item.cardSerial
+        }));
+      }
 
     function airsMemoryMeta(item) {
       return [
@@ -4553,6 +4557,33 @@
         .map((box) => items[Number(box.dataset.airsMapSelect)])
         .filter(Boolean);
       return (selected.length ? selected : items.slice(0, 5)).slice(0, 12);
+    }
+
+    function mapsProjectFromAirs(items = selectedAirsMapItems(loadAirsItems())) {
+      const stores = items.slice(0, 20).map((item) => ({
+        name: item.storeName || "好きな場所",
+        address: item.address || "",
+        category: item.category || item.moodLabel || item.feelingLabel || "air-s",
+        mapsUrl: mapsLinkForAirs(item),
+        lat: Number.isFinite(Number(item.lat)) ? Number(item.lat) : null,
+        lng: Number.isFinite(Number(item.lng)) ? Number(item.lng) : null
+      }));
+      return {
+        title: airsMapTitle(),
+        description: `${airsMapNote()} air-sで残した場所記憶を、公開・埋め込み用のmap-s MAPに変換します。`,
+        theme: "cafe",
+        stores
+      };
+    }
+
+    function mapSBuilderUrlFromAirs(items = selectedAirsMapItems(loadAirsItems())) {
+      const origin = location.hostname ? "https://map-s.site" : location.origin;
+      const url = new URL(origin);
+      url.searchParams.set("maps-preview", "1");
+      const encoded = mapsBuilderEncodeProject(mapsProjectFromAirs(items));
+      if (encoded) url.searchParams.set("ms", encoded);
+      url.hash = "maps-builder";
+      return url.toString();
     }
 
     function buildAirsMapShareUrl(mapId) {
@@ -5473,6 +5504,7 @@
               <button type="button" data-airs-map-share="x" onclick="shareAirsMap('x')">X用にコピー</button>
               <button type="button" data-airs-map-share="copy" onclick="shareAirsMap('copy')">共有文をコピー</button>
               <button type="button" onclick="saveAirsMapImage(this)">発信用画像を保存</button>
+              <a href="${escapeHtml(mapSBuilderUrlFromAirs(mapItems))}" target="_blank" rel="noopener">map-sで公開MAP化</a>
             </div>
             <div class="airs-map-link-result" id="airs-map-link-result"></div>
           </div>
@@ -5653,6 +5685,8 @@
           address: selectedAirsPlace?.address || "",
           category: selectedAirsPlace?.category || "",
           rating: selectedAirsPlace?.rating || null,
+          lat: mapsBuilderNumber(selectedAirsPlace?.lat ?? selectedAirsPlace?.latitude ?? selectedAirsPlace?.location?.latitude),
+          lng: mapsBuilderNumber(selectedAirsPlace?.lng ?? selectedAirsPlace?.longitude ?? selectedAirsPlace?.location?.longitude),
           comment,
           personaKey: selectedAirsPersona.key,
           image: selectedAirsPersona.image,
