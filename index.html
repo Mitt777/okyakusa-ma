@@ -457,6 +457,227 @@
       font-weight: 900;
     }
 
+    .maps-builder {
+      background: linear-gradient(135deg, #ffffff 0%, #f4fbff 100%);
+      border-color: #cfe6f3;
+    }
+
+    .maps-builder-layout {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .maps-builder-form,
+    .maps-builder-preview {
+      border: 1px solid #dce9f0;
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+      box-shadow: 0 16px 34px rgba(36, 96, 138, .08);
+    }
+
+    .maps-builder-form label {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+      color: #415766;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .maps-builder-form input,
+    .maps-builder-form textarea {
+      width: 100%;
+      border: 1px solid #cfe1ea;
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 12px 13px;
+      color: #1d2a33;
+      font: inherit;
+      font-weight: 800;
+      box-sizing: border-box;
+    }
+
+    .maps-builder-form textarea {
+      min-height: 94px;
+      resize: vertical;
+    }
+
+    .maps-builder-actions,
+    .maps-builder-copy-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .maps-builder-status {
+      min-height: 20px;
+      margin: 12px 0 0;
+      color: #47626f;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .maps-builder-candidates {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .maps-builder-candidate,
+    .maps-builder-store {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 12px;
+    }
+
+    .maps-builder-candidate strong,
+    .maps-builder-store strong {
+      display: block;
+      color: #1d2a33;
+      font-size: 15px;
+    }
+
+    .maps-builder-candidate span,
+    .maps-builder-store span {
+      display: block;
+      margin-top: 3px;
+      color: #5c6f78;
+      font-size: 12px;
+      font-weight: 780;
+      line-height: 1.5;
+    }
+
+    .maps-builder-preview-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .maps-builder-preview-head h3 {
+      margin: 0 0 6px;
+      color: #1d2a33;
+      font-size: 24px;
+    }
+
+    .maps-builder-preview-head p {
+      margin: 0;
+      color: #526572;
+      font-weight: 760;
+      line-height: 1.7;
+    }
+
+    .maps-builder-output {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .maps-builder-map {
+      position: relative;
+      min-height: 290px;
+      overflow: hidden;
+      border: 1px solid #dce9f0;
+      border-radius: 16px;
+      background:
+        linear-gradient(18deg, transparent 47%, rgba(36, 96, 138, .12) 48%, transparent 49%),
+        linear-gradient(164deg, transparent 43%, rgba(36, 96, 138, .08) 44%, transparent 45%),
+        radial-gradient(circle at 28% 24%, rgba(121, 190, 232, .16), transparent 31%),
+        radial-gradient(circle at 78% 68%, rgba(255, 230, 121, .2), transparent 30%),
+        #f8fcfb;
+    }
+
+    .maps-builder-map-empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      text-align: center;
+      color: #5c6f78;
+      font-weight: 900;
+      line-height: 1.7;
+    }
+
+    .maps-builder-pin {
+      position: absolute;
+      width: 138px;
+      border: 1px solid rgba(36, 96, 138, .15);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 18px 32px rgba(36, 96, 138, .12);
+      padding: 12px;
+      box-sizing: border-box;
+      transform: translate(-50%, -50%);
+    }
+
+    .maps-builder-pin b {
+      display: inline-grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 50%;
+      background: #2f7f64;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .maps-builder-pin strong {
+      display: block;
+      margin-top: 8px;
+      color: #1d2a33;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .maps-builder-pin span {
+      display: block;
+      margin-top: 4px;
+      color: #5c6f78;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .maps-builder-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .maps-builder-code {
+      margin-top: 14px;
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 12px;
+    }
+
+    .maps-builder-code strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #315d73;
+      font-size: 13px;
+    }
+
+    .maps-builder-code code {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      color: #415766;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .airs-shell {
       width: min(1120px, calc(100% - 36px));
       margin: 0 auto;
@@ -2657,7 +2878,9 @@
       .maps-grid-3,
       .maps-steps,
       .maps-pricing,
-      .maps-seo-list {
+      .maps-seo-list,
+      .maps-builder-layout,
+      .maps-builder-output {
         grid-template-columns: 1fr;
       }
 
@@ -2678,6 +2901,26 @@
         grid-column: 1 / -1;
         justify-self: start;
       }
+
+      .maps-builder-preview-head,
+      .maps-builder-actions,
+      .maps-builder-copy-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .maps-builder-candidate,
+      .maps-builder-store {
+        grid-template-columns: 1fr;
+      }
+
+      .maps-builder-map {
+        min-height: 340px;
+      }
+
+      .maps-builder-pin {
+        width: 128px;
+      }
     }
   </style>
 </head>
@@ -2693,7 +2936,7 @@
           <a href="#maps-how">作り方</a>
           <a href="#maps-seo">SEO導線</a>
           <a href="#maps-pricing">料金</a>
-          <a class="maps-button primary" href="#maps-beta">無料で相談する</a>
+          <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
         </nav>
       </div>
 
@@ -2706,7 +2949,7 @@
             公開URL、QR、サイト埋め込みまで。専門知識なしで、まずは軽くつなぎます。
           </p>
           <div class="maps-actions">
-            <a class="maps-button primary" href="#maps-beta">無料でマップ作成を相談する</a>
+            <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
             <a class="maps-button" href="#maps-sample">サンプルを見る</a>
           </div>
           <p class="maps-note">
@@ -2737,6 +2980,70 @@
               <img src="/assets/worldview-cards/personas/34-1.webp" alt="">
               <span><strong>サイトに埋め込み</strong>WordPressにもHTMLで貼り付け</span>
               <span class="maps-pill">Embed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section maps-builder" id="maps-builder">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">作成デモ β</span>
+            <h2>Google Maps URLや店名から、Map作成の流れを試せます。</h2>
+            <p>今はブラウザ内だけの軽いプレビューです。正式βでは、この流れから公開URLとiframeコードを発行します。</p>
+          </div>
+          <a class="maps-button" href="#maps-pricing">料金を見る</a>
+        </div>
+
+        <div class="maps-builder-layout">
+          <div class="maps-builder-form">
+            <label>
+              Map名
+              <input id="maps-builder-title" type="text" value="那須の静かなカフェMAP" autocomplete="off">
+            </label>
+            <label>
+              説明
+              <textarea id="maps-builder-description">ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。</textarea>
+            </label>
+            <label>
+              Google Maps URL / 店名・地域名
+              <input id="maps-builder-query" type="text" placeholder="例：リビングストン 那須 / https://maps.google.com/..." autocomplete="off">
+            </label>
+            <div class="maps-builder-actions">
+              <button class="maps-button primary" id="maps-builder-search" type="button">店舗候補を確認</button>
+              <button class="maps-button" id="maps-builder-manual" type="button">入力名で仮追加</button>
+            </div>
+            <p class="maps-builder-status" id="maps-builder-status">店名だけでも候補確認できます。URLがあれば、そのまま仮追加もできます。</p>
+            <div class="maps-builder-candidates" id="maps-builder-candidates" aria-live="polite"></div>
+          </div>
+
+          <div class="maps-builder-preview" aria-label="Map作成プレビュー">
+            <div class="maps-builder-preview-head">
+              <div>
+                <h3 id="maps-builder-preview-title">那須の静かなカフェMAP</h3>
+                <p id="maps-builder-preview-description">ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。</p>
+              </div>
+              <span class="maps-pill" id="maps-builder-count">0 stores</span>
+            </div>
+
+            <div class="maps-builder-output">
+              <div class="maps-builder-map" id="maps-builder-map">
+                <div class="maps-builder-map-empty">店舗を追加すると、ここに軽いピン地図が表示されます。</div>
+              </div>
+              <div class="maps-builder-list" id="maps-builder-list"></div>
+            </div>
+
+            <div class="maps-builder-code">
+              <strong>公開URL Preview</strong>
+              <code id="maps-builder-public-url">https://map-s.site/m/preview</code>
+            </div>
+            <div class="maps-builder-code">
+              <strong>iframeコード Preview</strong>
+              <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/embed/preview"&gt;&lt;/iframe&gt;</code>
+            </div>
+            <div class="maps-builder-copy-actions">
+              <button class="maps-button primary" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
+              <button class="maps-button" id="maps-builder-copy-embed" type="button">埋め込みコードをコピー</button>
             </div>
           </div>
         </div>
@@ -4638,6 +4945,282 @@
     }
 
     initAirsHome();
+
+    const MAPS_BUILDER_KEY = "maps_builder_beta_v1";
+    let mapsBuilderStores = [];
+
+    function mapsBuilderIsActive() {
+      const host = (location.hostname || "").replace(/^www\./, "");
+      return host === "map-s.site" || location.search.includes("maps-preview=1");
+    }
+
+    function mapsEscapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function mapsHashNumber(value, salt = 0) {
+      const text = String(value || "map-s");
+      let hash = 0;
+      for (let i = 0; i < text.length; i += 1) {
+        hash = (hash * 31 + text.charCodeAt(i) + salt) % 100000;
+      }
+      return hash;
+    }
+
+    function mapsSlug(value) {
+      const base = String(value || "preview")
+        .trim()
+        .toLowerCase()
+        .replace(/[^\w\u3040-\u30ff\u3400-\u9fff]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      return encodeURIComponent(base || "preview");
+    }
+
+    function mapsBuilderLoad() {
+      try {
+        const raw = localStorage.getItem(MAPS_BUILDER_KEY);
+        if (!raw) return { title: "", description: "", stores: [] };
+        const parsed = JSON.parse(raw);
+        return {
+          title: parsed.title || "",
+          description: parsed.description || "",
+          stores: Array.isArray(parsed.stores) ? parsed.stores.slice(0, 20) : []
+        };
+      } catch (error) {
+        return { title: "", description: "", stores: [] };
+      }
+    }
+
+    function mapsBuilderSave() {
+      const titleInput = document.querySelector("#maps-builder-title");
+      const descriptionInput = document.querySelector("#maps-builder-description");
+      const project = {
+        title: titleInput?.value || "",
+        description: descriptionInput?.value || "",
+        stores: mapsBuilderStores
+      };
+      try {
+        localStorage.setItem(MAPS_BUILDER_KEY, JSON.stringify(project));
+      } catch (error) {
+        // localStorageが使えない環境では、画面上のプレビューだけを維持します。
+      }
+    }
+
+    function mapsBuilderNormalizeStore(input) {
+      return {
+        id: input.place_id || input.id || `maps_store_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        name: input.name || input.store_name || input.title || "名称未設定",
+        address: input.address || input.formatted_address || "",
+        category: input.category || input.primaryType || "",
+        websiteUrl: input.website_url || input.websiteUrl || input.website || "",
+        mapsUrl: input.google_maps_url || input.mapsUrl || input.maps_url || input.url || "",
+        rating: input.rating || null
+      };
+    }
+
+    function mapsBuilderPoint(store, index) {
+      const seed = mapsHashNumber(`${store.name}-${store.address}`, index + 7);
+      return {
+        left: 18 + (seed % 62),
+        top: 22 + ((Math.floor(seed / 7) + index * 13) % 56)
+      };
+    }
+
+    function mapsBuilderProjectUrls() {
+      const title = document.querySelector("#maps-builder-title")?.value || "preview";
+      const slug = mapsSlug(title);
+      const origin = location.hostname ? location.origin : "https://map-s.site";
+      const publicUrl = `${origin}/m/${slug}`;
+      const embedUrl = `${origin}/embed/${slug}`;
+      return {
+        publicUrl,
+        embedCode: `<iframe src="${embedUrl}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
+      };
+    }
+
+    function mapsBuilderRender() {
+      if (!mapsBuilderIsActive()) return;
+      const titleInput = document.querySelector("#maps-builder-title");
+      const descriptionInput = document.querySelector("#maps-builder-description");
+      const previewTitle = document.querySelector("#maps-builder-preview-title");
+      const previewDescription = document.querySelector("#maps-builder-preview-description");
+      const count = document.querySelector("#maps-builder-count");
+      const map = document.querySelector("#maps-builder-map");
+      const list = document.querySelector("#maps-builder-list");
+      const publicUrl = document.querySelector("#maps-builder-public-url");
+      const embedCode = document.querySelector("#maps-builder-embed-code");
+      if (!titleInput || !descriptionInput || !map || !list) return;
+
+      const title = titleInput.value.trim() || "店舗MAP Preview";
+      const description = descriptionInput.value.trim() || "Google Mapsリンクから作る、軽い店舗MAPです。";
+      if (previewTitle) previewTitle.textContent = title;
+      if (previewDescription) previewDescription.textContent = description;
+      if (count) count.textContent = `${mapsBuilderStores.length} stores`;
+
+      if (!mapsBuilderStores.length) {
+        map.innerHTML = '<div class="maps-builder-map-empty">店舗を追加すると、ここに軽いピン地図が表示されます。</div>';
+        list.innerHTML = '<div class="maps-builder-store"><div><strong>まだ店舗がありません</strong><span>左の入力欄から、Google Maps URLまたは店名で追加できます。</span></div></div>';
+      } else {
+        map.innerHTML = mapsBuilderStores.map((store, index) => {
+          const point = mapsBuilderPoint(store, index);
+          return `
+            <div class="maps-builder-pin" style="left:${point.left}%;top:${point.top}%;">
+              <b>${index + 1}</b>
+              <strong>${mapsEscapeHtml(store.name)}</strong>
+              <span>${mapsEscapeHtml(store.category || store.address || "Google Maps")}</span>
+            </div>
+          `;
+        }).join("");
+        list.innerHTML = mapsBuilderStores.map((store, index) => `
+          <div class="maps-builder-store">
+            <div>
+              <strong>${index + 1}. ${mapsEscapeHtml(store.name)}</strong>
+              <span>${mapsEscapeHtml(store.address || store.category || "住所情報は公開時に確認")}</span>
+            </div>
+            <button class="maps-button" type="button" data-maps-remove="${mapsEscapeHtml(store.id)}">削除</button>
+          </div>
+        `).join("");
+      }
+
+      const urls = mapsBuilderProjectUrls();
+      if (publicUrl) publicUrl.textContent = urls.publicUrl;
+      if (embedCode) embedCode.textContent = urls.embedCode;
+      mapsBuilderSave();
+    }
+
+    function mapsBuilderSetStatus(message) {
+      const status = document.querySelector("#maps-builder-status");
+      if (status) status.textContent = message;
+    }
+
+    function mapsBuilderAddStore(store) {
+      const normalized = mapsBuilderNormalizeStore(store);
+      if (mapsBuilderStores.some((item) => item.id === normalized.id || (item.name === normalized.name && item.address === normalized.address))) {
+        mapsBuilderSetStatus("この店舗はすでに追加されています。");
+        return;
+      }
+      mapsBuilderStores = [...mapsBuilderStores, normalized].slice(0, 20);
+      mapsBuilderSetStatus(`${normalized.name} をMapに追加しました。`);
+      mapsBuilderRender();
+    }
+
+    function mapsBuilderRenderCandidates(candidates) {
+      const box = document.querySelector("#maps-builder-candidates");
+      if (!box) return;
+      if (!candidates.length) {
+        box.innerHTML = '<div class="maps-builder-candidate"><div><strong>候補が見つかりませんでした</strong><span>店名を少し詳しくするか、Google Maps URLを貼って仮追加してください。</span></div></div>';
+        return;
+      }
+      box.innerHTML = candidates.map((candidate, index) => `
+        <div class="maps-builder-candidate">
+          <div>
+            <strong>${mapsEscapeHtml(candidate.name || "名称未設定")}</strong>
+            <span>${mapsEscapeHtml(candidate.address || candidate.category || "Google Maps候補")}</span>
+          </div>
+          <button class="maps-button primary" type="button" data-maps-candidate="${index}">追加</button>
+        </div>
+      `).join("");
+      box.querySelectorAll("[data-maps-candidate]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const index = Number(button.dataset.mapsCandidate || 0);
+          mapsBuilderAddStore(candidates[index]);
+          box.innerHTML = "";
+        });
+      });
+    }
+
+    async function mapsBuilderSearch() {
+      const input = document.querySelector("#maps-builder-query");
+      const query = input?.value.trim() || "";
+      if (!query) {
+        mapsBuilderSetStatus("店名、地域名、またはGoogle Maps URLを入力してください。");
+        return;
+      }
+      mapsBuilderSetStatus("Google Maps候補を確認しています...");
+      try {
+        const response = await fetch("/api/place-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ store_query: query })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data?.ok === false) {
+          throw new Error(data?.error || "候補確認に失敗しました。");
+        }
+        const candidates = Array.isArray(data.candidates) ? data.candidates : [];
+        mapsBuilderRenderCandidates(candidates);
+        mapsBuilderSetStatus(candidates.length ? "候補からMapに追加できます。" : "候補が見つかりませんでした。入力名で仮追加できます。");
+      } catch (error) {
+        mapsBuilderSetStatus(`候補確認に失敗しました。入力名で仮追加できます。 / ${error.message}`);
+      }
+    }
+
+    async function mapsBuilderCopy(text, doneMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        mapsBuilderSetStatus(doneMessage);
+      } catch (error) {
+        mapsBuilderSetStatus("コピーできませんでした。表示されたコードを選択してコピーしてください。");
+      }
+    }
+
+    function initMapsBuilder() {
+      if (!mapsBuilderIsActive()) return;
+      const titleInput = document.querySelector("#maps-builder-title");
+      const descriptionInput = document.querySelector("#maps-builder-description");
+      const queryInput = document.querySelector("#maps-builder-query");
+      if (!titleInput || !descriptionInput || !queryInput) return;
+
+      const saved = mapsBuilderLoad();
+      if (saved.title) titleInput.value = saved.title;
+      if (saved.description) descriptionInput.value = saved.description;
+      mapsBuilderStores = saved.stores || [];
+
+      titleInput.addEventListener("input", mapsBuilderRender);
+      descriptionInput.addEventListener("input", mapsBuilderRender);
+      queryInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          mapsBuilderSearch();
+        }
+      });
+      document.querySelector("#maps-builder-search")?.addEventListener("click", mapsBuilderSearch);
+      document.querySelector("#maps-builder-manual")?.addEventListener("click", () => {
+        const query = queryInput.value.trim();
+        if (!query) {
+          mapsBuilderSetStatus("仮追加する店名またはGoogle Maps URLを入力してください。");
+          return;
+        }
+        const looksLikeUrl = /^https?:\/\//i.test(query);
+        mapsBuilderAddStore({
+          name: looksLikeUrl ? "Google Maps登録店舗" : query,
+          mapsUrl: looksLikeUrl ? query : "",
+          address: looksLikeUrl ? query : ""
+        });
+        queryInput.value = "";
+      });
+      document.querySelector("#maps-builder-list")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-maps-remove]");
+        if (!button) return;
+        mapsBuilderStores = mapsBuilderStores.filter((store) => store.id !== button.dataset.mapsRemove);
+        mapsBuilderSetStatus("店舗を削除しました。");
+        mapsBuilderRender();
+      });
+      document.querySelector("#maps-builder-copy-url")?.addEventListener("click", () => {
+        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URL Previewをコピーしました。");
+      });
+      document.querySelector("#maps-builder-copy-embed")?.addEventListener("click", () => {
+        mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコード Previewをコピーしました。");
+      });
+      mapsBuilderRender();
+    }
+
+    initMapsBuilder();
 
     const form = document.querySelector("#diagnosis-form");
     const message = document.querySelector("#form-message");
