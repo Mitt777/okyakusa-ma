@@ -326,6 +326,92 @@
       flex: 1 1 150px;
     }
 
+    .maps-showcase {
+      display: grid;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .maps-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .maps-showcase-card {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      border: 1px solid #dce9f0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 18px 42px rgba(55, 92, 113, .08);
+    }
+
+    .maps-showcase-card h3 {
+      margin: 0;
+      color: #1d2a33;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .maps-showcase-card p {
+      margin: 0;
+      color: #526572;
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.7;
+    }
+
+    .maps-showcase-shot {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #dce9f0;
+      border-radius: 8px;
+      background: #f7fbfc;
+      aspect-ratio: 9 / 14;
+    }
+
+    .maps-showcase-shot img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .maps-showcase-detail {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .maps-showcase-mini {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .maps-showcase-mini img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      display: block;
+      border: 1px solid #dce9f0;
+      border-radius: 8px;
+      object-fit: cover;
+      object-position: top center;
+      background: #f7fbfc;
+    }
+
+    .maps-showcase-mini span {
+      color: #526572;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
     .maps-section {
       margin: 22px 0;
       border: 1px solid #dbe8f0;
@@ -3687,6 +3773,8 @@
       .maps-steps,
       .maps-pricing,
       .maps-seo-list,
+      .maps-showcase-grid,
+      .maps-showcase-detail,
       .maps-builder-layout,
       .maps-builder-output {
         grid-template-columns: 1fr;
@@ -3835,6 +3923,56 @@
           <div class="maps-demo-actions">
             <a class="maps-button primary" id="maps-demo-sample" href="#maps-builder">このサンプルMAPをもとに作る</a>
             <a class="maps-button" href="#maps-how">作り方を見る</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="maps-section maps-showcase" id="maps-display-types">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">表示タイプ</span>
+            <h2>1店舗ならショップ情報ページ。複数店舗なら雑誌MAP。</h2>
+            <p>登録数に合わせて、公開ページと埋め込みの見え方が変わります。Google Maps由来の情報を、サイトに貼りやすい形へ整えます。</p>
+          </div>
+          <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
+        </div>
+
+        <div class="maps-showcase-grid">
+          <article class="maps-showcase-card">
+            <div>
+              <span class="maps-pill">1 store</span>
+              <h3>1店舗ページ</h3>
+              <p>Google Mapsの地図を見せながら、営業時間・口コミ・駐車場・決済などを「来店前メモ」として整理します。</p>
+            </div>
+            <div class="maps-showcase-shot">
+              <img src="/assets/map-s-showcase/single-shop-map.jpg" alt="1店舗ページのGoogle Maps表示例" loading="lazy">
+            </div>
+          </article>
+
+          <article class="maps-showcase-card">
+            <div>
+              <span class="maps-pill">multi stores</span>
+              <h3>複数店舗MAP</h3>
+              <p>地域のカフェ、系列店、商店街、イベント会場などを、軽い雑誌MAP風のページとして公開できます。</p>
+            </div>
+            <div class="maps-showcase-shot">
+              <img src="/assets/map-s-showcase/multi-map-mobile.jpg" alt="複数店舗MAPのスマホ表示例" loading="lazy">
+            </div>
+          </article>
+        </div>
+
+        <div class="maps-showcase-detail" aria-label="map-s表示例の詳細">
+          <div class="maps-showcase-mini">
+            <img src="/assets/map-s-showcase/single-shop-hours.jpg" alt="来店前メモの営業時間表示例" loading="lazy">
+            <span>営業時間を曜日ごとに整列</span>
+          </div>
+          <div class="maps-showcase-mini">
+            <img src="/assets/map-s-showcase/single-shop-note.jpg" alt="駐車場や決済情報の表示例" loading="lazy">
+            <span>駐車場・決済・サービスを整理</span>
+          </div>
+          <div class="maps-showcase-mini">
+            <img src="/assets/map-s-showcase/multi-store-list.jpg" alt="複数店舗リストの表示例" loading="lazy">
+            <span>店舗リストからGoogle Mapsへ移動</span>
           </div>
         </div>
       </section>
