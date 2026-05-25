@@ -5773,6 +5773,64 @@
       setMeta("og:description", cleanDescription, "property");
     }
 
+    function mapsBuilderSetCanonical(url) {
+      if (!url) return;
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", url);
+      setMeta("og:url", url, "property");
+    }
+
+    function mapsBuilderSyncStructuredData(title, description, urls) {
+      const scriptId = "maps-builder-jsonld";
+      let script = document.querySelector(`#${scriptId}`);
+      if (!mapsBuilderIsPublicPage() || !mapsBuilderStores.length) {
+        script?.remove();
+        return;
+      }
+      if (!script) {
+        script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.id = scriptId;
+        document.head.appendChild(script);
+      }
+      const itemList = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: title,
+        description,
+        url: urls.publicUrl,
+        numberOfItems: mapsBuilderStores.length,
+        itemListElement: mapsBuilderStores.map((store, index) => {
+          const item = {
+            "@type": "LocalBusiness",
+            name: store.name,
+            address: store.address || undefined,
+            url: store.mapsUrl || undefined
+          };
+          if (Number.isFinite(store.lat) && Number.isFinite(store.lng)) {
+            item.geo = {
+              "@type": "GeoCoordinates",
+              latitude: store.lat,
+              longitude: store.lng
+            };
+          }
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            name: store.name,
+            item
+          };
+        })
+      };
+      script.textContent = JSON.stringify(itemList);
+      mapsBuilderSetCanonical(urls.publicUrl);
+    }
+
     function mapsBuilderSampleStores() {
       return [
         {
@@ -6090,6 +6148,16 @@
         return mapsBuilderPublishedUrls;
       }
       const origin = location.hostname ? location.origin : "https://map-s.site";
+      const pathMapId = mapsBuilderPathMapId();
+      if (mapsBuilderIsPublicPage() && pathMapId) {
+        const publicPageUrl = `${origin}/m/${encodeURIComponent(pathMapId)}`;
+        const embedPageUrl = `${origin}/embed/${encodeURIComponent(pathMapId)}`;
+        return {
+          publicUrl: publicPageUrl,
+          embedUrl: embedPageUrl,
+          embedCode: `<iframe src="${embedPageUrl}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
+        };
+      }
       const project = mapsBuilderProjectSnapshot();
       const encodedProject = mapsBuilderEncodeProject(project);
       const publicUrl = new URL(`${origin}/`);
@@ -6235,6 +6303,7 @@
       if (publicX) {
         publicX.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(urls.publicUrl)}`;
       }
+      mapsBuilderSyncStructuredData(title, description, urls);
       mapsBuilderSetActiveStore();
       mapsBuilderSave();
     }
