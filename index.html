@@ -3286,12 +3286,17 @@
               <code id="maps-builder-public-url">https://map-s.site/?maps-preview=1#maps-builder</code>
             </div>
             <div class="maps-builder-code">
+              <strong>埋め込みURL</strong>
+              <code id="maps-builder-embed-url">https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder</code>
+            </div>
+            <div class="maps-builder-code">
               <strong>iframeコード</strong>
               <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder"&gt;&lt;/iframe&gt;</code>
             </div>
             <div class="maps-builder-copy-actions">
               <button class="maps-button primary" id="maps-builder-publish" type="button">公開URLを発行</button>
               <button class="maps-button primary" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
+              <button class="maps-button primary" id="maps-builder-copy-embed-url" type="button">埋め込みURLをコピー</button>
               <button class="maps-button" id="maps-builder-copy-embed" type="button">埋め込みコードをコピー</button>
             </div>
           </div>
@@ -5465,6 +5470,7 @@
       embedUrl.searchParams.set("embed", "1");
       return {
         publicUrl: publicUrl.toString(),
+        embedUrl: embedUrl.toString(),
         embedCode: `<iframe src="${embedUrl.toString()}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
       };
     }
@@ -5480,6 +5486,7 @@
       const list = document.querySelector("#maps-builder-list");
       const output = document.querySelector(".maps-builder-output");
       const publicUrl = document.querySelector("#maps-builder-public-url");
+      const embedUrl = document.querySelector("#maps-builder-embed-url");
       const embedCode = document.querySelector("#maps-builder-embed-code");
       if (!titleInput || !descriptionInput || !map || !list) return;
 
@@ -5547,6 +5554,7 @@
 
       const urls = mapsBuilderProjectUrls();
       if (publicUrl) publicUrl.textContent = urls.publicUrl;
+      if (embedUrl) embedUrl.textContent = urls.embedUrl;
       if (embedCode) embedCode.textContent = urls.embedCode;
       mapsBuilderSave();
     }
@@ -5581,6 +5589,7 @@
         mapsBuilderPublishedSignature = mapsBuilderProjectSignature();
         mapsBuilderPublishedUrls = {
           publicUrl: `${origin}/m/${encodeURIComponent(mapId)}`,
+          embedUrl: `${origin}/embed/${encodeURIComponent(mapId)}`,
           embedCode: `<iframe src="${origin}/embed/${encodeURIComponent(mapId)}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
         };
         mapsBuilderRender();
@@ -5614,6 +5623,7 @@
         mapsBuilderPublishedSignature = mapsBuilderProjectSignature();
         mapsBuilderPublishedUrls = {
           publicUrl: data.publicUrl,
+          embedUrl: data.embedUrl,
           embedCode: data.embedCode
         };
         mapsBuilderRender();
@@ -5750,6 +5760,9 @@
       });
       document.querySelector("#maps-builder-copy-url")?.addEventListener("click", () => {
         mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URLをコピーしました。");
+      });
+      document.querySelector("#maps-builder-copy-embed-url")?.addEventListener("click", () => {
+        mapsBuilderCopy(mapsBuilderProjectUrls().embedUrl, "埋め込みURLをコピーしました。");
       });
       document.querySelector("#maps-builder-copy-embed")?.addEventListener("click", () => {
         mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコードをコピーしました。");
