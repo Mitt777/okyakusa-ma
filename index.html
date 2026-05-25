@@ -506,6 +506,53 @@
       resize: vertical;
     }
 
+    .maps-builder-theme {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .maps-builder-theme button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      border: 1px solid #cfe1ea;
+      border-radius: 12px;
+      background: #fbfdff;
+      color: #315d73;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .maps-builder-theme button.is-active {
+      border-color: rgba(47, 127, 100, .48);
+      background: #f3fbf7;
+      color: #1d5c45;
+      box-shadow: inset 0 0 0 1px rgba(47, 127, 100, .18);
+    }
+
+    .maps-theme-swatch {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(49, 93, 115, .18);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fbfaf4 0 45%, #2f7f64 45% 100%);
+      flex: 0 0 auto;
+    }
+
+    .maps-theme-swatch.clean {
+      background: linear-gradient(135deg, #f8fbff 0 45%, #3c78a8 45% 100%);
+    }
+
+    .maps-theme-swatch.travel {
+      background: linear-gradient(135deg, #f7fbf4 0 45%, #5f8b52 45% 100%);
+    }
+
     .maps-builder-actions,
     .maps-builder-copy-actions {
       display: flex;
@@ -587,6 +634,15 @@
     }
 
     .maps-builder-map {
+      --maps-paper: #fbfaf4;
+      --maps-grid: rgba(31, 85, 94, .045);
+      --maps-grid-strong: rgba(31, 85, 94, .04);
+      --maps-road: rgba(55, 118, 151, .14);
+      --maps-road-soft: rgba(55, 118, 151, .1);
+      --maps-land: rgba(124, 185, 175, .18);
+      --maps-warm: rgba(232, 190, 104, .2);
+      --maps-pin: #2f7f64;
+      --maps-pin-text: #2f7f64;
       position: relative;
       min-width: 0;
       min-height: 290px;
@@ -595,15 +651,39 @@
       border: 1px solid #dce9f0;
       border-radius: 16px;
       background:
-        linear-gradient(115deg, transparent 0 44%, rgba(55, 118, 151, .14) 44.4% 45.6%, transparent 46% 100%),
-        linear-gradient(28deg, transparent 0 51%, rgba(55, 118, 151, .1) 51.4% 52.4%, transparent 53% 100%),
-        linear-gradient(0deg, rgba(31, 85, 94, .045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(31, 85, 94, .04) 1px, transparent 1px),
-        radial-gradient(circle at 20% 28%, rgba(124, 185, 175, .18), transparent 28%),
-        radial-gradient(circle at 76% 68%, rgba(232, 190, 104, .2), transparent 30%),
-        #fbfaf4;
+        linear-gradient(115deg, transparent 0 44%, var(--maps-road) 44.4% 45.6%, transparent 46% 100%),
+        linear-gradient(28deg, transparent 0 51%, var(--maps-road-soft) 51.4% 52.4%, transparent 53% 100%),
+        linear-gradient(0deg, var(--maps-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--maps-grid-strong) 1px, transparent 1px),
+        radial-gradient(circle at 20% 28%, var(--maps-land), transparent 28%),
+        radial-gradient(circle at 76% 68%, var(--maps-warm), transparent 30%),
+        var(--maps-paper);
       background-size: auto, auto, 34px 34px, 34px 34px, auto, auto, auto;
       isolation: isolate;
+    }
+
+    .maps-builder-map.theme-clean {
+      --maps-paper: #f8fbff;
+      --maps-grid: rgba(48, 94, 130, .04);
+      --maps-grid-strong: rgba(48, 94, 130, .035);
+      --maps-road: rgba(63, 120, 168, .13);
+      --maps-road-soft: rgba(63, 120, 168, .08);
+      --maps-land: rgba(129, 184, 211, .14);
+      --maps-warm: rgba(225, 234, 242, .42);
+      --maps-pin: #3c78a8;
+      --maps-pin-text: #315d73;
+    }
+
+    .maps-builder-map.theme-travel {
+      --maps-paper: #f7fbf4;
+      --maps-grid: rgba(72, 119, 77, .045);
+      --maps-grid-strong: rgba(72, 119, 77, .04);
+      --maps-road: rgba(95, 139, 82, .14);
+      --maps-road-soft: rgba(126, 143, 84, .1);
+      --maps-land: rgba(128, 184, 119, .18);
+      --maps-warm: rgba(214, 189, 107, .22);
+      --maps-pin: #5f8b52;
+      --maps-pin-text: #4f7244;
     }
 
     .maps-builder-map::before,
@@ -619,7 +699,7 @@
       border: 1px solid rgba(47, 127, 100, .16);
       border-radius: 18px;
       background:
-        linear-gradient(135deg, transparent 0 58%, rgba(47, 127, 100, .12) 58.4% 59.2%, transparent 59.6% 100%),
+        linear-gradient(135deg, transparent 0 58%, color-mix(in srgb, var(--maps-pin) 24%, transparent) 58.4% 59.2%, transparent 59.6% 100%),
         linear-gradient(72deg, transparent 0 38%, rgba(194, 137, 61, .12) 38.4% 39.2%, transparent 39.6% 100%);
     }
 
@@ -683,8 +763,8 @@
     }
 
     .maps-builder-pin[href]:hover {
-      border-color: rgba(47, 127, 100, .42);
-      box-shadow: 0 20px 38px rgba(47, 127, 100, .2);
+      border-color: color-mix(in srgb, var(--maps-pin) 58%, transparent);
+      box-shadow: 0 20px 38px color-mix(in srgb, var(--maps-pin) 26%, transparent);
       transform: translate(-50%, -52%);
     }
 
@@ -697,7 +777,7 @@
       height: 24px;
       place-items: center;
       border-radius: 50%;
-      background: #2f7f64;
+      background: var(--maps-pin);
       color: #fff;
       font-size: 12px;
       line-height: 1;
@@ -727,7 +807,7 @@
     .maps-builder-pin em {
       display: inline-flex;
       margin-top: 7px;
-      color: #2f7f64;
+      color: var(--maps-pin-text);
       font-size: 10px;
       font-style: normal;
       font-weight: 900;
@@ -775,6 +855,13 @@
       text-overflow: ellipsis;
     }
 
+    .maps-builder-pin.is-active,
+    .maps-builder-map.is-dense .maps-builder-pin.is-active {
+      border-color: color-mix(in srgb, var(--maps-pin) 65%, transparent);
+      box-shadow: 0 20px 40px color-mix(in srgb, var(--maps-pin) 24%, transparent);
+      z-index: 3;
+    }
+
     .maps-builder-map.is-dense .maps-builder-pin span,
     .maps-builder-map.is-dense .maps-builder-pin em {
       display: none;
@@ -788,6 +875,12 @@
     .maps-builder-list .maps-builder-store {
       grid-template-columns: 1fr;
       align-items: start;
+    }
+
+    .maps-builder-list .maps-builder-store.is-active {
+      border-color: rgba(47, 127, 100, .38);
+      background: #f7fcfa;
+      box-shadow: inset 4px 0 0 rgba(47, 127, 100, .45);
     }
 
     .maps-builder-list .maps-builder-store-actions {
@@ -3308,6 +3401,14 @@
               <textarea id="maps-builder-description">ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。</textarea>
             </label>
             <label>
+              Mapテーマ
+              <div class="maps-builder-theme" id="maps-builder-theme">
+                <button class="is-active" type="button" data-maps-theme="cafe"><span class="maps-theme-swatch"></span>cafe</button>
+                <button type="button" data-maps-theme="clean"><span class="maps-theme-swatch clean"></span>clean</button>
+                <button type="button" data-maps-theme="travel"><span class="maps-theme-swatch travel"></span>travel</button>
+              </div>
+            </label>
+            <label>
               Google Maps URL / 店名・地域名
               <input id="maps-builder-query" type="text" placeholder="例：リビングストン 那須 / https://maps.google.com/..." autocomplete="off">
             </label>
@@ -3349,8 +3450,8 @@
             </div>
             <div class="maps-builder-copy-actions">
               <button class="maps-button primary" id="maps-builder-publish" type="button">公開URLを発行</button>
-              <button class="maps-button primary" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
-              <button class="maps-button primary" id="maps-builder-copy-embed-url" type="button">埋め込みURLをコピー</button>
+              <button class="maps-button" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
+              <button class="maps-button" id="maps-builder-copy-embed-url" type="button">埋め込みURLをコピー</button>
               <button class="maps-button" id="maps-builder-copy-embed" type="button">埋め込みコードをコピー</button>
             </div>
           </div>
@@ -5300,6 +5401,7 @@
 
     const MAPS_BUILDER_KEY = "maps_builder_beta_v1";
     let mapsBuilderStores = [];
+    let mapsBuilderTheme = "cafe";
     let mapsBuilderPublishedUrls = null;
     let mapsBuilderPublishedSignature = "";
 
@@ -5363,12 +5465,17 @@
       return encodeURIComponent(base || "preview");
     }
 
+    function mapsBuilderNormalizeTheme(value) {
+      return ["cafe", "clean", "travel"].includes(value) ? value : "cafe";
+    }
+
     function mapsBuilderProjectSnapshot() {
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
       return {
         title: titleInput?.value || "",
         description: descriptionInput?.value || "",
+        theme: mapsBuilderTheme,
         stores: mapsBuilderStores.slice(0, 20)
       };
     }
@@ -5402,6 +5509,7 @@
         return {
           title: parsed.title || "",
           description: parsed.description || "",
+          theme: mapsBuilderNormalizeTheme(parsed.theme),
           stores: Array.isArray(parsed.stores) ? parsed.stores.slice(0, 20) : []
         };
       } catch (error) {
@@ -5428,6 +5536,7 @@
         return {
           title: parsed.title || "",
           description: parsed.description || "",
+          theme: mapsBuilderNormalizeTheme(parsed.theme),
           stores: Array.isArray(parsed.stores) ? parsed.stores.slice(0, 20) : []
         };
       } catch (error) {
@@ -5441,6 +5550,7 @@
       const project = {
         title: titleInput?.value || "",
         description: descriptionInput?.value || "",
+        theme: mapsBuilderTheme,
         stores: mapsBuilderStores
       };
       try {
@@ -5573,6 +5683,22 @@
       };
     }
 
+    function mapsBuilderApplyTheme(map) {
+      if (map) {
+        map.classList.remove("theme-clean", "theme-travel");
+        if (mapsBuilderTheme !== "cafe") map.classList.add(`theme-${mapsBuilderTheme}`);
+      }
+      document.querySelectorAll("[data-maps-theme]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.mapsTheme === mapsBuilderTheme);
+      });
+    }
+
+    function mapsBuilderSetActiveStore(storeId = "") {
+      document.querySelectorAll("[data-maps-store-id]").forEach((element) => {
+        element.classList.toggle("is-active", Boolean(storeId) && element.dataset.mapsStoreId === storeId);
+      });
+    }
+
     function mapsBuilderRender() {
       if (!mapsBuilderIsActive()) return;
       const titleInput = document.querySelector("#maps-builder-title");
@@ -5599,6 +5725,7 @@
       if (previewTitle) previewTitle.textContent = title;
       if (previewDescription) previewDescription.textContent = description;
       if (count) count.textContent = `${mapsBuilderStores.length} stores`;
+      mapsBuilderApplyTheme(map);
 
       if (!mapsBuilderStores.length) {
         map.classList.remove("is-dense");
@@ -5619,7 +5746,7 @@
             : "";
           const category = store.category ? `<em>${mapsEscapeHtml(store.category)}</em>` : "";
           return `
-            <${pinTag} class="maps-builder-pin" style="--maps-pin-left:${point.left}%;--maps-pin-top:${point.top}%;"${pinHref} aria-label="${index + 1}. ${mapsEscapeHtml(store.name)}">
+            <${pinTag} class="maps-builder-pin" data-maps-store-id="${mapsEscapeHtml(store.id)}" style="--maps-pin-left:${point.left}%;--maps-pin-top:${point.top}%;"${pinHref} aria-label="${index + 1}. ${mapsEscapeHtml(store.name)}">
               <b>${index + 1}</b>
               <strong>${mapsEscapeHtml(store.name)}</strong>
               <span>${mapsEscapeHtml(shortAddress)}</span>
@@ -5635,7 +5762,7 @@
             ? `<a class="maps-button" href="${mapsEscapeHtml(store.websiteUrl)}" target="_blank" rel="noopener">公式サイト</a>`
             : "";
           return `
-            <div class="maps-builder-store">
+            <div class="maps-builder-store" data-maps-store-id="${mapsEscapeHtml(store.id)}" tabindex="0">
               <div>
                 <strong>${index + 1}. ${mapsEscapeHtml(store.name)}</strong>
                 <span>${mapsEscapeHtml(store.address || store.category || "住所情報は公開時に確認")}</span>
@@ -5654,6 +5781,7 @@
       if (publicUrl) publicUrl.textContent = urls.publicUrl;
       if (embedUrl) embedUrl.textContent = urls.embedUrl;
       if (embedCode) embedCode.textContent = urls.embedCode;
+      mapsBuilderSetActiveStore();
       mapsBuilderSave();
     }
 
@@ -5662,6 +5790,7 @@
       const descriptionInput = document.querySelector("#maps-builder-description");
       if (titleInput) titleInput.value = project?.title || "";
       if (descriptionInput) descriptionInput.value = project?.description || "";
+      mapsBuilderTheme = mapsBuilderNormalizeTheme(project?.theme);
       mapsBuilderStores = Array.isArray(project?.stores)
         ? project.stores.slice(0, 100).map(mapsBuilderNormalizeStore)
         : [];
@@ -5824,6 +5953,7 @@
       const saved = mapsBuilderLoad();
       if (saved.title) titleInput.value = saved.title;
       if (saved.description) descriptionInput.value = saved.description;
+      mapsBuilderTheme = mapsBuilderNormalizeTheme(saved.theme);
       mapsBuilderStores = (saved.stores || []).map(mapsBuilderNormalizeStore);
 
       titleInput.addEventListener("input", mapsBuilderRender);
@@ -5849,6 +5979,14 @@
         });
         if (added) queryInput.value = "";
       });
+      document.querySelector("#maps-builder-theme")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-maps-theme]");
+        if (!button) return;
+        mapsBuilderTheme = mapsBuilderNormalizeTheme(button.dataset.mapsTheme);
+        mapsBuilderPublishedUrls = null;
+        mapsBuilderPublishedSignature = "";
+        mapsBuilderRender();
+      });
       document.querySelector("#maps-builder-list")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-maps-remove]");
         if (!button) return;
@@ -5856,6 +5994,22 @@
         mapsBuilderSetStatus("店舗を削除しました。");
         mapsBuilderRender();
       });
+      document.querySelector("#maps-builder-map")?.addEventListener("pointerover", (event) => {
+        mapsBuilderSetActiveStore(event.target.closest("[data-maps-store-id]")?.dataset.mapsStoreId || "");
+      });
+      document.querySelector("#maps-builder-list")?.addEventListener("pointerover", (event) => {
+        mapsBuilderSetActiveStore(event.target.closest("[data-maps-store-id]")?.dataset.mapsStoreId || "");
+      });
+      document.querySelector("#maps-builder-map")?.addEventListener("pointerleave", () => mapsBuilderSetActiveStore());
+      document.querySelector("#maps-builder-list")?.addEventListener("pointerleave", () => mapsBuilderSetActiveStore());
+      document.querySelector("#maps-builder-map")?.addEventListener("focusin", (event) => {
+        mapsBuilderSetActiveStore(event.target.closest("[data-maps-store-id]")?.dataset.mapsStoreId || "");
+      });
+      document.querySelector("#maps-builder-map")?.addEventListener("focusout", () => mapsBuilderSetActiveStore());
+      document.querySelector("#maps-builder-list")?.addEventListener("focusin", (event) => {
+        mapsBuilderSetActiveStore(event.target.closest("[data-maps-store-id]")?.dataset.mapsStoreId || "");
+      });
+      document.querySelector("#maps-builder-list")?.addEventListener("focusout", () => mapsBuilderSetActiveStore());
       document.querySelector("#maps-builder-copy-url")?.addEventListener("click", () => {
         mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URLをコピーしました。");
       });

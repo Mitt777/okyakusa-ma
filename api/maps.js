@@ -51,12 +51,18 @@ function normalizeStore(store) {
   };
 }
 
+function normalizeTheme(value) {
+  const theme = text(value, 40);
+  return ["cafe", "clean", "travel"].includes(theme) ? theme : "cafe";
+}
+
 function contentHash(project) {
   return crypto
     .createHash("sha256")
     .update(JSON.stringify({
       title: project.title,
       description: project.description,
+      theme: project.theme,
       stores: project.stores
     }))
     .digest("hex");
@@ -79,6 +85,7 @@ function buildProject(body) {
     mapId,
     title: text(body?.title || "店舗MAP", 140),
     description: text(body?.description || "", 800),
+    theme: normalizeTheme(body?.theme),
     stores,
     source: "map-s.site_beta",
     createdAt: now,
