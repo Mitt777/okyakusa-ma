@@ -21,6 +21,11 @@ function safeSegment(value) {
     .slice(0, 80);
 }
 
+function safeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
 function createMapId() {
   return `map_${Date.now().toString(36)}_${crypto.randomBytes(3).toString("hex")}`;
 }
@@ -40,7 +45,9 @@ function normalizeStore(store) {
     category,
     websiteUrl,
     mapsUrl,
-    rating: store?.rating || null
+    rating: store?.rating || null,
+    lat: safeNumber(store?.lat ?? store?.latitude ?? store?.location?.latitude),
+    lng: safeNumber(store?.lng ?? store?.longitude ?? store?.location?.longitude)
   };
 }
 

@@ -15,6 +15,8 @@ function candidatePayload(place) {
     user_rating_count: place.user_rating_count,
     google_maps_url: place.google_maps_uri || "",
     website_url: place.website_uri || "",
+    lat: place.lat,
+    lng: place.lng,
     phone: place.phone || "",
     business_status: place.business_status || "",
     photos_count: place.photos_count || 0
