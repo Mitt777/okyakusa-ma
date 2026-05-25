@@ -684,6 +684,21 @@
       background: #eef5f5;
     }
 
+    .maps-builder-single-example {
+      border-bottom: 1px solid #dce9f0;
+      background: #f7fbfc;
+      padding: 9px 14px;
+      color: #3a5969;
+      font-size: 12px;
+      font-weight: 860;
+      line-height: 1.35;
+    }
+
+    .maps-public-mode .maps-builder-single-example,
+    .maps-embed-mode .maps-builder-single-example {
+      display: none;
+    }
+
     .maps-builder-google-body {
       display: grid;
       gap: 8px;
@@ -724,6 +739,57 @@
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 4px;
+    }
+
+    .maps-builder-visit-note {
+      display: grid;
+      gap: 10px;
+      border-top: 1px solid #dce9f0;
+      background: linear-gradient(180deg, #fbfefa 0%, #f8fbfc 100%);
+      padding: 14px;
+    }
+
+    .maps-builder-visit-note h4 {
+      margin: 0;
+      color: #1d2a33;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .maps-builder-visit-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .maps-builder-visit-item {
+      border: 1px solid #dce9f0;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .82);
+      padding: 10px;
+    }
+
+    .maps-builder-visit-item b {
+      display: block;
+      margin-bottom: 4px;
+      color: #647383;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .maps-builder-visit-item span {
+      color: #1d2a33;
+      font-size: 14px;
+      font-weight: 820;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .maps-builder-visit-note p {
+      margin: 0;
+      color: #526572;
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.6;
     }
 
     .maps-builder-map {
@@ -6165,6 +6231,15 @@
         websiteUrl: input.website_url || input.websiteUrl || input.website || "",
         mapsUrl: input.google_maps_url || input.mapsUrl || input.maps_url || input.url || fallbackMapsUrl,
         rating: input.rating || null,
+        userRatingCount: mapsBuilderNumber(input.userRatingCount ?? input.user_rating_count),
+        weekdayDescriptions: Array.isArray(input.weekdayDescriptions || input.weekday_descriptions)
+          ? (input.weekdayDescriptions || input.weekday_descriptions).slice(0, 7)
+          : [],
+        parkingOptions: input.parkingOptions || input.parking_options || null,
+        paymentOptions: input.paymentOptions || input.payment_options || null,
+        serviceOptions: input.serviceOptions || input.service_options || null,
+        reviewSummary: input.reviewSummary || input.review_summary || "",
+        editorialSummary: input.editorialSummary || input.editorial_summary || "",
         lat: mapsBuilderNumber(input.lat ?? input.latitude ?? input.location?.latitude),
         lng: mapsBuilderNumber(input.lng ?? input.longitude ?? input.location?.longitude)
       };
@@ -6189,6 +6264,80 @@
         : [store?.name, store?.address].filter(Boolean).join(" ");
       if (!query) return "";
       return `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=16&output=embed`;
+    }
+
+    function mapsBuilderTrueKeys(object) {
+      if (!object || typeof object !== "object") return [];
+      return Object.entries(object)
+        .filter(([, value]) => value === true)
+        .map(([key]) => key);
+    }
+
+    function mapsBuilderOptionLabels(keys, labels) {
+      return keys.map((key) => labels[key]).filter(Boolean);
+    }
+
+    function mapsBuilderVisitNoteItems(store) {
+      const items = [];
+      if (store.address) {
+        items.push({ label: "エリア", value: store.address });
+      }
+      if (store.rating || store.userRatingCount) {
+        const rating = store.rating ? `${store.rating}` : "";
+        const count = store.userRatingCount ? `${store.userRatingCount}件` : "";
+        items.push({ label: "口コミ", value: [rating, count].filter(Boolean).join(" / ") });
+      }
+      const hours = Array.isArray(store.weekdayDescriptions) ? store.weekdayDescriptions.filter(Boolean) : [];
+      if (hours.length) {
+        items.push({ label: "営業時間", value: hours.slice(0, 7).join("\n") });
+      }
+      const parking = mapsBuilderOptionLabels(mapsBuilderTrueKeys(store.parkingOptions), {
+        freeParkingLot: "無料駐車場",
+        paidParkingLot: "有料駐車場",
+        freeStreetParking: "無料路上駐車",
+        paidStreetParking: "有料路上駐車",
+        valetParking: "バレーパーキング",
+        freeGarageParking: "無料ガレージ",
+        paidGarageParking: "有料ガレージ"
+      });
+      if (parking.length) {
+        items.push({ label: "駐車場", value: parking.join(" / ") });
+      }
+      const payment = mapsBuilderOptionLabels(mapsBuilderTrueKeys(store.paymentOptions), {
+        acceptsCreditCards: "クレジットカード",
+        acceptsDebitCards: "デビットカード",
+        acceptsCashOnly: "現金のみ",
+        acceptsNfc: "タッチ決済"
+      });
+      if (payment.length) {
+        items.push({ label: "現金以外の支払い", value: payment.join(" / ") });
+      }
+      if (store.category) {
+        items.push({ label: "カテゴリ", value: store.category });
+      }
+      if (store.reviewSummary || store.editorialSummary) {
+        items.push({ label: "Google Maps要約", value: store.reviewSummary || store.editorialSummary });
+      }
+      return items.slice(0, 7);
+    }
+
+    function mapsBuilderVisitNoteHtml(store) {
+      const items = mapsBuilderVisitNoteItems(store);
+      if (!items.length) return "";
+      return `
+        <div class="maps-builder-visit-note" aria-label="来店前メモ">
+          <h4>来店前メモ</h4>
+          <div class="maps-builder-visit-grid">
+            ${items.map((item) => `
+              <div class="maps-builder-visit-item">
+                <b>${mapsEscapeHtml(item.label)}</b>
+                <span>${mapsEscapeHtml(item.value)}</span>
+              </div>
+            `).join("")}
+          </div>
+          <p>Google Mapsや登録情報をもとに、初めて行く前に見たいことだけを短くまとめています。最新情報はGoogle Mapsで確認してください。</p>
+        </div>
+      `;
     }
 
     function mapsBuilderLocatedStores(stores = mapsBuilderStores) {
@@ -6464,6 +6613,7 @@
           const categoryMeta = store?.category ? `<span>${mapsEscapeHtml(store.category)}</span>` : "";
           const ratingMeta = store?.rating ? `<span>rating ${mapsEscapeHtml(store.rating)}</span>` : "";
           googleCard.innerHTML = singleShop ? `
+            <div class="maps-builder-single-example">1店舗ページとして設置すると、このようにGoogle Mapsと来店前メモをまとめて表示できます。</div>
             ${embedSrc ? `<iframe class="maps-builder-google-frame" src="${mapsEscapeHtml(embedSrc)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${mapsEscapeHtml(store.name)} Google Maps"></iframe>` : ""}
             <div class="maps-builder-google-body">
               <strong>${mapsEscapeHtml(store.name)}</strong>
@@ -6471,6 +6621,7 @@
               <div class="maps-builder-google-meta">${categoryMeta}${ratingMeta}</div>
               <div class="maps-builder-google-actions">${mapsLink}${websiteLink}</div>
             </div>
+            ${mapsBuilderVisitNoteHtml(store)}
           ` : "";
         }
         map.innerHTML = mapsBuilderGeoLayer(mapsBuilderStores, pinPoints) + mapsBuilderStores.map((store, index) => {

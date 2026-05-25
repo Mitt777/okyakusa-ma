@@ -26,6 +26,13 @@ function safeNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+function safeObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return Object.fromEntries(Object.entries(value).filter(([key, item]) =>
+    /^[a-zA-Z0-9_]+$/.test(key) && typeof item === "boolean"
+  ));
+}
+
 function createMapId() {
   return `map_${Date.now().toString(36)}_${crypto.randomBytes(3).toString("hex")}`;
 }
@@ -46,6 +53,15 @@ function normalizeStore(store) {
     websiteUrl,
     mapsUrl,
     rating: store?.rating || null,
+    userRatingCount: safeNumber(store?.userRatingCount ?? store?.user_rating_count),
+    weekdayDescriptions: Array.isArray(store?.weekdayDescriptions || store?.weekday_descriptions)
+      ? (store.weekdayDescriptions || store.weekday_descriptions).slice(0, 7).map((item) => text(item, 120)).filter(Boolean)
+      : [],
+    parkingOptions: safeObject(store?.parkingOptions || store?.parking_options),
+    paymentOptions: safeObject(store?.paymentOptions || store?.payment_options),
+    serviceOptions: safeObject(store?.serviceOptions || store?.service_options),
+    reviewSummary: text(store?.reviewSummary || store?.review_summary || "", 240),
+    editorialSummary: text(store?.editorialSummary || store?.editorial_summary || "", 240),
     lat: safeNumber(store?.lat ?? store?.latitude ?? store?.location?.latitude),
     lng: safeNumber(store?.lng ?? store?.longitude ?? store?.location?.longitude)
   };

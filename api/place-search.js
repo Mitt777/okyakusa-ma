@@ -19,7 +19,15 @@ function candidatePayload(place) {
     lng: place.lng,
     phone: place.phone || "",
     business_status: place.business_status || "",
-    photos_count: place.photos_count || 0
+    photos_count: place.photos_count || 0,
+    weekday_descriptions: place.current_weekday_descriptions?.length
+      ? place.current_weekday_descriptions
+      : place.weekday_descriptions || [],
+    parking_options: place.parking_options || null,
+    payment_options: place.payment_options || null,
+    service_options: place.service_options || null,
+    review_summary: place.review_summary || "",
+    editorial_summary: place.editorial_summary || place.generative_summary || ""
   };
 }
 
