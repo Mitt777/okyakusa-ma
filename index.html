@@ -678,6 +678,57 @@
       font-weight: 800;
     }
 
+    .maps-builder-store-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .maps-builder-store-actions .maps-button {
+      padding: 9px 11px;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .maps-embed-mode body {
+      background: #fff;
+    }
+
+    .maps-embed-mode .maps-shell {
+      width: 100%;
+      padding: 0;
+    }
+
+    .maps-embed-mode .maps-topbar,
+    .maps-embed-mode .maps-hero,
+    .maps-embed-mode .maps-section:not(.maps-builder),
+    .maps-embed-mode .maps-builder .maps-section-head,
+    .maps-embed-mode .maps-builder-form,
+    .maps-embed-mode .maps-builder-code,
+    .maps-embed-mode .maps-builder-copy-actions {
+      display: none;
+    }
+
+    .maps-embed-mode .maps-builder {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .maps-embed-mode .maps-builder-layout,
+    .maps-embed-mode .maps-builder-output {
+      display: block;
+    }
+
+    .maps-embed-mode .maps-builder-preview {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
     .airs-shell {
       width: min(1120px, calc(100% - 36px));
       margin: 0 auto;
@@ -2990,7 +3041,7 @@
           <div>
             <span class="maps-kicker">作成デモ β</span>
             <h2>Google Maps URLや店名から、Map作成の流れを試せます。</h2>
-            <p>今はブラウザ内だけの軽いプレビューです。正式βでは、この流れから公開URLとiframeコードを発行します。</p>
+            <p>今はブラウザ内だけの軽いβです。この流れから、開ける公開URLとiframeコードを発行します。</p>
           </div>
           <a class="maps-button" href="#maps-pricing">料金を見る</a>
         </div>
@@ -3034,12 +3085,12 @@
             </div>
 
             <div class="maps-builder-code">
-              <strong>公開URL Preview</strong>
-              <code id="maps-builder-public-url">https://map-s.site/m/preview</code>
+              <strong>公開URL β Preview</strong>
+              <code id="maps-builder-public-url">https://map-s.site/?maps-preview=1#maps-builder</code>
             </div>
             <div class="maps-builder-code">
-              <strong>iframeコード Preview</strong>
-              <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/embed/preview"&gt;&lt;/iframe&gt;</code>
+              <strong>iframeコード β Preview</strong>
+              <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder"&gt;&lt;/iframe&gt;</code>
             </div>
             <div class="maps-builder-copy-actions">
               <button class="maps-button primary" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
@@ -4981,7 +5032,60 @@
       return encodeURIComponent(base || "preview");
     }
 
+    function mapsBuilderProjectSnapshot() {
+      const titleInput = document.querySelector("#maps-builder-title");
+      const descriptionInput = document.querySelector("#maps-builder-description");
+      return {
+        title: titleInput?.value || "",
+        description: descriptionInput?.value || "",
+        stores: mapsBuilderStores.slice(0, 20)
+      };
+    }
+
+    function mapsBuilderEncodeProject(project) {
+      try {
+        const json = JSON.stringify(project);
+        const binary = encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (_match, hex) =>
+          String.fromCharCode(parseInt(hex, 16))
+        );
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function mapsBuilderDecodeProject(value) {
+      if (!value) return null;
+      try {
+        const normalized = String(value).replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+        const binary = atob(padded);
+        const json = decodeURIComponent(Array.from(binary).map((char) =>
+          `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`
+        ).join(""));
+        const parsed = JSON.parse(json);
+        return {
+          title: parsed.title || "",
+          description: parsed.description || "",
+          stores: Array.isArray(parsed.stores) ? parsed.stores.slice(0, 20) : []
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function mapsBuilderSharedProject() {
+      try {
+        const params = new URLSearchParams(location.search);
+        return mapsBuilderDecodeProject(params.get("ms"));
+      } catch (error) {
+        return null;
+      }
+    }
+
     function mapsBuilderLoad() {
+      const sharedProject = mapsBuilderSharedProject();
+      if (sharedProject) return sharedProject;
       try {
         const raw = localStorage.getItem(MAPS_BUILDER_KEY);
         if (!raw) return { title: "", description: "", stores: [] };
@@ -5012,13 +5116,19 @@
     }
 
     function mapsBuilderNormalizeStore(input) {
+      const name = input.name || input.store_name || input.title || "名称未設定";
+      const address = input.address || input.formatted_address || "";
+      const searchQuery = [name, address].filter(Boolean).join(" ");
+      const fallbackMapsUrl = name !== "名称未設定"
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`
+        : "";
       return {
         id: input.place_id || input.id || `maps_store_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-        name: input.name || input.store_name || input.title || "名称未設定",
-        address: input.address || input.formatted_address || "",
+        name,
+        address,
         category: input.category || input.primaryType || "",
         websiteUrl: input.website_url || input.websiteUrl || input.website || "",
-        mapsUrl: input.google_maps_url || input.mapsUrl || input.maps_url || input.url || "",
+        mapsUrl: input.google_maps_url || input.mapsUrl || input.maps_url || input.url || fallbackMapsUrl,
         rating: input.rating || null
       };
     }
@@ -5032,14 +5142,18 @@
     }
 
     function mapsBuilderProjectUrls() {
-      const title = document.querySelector("#maps-builder-title")?.value || "preview";
-      const slug = mapsSlug(title);
       const origin = location.hostname ? location.origin : "https://map-s.site";
-      const publicUrl = `${origin}/m/${slug}`;
-      const embedUrl = `${origin}/embed/${slug}`;
+      const project = mapsBuilderProjectSnapshot();
+      const encodedProject = mapsBuilderEncodeProject(project);
+      const publicUrl = new URL(`${origin}/`);
+      publicUrl.searchParams.set("maps-preview", "1");
+      if (encodedProject) publicUrl.searchParams.set("ms", encodedProject);
+      publicUrl.hash = "maps-builder";
+      const embedUrl = new URL(publicUrl.toString());
+      embedUrl.searchParams.set("embed", "1");
       return {
-        publicUrl,
-        embedCode: `<iframe src="${embedUrl}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
+        publicUrl: publicUrl.toString(),
+        embedCode: `<iframe src="${embedUrl.toString()}" width="100%" height="520" style="border:0;border-radius:12px;" loading="lazy"></iframe>`
       };
     }
 
@@ -5076,15 +5190,27 @@
             </div>
           `;
         }).join("");
-        list.innerHTML = mapsBuilderStores.map((store, index) => `
-          <div class="maps-builder-store">
-            <div>
-              <strong>${index + 1}. ${mapsEscapeHtml(store.name)}</strong>
-              <span>${mapsEscapeHtml(store.address || store.category || "住所情報は公開時に確認")}</span>
+        list.innerHTML = mapsBuilderStores.map((store, index) => {
+          const mapsLink = store.mapsUrl
+            ? `<a class="maps-button primary" href="${mapsEscapeHtml(store.mapsUrl)}" target="_blank" rel="noopener">Google Maps</a>`
+            : "";
+          const websiteLink = store.websiteUrl
+            ? `<a class="maps-button" href="${mapsEscapeHtml(store.websiteUrl)}" target="_blank" rel="noopener">公式サイト</a>`
+            : "";
+          return `
+            <div class="maps-builder-store">
+              <div>
+                <strong>${index + 1}. ${mapsEscapeHtml(store.name)}</strong>
+                <span>${mapsEscapeHtml(store.address || store.category || "住所情報は公開時に確認")}</span>
+              </div>
+              <div class="maps-builder-store-actions">
+                ${mapsLink}
+                ${websiteLink}
+                <button class="maps-button" type="button" data-maps-remove="${mapsEscapeHtml(store.id)}">削除</button>
+              </div>
             </div>
-            <button class="maps-button" type="button" data-maps-remove="${mapsEscapeHtml(store.id)}">削除</button>
-          </div>
-        `).join("");
+          `;
+        }).join("");
       }
 
       const urls = mapsBuilderProjectUrls();
@@ -5102,11 +5228,12 @@
       const normalized = mapsBuilderNormalizeStore(store);
       if (mapsBuilderStores.some((item) => item.id === normalized.id || (item.name === normalized.name && item.address === normalized.address))) {
         mapsBuilderSetStatus("この店舗はすでに追加されています。");
-        return;
+        return false;
       }
       mapsBuilderStores = [...mapsBuilderStores, normalized].slice(0, 20);
       mapsBuilderSetStatus(`${normalized.name} をMapに追加しました。`);
       mapsBuilderRender();
+      return true;
     }
 
     function mapsBuilderRenderCandidates(candidates) {
@@ -5128,8 +5255,11 @@
       box.querySelectorAll("[data-maps-candidate]").forEach((button) => {
         button.addEventListener("click", () => {
           const index = Number(button.dataset.mapsCandidate || 0);
-          mapsBuilderAddStore(candidates[index]);
-          box.innerHTML = "";
+          if (mapsBuilderAddStore(candidates[index])) {
+            const input = document.querySelector("#maps-builder-query");
+            if (input) input.value = "";
+            box.innerHTML = "";
+          }
         });
       });
     }
@@ -5171,6 +5301,13 @@
 
     function initMapsBuilder() {
       if (!mapsBuilderIsActive()) return;
+      try {
+        if (new URLSearchParams(location.search).get("embed") === "1") {
+          document.documentElement.classList.add("maps-embed-mode");
+        }
+      } catch (error) {
+        // URLSearchParamsが使えない環境では通常表示にします。
+      }
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
       const queryInput = document.querySelector("#maps-builder-query");
@@ -5179,7 +5316,7 @@
       const saved = mapsBuilderLoad();
       if (saved.title) titleInput.value = saved.title;
       if (saved.description) descriptionInput.value = saved.description;
-      mapsBuilderStores = saved.stores || [];
+      mapsBuilderStores = (saved.stores || []).map(mapsBuilderNormalizeStore);
 
       titleInput.addEventListener("input", mapsBuilderRender);
       descriptionInput.addEventListener("input", mapsBuilderRender);
@@ -5197,12 +5334,12 @@
           return;
         }
         const looksLikeUrl = /^https?:\/\//i.test(query);
-        mapsBuilderAddStore({
+        const added = mapsBuilderAddStore({
           name: looksLikeUrl ? "Google Maps登録店舗" : query,
           mapsUrl: looksLikeUrl ? query : "",
           address: looksLikeUrl ? query : ""
         });
-        queryInput.value = "";
+        if (added) queryInput.value = "";
       });
       document.querySelector("#maps-builder-list")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-maps-remove]");
@@ -5212,10 +5349,10 @@
         mapsBuilderRender();
       });
       document.querySelector("#maps-builder-copy-url")?.addEventListener("click", () => {
-        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URL Previewをコピーしました。");
+        mapsBuilderCopy(mapsBuilderProjectUrls().publicUrl, "公開URL β Previewをコピーしました。");
       });
       document.querySelector("#maps-builder-copy-embed")?.addEventListener("click", () => {
-        mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコード Previewをコピーしました。");
+        mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコード β Previewをコピーしました。");
       });
       mapsBuilderRender();
     }
