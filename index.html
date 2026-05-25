@@ -382,6 +382,12 @@
       font-size: 18px;
     }
 
+    .maps-feature .maps-button {
+      width: 100%;
+      margin-top: 14px;
+      box-shadow: none;
+    }
+
     .maps-steps {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3801,16 +3807,19 @@
             <b>Cafe</b>
             <strong>カフェMAP</strong>
             <p>地域のカフェ、静かな店、雨の日向け、作業向けなどをまとめます。</p>
+            <button class="maps-button" type="button" data-maps-template="cafe">この用途で作る</button>
           </div>
           <div class="maps-feature">
             <b>Area</b>
             <strong>商店街・観光MAP</strong>
             <p>商店街、観光協会、イベント回遊、犬OK、子連れ向けのMAPに使えます。</p>
+            <button class="maps-button" type="button" data-maps-template="area">この用途で作る</button>
           </div>
           <div class="maps-feature">
             <b>Store</b>
             <strong>系列店・駐車場MAP</strong>
             <p>複数店舗、駐車場、会場案内、周辺施設をサイトに貼れる形で整理します。</p>
+            <button class="maps-button" type="button" data-maps-template="store">この用途で作る</button>
           </div>
         </div>
       </section>
@@ -5898,6 +5907,39 @@
       mapsBuilderRender();
     }
 
+    function mapsBuilderTemplateProject(key) {
+      const templates = {
+        cafe: {
+          title: "地域の静かなカフェMAP",
+          description: "ひとりで過ごしやすい店、雨の日に寄りたい店、作業や読書に向いたカフェをまとめたMAPです。",
+          theme: "cafe"
+        },
+        area: {
+          title: "商店街・観光回遊MAP",
+          description: "地域を歩く人が、目的や気分に合わせて立ち寄りやすい場所をまとめたMAPです。",
+          theme: "travel"
+        },
+        store: {
+          title: "系列店・駐車場MAP",
+          description: "複数店舗、駐車場、会場、周辺施設を、サイトに貼りやすい形で整理したMAPです。",
+          theme: "clean"
+        }
+      };
+      return templates[key] || templates.cafe;
+    }
+
+    function mapsBuilderUseTemplate(key, titleInput, descriptionInput) {
+      const template = mapsBuilderTemplateProject(key);
+      if (titleInput) titleInput.value = template.title;
+      if (descriptionInput) descriptionInput.value = template.description;
+      mapsBuilderTheme = mapsBuilderNormalizeTheme(template.theme);
+      mapsBuilderPublishedUrls = null;
+      mapsBuilderPublishedSignature = "";
+      mapsBuilderSetStatus("用途テンプレを反映しました。店舗はそのまま、タイトルと説明を編集できます。");
+      location.hash = "maps-builder";
+      mapsBuilderRender();
+    }
+
     function mapsBuilderProjectSnapshot() {
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
@@ -6540,6 +6582,11 @@
       });
       document.querySelector("#maps-demo-sample")?.addEventListener("click", () => {
         mapsBuilderUseSampleProject(titleInput, descriptionInput, "サンプルMAPを読み込みました。ここから編集して公開できます。");
+      });
+      document.querySelectorAll("[data-maps-template]").forEach((button) => {
+        button.addEventListener("click", () => {
+          mapsBuilderUseTemplate(button.dataset.mapsTemplate, titleInput, descriptionInput);
+        });
       });
       document.querySelector("#maps-builder-theme")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-maps-theme]");
