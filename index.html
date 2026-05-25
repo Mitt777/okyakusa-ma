@@ -1426,6 +1426,8 @@
     }
 
     .maps-public-mode [data-maps-remove],
+    .maps-public-mode [data-maps-refresh],
+    .maps-embed-mode [data-maps-refresh],
     .maps-embed-mode [data-maps-remove] {
       display: none;
     }
@@ -6698,6 +6700,9 @@
           const websiteLink = store?.websiteUrl
             ? `<a class="maps-button" href="${mapsEscapeHtml(store.websiteUrl)}" target="_blank" rel="noopener">公式サイト</a>`
             : "";
+          const refreshButton = !mapsBuilderIsPublicPage() && !mapsBuilderIsEmbed()
+            ? `<button class="maps-button" type="button" data-maps-refresh="${mapsEscapeHtml(store.id)}">Google Maps情報を更新</button>`
+            : "";
           const categoryMeta = store?.category ? `<span>${mapsEscapeHtml(store.category)}</span>` : "";
           const ratingMeta = store?.rating ? `<span>rating ${mapsEscapeHtml(store.rating)}</span>` : "";
           googleCard.innerHTML = singleShop ? `
@@ -6707,7 +6712,7 @@
               <strong>${mapsEscapeHtml(store.name)}</strong>
               <span>${mapsEscapeHtml(store.address || store.category || "Google Maps情報をもとに表示しています。")}</span>
               <div class="maps-builder-google-meta">${categoryMeta}${ratingMeta}</div>
-              <div class="maps-builder-google-actions">${mapsLink}${websiteLink}</div>
+              <div class="maps-builder-google-actions">${mapsLink}${websiteLink}${refreshButton}</div>
             </div>
             ${mapsBuilderVisitNoteHtml(store)}
           ` : "";
@@ -6921,6 +6926,41 @@
       }
     }
 
+    async function mapsBuilderRefreshStore(storeId) {
+      const store = mapsBuilderStores.find((item) => item.id === storeId);
+      if (!store) return;
+      const query = [store.name, store.address].filter(Boolean).join(" ");
+      if (!query) {
+        mapsBuilderSetStatus("更新に使える店名または住所がありません。");
+        return;
+      }
+      mapsBuilderSetStatus("Google Maps情報を更新しています...");
+      try {
+        const response = await fetch("/api/place-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ store_query: query })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data?.ok === false) {
+          throw new Error(data?.error || "Google Maps情報を更新できませんでした。");
+        }
+        const candidate = Array.isArray(data.candidates) ? data.candidates[0] : null;
+        if (!candidate) {
+          mapsBuilderSetStatus("更新できるGoogle Maps候補が見つかりませんでした。");
+          return;
+        }
+        const refreshed = mapsBuilderNormalizeStore({ ...store, ...candidate, id: candidate.place_id || store.id });
+        mapsBuilderStores = mapsBuilderStores.map((item) => item.id === storeId ? refreshed : item);
+        mapsBuilderPublishedUrls = null;
+        mapsBuilderPublishedSignature = "";
+        mapsBuilderSetStatus(`${refreshed.name} のGoogle Maps情報を更新しました。再度公開URLを発行すると公開ページにも反映されます。`);
+        mapsBuilderRender();
+      } catch (error) {
+        mapsBuilderSetStatus(`Google Maps情報を更新できませんでした。 / ${error.message}`);
+      }
+    }
+
     async function mapsBuilderCopy(text, doneMessage) {
       try {
         await navigator.clipboard.writeText(text);
@@ -7002,6 +7042,11 @@
         mapsBuilderStores = mapsBuilderStores.filter((store) => store.id !== button.dataset.mapsRemove);
         mapsBuilderSetStatus("店舗を削除しました。");
         mapsBuilderRender();
+      });
+      document.querySelector("#maps-builder-google-card")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-maps-refresh]");
+        if (!button) return;
+        mapsBuilderRefreshStore(button.dataset.mapsRefresh);
       });
       document.querySelector("#maps-builder-map")?.addEventListener("pointerover", (event) => {
         mapsBuilderSetActiveStore(event.target.closest("[data-maps-store-id]")?.dataset.mapsStoreId || "");
