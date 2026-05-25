@@ -16,7 +16,7 @@
       }
       meta.setAttribute("content", content);
     }
-    if (currentHost === "air-s.jp") {
+    if (currentHost === "air-s.jp" || location.search.includes("airs-preview=1")) {
       document.documentElement.classList.add("airs-domain");
       document.title = "air-s | 好きなお店の空気を、1枚のair-sに。";
       setMeta("description", "好きなお店や場所の空気を、レビューではなく自分の記憶として残すair-s。5つ集めると、自分だけのair-s Mapが育ちます。");
@@ -1381,6 +1381,40 @@
       color: #8a5a16;
     }
 
+    .airs-memory-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+
+    .airs-memory-tags small {
+      margin: 0;
+    }
+
+    .airs-card .airs-card-mood {
+      background: #eef2fb;
+      color: #3d557a;
+    }
+
+    .airs-return-reason {
+      margin: 8px 0 0;
+      border-left: 3px solid rgba(31, 122, 94, .34);
+      padding-left: 10px;
+      color: #46534a;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .airs-card-photo {
+      margin: 10px 0 0;
+    }
+
+    .airs-card-photo img {
+      aspect-ratio: 16 / 9;
+      margin-bottom: 0;
+    }
+
     .airs-card p {
       min-height: 44px;
     }
@@ -1728,6 +1762,17 @@
       line-height: 1.35;
     }
 
+    .airs-map-pin-card em {
+      overflow: hidden;
+      color: #8a5a16;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 900;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .airs-map-item {
       display: grid;
       grid-template-columns: 58px minmax(0, 1fr) auto;
@@ -1755,6 +1800,15 @@
       color: #667065;
       font-size: 11px;
       font-weight: 900;
+    }
+
+    .airs-map-memory {
+      display: block;
+      margin-top: 4px;
+      color: #47564d;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
     }
 
     .airs-map-pin {
@@ -3542,6 +3596,14 @@
             <span class="airs-field-title">一言コメント <span class="field-optional">任意</span></span>
             <textarea id="airs-comment" placeholder="例: 雨の日に、奥の席で少し落ち着けた。"></textarea>
           </label>
+          <label>
+            <span class="airs-field-title">その時の気分 <span class="field-optional">任意</span></span>
+            <input id="airs-mood-label" placeholder="例: ほどけた / 静か / 少し元気">
+          </label>
+          <label>
+            <span class="airs-field-title">また行きたい理由 <span class="field-optional">任意</span></span>
+            <input id="airs-revisit-reason" placeholder="例: あの席で、もう一度休みたい">
+          </label>
         </div>
         <div class="airs-photo-field">
           <label>
@@ -3978,7 +4040,7 @@
     let selectedAirsFeeling = null;
 
     function isAirsDomain() {
-      return location.hostname.replace(/^www\./, "") === "air-s.jp";
+      return location.hostname.replace(/^www\./, "") === "air-s.jp" || location.search.includes("airs-preview=1");
     }
 
     function airsTimeLabel(date = new Date()) {
@@ -4030,7 +4092,9 @@
 
     function shareAirsText(item) {
       const sourceLine = item.sourceUrl ? `\n${item.sourceUrl}` : "";
-      return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${sourceLine}\n${location.origin}`;
+      const moodLine = item.moodLabel ? `\n気分: ${item.moodLabel}` : "";
+      const revisitLine = item.revisitReason ? `\nまた行きたい理由: ${item.revisitReason}` : "";
+      return `「${item.storeName}」をair-sしました。\n${item.comment || "この空気だった。"}${moodLine}${revisitLine}${sourceLine}\n${location.origin}`;
     }
 
     function airsMapTitle() {
@@ -4062,10 +4126,26 @@
         recoveryCore: item.recoveryCore || "",
         feelingButton: item.feelingButton || "",
         feelingLabel: item.feelingLabel || "",
+        moodLabel: item.moodLabel || "",
+        moodTime: item.moodTime || "",
+        revisitReason: item.revisitReason || "",
         personaKey: item.personaKey,
         placeId: item.placeId,
         cardSerial: item.cardSerial
       }));
+    }
+
+    function airsMemoryMeta(item) {
+      return [
+        item.timeLabel || "air-s",
+        item.moodLabel || "",
+        item.feelingLabel || "",
+        item.revisitReason ? `また: ${item.revisitReason}` : ""
+      ].filter(Boolean);
+    }
+
+    function airsMemorySummary(item) {
+      return airsMemoryMeta(item).join(" / ") || item.comment || "この空気だった。";
     }
 
     function selectedAirsMapItems(items = loadAirsItems()) {
@@ -4617,6 +4697,7 @@
                 <span>${index + 1}</span>
                 <b>${escapeHtml(item.storeName)}</b>
                 <small>${escapeHtml(item.timeLabel || "air-s")}</small>
+                ${item.moodLabel || item.revisitReason ? `<em>${escapeHtml(item.moodLabel || item.revisitReason)}</em>` : ""}
               </a>
             `;
           }).join("")}
@@ -4634,7 +4715,8 @@
               <img src="${escapeHtml(item.photoUrl || item.image || "/assets/worldview-cards/personas/21-1.webp")}" alt="${escapeHtml(item.storeName)}">
               <div>
                 <b>${escapeHtml(item.storeName)}</b>
-                <small>${escapeHtml(item.timeLabel || "air-s")} / ${escapeHtml(item.feelingLabel || item.comment || "この空気だった。")}</small>
+                <small>${escapeHtml(airsMemorySummary(item))}</small>
+                ${item.comment ? `<span class="airs-map-memory">${escapeHtml(item.comment)}</span>` : ""}
                 ${isSelectable ? `
                   <label class="airs-map-select">
                     <input type="checkbox" data-airs-map-select="${index}" checked>
@@ -4815,6 +4897,8 @@
             recoveryCore: item.recoveryCore,
             feelingButton: item.feelingButton,
             feelingLabel: item.feelingLabel,
+            moodLabel: item.moodLabel,
+            revisitReason: item.revisitReason,
             cardStyleSource: item.cardStyleSource,
             industrySkin: item.industrySkin,
             moodTime: item.moodTime,
@@ -4904,12 +4988,16 @@
       }
       list.innerHTML = items.map((item, index) => `
         <article class="airs-card">
-          <img src="${item.image}" alt="${item.storeName}">
-          <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${item.timeLabel}</small>
-          <b>${item.storeName}</b>
-          ${item.feelingLabel ? `<small class="airs-card-recovery">${escapeHtml(item.feelingLabel)}</small>` : ""}
-          <p>${item.comment || "この空気だった。"}</p>
-          ${item.photoUrl ? `<p><img src="${escapeHtml(item.photoUrl)}" alt="${escapeHtml(item.storeName)}の記憶写真" style="aspect-ratio: 16 / 9;"></p>` : ""}
+          <img src="${escapeHtml(item.image || "/assets/worldview-cards/personas/21-1.webp")}" alt="${escapeHtml(item.storeName)}">
+          <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${escapeHtml(item.timeLabel || "air-s")}</small>
+          <b>${escapeHtml(item.storeName)}</b>
+          <div class="airs-memory-tags" aria-label="場所記憶のメタ情報">
+            ${item.moodLabel ? `<small class="airs-card-mood">${escapeHtml(item.moodLabel)}</small>` : ""}
+            ${item.feelingLabel ? `<small class="airs-card-recovery">${escapeHtml(item.feelingLabel)}</small>` : ""}
+          </div>
+          <p>${escapeHtml(item.comment || "この空気だった。")}</p>
+          ${item.revisitReason ? `<div class="airs-return-reason">また行きたい理由: ${escapeHtml(item.revisitReason)}</div>` : ""}
+          ${item.photoUrl ? `<p class="airs-card-photo"><img src="${escapeHtml(item.photoUrl)}" alt="${escapeHtml(item.storeName)}の記憶写真"></p>` : ""}
           <p>${item.serverSaved ? "このair-sは保存されています。今はまだ自分だけのLockerに置かれています。" : "この端末内の仮保存です。公開や交流はまだ行いません。"}</p>
           <div class="airs-share">
             <a href="${mapsLinkForAirs(item)}" target="_blank" rel="noopener">Google Mapsで開く</a>
@@ -5024,7 +5112,11 @@
         if (storeNameInput) storeNameInput.value = "";
         if (sourceUrlInput) sourceUrlInput.value = "";
         const commentInput = document.querySelector("#airs-comment");
+        const moodInput = document.querySelector("#airs-mood-label");
+        const revisitInput = document.querySelector("#airs-revisit-reason");
         if (commentInput) commentInput.value = "";
+        if (moodInput) moodInput.value = "";
+        if (revisitInput) revisitInput.value = "";
         if (photoInput) photoInput.value = "";
         if (photoPreview) {
           photoPreview.classList.remove("has-image");
@@ -5136,6 +5228,8 @@
         const storeName = document.querySelector("#airs-store-name")?.value.trim() || "好きなお店";
         const sourceUrl = document.querySelector("#airs-source-url")?.value.trim() || selectedAirsPlace?.google_maps_url || "";
         const comment = document.querySelector("#airs-comment")?.value.trim() || "";
+        const moodLabel = document.querySelector("#airs-mood-label")?.value.trim() || "";
+        const revisitReason = document.querySelector("#airs-revisit-reason")?.value.trim() || "";
         const feeling = selectedAirsFeeling;
         const recoveryCore = feeling?.core || "";
         const airId = `airs_${Date.now().toString(36)}`;
@@ -5175,6 +5269,10 @@
           feeling_button: feeling?.key || "",
           feelingLabel: feeling?.feelingLabel || "",
           feeling_label: feeling?.feelingLabel || "",
+          moodLabel,
+          mood_label: moodLabel,
+          revisitReason,
+          revisit_reason: revisitReason,
           cardStyleSource: "selected",
           card_style_source: "selected",
           industrySkin: "",

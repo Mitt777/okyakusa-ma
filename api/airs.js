@@ -97,6 +97,10 @@ function buildAirsRecord(body) {
     feeling_button: cleanText(body.feelingButton || body.feeling_button, 80),
     feelingLabel: cleanText(body.feelingLabel || body.feeling_label, 120),
     feeling_label: cleanText(body.feelingLabel || body.feeling_label, 120),
+    moodLabel: cleanText(body.moodLabel || body.mood_label, 80),
+    mood_label: cleanText(body.moodLabel || body.mood_label, 80),
+    revisitReason: cleanText(body.revisitReason || body.revisit_reason, 160),
+    revisit_reason: cleanText(body.revisitReason || body.revisit_reason, 160),
     cardStyleSource: cleanText(body.cardStyleSource || body.card_style_source || "selected", 40),
     card_style_source: cleanText(body.cardStyleSource || body.card_style_source || "selected", 40),
     industrySkin: cleanText(body.industrySkin || body.industry_skin, 40),
@@ -122,6 +126,8 @@ function buildAirsRecord(body) {
       placeId: cleanText(body.placeId, 120),
       recoveryCore: cleanText(body.recoveryCore || body.recovery_core, 40),
       feelingButton: cleanText(body.feelingButton || body.feeling_button, 80),
+      moodLabel: cleanText(body.moodLabel || body.mood_label, 80),
+      revisitReason: cleanText(body.revisitReason || body.revisit_reason, 160),
       capturedAt: createdAt
     },
     source_snapshot: {
@@ -132,6 +138,8 @@ function buildAirsRecord(body) {
       placeId: cleanText(body.placeId, 120),
       recoveryCore: cleanText(body.recoveryCore || body.recovery_core, 40),
       feelingButton: cleanText(body.feelingButton || body.feeling_button, 80),
+      moodLabel: cleanText(body.moodLabel || body.mood_label, 80),
+      revisitReason: cleanText(body.revisitReason || body.revisit_reason, 160),
       capturedAt: createdAt
     },
     cardSerial: serial,
@@ -238,6 +246,9 @@ function buildAirsMapRecord(body) {
     recoveryCore: cleanText(item.recoveryCore || item.recovery_core, 40),
     feelingButton: cleanText(item.feelingButton || item.feeling_button, 80),
     feelingLabel: cleanText(item.feelingLabel || item.feeling_label, 120),
+    moodLabel: cleanText(item.moodLabel || item.mood_label, 80),
+    moodTime: cleanText(item.moodTime || item.mood_time, 40),
+    revisitReason: cleanText(item.revisitReason || item.revisit_reason, 160),
     personaKey: cleanText(item.personaKey, 32),
     placeId: cleanText(item.placeId, 120),
     cardSerial: cleanText(item.cardSerial, 80)
