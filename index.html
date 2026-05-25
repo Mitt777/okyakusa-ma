@@ -4,15 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>お客様.COM | えらばれる店スコア診断</title>
+  <meta name="description" content="Google Maps診断、口コミ、SNS、AI検索、入りやすさから、お店が初めてのお客様にどう見えているかを診断します。">
   <script>
     const currentHost = location.hostname.replace(/^www\./, "");
+    function setMeta(name, content, attr = "name") {
+      let meta = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attr, name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    }
     if (currentHost === "air-s.jp") {
       document.documentElement.classList.add("airs-domain");
       document.title = "air-s | 好きなお店の空気を、1枚のair-sに。";
+      setMeta("description", "好きなお店や場所の空気を、レビューではなく自分の記憶として残すair-s。5つ集めると、自分だけのair-s Mapが育ちます。");
     }
     if (currentHost === "map-s.site" || location.search.includes("maps-preview=1")) {
       document.documentElement.classList.add("maps-domain");
-      document.title = "map-s | Google Mapsリンクだけで、きれいな店舗MAPを。";
+      document.title = "map-s | Google MapsのURLだけで店舗MAPを3分作成";
+      setMeta("description", "Google MapsのURLを貼るだけで、店舗MAPページを3分で作成・公開。商店街、観光協会、複数店舗、イベント会場、周辺案内に。埋め込み、QR、共有URL対応予定。");
     }
   </script>
   <style>
@@ -2675,30 +2687,30 @@
       <div class="maps-topbar">
         <div class="maps-brand">
           <strong>map-s</strong>
-          <span>Google MapsのURLを貼るだけで、きれいな店舗MAPを。</span>
+          <span>Google MapsのURLだけで、店舗MAPを3分作成。</span>
         </div>
         <nav class="maps-nav" aria-label="map-sナビゲーション">
           <a href="#maps-how">作り方</a>
           <a href="#maps-seo">SEO導線</a>
           <a href="#maps-pricing">料金</a>
-          <a class="maps-button primary" href="#maps-beta">βを相談する</a>
+          <a class="maps-button primary" href="#maps-beta">無料で相談する</a>
         </nav>
       </div>
 
       <section class="maps-hero">
         <div>
-          <span class="maps-kicker">map-s.site β / Form Mailer型の軽いMap作成</span>
-          <h1 id="maps-title">Google MapsのURLを貼るだけで、きれいな店舗MAPページを。</h1>
+          <span class="maps-kicker">map-s（マップス）β / Form Mailer型の軽いMap作成サービス</span>
+          <h1 id="maps-title">Google MapsのURLだけで、店舗MAPページを3分で作成・公開。</h1>
           <p class="maps-lead">
-            3分で、店舗一覧、商店街MAP、観光MAP、チェーン店MAPを専門知識なしで作成。
-            公開URL、サイト埋め込み、QRまで、まずは軽くつなぎます。
+            商店街、観光協会、複数店舗、イベント会場、周辺案内に。
+            公開URL、QR、サイト埋め込みまで。専門知識なしで、まずは軽くつなぎます。
           </p>
           <div class="maps-actions">
-            <a class="maps-button primary" href="#maps-beta">無料βで相談する</a>
+            <a class="maps-button primary" href="#maps-beta">無料でマップ作成を相談する</a>
             <a class="maps-button" href="#maps-sample">サンプルを見る</a>
           </div>
           <p class="maps-note">
-            air-sの場所検索・軽量Map表示・QR生成の土台を使い、業務向けの「公開・埋め込み」レイヤーとして設計します。
+            Googleマイマップより見た目を整えやすく、重い開発より早く公開できる、業務向けの「公開・埋め込み」レイヤーです。
           </p>
         </div>
 
@@ -2836,9 +2848,10 @@
             <strong>0円</strong>
             <ul>
               <li>1Map</li>
-              <li>5店舗まで</li>
+              <li>10店舗まで</li>
               <li>公開URL</li>
               <li>QR生成</li>
+              <li>map-sロゴあり</li>
             </ul>
           </div>
           <div class="maps-price recommended">
