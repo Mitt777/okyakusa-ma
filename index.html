@@ -3697,6 +3697,7 @@
             </div>
             <div class="maps-public-actions" aria-label="公開MAPの共有">
               <button class="maps-button primary" id="maps-public-copy-url" type="button">URLをコピー</button>
+              <a class="maps-button" id="maps-public-clone" href="/?maps-preview=1#maps-builder">このMAPをもとに作る</a>
               <a class="maps-button" id="maps-public-line" href="#" target="_blank" rel="noopener">LINE</a>
               <a class="maps-button" id="maps-public-x" href="#" target="_blank" rel="noopener">X</a>
             </div>
@@ -6189,6 +6190,16 @@
       ].join("\n");
     }
 
+    function mapsBuilderCloneUrl() {
+      const origin = location.hostname ? location.origin : "https://map-s.site";
+      const url = new URL(`${origin}/`);
+      url.searchParams.set("maps-preview", "1");
+      const encodedProject = mapsBuilderEncodeProject(mapsBuilderProjectSnapshot());
+      if (encodedProject) url.searchParams.set("ms", encodedProject);
+      url.hash = "maps-builder";
+      return url.toString();
+    }
+
     function mapsBuilderApplyTheme(map) {
       if (map) {
         map.classList.remove("theme-clean", "theme-travel");
@@ -6220,6 +6231,7 @@
       const embedCode = document.querySelector("#maps-builder-embed-code");
       const qrImage = document.querySelector("#maps-builder-qr");
       const installNote = document.querySelector("#maps-builder-install-note");
+      const publicClone = document.querySelector("#maps-public-clone");
       const publicLine = document.querySelector("#maps-public-line");
       const publicX = document.querySelector("#maps-public-x");
       if (!titleInput || !descriptionInput || !map || !list) return;
@@ -6303,6 +6315,7 @@
       if (publicX) {
         publicX.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(urls.publicUrl)}`;
       }
+      if (publicClone) publicClone.href = mapsBuilderCloneUrl();
       mapsBuilderSyncStructuredData(title, description, urls);
       mapsBuilderSetActiveStore();
       mapsBuilderSave();
