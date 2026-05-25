@@ -997,6 +997,67 @@
       font-weight: 800;
     }
 
+    .maps-builder-share-kit {
+      display: grid;
+      grid-template-columns: 154px minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+      border: 1px solid #dce9f0;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 12px;
+    }
+
+    .maps-builder-qr {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .maps-builder-qr img {
+      width: 138px;
+      height: 138px;
+      border: 1px solid #dce9f0;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+    }
+
+    .maps-builder-qr span,
+    .maps-builder-install p {
+      margin: 0;
+      color: #607483;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .maps-builder-install {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-width: 0;
+    }
+
+    .maps-builder-install strong {
+      color: #315d73;
+      font-size: 13px;
+    }
+
+    .maps-builder-install code {
+      display: block;
+      overflow-x: auto;
+      border: 1px solid #e4edf3;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      color: #415766;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
     .maps-builder-store-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1033,12 +1094,14 @@
     .maps-embed-mode .maps-builder .maps-section-head,
     .maps-embed-mode .maps-builder-form,
     .maps-embed-mode .maps-builder-code,
+    .maps-embed-mode .maps-builder-share-kit,
     .maps-embed-mode .maps-builder-copy-actions,
     .maps-public-mode .maps-hero,
     .maps-public-mode .maps-section:not(.maps-builder),
     .maps-public-mode .maps-builder .maps-section-head,
     .maps-public-mode .maps-builder-form,
     .maps-public-mode .maps-builder-code,
+    .maps-public-mode .maps-builder-share-kit,
     .maps-public-mode .maps-builder-copy-actions {
       display: none;
     }
@@ -3445,6 +3508,15 @@
         grid-template-columns: 1fr;
       }
 
+      .maps-builder-share-kit {
+        grid-template-columns: 1fr;
+      }
+
+      .maps-builder-qr img {
+        width: 126px;
+        height: 126px;
+      }
+
       .maps-builder-map {
         height: 330px;
         min-height: 330px;
@@ -3614,11 +3686,25 @@
               <strong>iframeコード</strong>
               <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder"&gt;&lt;/iframe&gt;</code>
             </div>
+            <div class="maps-builder-share-kit">
+              <div class="maps-builder-qr">
+                <img id="maps-builder-qr" alt="公開URLのQRコード">
+                <span>公開URLをスマホで開くためのQRです。</span>
+              </div>
+              <div class="maps-builder-install">
+                <strong>設置メモ</strong>
+                <p>WordPressや既存サイトでは、HTMLブロックにiframeコードを貼るだけで設置できます。</p>
+                <code id="maps-builder-install-note">1. 公開する
+2. iframeコードをコピー
+3. HTMLブロックに貼り付け</code>
+              </div>
+            </div>
             <div class="maps-builder-copy-actions">
               <button class="maps-button primary" id="maps-builder-publish" type="button">公開する</button>
               <button class="maps-button" id="maps-builder-copy-url" type="button">公開URL</button>
               <button class="maps-button" id="maps-builder-copy-embed-url" type="button">埋め込みURL</button>
               <button class="maps-button" id="maps-builder-copy-embed" type="button">iframeコード</button>
+              <button class="maps-button" id="maps-builder-copy-install" type="button">設置メモ</button>
             </div>
           </div>
         </div>
@@ -5985,6 +6071,22 @@
       };
     }
 
+    function mapsBuilderQrImageUrl(url) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=12&data=${encodeURIComponent(url)}`;
+    }
+
+    function mapsBuilderInstallNote(urls) {
+      return [
+        "1. map-sで公開する",
+        "2. iframeコードをコピーする",
+        "3. WordPressのHTMLブロック、または既存サイトの任意の場所へ貼り付ける",
+        "",
+        urls.embedCode,
+        "",
+        `公開URL: ${urls.publicUrl}`
+      ].join("\n");
+    }
+
     function mapsBuilderApplyTheme(map) {
       if (map) {
         map.classList.remove("theme-clean", "theme-travel");
@@ -6014,6 +6116,8 @@
       const publicUrl = document.querySelector("#maps-builder-public-url");
       const embedUrl = document.querySelector("#maps-builder-embed-url");
       const embedCode = document.querySelector("#maps-builder-embed-code");
+      const qrImage = document.querySelector("#maps-builder-qr");
+      const installNote = document.querySelector("#maps-builder-install-note");
       if (!titleInput || !descriptionInput || !map || !list) return;
 
       const currentSignature = mapsBuilderProjectSignature();
@@ -6084,6 +6188,11 @@
       if (publicUrl) publicUrl.textContent = urls.publicUrl;
       if (embedUrl) embedUrl.textContent = urls.embedUrl;
       if (embedCode) embedCode.textContent = urls.embedCode;
+      if (qrImage) {
+        qrImage.src = mapsBuilderQrImageUrl(urls.publicUrl);
+        qrImage.alt = `${title} の公開URL QRコード`;
+      }
+      if (installNote) installNote.textContent = mapsBuilderInstallNote(urls);
       mapsBuilderSetActiveStore();
       mapsBuilderSave();
     }
@@ -6340,6 +6449,9 @@
       });
       document.querySelector("#maps-builder-copy-embed")?.addEventListener("click", () => {
         mapsBuilderCopy(mapsBuilderProjectUrls().embedCode, "iframeコードをコピーしました。");
+      });
+      document.querySelector("#maps-builder-copy-install")?.addEventListener("click", () => {
+        mapsBuilderCopy(mapsBuilderInstallNote(mapsBuilderProjectUrls()), "設置メモをコピーしました。");
       });
       document.querySelector("#maps-builder-publish")?.addEventListener("click", mapsBuilderPublish);
       mapsBuilderRender();
