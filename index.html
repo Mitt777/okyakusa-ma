@@ -315,6 +315,17 @@
       font-weight: 800;
     }
 
+    .maps-demo-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0 16px 16px;
+    }
+
+    .maps-demo-actions .maps-button {
+      flex: 1 1 150px;
+    }
+
     .maps-section {
       margin: 22px 0;
       border: 1px solid #dbe8f0;
@@ -3453,21 +3464,25 @@
             <span class="maps-pill">Preview</span>
           </div>
           <div class="maps-demo-map">
-            <div class="maps-demo-pin"><b>1</b><strong>森のカフェ</strong><span>朝・静か</span></div>
-            <div class="maps-demo-pin"><b>2</b><strong>黒磯の本屋</strong><span>雨の日</span></div>
-            <div class="maps-demo-pin"><b>3</b><strong>小さな食堂</strong><span>夜・安心</span></div>
+            <div class="maps-demo-pin"><b>1</b><strong>リビングストン</strong><span>黒磯・静か</span></div>
+            <div class="maps-demo-pin"><b>2</b><strong>Cafe facile</strong><span>那須町</span></div>
+            <div class="maps-demo-pin"><b>3</b><strong>NASU SHOZO CAFE</strong><span>森のカフェ</span></div>
           </div>
           <div class="maps-demo-list">
             <div>
               <img src="/assets/worldview-cards/personas/21-1.webp" alt="">
-              <span><strong>Google Mapsへ案内</strong>店舗カードとリストを同時表示</span>
+              <span><strong>相対配置で表示</strong>Places由来の座標を軽いMAPに変換</span>
               <span class="maps-pill">MAP</span>
             </div>
             <div>
               <img src="/assets/worldview-cards/personas/34-1.webp" alt="">
-              <span><strong>サイトに埋め込み</strong>WordPressにもHTMLで貼り付け</span>
+              <span><strong>公開と埋め込み</strong>URLとiframeをすぐ発行</span>
               <span class="maps-pill">Embed</span>
             </div>
+          </div>
+          <div class="maps-demo-actions">
+            <a class="maps-button primary" href="#maps-builder">このサンプルを編集する</a>
+            <a class="maps-button" href="#maps-how">作り方を見る</a>
           </div>
         </div>
       </section>
@@ -5625,6 +5640,15 @@
       ];
     }
 
+    function mapsBuilderSampleProject() {
+      return {
+        title: "那須の静かなカフェMAP",
+        description: "ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。",
+        theme: "cafe",
+        stores: mapsBuilderSampleStores()
+      };
+    }
+
     function mapsBuilderProjectSnapshot() {
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
@@ -6110,10 +6134,16 @@
       if (!titleInput || !descriptionInput || !queryInput) return;
 
       const saved = mapsBuilderLoad();
-      if (saved.title) titleInput.value = saved.title;
-      if (saved.description) descriptionInput.value = saved.description;
-      mapsBuilderTheme = mapsBuilderNormalizeTheme(saved.theme);
-      mapsBuilderStores = (saved.stores || []).map(mapsBuilderNormalizeStore);
+      const shouldShowSample = !mapsBuilderSharedProject()
+        && !mapsBuilderRemoteMapId()
+        && !saved.title
+        && !saved.description
+        && !(saved.stores || []).length;
+      const project = shouldShowSample ? mapsBuilderSampleProject() : saved;
+      if (project.title) titleInput.value = project.title;
+      if (project.description) descriptionInput.value = project.description;
+      mapsBuilderTheme = mapsBuilderNormalizeTheme(project.theme);
+      mapsBuilderStores = (project.stores || []).map(mapsBuilderNormalizeStore);
 
       titleInput.addEventListener("input", mapsBuilderRender);
       descriptionInput.addEventListener("input", mapsBuilderRender);
@@ -6139,10 +6169,11 @@
         if (added) queryInput.value = "";
       });
       document.querySelector("#maps-builder-sample")?.addEventListener("click", () => {
-        mapsBuilderTheme = "cafe";
-        mapsBuilderStores = mapsBuilderSampleStores().map(mapsBuilderNormalizeStore);
-        titleInput.value = "那須の静かなカフェMAP";
-        descriptionInput.value = "ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。";
+        const sample = mapsBuilderSampleProject();
+        mapsBuilderTheme = sample.theme;
+        mapsBuilderStores = sample.stores.map(mapsBuilderNormalizeStore);
+        titleInput.value = sample.title;
+        descriptionInput.value = sample.description;
         mapsBuilderPublishedUrls = null;
         mapsBuilderPublishedSignature = "";
         mapsBuilderSetStatus("サンプルMAPを入れました。公開前に店名や説明を編集できます。");
