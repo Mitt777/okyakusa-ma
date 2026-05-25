@@ -561,6 +561,10 @@
       align-items: center;
     }
 
+    .maps-builder-actions .maps-button {
+      min-height: 44px;
+    }
+
     .maps-builder-status {
       min-height: 20px;
       margin: 12px 0 0;
@@ -941,9 +945,17 @@
       background: #fff;
     }
 
+    .maps-public-mode body {
+      background: #f7fbfd;
+    }
+
     .maps-embed-mode .maps-shell {
       width: 100%;
       padding: 0;
+    }
+
+    .maps-public-mode .maps-shell {
+      padding-top: 12px;
     }
 
     .maps-embed-mode .maps-topbar,
@@ -952,7 +964,13 @@
     .maps-embed-mode .maps-builder .maps-section-head,
     .maps-embed-mode .maps-builder-form,
     .maps-embed-mode .maps-builder-code,
-    .maps-embed-mode .maps-builder-copy-actions {
+    .maps-embed-mode .maps-builder-copy-actions,
+    .maps-public-mode .maps-hero,
+    .maps-public-mode .maps-section:not(.maps-builder),
+    .maps-public-mode .maps-builder .maps-section-head,
+    .maps-public-mode .maps-builder-form,
+    .maps-public-mode .maps-builder-code,
+    .maps-public-mode .maps-builder-copy-actions {
       display: none;
     }
 
@@ -964,9 +982,29 @@
       padding: 0;
     }
 
+    .maps-public-mode .maps-builder {
+      margin-top: 18px;
+    }
+
+    .maps-public-mode .maps-builder-layout {
+      display: block;
+    }
+
     .maps-embed-mode .maps-builder-layout,
     .maps-embed-mode .maps-builder-output {
       display: block;
+    }
+
+    .maps-public-mode .maps-builder-output {
+      grid-template-columns: 1fr;
+    }
+
+    .maps-public-mode .maps-builder-map {
+      height: clamp(340px, 40vw, 520px);
+    }
+
+    .maps-public-mode .maps-builder-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .maps-embed-mode .maps-builder-preview {
@@ -976,20 +1014,74 @@
     }
 
     .maps-embed-mode .maps-builder-preview-head {
-      padding: 16px 16px 0;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 14px 14px 0;
+    }
+
+    .maps-embed-mode .maps-builder-preview-head h3 {
+      margin-bottom: 3px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .maps-embed-mode .maps-builder-preview-head p {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 1.55;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .maps-embed-mode .maps-pill {
+      padding: 5px 9px;
+      font-size: 11px;
     }
 
     .maps-embed-mode .maps-builder-map {
+      height: 230px;
+      min-height: 230px;
       border-left: 0;
       border-right: 0;
       border-radius: 0;
-      min-height: 330px;
+    }
+
+    .maps-embed-mode .maps-builder-output.is-dense .maps-builder-map {
+      height: 255px;
     }
 
     .maps-embed-mode .maps-builder-list {
-      padding: 14px 16px 16px;
+      gap: 8px;
+      padding: 10px 14px 14px;
     }
 
+    .maps-embed-mode .maps-builder-store {
+      padding: 10px;
+    }
+
+    .maps-embed-mode .maps-builder-store strong {
+      font-size: 13px;
+    }
+
+    .maps-embed-mode .maps-builder-store span {
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .maps-embed-mode .maps-builder-store-actions {
+      display: none;
+    }
+
+    .maps-embed-mode .maps-builder-store:nth-child(n+3) {
+      display: none;
+    }
+
+    .maps-embed-mode .maps-builder-output.is-dense .maps-builder-list {
+      grid-template-columns: 1fr;
+    }
+
+    .maps-public-mode [data-maps-remove],
     .maps-embed-mode [data-maps-remove] {
       display: none;
     }
@@ -3415,8 +3507,9 @@
             <div class="maps-builder-actions">
               <button class="maps-button primary" id="maps-builder-search" type="button">店舗候補を確認</button>
               <button class="maps-button" id="maps-builder-manual" type="button">入力名で仮追加</button>
+              <button class="maps-button" id="maps-builder-sample" type="button">サンプルを入れる</button>
             </div>
-            <p class="maps-builder-status" id="maps-builder-status">店名だけでも候補確認できます。URLがあれば、そのまま仮追加もできます。</p>
+            <p class="maps-builder-status" id="maps-builder-status">店名やGoogle Maps URLから店舗を追加できます。</p>
             <div class="maps-builder-candidates" id="maps-builder-candidates" aria-live="polite"></div>
           </div>
 
@@ -3449,10 +3542,10 @@
               <code id="maps-builder-embed-code">&lt;iframe src="https://map-s.site/?maps-preview=1&amp;embed=1#maps-builder"&gt;&lt;/iframe&gt;</code>
             </div>
             <div class="maps-builder-copy-actions">
-              <button class="maps-button primary" id="maps-builder-publish" type="button">公開URLを発行</button>
-              <button class="maps-button" id="maps-builder-copy-url" type="button">公開URLをコピー</button>
-              <button class="maps-button" id="maps-builder-copy-embed-url" type="button">埋め込みURLをコピー</button>
-              <button class="maps-button" id="maps-builder-copy-embed" type="button">埋め込みコードをコピー</button>
+              <button class="maps-button primary" id="maps-builder-publish" type="button">公開する</button>
+              <button class="maps-button" id="maps-builder-copy-url" type="button">公開URL</button>
+              <button class="maps-button" id="maps-builder-copy-embed-url" type="button">埋め込みURL</button>
+              <button class="maps-button" id="maps-builder-copy-embed" type="button">iframeコード</button>
             </div>
           </div>
         </div>
@@ -5433,6 +5526,10 @@
       }
     }
 
+    function mapsBuilderIsPublicPage() {
+      return /^\/m\//.test(location.pathname);
+    }
+
     function mapsBuilderIsActive() {
       const host = (location.hostname || "").replace(/^www\./, "");
       return host === "map-s.site" || location.search.includes("maps-preview=1") || /^\/(?:m|embed)\//.test(location.pathname);
@@ -5467,6 +5564,51 @@
 
     function mapsBuilderNormalizeTheme(value) {
       return ["cafe", "clean", "travel"].includes(value) ? value : "cafe";
+    }
+
+    function mapsBuilderSampleStores() {
+      return [
+        {
+          name: "リビングストン",
+          address: "栃木県那須塩原市高砂町6-21",
+          category: "カフェ・喫茶",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=%E3%83%AA%E3%83%93%E3%83%B3%E3%82%B0%E3%82%B9%E3%83%88%E3%83%B3%20%E9%82%A3%E9%A0%88",
+          lat: 36.970,
+          lng: 140.048
+        },
+        {
+          name: "Cafe facile",
+          address: "栃木県那須郡那須町高久甲5462-1",
+          category: "カフェ",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=Cafe%20facile%20%E9%82%A3%E9%A0%88",
+          lat: 37.039,
+          lng: 140.020
+        },
+        {
+          name: "SUDA COFFEE",
+          address: "栃木県那須郡那須町高久乙593-402",
+          category: "カフェ",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=SUDA%20COFFEE%20%E9%82%A3%E9%A0%88",
+          lat: 37.055,
+          lng: 140.008
+        },
+        {
+          name: "NASU SHOZO CAFE",
+          address: "栃木県那須郡那須町高久乙2730-25",
+          category: "カフェ・喫茶",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=NASU%20SHOZO%20CAFE",
+          lat: 37.058,
+          lng: 140.011
+        },
+        {
+          name: "ペニーレイン 那須店",
+          address: "栃木県那須郡那須町湯本656-2",
+          category: "ベーカリー",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=%E3%83%9A%E3%83%8B%E3%83%BC%E3%83%AC%E3%82%A4%E3%83%B3%20%E9%82%A3%E9%A0%88%E5%BA%97",
+          lat: 37.089,
+          lng: 140.000
+        }
+      ];
     }
 
     function mapsBuilderProjectSnapshot() {
@@ -5944,6 +6086,8 @@
       if (!mapsBuilderIsActive()) return;
       if (mapsBuilderIsEmbed()) {
         document.documentElement.classList.add("maps-embed-mode");
+      } else if (mapsBuilderIsPublicPage()) {
+        document.documentElement.classList.add("maps-public-mode");
       }
       const titleInput = document.querySelector("#maps-builder-title");
       const descriptionInput = document.querySelector("#maps-builder-description");
@@ -5978,6 +6122,16 @@
           address: looksLikeUrl ? query : ""
         });
         if (added) queryInput.value = "";
+      });
+      document.querySelector("#maps-builder-sample")?.addEventListener("click", () => {
+        mapsBuilderTheme = "cafe";
+        mapsBuilderStores = mapsBuilderSampleStores().map(mapsBuilderNormalizeStore);
+        titleInput.value = "那須の静かなカフェMAP";
+        descriptionInput.value = "ひとりで静かに過ごしたい時に、訪れやすい場所をまとめたMAPです。";
+        mapsBuilderPublishedUrls = null;
+        mapsBuilderPublishedSignature = "";
+        mapsBuilderSetStatus("サンプルMAPを入れました。公開前に店名や説明を編集できます。");
+        mapsBuilderRender();
       });
       document.querySelector("#maps-builder-theme")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-maps-theme]");
