@@ -135,6 +135,54 @@ async function saveBlobProject(project) {
   });
 }
 
+function locatedStores(project) {
+  return (Array.isArray(project?.stores) ? project.stores : [])
+    .map((store, index) => ({
+      index,
+      lat: safeNumber(store.lat),
+      lng: safeNumber(store.lng)
+    }))
+    .filter((store) => store.lat !== null && store.lng !== null)
+    .slice(0, 20);
+}
+
+function staticMapUrl(stores) {
+  const key = process.env.GOOGLE_MAPS_STATIC_API_KEY;
+  if (!key || !stores.length) return "";
+  const url = new URL("https://maps.googleapis.com/maps/api/staticmap");
+  url.searchParams.set("size", "640x315");
+  url.searchParams.set("scale", "2");
+  url.searchParams.set("format", "jpg");
+  url.searchParams.set("maptype", "roadmap");
+  stores.forEach((store) => {
+    const label = store.index < 9 ? String(store.index + 1) : "";
+    const marker = [
+      "color:0x2f7f64",
+      label ? `label:${label}` : "",
+      `${store.lat},${store.lng}`
+    ].filter(Boolean).join("|");
+    url.searchParams.append("markers", marker);
+  });
+  url.searchParams.set("key", key);
+  return url.toString();
+}
+
+async function sendStaticMapImage(project, response) {
+  if (!process.env.GOOGLE_MAPS_STATIC_API_KEY) {
+    return sendJson(response, 503, { ok: false, error: "GOOGLE_MAPS_STATIC_API_KEYが未設定です。" });
+  }
+  const imageUrl = staticMapUrl(locatedStores(project));
+  if (!imageUrl) return sendJson(response, 404, { ok: false, error: "地図画像に使える緯度経度がありません。" });
+  const mapResponse = await fetch(imageUrl);
+  if (!mapResponse.ok) {
+    return sendJson(response, mapResponse.status, { ok: false, error: "Maps Static API画像を取得できませんでした。" });
+  }
+  const body = Buffer.from(await mapResponse.arrayBuffer());
+  response.setHeader("content-type", mapResponse.headers.get("content-type") || "image/jpeg");
+  response.setHeader("cache-control", "public, max-age=3600, s-maxage=86400");
+  return response.status(200).send(body);
+}
+
 module.exports = async function handler(request, response) {
   try {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -150,6 +198,9 @@ module.exports = async function handler(request, response) {
       if (!mapId) return sendJson(response, 400, { ok: false, error: "mapIdが必要です。" });
       const project = await loadBlobProject(mapId);
       if (!project) return sendJson(response, 404, { ok: false, error: "MAPが見つかりませんでした。" });
+      if (url.searchParams.get("og") === "1" || request.query?.og === "1") {
+        return sendStaticMapImage(project, response);
+      }
       return sendJson(response, 200, { ok: true, project });
     }
 

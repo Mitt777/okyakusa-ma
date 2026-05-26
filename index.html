@@ -6164,7 +6164,7 @@
       setMeta("og:description", cleanDescription, "property");
       const mapId = mapsBuilderRemoteMapId();
       if (mapsBuilderIsPublicPage() && mapId) {
-        const ogImage = `${location.origin}/api/og-map?mapId=${encodeURIComponent(mapId)}`;
+        const ogImage = `${location.origin}/api/maps?og=1&mapId=${encodeURIComponent(mapId)}`;
         setMeta("og:image", ogImage, "property");
         setMeta("twitter:image", ogImage);
         setMeta("twitter:card", "summary_large_image");
