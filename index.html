@@ -3029,6 +3029,109 @@
       font-weight: 850;
     }
 
+    .living-seed-showroom {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      border: 1px solid #d9e2ee;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 12px;
+    }
+
+    .living-seed-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .living-seed-head strong,
+    .living-seed-head span {
+      display: block;
+    }
+
+    .living-seed-head strong {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .living-seed-head span {
+      margin-top: 3px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .living-seed-badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #eef7f2;
+      color: #27624d;
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .living-seed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .living-seed-card {
+      display: grid;
+      gap: 7px;
+      border: 1px solid #dce5ee;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .living-seed-card b,
+    .living-seed-card span,
+    .living-seed-card small {
+      display: block;
+    }
+
+    .living-seed-card b {
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .living-seed-card span {
+      color: #667085;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .living-seed-card small {
+      color: #27624d;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .living-seed-card button {
+      min-height: 36px;
+      border: 1px solid #d7b77b;
+      border-radius: 7px;
+      background: #fff7e6;
+      color: #7b4e13;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
     .living-card-candidates {
       display: none;
       margin-top: 12px;
@@ -4033,8 +4136,14 @@
       .living-card-lab,
       .living-card-search,
       .living-card-candidate,
+      .living-seed-head,
+      .living-seed-grid,
       .living-service-flow {
         grid-template-columns: 1fr;
+      }
+
+      .living-seed-badge {
+        width: fit-content;
       }
 
       .living-card-preview {
@@ -5108,6 +5217,16 @@
             </div>
             <div class="living-card-message" id="living-card-message" role="status" aria-live="polite"></div>
           </form>
+          <div class="living-seed-showroom" aria-labelledby="living-seed-title">
+            <div class="living-seed-head">
+              <div>
+                <strong id="living-seed-title">那須ショールーム β</strong>
+                <span>まずは主要店候補だけ。Google由来データは保存せず、開いた瞬間に仮カード化します。</span>
+              </div>
+              <span class="living-seed-badge">Seed DB prototype</span>
+            </div>
+            <div class="living-seed-grid" id="living-seed-grid"></div>
+          </div>
           <div class="living-card-candidates" id="living-card-candidates" aria-live="polite"></div>
           <div class="living-service-flow" aria-label="関連サービスの役割">
             <a href="https://g-maps.shop/" target="_blank" rel="noopener"><b>g-maps.shop</b><span>気づく</span></a>
@@ -7808,6 +7927,7 @@
     const livingCardQuery = document.querySelector("#living-card-query");
     const livingCardMessage = document.querySelector("#living-card-message");
     const livingCardCandidates = document.querySelector("#living-card-candidates");
+    const livingSeedGrid = document.querySelector("#living-seed-grid");
     const livingCardPreview = document.querySelector("#living-card-preview");
     const livingCardPreviewWrap = document.querySelector(".living-card-preview-wrap");
     const livingCardBg = document.querySelector("#living-card-bg");
@@ -7833,6 +7953,36 @@
       if (!livingCardCandidates) return;
       livingCardCandidates.classList.add("is-open");
       livingCardCandidates.innerHTML = html;
+    }
+
+    const nasuShowroomSeeds = [
+      { name: "リビングストン", area: "那須塩原市", category: "カフェ・喫茶", query: "リビングストン 那須塩原" },
+      { name: "SUDA COFFEE", area: "那須町", category: "カフェ", query: "SUDA COFFEE 那須" },
+      { name: "NASU SHOZO CAFE", area: "那須町", category: "カフェ・喫茶", query: "NASU SHOZO CAFE 那須" },
+      { name: "ペニーレイン 那須店", area: "那須町", category: "ベーカリー", query: "ペニーレイン 那須店" },
+      { name: "Cafe facile", area: "那須町", category: "カフェ", query: "Cafe facile 那須" },
+      { name: "1988 CAFE SHOZO", area: "那須塩原市", category: "カフェ", query: "1988 CAFE SHOZO 黒磯" }
+    ];
+
+    function renderNasuShowroomSeeds() {
+      if (!livingSeedGrid) return;
+      livingSeedGrid.innerHTML = nasuShowroomSeeds.map((seed, index) => `
+        <article class="living-seed-card">
+          <div>
+            <b>${escapeHtml(seed.name)}</b>
+            <span>${escapeHtml(seed.area)} / ${escapeHtml(seed.category)}</span>
+            <small>Place ID化予定 / 表示時に生成</small>
+          </div>
+          <button type="button" data-living-seed-index="${index}">仮カードを見る</button>
+        </article>
+      `).join("");
+      livingSeedGrid.querySelectorAll("[data-living-seed-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const seed = nasuShowroomSeeds[Number(button.dataset.livingSeedIndex)];
+          if (!seed) return;
+          searchLivingCardQuery(seed.query, button);
+        });
+      });
     }
 
     function livingCandidateMeta(candidate) {
@@ -8088,17 +8238,21 @@
       }
     }
 
-    livingCardForm?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const query = livingCardQuery?.value.trim() || "";
+    async function searchLivingCardQuery(query, triggerButton) {
       if (!query) {
         if (livingCardMessage) livingCardMessage.textContent = "店名 + 地域、またはGoogle Maps URLを入力してください。";
         return;
       }
-      const submitButton = livingCardForm.querySelector("button[type='submit']");
+      const submitButton = livingCardForm?.querySelector("button[type='submit']");
+      const originalTriggerText = triggerButton?.textContent || "";
+      if (livingCardQuery) livingCardQuery.value = query;
       if (submitButton) {
         submitButton.disabled = true;
         submitButton.textContent = "候補を確認中...";
+      }
+      if (triggerButton) {
+        triggerButton.disabled = true;
+        triggerButton.textContent = "確認中...";
       }
       if (livingCardMessage) livingCardMessage.textContent = "";
       try {
@@ -8120,8 +8274,20 @@
           submitButton.disabled = false;
           submitButton.textContent = "自分のお店カードを見る";
         }
+        if (triggerButton) {
+          triggerButton.disabled = false;
+          triggerButton.textContent = originalTriggerText || "仮カードを見る";
+        }
       }
+    }
+
+    livingCardForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = livingCardQuery?.value.trim() || "";
+      searchLivingCardQuery(query);
     });
+
+    renderNasuShowroomSeeds();
 
     const urlHelp = {
       maps: {
