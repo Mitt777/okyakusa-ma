@@ -3134,9 +3134,7 @@
 
     .living-card-preview {
       position: relative;
-      display: grid;
-      align-content: end;
-      min-height: 540px;
+      min-height: 430px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,.8);
       border-radius: 8px;
@@ -3156,10 +3154,9 @@
 
     .living-card-bg {
       background:
-        linear-gradient(135deg, rgba(31, 138, 112, .32), rgba(36, 91, 219, .18)),
         url("/assets/worldview-cards/worldview_immersion-restaurant.jpg") center / cover;
       transform: scale(1.04);
-      opacity: .82;
+      opacity: 1;
       transition: opacity .45s ease;
     }
 
@@ -3174,7 +3171,7 @@
     .living-card-shade {
       z-index: -1;
       background:
-        linear-gradient(180deg, rgba(15, 18, 24, 0) 0%, rgba(15, 18, 24, .08) 42%, rgba(15, 18, 24, .52) 100%);
+        linear-gradient(180deg, rgba(15, 18, 24, 0) 0%, rgba(15, 18, 24, 0) 72%, rgba(15, 18, 24, .06) 100%);
     }
 
     .living-card-panel {
@@ -3182,12 +3179,12 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 8px 14px;
       align-items: end;
-      margin: 0 14px 14px;
-      border: 1px solid rgba(255, 255, 255, .32);
+      border: 1px solid #dce5ee;
       border-radius: 8px;
-      background: rgba(18, 24, 31, .5);
-      padding: 12px;
-      backdrop-filter: blur(10px);
+      background: #fff;
+      padding: 14px;
+      color: var(--ink);
+      box-shadow: 0 12px 28px rgba(23, 32, 44, .08);
       transform: translateY(0);
     }
 
@@ -3201,8 +3198,8 @@
       width: fit-content;
       margin-bottom: 0;
       border-radius: 999px;
-      background: rgba(255, 255, 255, .16);
-      color: #fff7e6;
+      background: #fff7e6;
+      color: #7b4e13;
       padding: 4px 8px;
       font-size: 10px;
       font-weight: 900;
@@ -3213,6 +3210,7 @@
       margin: 0;
       font-size: clamp(22px, 3.3vw, 32px);
       line-height: 1.12;
+      color: var(--ink);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -3222,7 +3220,7 @@
       display: -webkit-box;
       overflow: hidden;
       margin: 0;
-      color: rgba(255, 255, 255, .9);
+      color: #536172;
       font-size: 12px;
       font-weight: 800;
       line-height: 1.6;
@@ -3235,7 +3233,7 @@
       gap: 2px;
       grid-column: 1 / -1;
       margin-top: 0;
-      border-top: 1px solid rgba(255, 255, 255, .16);
+      border-top: 1px solid #edf1f5;
       padding-top: 8px;
     }
 
@@ -3264,8 +3262,9 @@
     .living-card-tags span {
       border-radius: 999px;
       background: rgba(255, 255, 255, .18);
-      padding: 4px 7px;
-      color: #fff;
+      padding: 5px 8px;
+      color: #365449;
+      background: #eef7f2;
       font-size: 10px;
       font-weight: 900;
     }
@@ -3958,7 +3957,7 @@
       }
 
       .living-card-preview {
-        min-height: 480px;
+        min-height: 360px;
       }
 
       .living-card-panel {
@@ -4885,19 +4884,19 @@
           <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
             <div class="living-card-bg" id="living-card-bg"></div>
             <div class="living-card-shade"></div>
-            <div class="living-card-panel">
-              <span id="living-card-type">Living Shop Card</span>
-              <h3 id="living-card-name">あなたのお店</h3>
-              <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
-              <div class="living-card-meta" id="living-card-meta">
-                <b>公開情報から生成</b>
-                <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
-              </div>
-              <div class="living-card-tags" id="living-card-tags">
-                <span>外観</span><span>世界観</span><span>初来店</span>
-              </div>
-            </div>
           </article>
+          <div class="living-card-panel">
+            <span id="living-card-type">Living Shop Card</span>
+            <h3 id="living-card-name">あなたのお店</h3>
+            <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
+            <div class="living-card-meta" id="living-card-meta">
+              <b>公開情報から生成</b>
+              <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
+            </div>
+            <div class="living-card-tags" id="living-card-tags">
+              <span>外観</span><span>世界観</span><span>初来店</span>
+            </div>
+          </div>
           <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
         </div>
       </section>
@@ -7814,7 +7813,7 @@
       }
 
       if (livingCardBg && visual.street_view_available && visual.street_view_image_url) {
-        livingCardBg.style.background = `linear-gradient(135deg, rgba(31, 138, 112, .16), rgba(23, 32, 44, .2)), url("${visual.street_view_image_url}") center / cover`;
+        livingCardBg.style.background = `url("${visual.street_view_image_url}") center / cover`;
         livingCardPreview?.classList.add("has-street-view");
         if (livingCardAttribution) {
           const mapsLink = result.attribution?.google_maps_url
