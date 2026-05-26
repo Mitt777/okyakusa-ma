@@ -3092,6 +3092,19 @@
       line-height: 1.45;
     }
 
+    .living-card-candidate-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: stretch;
+      min-width: 170px;
+    }
+
+    .living-card-candidate button.living-card-video-button {
+      border-color: #d7b77b;
+      background: #fff7e6;
+      color: #7b4e13;
+    }
+
     .living-service-flow {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3145,6 +3158,12 @@
       isolation: isolate;
     }
 
+    .living-card-preview.is-video {
+      display: grid;
+      place-items: center;
+      background: #101820;
+    }
+
     .living-card-bg,
     .living-card-shade {
       position: absolute;
@@ -3166,6 +3185,58 @@
 
     .living-card-preview.is-animated .living-card-bg {
       animation: livingCardDrift 7.2s ease-out both;
+    }
+
+    .living-card-video {
+      display: none;
+      width: 100%;
+      height: 100%;
+      min-height: 430px;
+      object-fit: cover;
+      background: #101820;
+    }
+
+    .living-card-preview.is-video .living-card-video {
+      display: block;
+    }
+
+    .living-card-preview.is-video .living-card-bg,
+    .living-card-preview.is-video .living-card-shade {
+      display: none;
+    }
+
+    .living-card-video-state {
+      position: absolute;
+      inset: 18px;
+      display: none;
+      place-items: center;
+      border: 1px dashed rgba(255, 255, 255, .28);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(16, 24, 32, .86), rgba(31, 56, 62, .72));
+      color: #fff;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .living-card-preview.is-video-pending .living-card-video-state,
+    .living-card-preview.is-video-unavailable .living-card-video-state {
+      display: grid;
+    }
+
+    .living-card-video-state strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .living-card-video-state p {
+      margin: 0;
+      color: rgba(255, 255, 255, .82);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.75;
     }
 
     .living-card-shade {
@@ -3960,8 +4031,16 @@
         min-height: 360px;
       }
 
+      .living-card-video {
+        min-height: 360px;
+      }
+
       .living-card-panel {
         grid-template-columns: 1fr;
+      }
+
+      .living-card-candidate-actions {
+        min-width: 0;
       }
 
       .living-card-tags {
@@ -4884,6 +4963,13 @@
           <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
             <div class="living-card-bg" id="living-card-bg"></div>
             <div class="living-card-shade"></div>
+            <video class="living-card-video" id="living-card-video" muted playsinline controls loop></video>
+            <div class="living-card-video-state" id="living-card-video-state">
+              <div>
+                <strong>Cinematic Shop Card</strong>
+                <p>対応するAerial View動画がある場合、ここに3D空撮動画を表示します。</p>
+              </div>
+            </div>
           </article>
           <div class="living-card-panel">
             <span id="living-card-type">Living Shop Card</span>
@@ -7714,6 +7800,8 @@
     const livingCardCandidates = document.querySelector("#living-card-candidates");
     const livingCardPreview = document.querySelector("#living-card-preview");
     const livingCardBg = document.querySelector("#living-card-bg");
+    const livingCardVideo = document.querySelector("#living-card-video");
+    const livingCardVideoState = document.querySelector("#living-card-video-state");
     const livingCardType = document.querySelector("#living-card-type");
     const livingCardName = document.querySelector("#living-card-name");
     const livingCardHeadline = document.querySelector("#living-card-headline");
@@ -7758,7 +7846,7 @@
 
       openLivingCandidates(`
         <strong>どのお店のカードを見ますか？</strong>
-        <p>Google Maps上の公開情報をもとにカードを仮生成します。内部のGoogle Business Profile情報は使いません。</p>
+        <p>Google Maps上の公開情報をもとにカードを仮生成します。動画版はAerial View対応地域だけ表示されます。</p>
         ${candidates.map((candidate, index) => `
           <article class="living-card-candidate">
             <div>
@@ -7766,7 +7854,10 @@
               <span>${escapeHtml(candidate.address || "住所未取得")}</span>
               <small>${escapeHtml(livingCandidateMeta(candidate))}</small>
             </div>
-            <button type="button" data-living-place-index="${index}">このカードを見る</button>
+            <div class="living-card-candidate-actions">
+              <button type="button" data-living-place-index="${index}">このカードを見る</button>
+              <button class="living-card-video-button" type="button" data-living-video-index="${index}">動画で動線を見る</button>
+            </div>
           </article>
         `).join("")}
       `);
@@ -7778,6 +7869,13 @@
           generateLivingCard(candidate, button);
         });
       });
+      livingCardCandidates.querySelectorAll("[data-living-video-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const candidate = candidates[Number(button.dataset.livingVideoIndex)];
+          if (!candidate) return;
+          generateAerialCard(candidate, button);
+        });
+      });
     }
 
     function setLivingCardLoading(place) {
@@ -7785,7 +7883,19 @@
       if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
       if (livingCardHeadline) livingCardHeadline.textContent = "Google Mapsの公開情報とお店の空気を読み込み中です。";
       if (livingCardType) livingCardType.textContent = "Living Shop Card";
-      livingCardPreview?.classList.remove("has-street-view", "is-animated");
+      livingCardPreview?.classList.remove("has-street-view", "is-animated", "is-video", "is-video-pending", "is-video-unavailable");
+      if (livingCardVideo) {
+        livingCardVideo.removeAttribute("src");
+        livingCardVideo.load();
+      }
+      if (livingCardVideoState) {
+        livingCardVideoState.innerHTML = `
+          <div>
+            <strong>Cinematic Shop Card</strong>
+            <p>対応するAerial View動画がある場合、ここに3D空撮動画を表示します。</p>
+          </div>
+        `;
+      }
     }
 
     function renderLivingCard(result) {
@@ -7841,6 +7951,72 @@
       }
     }
 
+    function setAerialLoading(place) {
+      if (livingCardMessage) livingCardMessage.textContent = "Cinematic Shop Card動画を確認しています...";
+      if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
+      if (livingCardHeadline) livingCardHeadline.textContent = "Aerial View APIで、使える3D空撮動画があるか確認しています。";
+      if (livingCardType) livingCardType.textContent = "Cinematic Shop Card β";
+      livingCardPreview?.classList.remove("has-street-view", "is-animated", "is-video", "is-video-unavailable");
+      livingCardPreview?.classList.add("is-video-pending");
+      if (livingCardVideo) {
+        livingCardVideo.removeAttribute("src");
+        livingCardVideo.load();
+      }
+      if (livingCardVideoState) {
+        livingCardVideoState.innerHTML = `
+          <div>
+            <strong>動画を確認しています</strong>
+            <p>Aerial View対応地域では、既存動画を取得するか、新規レンダリングを開始します。</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderAerialCard(result) {
+      const place = result.place || {};
+      const video = result.video || {};
+      if (livingCardName) livingCardName.textContent = place.name || "Cinematic Shop Card";
+      if (livingCardType) livingCardType.textContent = "Cinematic Shop Card β";
+      if (livingCardHeadline) livingCardHeadline.textContent = result.status === "active"
+        ? "3D空撮動画で、お店の場所感と周辺の動線を伝えます。"
+        : result.message || "Aerial View動画の状態を確認しています。";
+      if (livingCardMeta) {
+        livingCardMeta.innerHTML = `
+          <b>${escapeHtml(place.address || result.address || "住所未取得")}</b>
+          <small>${result.video_id ? `videoId: ${escapeHtml(result.video_id)}` : "Aerial View API β / 対応地域のみ"}</small>
+        `;
+      }
+      if (livingCardTags) {
+        livingCardTags.innerHTML = ["空撮", "動線", "Pro"].map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+      }
+      if (livingCardAttribution) {
+        livingCardAttribution.textContent = result.attribution || "Aerial View imagery: Google Maps";
+      }
+
+      livingCardPreview?.classList.remove("has-street-view", "is-animated", "is-video-pending", "is-video-unavailable");
+      if (result.status === "active" && video.landscape_uri && livingCardVideo) {
+        livingCardVideo.src = video.landscape_uri;
+        livingCardVideo.poster = video.thumbnail_uri || "";
+        livingCardVideo.load();
+        livingCardVideo.play?.().catch(() => {});
+        livingCardPreview?.classList.add("is-video");
+        if (livingCardMessage) livingCardMessage.textContent = "Cinematic Shop Card動画を表示しました。";
+        return;
+      }
+
+      livingCardPreview?.classList.add(result.status === "processing" ? "is-video-pending" : "is-video-unavailable");
+      if (livingCardVideoState) {
+        const title = result.status === "processing" ? "動画を生成中です" : "この住所では動画を表示できません";
+        livingCardVideoState.innerHTML = `
+          <div>
+            <strong>${escapeHtml(title)}</strong>
+            <p>${escapeHtml(result.message || "対象地域や住所形式に制限があります。Street View Cardをご利用ください。")}</p>
+          </div>
+        `;
+      }
+      if (livingCardMessage) livingCardMessage.textContent = result.message || "Aerial View動画はまだ表示できません。";
+    }
+
     async function generateLivingCard(candidate, button) {
       setLivingCardLoading(candidate);
       const buttons = livingCardCandidates?.querySelectorAll("button") || [];
@@ -7861,6 +8037,39 @@
       } finally {
         buttons.forEach((item) => { item.disabled = false; });
         if (button) button.textContent = originalText || "このカードを見る";
+      }
+    }
+
+    async function generateAerialCard(candidate, button) {
+      setAerialLoading(candidate);
+      const buttons = livingCardCandidates?.querySelectorAll("button") || [];
+      buttons.forEach((item) => { item.disabled = true; });
+      const originalText = button?.textContent || "";
+      if (button) button.textContent = "動画を確認中...";
+      try {
+        const response = await fetch("/api/place-search?action=aerial-card", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ candidate })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || "動画を確認できませんでした。");
+        renderAerialCard(result);
+      } catch (error) {
+        livingCardPreview?.classList.remove("is-video", "is-video-pending");
+        livingCardPreview?.classList.add("is-video-unavailable");
+        if (livingCardVideoState) {
+          livingCardVideoState.innerHTML = `
+            <div>
+              <strong>動画を確認できませんでした</strong>
+              <p>${escapeHtml(error.message || "時間をおいて再度お試しください。")}</p>
+            </div>
+          `;
+        }
+        if (livingCardMessage) livingCardMessage.textContent = error.message || "動画を確認できませんでした。";
+      } finally {
+        buttons.forEach((item) => { item.disabled = false; });
+        if (button) button.textContent = originalText || "動画で動線を見る";
       }
     }
 

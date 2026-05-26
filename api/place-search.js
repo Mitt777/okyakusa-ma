@@ -58,6 +58,28 @@ function streetViewApiKey() {
   return process.env.GOOGLE_STREET_VIEW_API_KEY || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
 }
 
+function aerialViewApiKey() {
+  return process.env.GOOGLE_AERIAL_VIEW_API_KEY || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
+}
+
+function aerialHeaders(apiKey) {
+  return {
+    "content-type": "application/json",
+    "X-Goog-Api-Key": apiKey
+  };
+}
+
+function pickAerialVideoUri(data) {
+  const uris = data?.uris || {};
+  const video = uris.MP4_HIGH || uris.MP4_MEDIUM || uris.MP4_LOW || {};
+  const image = uris.IMAGE || {};
+  return {
+    landscape_uri: video.landscapeUri || "",
+    portrait_uri: video.portraitUri || "",
+    thumbnail_uri: image.landscapeUri || image.portraitUri || ""
+  };
+}
+
 async function hasStreetView(location) {
   const apiKey = streetViewApiKey();
   if (!apiKey || !location) return false;
@@ -75,6 +97,157 @@ async function hasStreetView(location) {
   } catch (error) {
     return false;
   }
+}
+
+async function lookupAerialVideo(apiKey, params) {
+  const url = new URL("https://aerialview.googleapis.com/v1/videos:lookupVideo");
+  if (params.videoId) url.searchParams.set("videoId", params.videoId);
+  if (params.address) url.searchParams.set("address", params.address);
+
+  const upstream = await fetch(url, {
+    method: "GET",
+    headers: aerialHeaders(apiKey)
+  });
+  const text = await upstream.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (error) {
+    data = { raw: text };
+  }
+  return { ok: upstream.ok, status: upstream.status, data };
+}
+
+async function renderAerialVideo(apiKey, address) {
+  const url = new URL("https://aerialview.googleapis.com/v1/videos:renderVideo");
+  const upstream = await fetch(url, {
+    method: "POST",
+    headers: aerialHeaders(apiKey),
+    body: JSON.stringify({ address })
+  });
+  const text = await upstream.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (error) {
+    data = { raw: text };
+  }
+  return { ok: upstream.ok, status: upstream.status, data };
+}
+
+async function sendAerialCard(request, response) {
+  const apiKey = aerialViewApiKey();
+  if (!apiKey) {
+    return sendJson(response, 200, {
+      ok: true,
+      configured: false,
+      mode: "aerial",
+      status: "not_configured",
+      message: "Aerial View APIキーが未設定です。GOOGLE_AERIAL_VIEW_API_KEYを設定すると試せます。"
+    });
+  }
+
+  const body = await readJsonBody(request);
+  const place = normalizeCardPlace(body.place || body.candidate || {});
+  const address = compact(body.address || place.address);
+  if (!address) {
+    return sendJson(response, 400, {
+      ok: false,
+      message: "Aerial View用の住所が取得できませんでした。"
+    });
+  }
+
+  const lookup = await lookupAerialVideo(apiKey, { address });
+  let data = lookup.data;
+  let source = "lookup";
+
+  if (!lookup.ok && lookup.status === 404) {
+    const render = await renderAerialVideo(apiKey, address);
+    data = render.data;
+    source = "render";
+
+    const videoId = data?.metadata?.videoId || data?.videoId || "";
+    if (render.ok && data?.state === "ACTIVE" && videoId) {
+      const activeLookup = await lookupAerialVideo(apiKey, { videoId });
+      if (activeLookup.ok) {
+        data = activeLookup.data;
+        source = "render_lookup";
+      }
+    } else if (!render.ok) {
+      const status = data?.error?.status || "";
+      const message = status === "INVALID_ARGUMENT"
+        ? "Aerial Viewは現在、対応地域や住所形式に制限があります。この店舗ではStreet View Cardをご利用ください。"
+        : data?.error?.message || "Aerial View動画を生成できませんでした。";
+      return sendJson(response, 200, {
+        ok: true,
+        configured: true,
+        mode: "aerial",
+        status: "unavailable",
+        place,
+        address,
+        message,
+        detail_status: status,
+        attribution: "Aerial View imagery: Google Maps"
+      });
+    }
+  } else if (!lookup.ok) {
+    return sendJson(response, 200, {
+      ok: true,
+      configured: true,
+      mode: "aerial",
+      status: "unavailable",
+      place,
+      address,
+      message: data?.error?.message || "Aerial View動画を取得できませんでした。",
+      detail_status: data?.error?.status || "",
+      attribution: "Aerial View imagery: Google Maps"
+    });
+  }
+
+  const video = pickAerialVideoUri(data);
+  const videoId = data?.metadata?.videoId || data?.videoId || "";
+  if (data?.state === "ACTIVE" && video.landscape_uri) {
+    return sendJson(response, 200, {
+      ok: true,
+      configured: true,
+      mode: "aerial",
+      status: "active",
+      source,
+      place,
+      address,
+      video_id: videoId,
+      video,
+      message: "Cinematic Shop Card動画を表示できます。",
+      attribution: "Aerial View imagery: Google Maps"
+    });
+  }
+
+  if (data?.state === "PROCESSING") {
+    return sendJson(response, 200, {
+      ok: true,
+      configured: true,
+      mode: "aerial",
+      status: "processing",
+      source,
+      place,
+      address,
+      video_id: videoId,
+      message: "Aerial View動画を生成中です。完了まで1時間から数時間かかる場合があります。",
+      attribution: "Aerial View imagery: Google Maps"
+    });
+  }
+
+  return sendJson(response, 200, {
+    ok: true,
+    configured: true,
+    mode: "aerial",
+    status: "unavailable",
+    source,
+    place,
+    address,
+    message: "この住所ではAerial View動画をまだ表示できません。",
+    attribution: "Aerial View imagery: Google Maps"
+  });
 }
 
 async function sendStreetView(request, response) {
@@ -154,6 +327,10 @@ module.exports = async function handler(request, response) {
 
     if (action === "living-card") {
       return sendLivingCard(request, response);
+    }
+
+    if (action === "aerial-card") {
+      return sendAerialCard(request, response);
     }
 
     const body = await readJsonBody(request);
