@@ -1750,6 +1750,46 @@
       line-height: 1.7;
     }
 
+    .card-language-note .english-mini-card {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      border-top: 1px solid rgba(63, 138, 109, .18);
+      padding-top: 12px;
+    }
+
+    .card-language-note .english-mini-card small {
+      color: #365449;
+    }
+
+    .card-language-note .english-mini-card strong {
+      margin-top: 0;
+      color: #1f2937;
+      font-size: 18px;
+    }
+
+    .card-language-note .english-mini-card p {
+      margin: 0;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .card-language-note .english-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card-language-note .english-tags span {
+      border-radius: 999px;
+      background: #eef7f2;
+      color: #27624d;
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
     .card-only-view .card-language-note {
       display: block;
     }
@@ -4361,13 +4401,38 @@
       return "ja";
     }
 
+    function buildEnglishMiniCardCopy() {
+      const storeName = shareContext?.storeName || "This place";
+      const primary = worldviewShareResult?.primaryName || "Atmospheric";
+      const secondary = worldviewShareResult?.secondaryName || "local";
+      const typeTitle = worldviewShareResult?.typeTitle || `${primary} x ${secondary}`;
+      const lowerPrimary = String(primary).replace(/型$/, "");
+      return {
+        title: storeName,
+        headline: `A ${lowerPrimary} shop card with a local sense of place.`,
+        body: `This card introduces the atmosphere of ${storeName} in a simple way for first-time visitors. It is useful before visiting, sharing with friends, or checking the mood of the place.`,
+        type: typeTitle,
+        tags: ["First visit", "Local feel", "Shop card"]
+      };
+    }
+
     function renderCardLanguageNote() {
       const copy = CARD_I18N[cardLanguageKey()] || CARD_I18N.ja;
+      const english = buildEnglishMiniCardCopy();
       return `
         <div class="card-language-note">
           <small>${escapeHtml(copy.label)}</small>
           <strong>${escapeHtml(copy.title)}</strong>
           <p>${escapeHtml(copy.body)}</p>
+          <div class="english-mini-card" lang="en">
+            <small>English mini card</small>
+            <strong>${escapeHtml(english.title)}</strong>
+            <p>${escapeHtml(english.headline)}<br>${escapeHtml(english.body)}</p>
+            <div class="english-tags">
+              <span>${escapeHtml(english.type)}</span>
+              ${english.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
+            </div>
+          </div>
         </div>
       `;
     }
