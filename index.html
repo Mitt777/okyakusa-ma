@@ -6162,6 +6162,13 @@
       setMeta("description", cleanDescription);
       setMeta("og:title", `${cleanTitle} | map-s`, "property");
       setMeta("og:description", cleanDescription, "property");
+      const mapId = mapsBuilderRemoteMapId();
+      if (mapsBuilderIsPublicPage() && mapId) {
+        const ogImage = `${location.origin}/api/og-map?mapId=${encodeURIComponent(mapId)}`;
+        setMeta("og:image", ogImage, "property");
+        setMeta("twitter:image", ogImage);
+        setMeta("twitter:card", "summary_large_image");
+      }
     }
 
     function mapsBuilderSetCanonical(url) {
