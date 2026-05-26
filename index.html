@@ -2929,6 +2929,354 @@
       box-shadow: 0 12px 24px rgba(31, 138, 112, .24);
     }
 
+    .living-card-lab {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+      gap: 22px;
+      align-items: stretch;
+      max-width: 1000px;
+      margin: 24px auto 22px;
+      text-align: left;
+    }
+
+    .living-card-copy,
+    .living-card-preview-wrap {
+      border: 1px solid rgba(183, 197, 206, .88);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: 0 18px 46px rgba(30, 44, 57, .1);
+    }
+
+    .living-card-copy {
+      padding: 22px;
+    }
+
+    .living-card-kicker {
+      display: inline-flex;
+      margin-bottom: 10px;
+      border: 1px solid #d7b77b;
+      border-radius: 999px;
+      background: #fff7e6;
+      color: #7b4e13;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .living-card-copy h2 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3.4vw, 38px);
+      line-height: 1.16;
+    }
+
+    .living-card-copy p {
+      margin: 0;
+      color: #536172;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .living-card-form {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .living-card-form label {
+      color: #344054;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .living-card-search {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      border: 1px solid #cbd6e2;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+    }
+
+    .living-card-search input {
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      padding: 12px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+    }
+
+    .living-card-search button,
+    .living-card-candidate button {
+      border: 1px solid var(--green);
+      border-radius: 7px;
+      background: var(--green);
+      color: #fff;
+      padding: 11px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .living-card-message {
+      min-height: 18px;
+      color: #7b4e13;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .living-card-candidates {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #d9e2ee;
+      border-radius: 8px;
+      background: #f8fbfd;
+      padding: 12px;
+    }
+
+    .living-card-candidates.is-open {
+      display: grid;
+      gap: 8px;
+    }
+
+    .living-card-candidates > strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .living-card-candidates > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .living-card-candidate {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid #dce5ee;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .living-card-candidate b,
+    .living-card-candidate span,
+    .living-card-candidate small {
+      display: block;
+    }
+
+    .living-card-candidate b {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .living-card-candidate span {
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .living-card-candidate small {
+      margin-top: 4px;
+      color: #27624d;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .living-service-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .living-service-flow a {
+      border: 1px solid #dce5ee;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 9px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .living-service-flow b,
+    .living-service-flow span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .living-service-flow b {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .living-service-flow span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .living-card-preview-wrap {
+      padding: 14px;
+    }
+
+    .living-card-preview {
+      position: relative;
+      display: grid;
+      align-content: end;
+      min-height: 540px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, #243447 0%, #49635f 48%, #d9b871 100%);
+      color: #fff;
+      box-shadow: 0 24px 54px rgba(23, 32, 44, .18);
+      isolation: isolate;
+    }
+
+    .living-card-bg,
+    .living-card-shade {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .living-card-bg {
+      background:
+        linear-gradient(135deg, rgba(31, 138, 112, .32), rgba(36, 91, 219, .18)),
+        url("/assets/worldview-cards/worldview_immersion-restaurant.jpg") center / cover;
+      transform: scale(1.04);
+      opacity: .82;
+      transition: opacity .45s ease;
+    }
+
+    .living-card-preview.has-street-view .living-card-bg {
+      opacity: 1;
+    }
+
+    .living-card-preview.is-animated .living-card-bg {
+      animation: livingCardDrift 7s ease-out both;
+    }
+
+    .living-card-shade {
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(15, 18, 24, .08) 0%, rgba(15, 18, 24, .28) 46%, rgba(15, 18, 24, .78) 100%);
+    }
+
+    .living-card-panel {
+      margin: 0 16px 38px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      border-radius: 8px;
+      background: rgba(19, 27, 36, .62);
+      padding: 18px;
+      backdrop-filter: blur(14px);
+      transform: translateY(0);
+    }
+
+    .living-card-preview.is-animated .living-card-panel {
+      animation: livingPanelRise .9s ease-out both;
+    }
+
+    .living-card-panel span {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .16);
+      color: #fff7e6;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .living-card-panel h3 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+      line-height: 1.12;
+    }
+
+    .living-card-panel p {
+      margin: 0;
+      color: rgba(255, 255, 255, .9);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .living-card-meta {
+      display: grid;
+      gap: 2px;
+      margin-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, .18);
+      padding-top: 12px;
+    }
+
+    .living-card-meta b {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .living-card-meta small {
+      color: rgba(255, 255, 255, .76);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .living-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .living-card-tags span {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .18);
+      padding: 5px 8px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .living-card-attribution {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      color: rgba(255, 255, 255, .78);
+      font-size: 10px;
+      font-weight: 800;
+      text-align: right;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+    }
+
+    .living-card-attribution a {
+      color: rgba(255, 255, 255, .92);
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    @keyframes livingCardDrift {
+      from { transform: scale(1.09) translate3d(-10px, 8px, 0); }
+      to { transform: scale(1.02) translate3d(6px, -4px, 0); }
+    }
+
+    @keyframes livingPanelRise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .step-line {
       display: flex;
       align-items: center;
@@ -3570,6 +3918,22 @@
       }
 
       .search-box button {
+        width: 100%;
+      }
+
+      .living-card-lab,
+      .living-card-search,
+      .living-card-candidate,
+      .living-service-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .living-card-preview {
+        min-height: 480px;
+      }
+
+      .living-card-search button,
+      .living-card-candidate button {
         width: 100%;
       }
 
@@ -4421,6 +4785,7 @@
         <span>えらばれる店スコア診断</span>
       </div>
       <nav aria-label="主要ナビゲーション">
+        <a href="#living-shop-card">カードを見る</a>
         <a href="#diagnosis-scope">診断でわかること</a>
         <a href="#">β版について</a>
         <a href="#">料金</a>
@@ -4429,10 +4794,10 @@
 
     <section class="hero" aria-labelledby="main-title">
       <div class="eyebrow">無料診断 β / 店舗向け</div>
-      <h1 id="main-title">お店の見え方を、まず1つの診断窓から。</h1>
+      <h1 id="main-title">Google Mapsから、あなたのお店の一枚ショップカードを。</h1>
       <p class="lead">
-        Google Maps診断、簡易SEO診断、口コミ、公式サイト、Instagram、SNS動画、来店前不安をまとめて確認し、
-        「本来来てほしいお客様に選ばれる状態」へ翻訳します。
+        店名を入れるだけ。Google Mapsの公開情報とお店の空気をもとに、
+        初めてのお客様に伝わる “動く一枚ショップカード” をつくります。
       </p>
 
       <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
@@ -4450,6 +4815,51 @@
           <p>診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
         </div>
       </div>
+
+      <section class="living-card-lab" id="living-shop-card" aria-labelledby="living-card-title">
+        <div class="living-card-copy">
+          <span class="living-card-kicker">Living Shop Card β</span>
+          <h2 id="living-card-title">動く一枚ショップカードを、まず見てみる。</h2>
+          <p>
+            写真も動画も用意しなくて大丈夫です。Google Maps上の公開情報からお店を特定し、
+            外観の見え方と短い世界観コピーを重ねて、持ちたくなるカードの入口を作ります。
+          </p>
+          <form class="living-card-form" id="living-card-form">
+            <label for="living-card-query">店名 + 地域、または Google Maps URL</label>
+            <div class="living-card-search">
+              <input id="living-card-query" name="card_query" placeholder="例: リビングストン 黒磯 / https://maps.google.com/..." autocomplete="off">
+              <button type="submit">自分のお店カードを見る</button>
+            </div>
+            <div class="living-card-message" id="living-card-message" role="status" aria-live="polite"></div>
+          </form>
+          <div class="living-card-candidates" id="living-card-candidates" aria-live="polite"></div>
+          <div class="living-service-flow" aria-label="関連サービスの役割">
+            <a href="https://g-maps.shop/" target="_blank" rel="noopener"><b>g-maps.shop</b><span>気づく</span></a>
+            <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener"><b>okyakusa-ma.com</b><span>欲しくなる</span></a>
+            <a href="https://map-s.site/" target="_blank" rel="noopener"><b>map-s.site</b><span>貼って使う</span></a>
+            <a href="https://air-s.jp/" target="_blank" rel="noopener"><b>air-s.jp</b><span>記憶になる</span></a>
+          </div>
+        </div>
+        <div class="living-card-preview-wrap">
+          <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
+            <div class="living-card-bg" id="living-card-bg"></div>
+            <div class="living-card-shade"></div>
+            <div class="living-card-panel">
+              <span id="living-card-type">Living Shop Card</span>
+              <h3 id="living-card-name">あなたのお店</h3>
+              <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
+              <div class="living-card-meta" id="living-card-meta">
+                <b>公開情報から生成</b>
+                <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
+              </div>
+              <div class="living-card-tags" id="living-card-tags">
+                <span>外観</span><span>世界観</span><span>初来店</span>
+              </div>
+            </div>
+            <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
+          </article>
+        </div>
+      </section>
 
       <div class="search-stage" aria-label="無料診断申込フォーム">
         <div class="step-line">
@@ -7258,6 +7668,18 @@
     const placeSearchButton = document.querySelector("#place-search-button");
     const placeCandidates = document.querySelector("#place-candidates");
     const formStepHint = document.querySelector("#form-step-hint");
+    const livingCardForm = document.querySelector("#living-card-form");
+    const livingCardQuery = document.querySelector("#living-card-query");
+    const livingCardMessage = document.querySelector("#living-card-message");
+    const livingCardCandidates = document.querySelector("#living-card-candidates");
+    const livingCardPreview = document.querySelector("#living-card-preview");
+    const livingCardBg = document.querySelector("#living-card-bg");
+    const livingCardType = document.querySelector("#living-card-type");
+    const livingCardName = document.querySelector("#living-card-name");
+    const livingCardHeadline = document.querySelector("#living-card-headline");
+    const livingCardMeta = document.querySelector("#living-card-meta");
+    const livingCardTags = document.querySelector("#living-card-tags");
+    const livingCardAttribution = document.querySelector("#living-card-attribution");
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -7267,6 +7689,176 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
     }
+
+    function openLivingCandidates(html) {
+      if (!livingCardCandidates) return;
+      livingCardCandidates.classList.add("is-open");
+      livingCardCandidates.innerHTML = html;
+    }
+
+    function livingCandidateMeta(candidate) {
+      const parts = [];
+      if (candidate.category) parts.push(candidate.category);
+      if (typeof candidate.rating === "number") {
+        parts.push(`評価 ${candidate.rating}${candidate.user_rating_count ? ` / 口コミ ${candidate.user_rating_count}件` : ""}`);
+      }
+      if (candidate.photos_count) parts.push(`写真 ${candidate.photos_count}件以上`);
+      return parts.join("・") || "Google Maps公開情報";
+    }
+
+    function renderLivingCardCandidates(candidates) {
+      if (!livingCardCandidates) return;
+      if (!candidates.length) {
+        openLivingCandidates(`
+          <strong>候補が見つかりませんでした</strong>
+          <p>店名に地域名を足すか、Google Maps URLを貼ってもう一度試してください。</p>
+        `);
+        return;
+      }
+
+      openLivingCandidates(`
+        <strong>どのお店のカードを見ますか？</strong>
+        <p>Google Maps上の公開情報をもとにカードを仮生成します。内部のGoogle Business Profile情報は使いません。</p>
+        ${candidates.map((candidate, index) => `
+          <article class="living-card-candidate">
+            <div>
+              <b>${escapeHtml(candidate.name || "名称未取得")}</b>
+              <span>${escapeHtml(candidate.address || "住所未取得")}</span>
+              <small>${escapeHtml(livingCandidateMeta(candidate))}</small>
+            </div>
+            <button type="button" data-living-place-index="${index}">このカードを見る</button>
+          </article>
+        `).join("")}
+      `);
+
+      livingCardCandidates.querySelectorAll("[data-living-place-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const candidate = candidates[Number(button.dataset.livingPlaceIndex)];
+          if (!candidate) return;
+          generateLivingCard(candidate, button);
+        });
+      });
+    }
+
+    function setLivingCardLoading(place) {
+      if (livingCardMessage) livingCardMessage.textContent = "カードを生成しています...";
+      if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
+      if (livingCardHeadline) livingCardHeadline.textContent = "Google Mapsの公開情報とお店の空気を読み込み中です。";
+      if (livingCardType) livingCardType.textContent = "Living Shop Card";
+      livingCardPreview?.classList.remove("has-street-view", "is-animated");
+    }
+
+    function renderLivingCard(result) {
+      const place = result.place || {};
+      const copy = result.copy || {};
+      const visual = result.visual || {};
+      const tags = Array.isArray(copy.accent_words) && copy.accent_words.length
+        ? copy.accent_words
+        : ["外観", "世界観", "初来店"];
+
+      if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
+      if (livingCardType) livingCardType.textContent = copy.worldview_label || "Living Shop Card";
+      if (livingCardHeadline) livingCardHeadline.textContent = copy.headline || "お店らしさを一枚に整えます。";
+      if (livingCardMeta) {
+        const address = place.address || "住所未取得";
+        const category = place.category || "カテゴリ未取得";
+        const rating = typeof place.rating === "number" ? `評価 ${place.rating}` : "評価未取得";
+        livingCardMeta.innerHTML = `
+          <b>${escapeHtml(category)} / ${escapeHtml(address)}</b>
+          <small>${escapeHtml(rating)}${place.user_rating_count ? ` / 口コミ ${escapeHtml(place.user_rating_count)}件` : ""}${place.photos_count ? ` / 写真 ${escapeHtml(place.photos_count)}件以上` : ""}</small>
+        `;
+      }
+      if (livingCardTags) {
+        livingCardTags.innerHTML = tags.slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+      }
+
+      if (livingCardBg && visual.street_view_available && visual.street_view_image_url) {
+        livingCardBg.style.background = `linear-gradient(135deg, rgba(31, 138, 112, .16), rgba(23, 32, 44, .2)), url("${visual.street_view_image_url}") center / cover`;
+        livingCardPreview?.classList.add("has-street-view");
+        if (livingCardAttribution) {
+          const mapsLink = result.attribution?.google_maps_url
+            ? ` <a href="${escapeHtml(result.attribution.google_maps_url)}" target="_blank" rel="noopener">Google Mapsで確認</a>`
+            : "";
+          livingCardAttribution.innerHTML = `Map data and Street View imagery: Google Maps.${mapsLink}`;
+        }
+      } else {
+        livingCardBg?.removeAttribute("style");
+        livingCardPreview?.classList.remove("has-street-view");
+        if (livingCardAttribution) {
+          livingCardAttribution.textContent = "Street Viewを取得できない場合は、公開情報ベースの静かなカードに切り替えています。";
+        }
+      }
+
+      const hasAnimated = sessionStorage.getItem("okm_living_card_animated") === "1";
+      if (!hasAnimated) {
+        livingCardPreview?.classList.add("is-animated");
+        sessionStorage.setItem("okm_living_card_animated", "1");
+      }
+      if (livingCardMessage) {
+        livingCardMessage.textContent = visual.street_view_available
+          ? "Street View背景のカードを仮生成しました。"
+          : "Street Viewが使えないため、フォールバックカードで表示しています。";
+      }
+    }
+
+    async function generateLivingCard(candidate, button) {
+      setLivingCardLoading(candidate);
+      const buttons = livingCardCandidates?.querySelectorAll("button") || [];
+      buttons.forEach((item) => { item.disabled = true; });
+      const originalText = button?.textContent || "";
+      if (button) button.textContent = "生成中...";
+      try {
+        const response = await fetch("/api/living-card", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ candidate })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || "カード生成に失敗しました。");
+        renderLivingCard(result);
+      } catch (error) {
+        if (livingCardMessage) livingCardMessage.textContent = error.message || "カード生成に失敗しました。";
+      } finally {
+        buttons.forEach((item) => { item.disabled = false; });
+        if (button) button.textContent = originalText || "このカードを見る";
+      }
+    }
+
+    livingCardForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = livingCardQuery?.value.trim() || "";
+      if (!query) {
+        if (livingCardMessage) livingCardMessage.textContent = "店名 + 地域、またはGoogle Maps URLを入力してください。";
+        return;
+      }
+      const submitButton = livingCardForm.querySelector("button[type='submit']");
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "候補を確認中...";
+      }
+      if (livingCardMessage) livingCardMessage.textContent = "";
+      try {
+        const response = await fetch("/api/place-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ store_query: query })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || "候補を取得できませんでした。");
+        renderLivingCardCandidates(result.candidates || []);
+      } catch (error) {
+        openLivingCandidates(`
+          <strong>候補確認ができませんでした</strong>
+          <p>${escapeHtml(error.message || "時間をおいて再度お試しください。")}</p>
+        `);
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "自分のお店カードを見る";
+        }
+      }
+    });
+
     const urlHelp = {
       maps: {
         title: "Google Maps URLの調べかた",

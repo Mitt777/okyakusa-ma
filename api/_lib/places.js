@@ -6,6 +6,7 @@ const BASIC_FIELD_MASKS = [
   "places.displayName",
   "places.formattedAddress",
   "places.shortFormattedAddress",
+  "places.location",
   "places.primaryType",
   "places.primaryTypeDisplayName",
   "places.types",
@@ -129,6 +130,10 @@ function normalizePlace(place) {
     resource_name: place.name || "",
     name: toText(place.displayName),
     address: place.formattedAddress || place.shortFormattedAddress || "",
+    location: place.location ? {
+      latitude: typeof place.location.latitude === "number" ? place.location.latitude : null,
+      longitude: typeof place.location.longitude === "number" ? place.location.longitude : null
+    } : null,
     primary_type: place.primaryType || "",
     primary_type_label: toText(place.primaryTypeDisplayName),
     types: Array.isArray(place.types) ? place.types : [],

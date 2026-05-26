@@ -194,7 +194,83 @@ async function generateDiagnosisJson(input, placesObservation) {
   };
 }
 
+function fallbackLivingCardCopy(place) {
+  const name = place?.name || "このお店";
+  const category = place?.primary_type_label || place?.category || "お店";
+  const area = place?.address ? place.address.split(/[、,]/)[0] : "";
+  return {
+    generated_by: "fallback",
+    headline: `${name}の空気が、入口から伝わる一枚に。`,
+    subcopy: `${area ? `${area}の` : ""}${category}として見えている公開情報をもとに、初めてのお客様が雰囲気を想像しやすいショップカードに整えます。`,
+    worldview_type: "craft_trust",
+    worldview_label: "手ざわりのある信頼",
+    accent_words: ["外観", "安心感", "お店らしさ"]
+  };
+}
+
+function buildLivingCardPrompt(place) {
+  return `
+あなたは okyakusa-ma.com の Living Shop Card コピーライターです。
+Google Maps上の公開情報だけを材料に、店主が「自分のお店もこんなふうに見えるの？」と思える短いカードコピーJSONを作ってください。
+
+重要:
+- Google公式サービスのような表現にしない
+- 断定しすぎない
+- SEO/MEO業者っぽい言葉にしない
+- 店舗の内部情報や未確認情報を足さない
+- 15秒で読める、温かいが軽いコピーにする
+
+店舗公開情報:
+${JSON.stringify(place, null, 2)}
+
+次のJSONだけを返してください。余計な説明は禁止です。
+{
+  "generated_by": "gemini",
+  "headline": "string",
+  "subcopy": "string",
+  "worldview_type": "craft_trust|worldview_immersion|daily_companion|local_community|entry_anxiety_relief|tourism_destination|quiet_resonance|live_impulse",
+  "worldview_label": "string",
+  "accent_words": ["string", "string", "string"]
+}`;
+}
+
+async function generateLivingCardCopy(place) {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+  if (!apiKey) return fallbackLivingCardCopy(place);
+
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: buildLivingCardPrompt(place) }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.48,
+          responseMimeType: "application/json"
+        }
+      })
+    });
+
+    if (!response.ok) return fallbackLivingCardCopy(place);
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("") || "";
+    return extractJson(text);
+  } catch (error) {
+    return fallbackLivingCardCopy(place);
+  }
+}
+
 module.exports = {
   fallbackDiagnosis,
-  generateDiagnosisJson
+  generateDiagnosisJson,
+  generateLivingCardCopy
 };

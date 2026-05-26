@@ -10,6 +10,7 @@ function candidatePayload(place) {
     place_id: place.place_id || "",
     name: place.name || "",
     address: place.address || "",
+    location: place.location || null,
     category: place.primary_type_label || place.primary_type || "",
     rating: place.rating,
     user_rating_count: place.user_rating_count,
