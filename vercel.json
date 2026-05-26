@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/m/:mapId",
-      "destination": "/?maps-preview=1&mapId=:mapId"
+      "destination": "/api/maps?public=1&mapId=:mapId"
     },
     {
       "source": "/embed/:mapId",

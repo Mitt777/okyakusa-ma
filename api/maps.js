@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const { readJsonBody, sendJson } = require("./_lib/response");
 
 const MAX_STORES = 100;
@@ -89,6 +91,14 @@ function publicBaseUrl(request) {
   const host = request.headers["x-forwarded-host"] || request.headers.host || "map-s.site";
   const proto = request.headers["x-forwarded-proto"] || "https";
   return `${proto}://${host}`;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function buildProject(body) {
@@ -183,6 +193,38 @@ async function sendStaticMapImage(project, response) {
   return response.status(200).send(body);
 }
 
+function publicMapHtml(project, mapId, request) {
+  const baseUrl = publicBaseUrl(request);
+  const pageUrl = `${baseUrl}/m/${encodeURIComponent(mapId)}`;
+  const imageUrl = `${baseUrl}/api/maps?og=1&amp;mapId=${escapeHtml(encodeURIComponent(mapId))}`;
+  const title = escapeHtml(`${project.title || "店舗MAP"} | map-s`);
+  const description = escapeHtml(project.description || "Google Maps由来の店舗情報を、軽い公開MAPとしてまとめました。");
+  const canonical = escapeHtml(pageUrl);
+  const meta = `
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="map-s">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:image" content="${imageUrl}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description}">
+  <meta name="twitter:image" content="${imageUrl}">`;
+  const htmlPath = path.join(process.cwd(), "index.html");
+  let html = fs.readFileSync(htmlPath, "utf8");
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  html = html.replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${description}">`);
+  return html.replace("</head>", `${meta}\n</head>`);
+}
+
+function sendPublicMapHtml(project, mapId, request, response) {
+  response.setHeader("content-type", "text/html; charset=utf-8");
+  response.setHeader("cache-control", "public, max-age=0, must-revalidate");
+  return response.status(200).send(publicMapHtml(project, mapId, request));
+}
+
 module.exports = async function handler(request, response) {
   try {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -200,6 +242,9 @@ module.exports = async function handler(request, response) {
       if (!project) return sendJson(response, 404, { ok: false, error: "MAPが見つかりませんでした。" });
       if (url.searchParams.get("og") === "1" || request.query?.og === "1") {
         return sendStaticMapImage(project, response);
+      }
+      if (url.searchParams.get("public") === "1" || request.query?.public === "1") {
+        return sendPublicMapHtml(project, mapId, request, response);
       }
       return sendJson(response, 200, { ok: true, project });
     }
