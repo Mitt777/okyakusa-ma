@@ -3420,8 +3420,38 @@
     }
 
     .living-card-meta small {
-      color: rgba(255, 255, 255, .76);
+      color: #667085;
       font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .living-card-english {
+      display: none;
+      gap: 5px;
+      grid-column: 1 / -1;
+      border-top: 1px solid #edf1f5;
+      padding-top: 8px;
+    }
+
+    .living-card-english.is-visible {
+      display: grid;
+    }
+
+    .living-card-english strong,
+    .living-card-english p {
+      margin: 0;
+    }
+
+    .living-card-english strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .living-card-english p {
+      color: #536172;
+      font-size: 11px;
+      font-weight: 750;
       line-height: 1.55;
     }
 
@@ -5254,6 +5284,10 @@
             <div class="living-card-meta" id="living-card-meta">
               <b>公開情報から生成</b>
               <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
+            </div>
+            <div class="living-card-english" id="living-card-english" lang="en">
+              <strong>English mini card</strong>
+              <p>Short English copy will appear here after generation.</p>
             </div>
             <div class="living-card-tags" id="living-card-tags">
               <span>外観</span><span>世界観</span><span>初来店</span>
@@ -7937,6 +7971,7 @@
     const livingCardName = document.querySelector("#living-card-name");
     const livingCardHeadline = document.querySelector("#living-card-headline");
     const livingCardMeta = document.querySelector("#living-card-meta");
+    const livingCardEnglish = document.querySelector("#living-card-english");
     const livingCardTags = document.querySelector("#living-card-tags");
     const livingCardAttribution = document.querySelector("#living-card-attribution");
 
@@ -8044,6 +8079,7 @@
       if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
       if (livingCardHeadline) livingCardHeadline.textContent = "Google Mapsの公開情報とお店の空気を読み込み中です。";
       if (livingCardType) livingCardType.textContent = "Living Shop Card";
+      livingCardEnglish?.classList.remove("is-visible");
       livingCardPreview?.classList.remove("has-street-view", "is-animated", "is-video", "is-video-pending", "is-video-unavailable");
       livingCardPreviewWrap?.classList.remove("is-aerial-active");
       if (livingCardVideo) {
@@ -8079,6 +8115,17 @@
           <b>${escapeHtml(category)} / ${escapeHtml(address)}</b>
           <small>${escapeHtml(rating)}${place.user_rating_count ? ` / 口コミ ${escapeHtml(place.user_rating_count)}件` : ""}${place.photos_count ? ` / 写真 ${escapeHtml(place.photos_count)}件以上` : ""}</small>
         `;
+      }
+      if (livingCardEnglish) {
+        const english = copy.english_card || {};
+        const hasEnglish = english.headline || english.subcopy;
+        livingCardEnglish.classList.toggle("is-visible", Boolean(hasEnglish));
+        livingCardEnglish.innerHTML = hasEnglish
+          ? `
+            <strong>${escapeHtml(english.title || "English mini card")}</strong>
+            <p>${escapeHtml(english.headline || "")}${english.subcopy ? `<br>${escapeHtml(english.subcopy)}` : ""}</p>
+          `
+          : "";
       }
       if (livingCardTags) {
         livingCardTags.innerHTML = tags.slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
@@ -8118,6 +8165,7 @@
       if (livingCardName) livingCardName.textContent = place.name || "選択したお店";
       if (livingCardHeadline) livingCardHeadline.textContent = "Aerial View APIで、使える3D空撮動画があるか確認しています。";
       if (livingCardType) livingCardType.textContent = "Cinematic Shop Card β";
+      livingCardEnglish?.classList.remove("is-visible");
       livingCardPreview?.classList.remove("has-street-view", "is-animated", "is-video", "is-video-unavailable");
       livingCardPreviewWrap?.classList.remove("is-aerial-active");
       livingCardPreview?.classList.add("is-video-pending");

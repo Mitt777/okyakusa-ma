@@ -204,7 +204,13 @@ function fallbackLivingCardCopy(place) {
     subcopy: `${area ? `${area}の` : ""}${category}として見えている公開情報をもとに、初めてのお客様が雰囲気を想像しやすいショップカードに整えます。`,
     worldview_type: "craft_trust",
     worldview_label: "手ざわりのある信頼",
-    accent_words: ["外観", "安心感", "お店らしさ"]
+    accent_words: ["外観", "安心感", "お店らしさ"],
+    english_card: {
+      title: name,
+      headline: `A ${category} that feels easy to approach from the first look.`,
+      subcopy: "This mini card is based on publicly visible Google Maps information and helps first-time visitors understand the atmosphere before they arrive.",
+      tags: ["First visit", "Local feel", "Easy to find"]
+    }
   };
 }
 
@@ -219,6 +225,8 @@ Google Maps上の公開情報だけを材料に、店主が「自分のお店も
 - SEO/MEO業者っぽい言葉にしない
 - 店舗の内部情報や未確認情報を足さない
 - 15秒で読める、温かいが軽いコピーにする
+- 日本語カードに加えて、訪日客が一瞬で理解できる短い英語ミニカードも作る
+- 英語は自然で簡潔に。誇張、断定、医療・安全保証、Google公式風表現は禁止
 
 店舗公開情報:
 ${JSON.stringify(place, null, 2)}
@@ -230,7 +238,13 @@ ${JSON.stringify(place, null, 2)}
   "subcopy": "string",
   "worldview_type": "craft_trust|worldview_immersion|daily_companion|local_community|entry_anxiety_relief|tourism_destination|quiet_resonance|live_impulse",
   "worldview_label": "string",
-  "accent_words": ["string", "string", "string"]
+  "accent_words": ["string", "string", "string"],
+  "english_card": {
+    "title": "string",
+    "headline": "string",
+    "subcopy": "string",
+    "tags": ["string", "string", "string"]
+  }
 }`;
 }
 
