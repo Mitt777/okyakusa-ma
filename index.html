@@ -3134,7 +3134,9 @@
       position: relative;
       display: grid;
       align-content: end;
+      gap: 10px;
       min-height: 540px;
+      padding-bottom: 34px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,.8);
       border-radius: 8px;
@@ -3172,11 +3174,11 @@
     .living-card-shade {
       z-index: -1;
       background:
-        linear-gradient(180deg, rgba(15, 18, 24, .08) 0%, rgba(15, 18, 24, .28) 46%, rgba(15, 18, 24, .78) 100%);
+        linear-gradient(180deg, rgba(15, 18, 24, .08) 0%, rgba(15, 18, 24, .28) 42%, rgba(15, 18, 24, .86) 100%);
     }
 
     .living-card-panel {
-      margin: 0 16px 38px;
+      margin: 0 16px;
       border: 1px solid rgba(255, 255, 255, .28);
       border-radius: 8px;
       background: rgba(19, 27, 36, .62);
@@ -3249,15 +3251,22 @@
     }
 
     .living-card-attribution {
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      left: 10px;
+      display: inline-block;
+      width: fit-content;
+      max-width: min(520px, calc(100% - 190px));
+      margin: 0 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(15, 18, 24, .58);
+      padding: 5px 9px;
       color: rgba(255, 255, 255, .78);
       font-size: 10px;
       font-weight: 800;
-      text-align: right;
+      line-height: 1.35;
+      text-align: left;
       text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .living-card-attribution a {
@@ -3930,6 +3939,12 @@
 
       .living-card-preview {
         min-height: 480px;
+        padding-bottom: 28px;
+      }
+
+      .living-card-attribution {
+        max-width: calc(100% - 32px);
+        white-space: normal;
       }
 
       .living-card-search button,
