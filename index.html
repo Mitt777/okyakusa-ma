@@ -3127,6 +3127,8 @@
     }
 
     .living-card-preview-wrap {
+      display: grid;
+      gap: 8px;
       padding: 14px;
     }
 
@@ -3136,7 +3138,6 @@
       align-content: end;
       gap: 10px;
       min-height: 540px;
-      padding-bottom: 34px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,.8);
       border-radius: 8px;
@@ -3168,7 +3169,7 @@
     }
 
     .living-card-preview.is-animated .living-card-bg {
-      animation: livingCardDrift 7s ease-out both;
+      animation: livingCardDrift 7.2s ease-out both;
     }
 
     .living-card-shade {
@@ -3253,32 +3254,32 @@
     .living-card-attribution {
       display: inline-block;
       width: fit-content;
-      max-width: min(520px, calc(100% - 190px));
-      margin: 0 16px;
+      max-width: 100%;
+      margin: 0;
       overflow: hidden;
       border-radius: 999px;
-      background: rgba(15, 18, 24, .58);
-      padding: 5px 9px;
-      color: rgba(255, 255, 255, .78);
+      background: #f3f6f9;
+      padding: 6px 9px;
+      color: #5c6673;
       font-size: 10px;
       font-weight: 800;
       line-height: 1.35;
       text-align: left;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .living-card-attribution a {
-      color: rgba(255, 255, 255, .92);
+      color: #365c85;
       font-weight: 900;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
 
     @keyframes livingCardDrift {
-      from { transform: scale(1.09) translate3d(-10px, 8px, 0); }
-      to { transform: scale(1.02) translate3d(6px, -4px, 0); }
+      from { transform: scale(1.17) translate3d(-20px, 14px, 0); filter: saturate(.92); }
+      45% { transform: scale(1.09) translate3d(8px, -8px, 0); filter: saturate(1.05); }
+      to { transform: scale(1.04) translate3d(0, 0, 0); filter: saturate(1); }
     }
 
     @keyframes livingPanelRise {
@@ -3939,11 +3940,9 @@
 
       .living-card-preview {
         min-height: 480px;
-        padding-bottom: 28px;
       }
 
       .living-card-attribution {
-        max-width: calc(100% - 32px);
         white-space: normal;
       }
 
@@ -4871,8 +4870,8 @@
                 <span>外観</span><span>世界観</span><span>初来店</span>
               </div>
             </div>
-            <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
           </article>
+          <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
         </div>
       </section>
 
@@ -7804,10 +7803,10 @@
         }
       }
 
-      const hasAnimated = sessionStorage.getItem("okm_living_card_animated") === "1";
-      if (!hasAnimated) {
-        livingCardPreview?.classList.add("is-animated");
-        sessionStorage.setItem("okm_living_card_animated", "1");
+      if (livingCardPreview) {
+        livingCardPreview.classList.remove("is-animated");
+        void livingCardPreview.offsetWidth;
+        livingCardPreview.classList.add("is-animated");
       }
       if (livingCardMessage) {
         livingCardMessage.textContent = visual.street_view_available
