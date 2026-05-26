@@ -7808,7 +7808,7 @@
       const originalText = button?.textContent || "";
       if (button) button.textContent = "生成中...";
       try {
-        const response = await fetch("/api/living-card", {
+        const response = await fetch("/api/place-search?action=living-card", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ candidate })
