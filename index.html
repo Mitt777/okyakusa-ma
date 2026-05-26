@@ -4914,8 +4914,8 @@
         <span>えらばれる店スコア診断</span>
       </div>
       <nav aria-label="主要ナビゲーション">
-        <a href="#living-shop-card">カードを見る</a>
         <a href="#diagnosis-scope">診断でわかること</a>
+        <a href="#living-shop-card">カードを見る</a>
         <a href="#">β版について</a>
         <a href="#">料金</a>
       </nav>
@@ -4944,58 +4944,6 @@
           <p>診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
         </div>
       </div>
-
-      <section class="living-card-lab" id="living-shop-card" aria-labelledby="living-card-title">
-        <div class="living-card-copy">
-          <span class="living-card-kicker">Living Shop Card β</span>
-          <h2 id="living-card-title">動く一枚ショップカードを、まず見てみる。</h2>
-          <p>
-            写真も動画も用意しなくて大丈夫です。Google Maps上の公開情報からお店を特定し、
-            外観の見え方と短い世界観コピーを重ねて、持ちたくなるカードの入口を作ります。
-          </p>
-          <form class="living-card-form" id="living-card-form">
-            <label for="living-card-query">店名 + 地域、または Google Maps URL</label>
-            <div class="living-card-search">
-              <input id="living-card-query" name="card_query" placeholder="例: リビングストン 黒磯 / https://maps.google.com/..." autocomplete="off">
-              <button type="submit">自分のお店カードを見る</button>
-            </div>
-            <div class="living-card-message" id="living-card-message" role="status" aria-live="polite"></div>
-          </form>
-          <div class="living-card-candidates" id="living-card-candidates" aria-live="polite"></div>
-          <div class="living-service-flow" aria-label="関連サービスの役割">
-            <a href="https://g-maps.shop/" target="_blank" rel="noopener"><b>g-maps.shop</b><span>気づく</span></a>
-            <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener"><b>okyakusa-ma.com</b><span>欲しくなる</span></a>
-            <a href="https://map-s.site/" target="_blank" rel="noopener"><b>map-s.site</b><span>貼って使う</span></a>
-            <a href="https://air-s.jp/" target="_blank" rel="noopener"><b>air-s.jp</b><span>記憶になる</span></a>
-          </div>
-        </div>
-        <div class="living-card-preview-wrap">
-          <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
-            <div class="living-card-bg" id="living-card-bg"></div>
-            <div class="living-card-shade"></div>
-            <video class="living-card-video" id="living-card-video" muted playsinline controls loop></video>
-            <div class="living-card-video-state" id="living-card-video-state">
-              <div>
-                <strong>Cinematic Shop Card</strong>
-                <p>対応するAerial View動画がある場合、ここに3D空撮動画を表示します。</p>
-              </div>
-            </div>
-          </article>
-          <div class="living-card-panel">
-            <span id="living-card-type">Living Shop Card</span>
-            <h3 id="living-card-name">あなたのお店</h3>
-            <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
-            <div class="living-card-meta" id="living-card-meta">
-              <b>公開情報から生成</b>
-              <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
-            </div>
-            <div class="living-card-tags" id="living-card-tags">
-              <span>外観</span><span>世界観</span><span>初来店</span>
-            </div>
-          </div>
-          <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
-        </div>
-      </section>
 
       <div class="search-stage" aria-label="無料診断申込フォーム">
         <div class="step-line">
@@ -5143,6 +5091,58 @@
           </div>
         </div>
       </div>
+
+      <section class="living-card-lab" id="living-shop-card" aria-labelledby="living-card-title">
+        <div class="living-card-copy">
+          <span class="living-card-kicker">Living Shop Card β</span>
+          <h2 id="living-card-title">動く一枚ショップカードを、まず見てみる。</h2>
+          <p>
+            写真も動画も用意しなくて大丈夫です。Google Maps上の公開情報からお店を特定し、
+            外観の見え方と短い世界観コピーを重ねて、持ちたくなるカードの入口を作ります。
+          </p>
+          <form class="living-card-form" id="living-card-form">
+            <label for="living-card-query">店名 + 地域、または Google Maps URL</label>
+            <div class="living-card-search">
+              <input id="living-card-query" name="card_query" placeholder="例: リビングストン 黒磯 / https://maps.google.com/..." autocomplete="off">
+              <button type="submit">自分のお店カードを見る</button>
+            </div>
+            <div class="living-card-message" id="living-card-message" role="status" aria-live="polite"></div>
+          </form>
+          <div class="living-card-candidates" id="living-card-candidates" aria-live="polite"></div>
+          <div class="living-service-flow" aria-label="関連サービスの役割">
+            <a href="https://g-maps.shop/" target="_blank" rel="noopener"><b>g-maps.shop</b><span>気づく</span></a>
+            <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener"><b>okyakusa-ma.com</b><span>欲しくなる</span></a>
+            <a href="https://map-s.site/" target="_blank" rel="noopener"><b>map-s.site</b><span>貼って使う</span></a>
+            <a href="https://air-s.jp/" target="_blank" rel="noopener"><b>air-s.jp</b><span>記憶になる</span></a>
+          </div>
+        </div>
+        <div class="living-card-preview-wrap">
+          <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
+            <div class="living-card-bg" id="living-card-bg"></div>
+            <div class="living-card-shade"></div>
+            <video class="living-card-video" id="living-card-video" muted playsinline controls loop></video>
+            <div class="living-card-video-state" id="living-card-video-state">
+              <div>
+                <strong>Cinematic Shop Card</strong>
+                <p>対応するAerial View動画がある場合、ここに3D空撮動画を表示します。</p>
+              </div>
+            </div>
+          </article>
+          <div class="living-card-panel">
+            <span id="living-card-type">Living Shop Card</span>
+            <h3 id="living-card-name">あなたのお店</h3>
+            <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
+            <div class="living-card-meta" id="living-card-meta">
+              <b>公開情報から生成</b>
+              <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
+            </div>
+            <div class="living-card-tags" id="living-card-tags">
+              <span>外観</span><span>世界観</span><span>初来店</span>
+            </div>
+          </div>
+          <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
+        </div>
+      </section>
 
     </section>
 
