@@ -1752,7 +1752,7 @@
 
     .card-language-note .english-mini-card {
       display: grid;
-      gap: 8px;
+      gap: 7px;
       margin-top: 12px;
       border-top: 1px solid rgba(63, 138, 109, .18);
       padding-top: 12px;
@@ -1765,14 +1765,15 @@
     .card-language-note .english-mini-card strong {
       margin-top: 0;
       color: #1f2937;
-      font-size: 18px;
+      font-size: 17px;
     }
 
     .card-language-note .english-mini-card p {
       margin: 0;
       color: #374151;
       font-size: 13px;
-      line-height: 1.75;
+      font-weight: 750;
+      line-height: 1.65;
     }
 
     .card-language-note .english-tags {
@@ -1785,7 +1786,7 @@
       border-radius: 999px;
       background: #eef7f2;
       color: #27624d;
-      padding: 5px 8px;
+      padding: 4px 8px;
       font-size: 10px;
       font-weight: 900;
     }
@@ -3470,6 +3471,49 @@
       }
     };
 
+    const WORLDVIEW_ENGLISH_TYPES = {
+      quiet_resonance: {
+        label: "Quiet resonance",
+        line: "A calm place for slow conversations and quiet time.",
+        tags: ["Calm", "Slow time", "Relaxed"]
+      },
+      craft_trust: {
+        label: "Craft and trust",
+        line: "A place where care, craft, and steady quality come through.",
+        tags: ["Craft", "Quality", "Trust"]
+      },
+      local_community: {
+        label: "Local community",
+        line: "A warm local place where visitors can feel the neighborhood.",
+        tags: ["Local", "Friendly", "Community"]
+      },
+      live_impulse: {
+        label: "Fresh and lively",
+        line: "A lively place with fresh moments, sound, and today-only energy.",
+        tags: ["Fresh", "Lively", "Today"]
+      },
+      worldview_immersion: {
+        label: "Immersive atmosphere",
+        line: "A memorable place with a distinctive mood, interior, and story.",
+        tags: ["Atmosphere", "Interior", "Memorable"]
+      },
+      daily_companion: {
+        label: "Everyday companion",
+        line: "An easy place to return to as part of everyday life.",
+        tags: ["Everyday", "Easy", "Comfort"]
+      },
+      tourism_destination: {
+        label: "Travel destination",
+        line: "A place worth adding to a trip for its local character.",
+        tags: ["Travel", "Local", "Destination"]
+      },
+      entry_anxiety_relief: {
+        label: "Easy first visit",
+        line: "A place that helps first-time visitors feel comfortable before they arrive.",
+        tags: ["First visit", "Easy to enter", "Helpful"]
+      }
+    };
+
     const WORLDVIEW_CARD_IMAGES = {
       quiet_resonance: {
         day: "/assets/worldview-cards/quiet_resonance-day.jpg",
@@ -4403,16 +4447,26 @@
 
     function buildEnglishMiniCardCopy() {
       const storeName = shareContext?.storeName || "This place";
-      const primary = worldviewShareResult?.primaryName || "Atmospheric";
-      const secondary = worldviewShareResult?.secondaryName || "local";
-      const typeTitle = worldviewShareResult?.typeTitle || `${primary} x ${secondary}`;
-      const lowerPrimary = String(primary).replace(/型$/, "");
+      const primaryKey = worldviewShareResult?.primaryKey || "";
+      const secondaryKey = worldviewShareResult?.secondaryKey || "";
+      const primary = WORLDVIEW_ENGLISH_TYPES[primaryKey] || {
+        label: "Local atmosphere",
+        line: "A place with its own mood and local character.",
+        tags: ["Local", "Atmosphere", "Shop card"]
+      };
+      const secondary = WORLDVIEW_ENGLISH_TYPES[secondaryKey];
+      const type = secondary ? `${primary.label} + ${secondary.label}` : primary.label;
+      const secondaryLine = secondary ? ` It also has a ${secondary.label.toLowerCase()} feeling.` : "";
+      const tags = [...primary.tags, ...(secondary?.tags || [])]
+        .filter(Boolean)
+        .filter((tag, index, array) => array.indexOf(tag) === index)
+        .slice(0, 3);
       return {
         title: storeName,
-        headline: `A ${lowerPrimary} shop card with a local sense of place.`,
-        body: `This card introduces the atmosphere of ${storeName} in a simple way for first-time visitors. It is useful before visiting, sharing with friends, or checking the mood of the place.`,
-        type: typeTitle,
-        tags: ["First visit", "Local feel", "Shop card"]
+        headline: primary.line,
+        body: `A short shop card for first-time visitors.${secondaryLine} Use it before visiting, sharing with friends, or checking the mood of the place.`,
+        type,
+        tags
       };
     }
 
@@ -5429,6 +5483,8 @@
         selectedPersonaKey,
         cardMode: selectedWorldviewCardMode,
         answerCode,
+        primaryKey: result.primaryKey,
+        secondaryKey: result.secondaryKey,
         scores: result.scores
       };
       const renderWorldviewTypeLead = (includeQuietLinks = false) => `
