@@ -2050,6 +2050,54 @@
       color: #22513f;
     }
 
+    .airs-moment-place {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 14px;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .7);
+      padding: 12px;
+    }
+
+    .airs-moment-place.is-linked {
+      border-color: rgba(31, 122, 94, .3);
+      background: linear-gradient(180deg, #f1fbf5 0%, rgba(255, 255, 255, .86) 100%);
+    }
+
+    .airs-moment-place strong {
+      color: #20382d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .airs-moment-place p {
+      color: #5a665d;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .airs-moment-place-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .airs-moment-place-actions a,
+    .airs-moment-place-actions button {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 7px 10px;
+      text-decoration: none;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
     .airs-moment-cuts {
       display: grid;
       gap: 10px;
@@ -5304,6 +5352,7 @@
             <input id="airs-moment-maps-url" type="url" placeholder="https://maps.google.com/...">
           </label>
         </div>
+        <div class="airs-moment-place" id="airs-moment-place-status" aria-live="polite"></div>
         <div class="airs-moment-templates" id="airs-moment-templates" aria-label="Momentテンプレート"></div>
         <div class="airs-moment-progress" id="airs-moment-progress" aria-label="3カット進捗"></div>
         <div class="airs-moment-cuts" id="airs-moment-cuts"></div>
@@ -5983,6 +6032,70 @@
       return airsMomentCutInputs().filter((input) => input.files?.[0]).length;
     }
 
+    function cleanAirsMomentPlaceName(value = "") {
+      return decodeURIComponent(value)
+        .replace(/\+/g, " ")
+        .replace(/\s+/g, " ")
+        .replace(/\s*-\s*Google Maps.*$/i, "")
+        .replace(/\s*@.*$/, "")
+        .trim();
+    }
+
+    function inferAirsMomentPlaceFromMapsUrl(rawUrl = "") {
+      const raw = rawUrl.trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw);
+        const queryName = url.searchParams.get("query") || url.searchParams.get("q");
+        if (queryName) return cleanAirsMomentPlaceName(queryName);
+        const placeMatch = decodeURIComponent(url.pathname).match(/\/place\/([^/]+)/);
+        if (placeMatch?.[1]) return cleanAirsMomentPlaceName(placeMatch[1]);
+      } catch {
+        const placeMatch = raw.match(/\/place\/([^/?#]+)/);
+        if (placeMatch?.[1]) return cleanAirsMomentPlaceName(placeMatch[1]);
+      }
+      return "";
+    }
+
+    function safeAirsMomentMapsUrl(rawUrl = "") {
+      try {
+        const url = new URL(rawUrl.trim());
+        return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function updateAirsMomentPlaceStatus() {
+      const host = document.querySelector("#airs-moment-place-status");
+      if (!host) return;
+      const mapsUrl = airsMomentValue("#airs-moment-maps-url");
+      const safeMapsUrl = safeAirsMomentMapsUrl(mapsUrl);
+      const storeName = airsMomentValue("#airs-moment-store-name");
+      const inferredName = inferAirsMomentPlaceFromMapsUrl(mapsUrl);
+      host.classList.toggle("is-linked", Boolean(mapsUrl));
+      if (!mapsUrl) {
+        host.innerHTML = `
+          <strong>お店との紐付けは、Google Maps URLだけで始めます。</strong>
+          <p>Place ID取得や店舗API連携は後で大丈夫です。まずは「このMomentはどのお店のものか」をAIRズに残します。</p>
+        `;
+        return;
+      }
+      host.innerHTML = `
+        <strong>このMomentをGoogle Mapsのお店に紐付けました。</strong>
+        <p>${inferredName ? `店名候補: ${escapeHtml(inferredName)}。` : "短縮URLなどは店名候補を読み取れない場合があります。"}AIRズ保存時にも、このURLを記憶として残します。</p>
+        <div class="airs-moment-place-actions">
+          ${safeMapsUrl ? `<a href="${escapeHtml(safeMapsUrl)}" target="_blank" rel="noopener">Google Mapsで確認</a>` : ""}
+          ${inferredName && !storeName ? `<button type="button" id="airs-moment-use-place-name">店名候補を使う</button>` : ""}
+        </div>
+      `;
+      host.querySelector("#airs-moment-use-place-name")?.addEventListener("click", () => {
+        const input = document.querySelector("#airs-moment-store-name");
+        if (input) input.value = inferredName;
+        updateAirsMomentOutput();
+      });
+    }
+
     function airsMomentPostText() {
       const template = currentAirsMomentTemplate();
       const storeName = airsMomentValue("#airs-moment-store-name") || "今日のお店";
@@ -6011,6 +6124,7 @@
           <span class="${doneCount > index ? "is-done" : ""}">Cut ${index + 1} / ${doneCount > index ? "撮れました" : cut.title}</span>
         `).join("");
       }
+      updateAirsMomentPlaceStatus();
       if (textarea) textarea.value = airsMomentPostText();
       if (output) output.classList.toggle("is-open", doneCount >= template.cuts.length);
     }
@@ -6078,6 +6192,7 @@
       }
       const template = currentAirsMomentTemplate();
       const sourceUrl = airsMomentValue("#airs-moment-maps-url");
+      const inferredStoreName = inferAirsMomentPlaceFromMapsUrl(sourceUrl);
       const item = {
         id: `moment_${Date.now().toString(36)}`,
         kind: "customer",
@@ -6106,6 +6221,10 @@
         momentTemplateTitle: template.title,
         momentCutCount: airsMomentDoneCount(),
         momentCopy: airsMomentPostText(),
+        momentMapsUrl: sourceUrl,
+        moment_maps_url: sourceUrl,
+        momentInferredStoreName: inferredStoreName,
+        moment_inferred_store_name: inferredStoreName,
         cardStyleSource: "moment",
         card_style_source: "moment",
         industrySkin: "",
