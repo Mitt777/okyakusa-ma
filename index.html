@@ -2091,6 +2091,7 @@
     .airs-moment-picker-actions {
       display: flex;
       justify-content: flex-end;
+      gap: 12px;
       margin: 8px 0 0;
     }
 
@@ -2104,6 +2105,23 @@
       font-weight: 950;
       text-decoration: underline;
       cursor: pointer;
+    }
+
+    .airs-moment-draft-note {
+      display: none;
+      margin-top: 8px;
+      border: 1px solid rgba(31, 122, 94, .18);
+      border-radius: 999px;
+      background: rgba(238, 249, 243, .74);
+      color: #22513f;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 950;
+      line-height: 1.45;
+    }
+
+    .airs-moment-draft-note.is-open {
+      display: inline-flex;
     }
 
     .airs-moment-progress {
@@ -2331,6 +2349,46 @@
       line-height: 1.5;
     }
 
+    .airs-moment-platforms {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-moment-platforms button {
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .78);
+      color: #24463a;
+      padding: 10px;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .airs-moment-platforms button.is-selected {
+      border-color: rgba(31, 122, 94, .48);
+      background: #eef9f3;
+      box-shadow: inset 0 0 0 1px rgba(31, 122, 94, .14);
+    }
+
+    .airs-moment-platforms b {
+      display: block;
+      color: #20382d;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .airs-moment-platforms span {
+      display: block;
+      margin-top: 3px;
+      color: #667065;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
     .airs-moment-mini-actions {
       display: flex;
       flex-wrap: wrap;
@@ -2348,6 +2406,37 @@
       font-size: 12px;
       font-weight: 950;
       cursor: pointer;
+    }
+
+    .airs-moment-final-steps {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      border: 1px solid rgba(58, 92, 73, .15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .7);
+      padding: 10px;
+    }
+
+    .airs-moment-final-steps label {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #46534a;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .airs-moment-final-steps input {
+      accent-color: #1f7a5e;
+    }
+
+    .airs-moment-final-note {
+      color: #1f7a5e;
+      font-size: 12px;
+      font-weight: 950;
+      line-height: 1.6;
     }
 
     .airs-moment-output textarea {
@@ -4892,7 +4981,8 @@
       }
 
       .airs-moment-ready-list,
-      .airs-moment-post-pack {
+      .airs-moment-post-pack,
+      .airs-moment-platforms {
         grid-template-columns: 1fr;
       }
 
@@ -5518,11 +5608,11 @@
         <div class="airs-moment-lead">
           <div>
             <strong>3カット撮ったら、投稿文が出ます。</strong>
-            <p>料理、光、手元、店内の空気。迷わず撮れるように1カットずつ案内し、撮れたら必ず褒めます。AIRズには動画ではなく記憶メモだけ残せます。</p>
+            <p>料理、光、手元、店内の空気。迷わず撮れるように1カットずつ案内し、撮れたら必ず褒めます。AIr-sには動画ではなく記憶メモだけ残せます。</p>
           </div>
           <div class="airs-moment-badge">
             3 cuts / 15 sec
-            <span>AIRズは残る<br>Momentは消える</span>
+            <span>AIr-sは残る<br>Momentは消える</span>
           </div>
         </div>
         <div class="airs-form-grid">
@@ -5539,27 +5629,36 @@
         <div class="airs-moment-phase-grid" id="airs-moment-phases" aria-label="Momentの目的カテゴリ"></div>
         <div class="airs-moment-picker-actions">
           <button type="button" id="airs-moment-all-patterns">全パターンを見る</button>
+          <button type="button" id="airs-moment-reset">最初から</button>
         </div>
+        <div class="airs-moment-draft-note" id="airs-moment-draft-note" aria-live="polite"></div>
         <div class="airs-moment-templates" id="airs-moment-templates" aria-label="Momentテンプレート"></div>
         <div class="airs-moment-progress" id="airs-moment-progress" aria-label="3カット進捗"></div>
         <div class="airs-moment-cuts" id="airs-moment-cuts"></div>
         <div class="airs-moment-output" id="airs-moment-output">
           <strong>投稿文ができました。</strong>
-          <p>動画はair-s内には保存しません。端末にある3カットをSNSで使い、AIRズには記憶だけ残します。</p>
+          <p>動画はair-s内には保存しません。端末にある3カットをSNSで使い、AIr-sには記憶だけ残します。</p>
           <div class="airs-moment-ready-list" id="airs-moment-ready-list" aria-label="撮影済みカット"></div>
           <div class="airs-moment-post-pack" id="airs-moment-post-pack" aria-label="投稿直前パック"></div>
+          <div class="airs-moment-platforms" id="airs-moment-platforms" aria-label="投稿先を選ぶ"></div>
           <textarea id="airs-moment-copy" aria-label="Moment投稿文"></textarea>
           <div class="airs-moment-mini-actions">
             <button type="button" id="airs-moment-copy-title">タイトルだけコピー</button>
             <button type="button" id="airs-moment-copy-tags">タグだけコピー</button>
             <button type="button" id="airs-moment-copy-maps">Maps URLをコピー</button>
           </div>
+          <div class="airs-moment-final-steps" aria-label="投稿前チェック">
+            <label><input type="checkbox" id="airs-moment-step-copy"> 投稿文・タグをコピーした</label>
+            <label><input type="checkbox" id="airs-moment-step-sns"> SNS投稿画面を開いた</label>
+            <label><input type="checkbox" id="airs-moment-step-memory"> AIr-sに記憶だけ残した</label>
+            <div class="airs-moment-final-note" id="airs-moment-final-note">あと少しです。投稿文をコピーして、SNSを開きましょう。</div>
+          </div>
           <div class="airs-moment-actions">
             <button class="airs-button primary" type="button" id="airs-moment-copy-button">投稿文をコピー</button>
-            <button class="airs-button" type="button" id="airs-moment-save-memory">AIRズに記憶だけ残す</button>
-            <a class="airs-button" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagramを開く</a>
-            <a class="airs-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTokを開く</a>
-            <a class="airs-button" href="https://www.youtube.com/" target="_blank" rel="noopener">Shortsを開く</a>
+            <button class="airs-button" type="button" id="airs-moment-save-memory">AIr-sに記憶だけ残す</button>
+            <a class="airs-button" href="https://www.instagram.com/" target="_blank" rel="noopener" data-airs-moment-sns>Instagramを開く</a>
+            <a class="airs-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-airs-moment-sns>TikTokを開く</a>
+            <a class="airs-button" href="https://www.youtube.com/" target="_blank" rel="noopener" data-airs-moment-sns>Shortsを開く</a>
           </div>
         </div>
       </section>
@@ -6064,6 +6163,7 @@
   <script>
     const AIRS_STORAGE_KEY = "airs_locker_v1";
     const AIRS_MAP_HISTORY_KEY = "airs_map_history_v1";
+    const AIRS_MOMENT_DRAFT_KEY = "airs_moment_draft_v1";
     const AIRS_PERSONAS = Array.from({ length: 36 }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
       return {
@@ -6103,22 +6203,27 @@
         label: "まず見せる",
         title: "今日のおすすめを出す",
         intent: "料理・商品・光を、すぐ投稿できる形にします。",
-        templateKeys: ["today-special", "cafe-light", "local-day"]
+        templateKeys: ["sensory-hook", "today-special", "cafe-light"]
       },
       {
         key: "feel",
         label: "好きになる",
         title: "お店の空気を伝える",
         intent: "人・準備・静かな時間で、好きになる理由を残します。",
-        templateKeys: ["waiting-time", "cafe-light", "local-day"]
+        templateKeys: ["waiting-time", "short-brand", "local-day"]
       },
       {
         key: "visit",
         label: "来てもらう",
         title: "行けそうを作る",
         intent: "入口・行き方・日常利用を見せて、来店前の不安を減らします。",
-        templateKeys: ["entrance-guide", "today-special", "waiting-time"]
+        templateKeys: ["entrance-guide", "qa-closeup", "best-three"]
       }
+    ];
+    const AIRS_MOMENT_PLATFORMS = [
+      { key: "instagram", label: "Instagram", hint: "保存されやすい余白あり" },
+      { key: "tiktok", label: "TikTok", hint: "短く、今日感を強める" },
+      { key: "shorts", label: "Shorts", hint: "タイトルと説明を分ける" }
     ];
     const AIRS_MOMENT_TEMPLATES = [
       {
@@ -6270,6 +6375,171 @@
             praise: "いい余韻です。地域に残るお店の感じが出ました。"
           }
         ]
+      },
+      {
+        key: "sensory-hook",
+        phaseKey: "show",
+        patternId: 1,
+        patternName: "感性のフック",
+        title: "一瞬で止める",
+        summary: "最初の質感・動き・色で、スクロールを止めます。",
+        copy: "一瞬だけ、目が止まるお店の気配がありました。",
+        tags: ["#お店の瞬間", "#ローカル動画", "#今日の空気", "#ShortVideo"],
+        cuts: [
+          { title: "質感を5秒", seconds: 5, guide: "湯気、焼き目、布、木目、光など、触りたくなる部分に近づきましょう。", praise: "目が止まります。この近さで十分伝わります。" },
+          { title: "動きを5秒", seconds: 5, guide: "注ぐ、切る、置く、開けるなど、一つだけ動きがある瞬間を撮りましょう。", praise: "動きが入りました。短い動画の入口になります。" },
+          { title: "全体を5秒", seconds: 5, guide: "最後に少し引いて、お店や商品の全体がわかるように撮りましょう。", praise: "ちゃんと着地しました。見た人が理解できます。" }
+        ]
+      },
+      {
+        key: "short-brand",
+        phaseKey: "feel",
+        patternId: 5,
+        patternName: "短尺ブランディング",
+        title: "お店の一言",
+        summary: "大切にしていることを、短い3カットで見せます。",
+        copy: "このお店が大切にしていることが、短い時間に少しだけ見えました。",
+        tags: ["#お店の想い", "#小さなお店", "#ブランド動画", "#LocalBrand"],
+        cuts: [
+          { title: "象徴を5秒", seconds: 5, guide: "看板、商品、道具など、お店らしさが出るものを撮りましょう。", praise: "お店の顔が見えました。最初の一枚として強いです。" },
+          { title: "手元を5秒", seconds: 5, guide: "作る、整える、渡すなど、丁寧さが出る手元を撮りましょう。", praise: "温度があります。言葉より伝わるカットです。" },
+          { title: "余韻を5秒", seconds: 5, guide: "席、棚、入口など、最後に残したい空気を撮りましょう。", praise: "いい余韻です。短くてもお店らしさが残ります。" }
+        ]
+      },
+      {
+        key: "deep-brand",
+        phaseKey: "feel",
+        patternId: 6,
+        patternName: "長尺ブランディング",
+        title: "物語の入口",
+        summary: "長い物語に入る前の、15秒の予告編です。",
+        copy: "この場所には、もう少し聞きたくなる物語がありました。",
+        tags: ["#お店の物語", "#店主の想い", "#ローカルストーリー", "#Story"],
+        cuts: [
+          { title: "場所を5秒", seconds: 5, guide: "外観や店内の一番らしい場所を、落ち着いて撮りましょう。", praise: "物語の舞台ができました。" },
+          { title: "人や道具を5秒", seconds: 5, guide: "店主さん、スタッフさん、使い込んだ道具などを撮りましょう。顔なしでも大丈夫です。", praise: "背景が見えてきました。深さが出ます。" },
+          { title: "続きの気配を5秒", seconds: 5, guide: "最後に、もっと知りたくなるものを一つだけ残しましょう。", praise: "続きが気になります。長尺への入口になります。" }
+        ]
+      },
+      {
+        key: "qa-closeup",
+        phaseKey: "visit",
+        patternId: 7,
+        patternName: "Q&A・密着",
+        title: "よく聞かれること",
+        summary: "初めての人が知りたいことを、3カットで答えます。",
+        copy: "初めて来る前に知りたいことを、少しだけ見える形にしました。",
+        tags: ["#初めてのお店", "#よくある質問", "#お店案内", "#LocalGuide"],
+        cuts: [
+          { title: "入口を5秒", seconds: 5, guide: "どこから入るかがわかる入口を撮りましょう。", praise: "安心できます。初めての人にやさしいです。" },
+          { title: "使い方を5秒", seconds: 5, guide: "注文、受付、席、支払いなど、迷いそうな場所を撮りましょう。", praise: "不安が減ります。これは実用的です。" },
+          { title: "一言の答えを5秒", seconds: 5, guide: "メニュー、席、駐車場など、聞かれがちな答えを映しましょう。", praise: "行く前の疑問に答えられています。" }
+        ]
+      },
+      {
+        key: "fresh-news",
+        phaseKey: "show",
+        patternId: 8,
+        patternName: "新情報・速報",
+        title: "今日だけのお知らせ",
+        summary: "本日のおすすめやイベントを、すぐ出せる形にします。",
+        copy: "今日だけの小さなお知らせです。気になったら、ふらっとどうぞ。",
+        tags: ["#本日のお知らせ", "#今日だけ", "#ローカル情報", "#Now"],
+        cuts: [
+          { title: "告知を5秒", seconds: 5, guide: "本日の商品、看板、メニュー、イベント案内を撮りましょう。", praise: "今日感があります。すぐ投稿できます。" },
+          { title: "中身を5秒", seconds: 5, guide: "実物や準備中の様子を撮りましょう。", praise: "内容が見えました。見る人が判断しやすいです。" },
+          { title: "来店の目印を5秒", seconds: 5, guide: "入口や外観など、行く時の目印を添えましょう。", praise: "最後に行けそうな感じが出ました。" }
+        ]
+      },
+      {
+        key: "best-three",
+        phaseKey: "visit",
+        patternId: 9,
+        patternName: "用途訴求",
+        title: "おすすめ3つ",
+        summary: "迷う人に向けて、使い方や選び方を見せます。",
+        copy: "迷ったら、この3つから。お店の使い方が少し見えました。",
+        tags: ["#おすすめ3つ", "#初心者ガイド", "#お店選び", "#LocalTips"],
+        cuts: [
+          { title: "1つ目を5秒", seconds: 5, guide: "一番おすすめしたい商品や席を撮りましょう。", praise: "選びやすくなりました。まず一つ目です。" },
+          { title: "2つ目を5秒", seconds: 5, guide: "違う用途や気分に合うものを撮りましょう。", praise: "幅が出ました。比較しやすいです。" },
+          { title: "3つ目を5秒", seconds: 5, guide: "最後に、初めての人にも勧めやすいものを撮りましょう。", praise: "これで選べます。投稿としてまとまりました。" }
+        ]
+      },
+      {
+        key: "seasonal-now",
+        phaseKey: "show",
+        patternId: 10,
+        patternName: "季節・旬",
+        title: "季節の一瞬",
+        summary: "旬の商品、雨の日、光、季節の景色を残します。",
+        copy: "季節が少しだけ、お店の中に入ってきていました。",
+        tags: ["#季節のお店", "#旬", "#今日の景色", "#Seasonal"],
+        cuts: [
+          { title: "季節を5秒", seconds: 5, guide: "窓の外、飾り、季節商品など、今だけのものを撮りましょう。", praise: "今だけの感じが出ています。" },
+          { title: "商品を5秒", seconds: 5, guide: "季節に合う料理、商品、色を撮りましょう。", praise: "旬が伝わります。保存したくなるカットです。" },
+          { title: "余韻を5秒", seconds: 5, guide: "最後に席や入口を撮って、また来たい感じで締めましょう。", praise: "季節とお店がつながりました。" }
+        ]
+      },
+      {
+        key: "customer-ugc",
+        phaseKey: "feel",
+        patternId: 12,
+        patternName: "参加・UGC",
+        title: "好きの応援",
+        summary: "お客様の好き、応援、体験共有に向いた型です。",
+        copy: "好きなお店を、少しだけ応援したくなる時間でした。",
+        tags: ["#好きなお店", "#応援投稿", "#また来たい", "#LocalSupport"],
+        cuts: [
+          { title: "好きな場所を5秒", seconds: 5, guide: "自分が好きだと思った席、商品、入口を撮りましょう。", praise: "好きが伝わります。評価ではなく応援です。" },
+          { title: "良かった瞬間を5秒", seconds: 5, guide: "料理、手元、光など、良かった瞬間を一つ撮りましょう。", praise: "自然な応援になっています。" },
+          { title: "また来たい理由を5秒", seconds: 5, guide: "最後に、また来たくなる理由が見えるものを撮りましょう。", praise: "やわらかく残せました。お店への贈り物になります。" }
+        ]
+      },
+      {
+        key: "local-event",
+        phaseKey: "feel",
+        patternId: 14,
+        patternName: "地域貢献",
+        title: "地域とのつながり",
+        summary: "イベント、地元参加、地域への想いを見せます。",
+        copy: "このお店は、地域の時間の中にもありました。",
+        tags: ["#地域のお店", "#地元イベント", "#地域貢献", "#LocalCommunity"],
+        cuts: [
+          { title: "地域の印を5秒", seconds: 5, guide: "地元の掲示、イベント案内、近くの風景などを撮りましょう。", praise: "地域との接点が見えました。" },
+          { title: "お店の参加を5秒", seconds: 5, guide: "準備、商品、協力しているものなどを撮りましょう。", praise: "お店の役割が伝わります。" },
+          { title: "人が集まる場所を5秒", seconds: 5, guide: "席、入口、広場など、人が集まる余白を撮りましょう。", praise: "地域に残る感じが出ました。" }
+        ]
+      },
+      {
+        key: "inbound-howto",
+        phaseKey: "visit",
+        patternId: 15,
+        patternName: "インバウンド利用",
+        title: "How to Order",
+        summary: "海外の人にも、注文や使い方が伝わる型です。",
+        copy: "A small local place in Japan, easy to enter and enjoy.",
+        tags: ["#JapanLocal", "#HowToOrder", "#VisitJapan", "#Nasu"],
+        cuts: [
+          { title: "入口を5秒", seconds: 5, guide: "海外の人にも入口がわかるように、外観や看板を撮りましょう。", praise: "入りやすさが伝わります。" },
+          { title: "注文を5秒", seconds: 5, guide: "メニュー、カウンター、注文の流れがわかる場所を撮りましょう。", praise: "使い方が見えました。安心につながります。" },
+          { title: "受け取りを5秒", seconds: 5, guide: "商品を受け取る、席に置く、食べ始める前の場面を撮りましょう。", praise: "体験の流れができました。" }
+        ]
+      },
+      {
+        key: "culture-moment",
+        phaseKey: "feel",
+        patternId: 16,
+        patternName: "文化体験",
+        title: "日本らしい体験",
+        summary: "作法、道具、自然、温泉地らしさなどを静かに見せます。",
+        copy: "A quiet local moment in Japan, not only a shop but a small experience.",
+        tags: ["#JapaneseCulture", "#LocalExperience", "#VisitJapan", "#NasuTrip"],
+        cuts: [
+          { title: "道具を5秒", seconds: 5, guide: "器、のれん、木、布、道具など、日本らしさが出るものを撮りましょう。", praise: "文化の入口が見えます。" },
+          { title: "所作を5秒", seconds: 5, guide: "置く、注ぐ、包む、整えるなど、静かな所作を撮りましょう。", praise: "動きが丁寧です。体験として伝わります。" },
+          { title: "場の空気を5秒", seconds: 5, guide: "最後に空間や外の景色を撮って、余韻で締めましょう。", praise: "旅の記憶になるカットです。" }
+        ]
       }
     ];
     let selectedAirsPersona = AIRS_PERSONAS[20];
@@ -6279,6 +6549,7 @@
     let showAllAirsMomentTemplates = false;
     let activeAirsMomentCutIndex = 0;
     let airsMomentCutClips = [];
+    let selectedAirsMomentPlatform = AIRS_MOMENT_PLATFORMS[0].key;
 
     function isAirsDomain() {
       return location.hostname.replace(/^www\./, "") === "air-s.jp" || location.search.includes("airs-preview=1");
@@ -6319,6 +6590,10 @@
       return AIRS_MOMENT_TEMPLATES.find((template) => template.key === selectedAirsMomentTemplate) || null;
     }
 
+    function airsMomentTemplatesByPattern() {
+      return [...AIRS_MOMENT_TEMPLATES].sort((a, b) => (a.patternId || 99) - (b.patternId || 99));
+    }
+
     function airsMomentTemplatesForCategory(categoryKey = selectedAirsMomentCategory) {
       const category = AIRS_MOMENT_CATEGORIES.find((item) => item.key === categoryKey);
       if (!category) return [];
@@ -6328,14 +6603,68 @@
     }
 
     function syncAirsMomentTemplateToCategory() {
-      const templates = showAllAirsMomentTemplates ? AIRS_MOMENT_TEMPLATES : airsMomentTemplatesForCategory();
+      const templates = showAllAirsMomentTemplates ? airsMomentTemplatesByPattern() : airsMomentTemplatesForCategory();
       if (!templates.some((template) => template.key === selectedAirsMomentTemplate)) {
         selectedAirsMomentTemplate = templates[0]?.key || "";
       }
     }
 
+    function updateAirsMomentDraftNote() {
+      const note = document.querySelector("#airs-moment-draft-note");
+      if (!note) return;
+      const draft = loadAirsMomentDraft();
+      if (!draft.updatedAt) {
+        note.classList.remove("is-open");
+        note.textContent = "";
+        return;
+      }
+      const minutes = Math.max(0, Math.round((Date.now() - Number(draft.updatedAt)) / 60000));
+      note.textContent = minutes < 1 ? "下書きを保存しました。" : `${minutes}分前の下書きを復元しています。`;
+      note.classList.add("is-open");
+    }
+
     function airsMomentValue(selector) {
       return document.querySelector(selector)?.value.trim() || "";
+    }
+
+    function loadAirsMomentDraft() {
+      try {
+        return JSON.parse(localStorage.getItem(AIRS_MOMENT_DRAFT_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveAirsMomentDraft() {
+      const draft = {
+        storeName: airsMomentValue("#airs-moment-store-name"),
+        mapsUrl: airsMomentValue("#airs-moment-maps-url"),
+        category: selectedAirsMomentCategory,
+        template: selectedAirsMomentTemplate,
+        platform: selectedAirsMomentPlatform,
+        showAll: showAllAirsMomentTemplates,
+        updatedAt: Date.now()
+      };
+      localStorage.setItem(AIRS_MOMENT_DRAFT_KEY, JSON.stringify(draft));
+      updateAirsMomentDraftNote();
+    }
+
+    function restoreAirsMomentDraft() {
+      const draft = loadAirsMomentDraft();
+      const storeInput = document.querySelector("#airs-moment-store-name");
+      const mapsInput = document.querySelector("#airs-moment-maps-url");
+      if (storeInput && draft.storeName) storeInput.value = draft.storeName;
+      if (mapsInput && draft.mapsUrl) mapsInput.value = draft.mapsUrl;
+      if (AIRS_MOMENT_CATEGORIES.some((category) => category.key === draft.category)) {
+        selectedAirsMomentCategory = draft.category;
+      }
+      if (AIRS_MOMENT_TEMPLATES.some((template) => template.key === draft.template)) {
+        selectedAirsMomentTemplate = draft.template;
+      }
+      if (AIRS_MOMENT_PLATFORMS.some((platform) => platform.key === draft.platform)) {
+        selectedAirsMomentPlatform = draft.platform;
+      }
+      showAllAirsMomentTemplates = Boolean(draft.showAll);
     }
 
     function airsMomentDoneCount() {
@@ -6348,6 +6677,31 @@
       });
       airsMomentCutClips = [];
       activeAirsMomentCutIndex = 0;
+    }
+
+    function resetAirsMomentDraft() {
+      resetAirsMomentCuts();
+      selectedAirsMomentCategory = "";
+      selectedAirsMomentTemplate = "";
+      selectedAirsMomentPlatform = AIRS_MOMENT_PLATFORMS[0].key;
+      showAllAirsMomentTemplates = false;
+      localStorage.removeItem(AIRS_MOMENT_DRAFT_KEY);
+      const storeInput = document.querySelector("#airs-moment-store-name");
+      const mapsInput = document.querySelector("#airs-moment-maps-url");
+      if (storeInput) storeInput.value = "";
+      if (mapsInput) mapsInput.value = "";
+      document.querySelectorAll(".airs-moment-final-steps input").forEach((input) => {
+        input.checked = false;
+      });
+      const allPatternsButton = document.querySelector("#airs-moment-all-patterns");
+      if (allPatternsButton) allPatternsButton.textContent = "全パターンを見る";
+      updateAirsMomentDraftNote();
+      updateAirsMomentFinalNote();
+      renderAirsMomentCategories();
+      renderAirsMomentTemplates();
+      renderAirsMomentCuts();
+      renderAirsMomentPlatforms();
+      updateAirsMomentOutput();
     }
 
     function airsMomentCutSecondLabel(index) {
@@ -6400,13 +6754,13 @@
       if (!mapsUrl) {
         host.innerHTML = `
           <strong>お店との紐付けは、Google Maps URLだけで始めます。</strong>
-          <p>Place ID取得や店舗API連携は後で大丈夫です。まずは「このMomentはどのお店のものか」をAIRズに残します。</p>
+          <p>Place ID取得や店舗API連携は後で大丈夫です。まずは「このMomentはどのお店のものか」をAIr-sに残します。</p>
         `;
         return;
       }
       host.innerHTML = `
         <strong>このMomentをGoogle Mapsのお店に紐付けました。</strong>
-        <p>${inferredName ? `店名候補: ${escapeHtml(inferredName)}。` : "短縮URLなどは店名候補を読み取れない場合があります。"}AIRズ保存時にも、このURLを記憶として残します。</p>
+        <p>${inferredName ? `店名候補: ${escapeHtml(inferredName)}。` : "短縮URLなどは店名候補を読み取れない場合があります。"}AIr-s保存時にも、このURLを記憶として残します。</p>
         <div class="airs-moment-place-actions">
           ${safeMapsUrl ? `<a href="${escapeHtml(safeMapsUrl)}" target="_blank" rel="noopener">Google Mapsで確認</a>` : ""}
           ${inferredName && !storeName ? `<button type="button" id="airs-moment-use-place-name">店名候補を使う</button>` : ""}
@@ -6415,16 +6769,38 @@
       host.querySelector("#airs-moment-use-place-name")?.addEventListener("click", () => {
         const input = document.querySelector("#airs-moment-store-name");
         if (input) input.value = inferredName;
+        saveAirsMomentDraft();
         updateAirsMomentOutput();
       });
     }
 
-    function airsMomentPostText() {
+    function airsMomentPostText(platformKey = selectedAirsMomentPlatform) {
       const template = currentAirsMomentTemplate();
       if (!template) return "";
       const storeName = airsMomentValue("#airs-moment-store-name") || "今日のお店";
       const mapsUrl = airsMomentValue("#airs-moment-maps-url");
       const mapsLine = mapsUrl ? `\n場所はこちら\n${mapsUrl}` : "";
+      const tags = template.tags.join(" ");
+      if (platformKey === "tiktok") {
+        return [
+          `${storeName}`,
+          template.copy,
+          "3カットで、今日のお店の空気を撮りました。",
+          mapsLine.trim(),
+          tags
+        ].filter(Boolean).join("\n");
+      }
+      if (platformKey === "shorts") {
+        return [
+          `タイトル: ${airsMomentPostTitle()}`,
+          "",
+          `${template.copy}`,
+          "15秒 / 3カットのローカル動画です。",
+          mapsLine.trim(),
+          "",
+          tags
+        ].filter(Boolean).join("\n");
+      }
       return [
         `${storeName}の今日の空気。`,
         template.copy,
@@ -6433,7 +6809,7 @@
         "むずかしい編集はせず、このまま投稿できます。",
         mapsLine.trim(),
         "",
-        template.tags.join(" ")
+        tags
       ].filter(Boolean).join("\n");
     }
 
@@ -6457,6 +6833,48 @@
       } finally {
         if (button) setTimeout(() => { button.textContent = original; }, 1400);
       }
+    }
+
+    function updateAirsMomentFinalNote() {
+      const note = document.querySelector("#airs-moment-final-note");
+      if (!note) return;
+      const copied = document.querySelector("#airs-moment-step-copy")?.checked;
+      const snsOpened = document.querySelector("#airs-moment-step-sns")?.checked;
+      const memorySaved = document.querySelector("#airs-moment-step-memory")?.checked;
+      if (copied && snsOpened && memorySaved) {
+        note.textContent = "完了です。動画はSNSへ、記憶はAIr-sに残りました。";
+      } else if (copied && snsOpened) {
+        note.textContent = "投稿まで進めました。最後にAIr-sへ記憶だけ残せます。";
+      } else if (copied) {
+        note.textContent = "投稿文は準備できました。次はSNSを開きましょう。";
+      } else {
+        note.textContent = "あと少しです。投稿文をコピーして、SNSを開きましょう。";
+      }
+    }
+
+    function markAirsMomentStep(step) {
+      const checkbox = document.querySelector(`#airs-moment-step-${step}`);
+      if (checkbox) checkbox.checked = true;
+      updateAirsMomentFinalNote();
+    }
+
+    function renderAirsMomentPlatforms() {
+      const host = document.querySelector("#airs-moment-platforms");
+      if (!host) return;
+      host.innerHTML = AIRS_MOMENT_PLATFORMS.map((platform) => `
+        <button type="button" class="${platform.key === selectedAirsMomentPlatform ? "is-selected" : ""}" data-airs-moment-platform="${platform.key}">
+          <b>${escapeHtml(platform.label)}</b>
+          <span>${escapeHtml(platform.hint)}</span>
+        </button>
+      `).join("");
+      host.querySelectorAll("[data-airs-moment-platform]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedAirsMomentPlatform = button.dataset.airsMomentPlatform;
+          saveAirsMomentDraft();
+          renderAirsMomentPlatforms();
+          updateAirsMomentOutput();
+        });
+      });
     }
 
     function updateAirsMomentOutput() {
@@ -6493,9 +6911,10 @@
       }
       if (postPack && template) {
         const mapsUrl = airsMomentValue("#airs-moment-maps-url");
+        const platform = AIRS_MOMENT_PLATFORMS.find((item) => item.key === selectedAirsMomentPlatform);
         postPack.innerHTML = `
           <span><b>タイトル</b>${escapeHtml(airsMomentPostTitle())}</span>
-          <span><b>タグ</b>${escapeHtml(airsMomentTagsText())}</span>
+          <span><b>投稿先</b>${escapeHtml(platform?.label || "Instagram")}用</span>
           <span><b>お店リンク</b>${mapsUrl ? "Google Maps URLあり" : "未入力でも投稿できます"}</span>
         `;
       } else if (postPack) {
@@ -6508,7 +6927,7 @@
       const host = document.querySelector("#airs-moment-templates");
       if (!host) return;
       syncAirsMomentTemplateToCategory();
-      const templates = showAllAirsMomentTemplates ? AIRS_MOMENT_TEMPLATES : airsMomentTemplatesForCategory();
+      const templates = showAllAirsMomentTemplates ? airsMomentTemplatesByPattern() : airsMomentTemplatesForCategory();
       if (!templates.length) {
         host.innerHTML = "";
         return;
@@ -6524,6 +6943,7 @@
         button.addEventListener("click", () => {
           selectedAirsMomentTemplate = button.dataset.airsMomentTemplate;
           resetAirsMomentCuts();
+          saveAirsMomentDraft();
           renderAirsMomentTemplates();
           renderAirsMomentCuts();
           updateAirsMomentOutput();
@@ -6549,6 +6969,7 @@
           if (allButton) allButton.textContent = "全パターンを見る";
           selectedAirsMomentTemplate = airsMomentTemplatesForCategory()[0]?.key || AIRS_MOMENT_TEMPLATES[0].key;
           resetAirsMomentCuts();
+          saveAirsMomentDraft();
           renderAirsMomentCategories();
           renderAirsMomentTemplates();
           renderAirsMomentCuts();
@@ -6687,34 +7108,51 @@
       };
       saveAirsItems([item, ...loadAirsItems()]);
       renderAirsLocker();
+      markAirsMomentStep("memory");
       location.hash = "airs-locker";
     }
 
     function initAirsMoment() {
+      restoreAirsMomentDraft();
+      const allPatternsButton = document.querySelector("#airs-moment-all-patterns");
+      if (allPatternsButton) allPatternsButton.textContent = showAllAirsMomentTemplates ? "3つの入口に戻る" : "全パターンを見る";
+      updateAirsMomentDraftNote();
       renderAirsMomentCategories();
       renderAirsMomentTemplates();
       renderAirsMomentCuts();
+      renderAirsMomentPlatforms();
       document.querySelector("#airs-moment-all-patterns")?.addEventListener("click", (event) => {
         showAllAirsMomentTemplates = !showAllAirsMomentTemplates;
         selectedAirsMomentCategory = "";
-        selectedAirsMomentTemplate = showAllAirsMomentTemplates ? AIRS_MOMENT_TEMPLATES[0].key : "";
+        selectedAirsMomentTemplate = showAllAirsMomentTemplates ? airsMomentTemplatesByPattern()[0].key : "";
         resetAirsMomentCuts();
+        saveAirsMomentDraft();
         event.currentTarget.textContent = showAllAirsMomentTemplates ? "3つの入口に戻る" : "全パターンを見る";
         renderAirsMomentCategories();
         renderAirsMomentTemplates();
         renderAirsMomentCuts();
         updateAirsMomentOutput();
       });
-      document.querySelector("#airs-moment-store-name")?.addEventListener("input", updateAirsMomentOutput);
-      document.querySelector("#airs-moment-maps-url")?.addEventListener("input", updateAirsMomentOutput);
+      document.querySelector("#airs-moment-reset")?.addEventListener("click", resetAirsMomentDraft);
+      document.querySelector("#airs-moment-store-name")?.addEventListener("input", () => {
+        saveAirsMomentDraft();
+        updateAirsMomentOutput();
+      });
+      document.querySelector("#airs-moment-maps-url")?.addEventListener("input", () => {
+        saveAirsMomentDraft();
+        updateAirsMomentOutput();
+      });
       document.querySelector("#airs-moment-copy-button")?.addEventListener("click", async (event) => {
         await copyAirsMomentText(airsMomentPostText(), event.currentTarget, "投稿文をコピーしてください");
+        markAirsMomentStep("copy");
       });
       document.querySelector("#airs-moment-copy-title")?.addEventListener("click", async (event) => {
         await copyAirsMomentText(airsMomentPostTitle(), event.currentTarget, "タイトルをコピーしてください");
+        markAirsMomentStep("copy");
       });
       document.querySelector("#airs-moment-copy-tags")?.addEventListener("click", async (event) => {
         await copyAirsMomentText(airsMomentTagsText(), event.currentTarget, "タグをコピーしてください");
+        markAirsMomentStep("copy");
       });
       document.querySelector("#airs-moment-copy-maps")?.addEventListener("click", async (event) => {
         const mapsUrl = airsMomentValue("#airs-moment-maps-url");
@@ -6723,6 +7161,13 @@
           return;
         }
         await copyAirsMomentText(mapsUrl, event.currentTarget, "Maps URLをコピーしてください");
+        markAirsMomentStep("copy");
+      });
+      document.querySelectorAll("[data-airs-moment-sns]").forEach((link) => {
+        link.addEventListener("click", () => markAirsMomentStep("sns"));
+      });
+      ["copy", "sns", "memory"].forEach((step) => {
+        document.querySelector(`#airs-moment-step-${step}`)?.addEventListener("change", updateAirsMomentFinalNote);
       });
       document.querySelector("#airs-moment-save-memory")?.addEventListener("click", saveAirsMomentMemory);
     }
@@ -7665,7 +8110,7 @@
       return `
         <div class="airs-moment-memory" aria-label="Momentの記憶">
           <strong>Moment: ${escapeHtml(templateTitle)} / ${escapeHtml(String(cutCount))}カット</strong>
-          <p>動画はair-s内に保存していません。今日のお店の空気だけを、AIRズの記憶として残しています。</p>
+          <p>動画はair-s内に保存していません。今日のお店の空気だけを、AIr-sの記憶として残しています。</p>
           ${copy ? `<p class="airs-moment-copy-preview">${escapeHtml(copy)}</p>` : ""}
         </div>
       `;
