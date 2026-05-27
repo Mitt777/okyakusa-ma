@@ -7171,6 +7171,88 @@
       return diff / (current.length / step);
     }
 
+    function airsMomentSupportedRecorderMime() {
+      const candidates = [
+        "video/mp4;codecs=h264",
+        "video/mp4",
+        "video/webm;codecs=vp9",
+        "video/webm;codecs=vp8",
+        "video/webm"
+      ];
+      return candidates.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || "";
+    }
+
+    function drawAirsMomentVideoFrame(ctx, video, width, height) {
+      ctx.fillStyle = "#20382d";
+      ctx.fillRect(0, 0, width, height);
+      const sourceWidth = video.videoWidth || width;
+      const sourceHeight = video.videoHeight || height;
+      const scale = Math.min(width / sourceWidth, height / sourceHeight);
+      const drawWidth = sourceWidth * scale;
+      const drawHeight = sourceHeight * scale;
+      const x = (width - drawWidth) / 2;
+      const y = (height - drawHeight) / 2;
+      ctx.drawImage(video, x, y, drawWidth, drawHeight);
+    }
+
+    async function playAirsMomentClipToCanvas(ctx, canvas, clip) {
+      const analysis = clip.analysis || {};
+      const duration = Math.min(5, Math.max(3, analysis.trimDuration || 5));
+      const start = Math.max(0, analysis.trimStart || 0);
+      const video = document.createElement("video");
+      video.src = clip.url;
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      await waitForAirsVideoEvent(video, "loadedmetadata");
+      video.currentTime = Math.min(start, Math.max(0, (video.duration || duration) - 0.2));
+      await waitForAirsVideoEvent(video, "seeked");
+      await video.play();
+      const begin = performance.now();
+      await new Promise((resolve) => {
+        const draw = () => {
+          drawAirsMomentVideoFrame(ctx, video, canvas.width, canvas.height);
+          if ((performance.now() - begin) / 1000 >= duration || video.ended) {
+            video.pause();
+            resolve();
+            return;
+          }
+          requestAnimationFrame(draw);
+        };
+        draw();
+      });
+    }
+
+    async function renderAirsMomentVideoWithRecorder(clips) {
+      if (!HTMLCanvasElement.prototype.captureStream || !window.MediaRecorder) {
+        throw new Error("この端末では軽量結合フォールバックを使えません。");
+      }
+      const mimeType = airsMomentSupportedRecorderMime();
+      if (!mimeType) throw new Error("この端末では動画書き出し形式に対応していません。");
+      const canvas = document.createElement("canvas");
+      canvas.width = 720;
+      canvas.height = 1280;
+      const ctx = canvas.getContext("2d");
+      const stream = canvas.captureStream(30);
+      const chunks = [];
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      recorder.ondataavailable = (event) => {
+        if (event.data?.size) chunks.push(event.data);
+      };
+      const stopped = new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = () => reject(new Error("軽量結合の録画に失敗しました。"));
+      });
+      recorder.start(250);
+      for (const clip of clips) {
+        await playAirsMomentClipToCanvas(ctx, canvas, clip);
+      }
+      recorder.stop();
+      await stopped;
+      stream.getTracks().forEach((track) => track.stop());
+      return new Blob(chunks, { type: mimeType || "video/mp4" });
+    }
+
     function classifyAirsMomentAnalysis(analysis) {
       const chips = [];
       chips.push({
@@ -7287,46 +7369,59 @@
       airsMomentRenderStatus = "動画を整えています。初回は少し時間がかかります。";
       renderAirsMomentRenderBox();
       try {
-        const ffmpeg = await loadAirsMomentFfmpeg();
-        ["cut0.mp4", "cut1.mp4", "cut2.mp4", "moment-output.mp4"].forEach((name) => {
-          try { ffmpeg.FS("unlink", name); } catch {}
-        });
-        for (let index = 0; index < 3; index += 1) {
-          ffmpeg.FS("writeFile", `cut${index}.mp4`, await window.FFmpeg.fetchFile(clips[index].file));
+        let outputBlob = null;
+        let usedFallback = false;
+        try {
+          const ffmpeg = await loadAirsMomentFfmpeg();
+          ["cut0.mp4", "cut1.mp4", "cut2.mp4", "moment-output.mp4"].forEach((name) => {
+            try { ffmpeg.FS("unlink", name); } catch {}
+          });
+          for (let index = 0; index < 3; index += 1) {
+            ffmpeg.FS("writeFile", `cut${index}.mp4`, await window.FFmpeg.fetchFile(clips[index].file));
+          }
+          const filter = [
+            "[0:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v0]",
+            "[1:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v1]",
+            "[2:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v2]",
+            "[v0][v1][v2]concat=n=3:v=1:a=0,format=yuv420p[v]"
+          ].join(";");
+          const trims = clips.map((clip) => ({
+            start: String(clip.analysis?.trimStart || 0),
+            duration: String(Math.min(5, Math.max(3, clip.analysis?.trimDuration || 5)))
+          }));
+          await ffmpeg.run(
+            "-ss", trims[0].start, "-t", trims[0].duration, "-i", "cut0.mp4",
+            "-ss", trims[1].start, "-t", trims[1].duration, "-i", "cut1.mp4",
+            "-ss", trims[2].start, "-t", trims[2].duration, "-i", "cut2.mp4",
+            "-filter_complex", filter,
+            "-map", "[v]",
+            "-an",
+            "-t", "15",
+            "-movflags", "faststart",
+            "moment-output.mp4"
+          );
+          const data = ffmpeg.FS("readFile", "moment-output.mp4");
+          outputBlob = new Blob([data.buffer], { type: "video/mp4" });
+        } catch (ffmpegError) {
+          console.warn("air-s Moment ffmpeg render failed, trying recorder fallback", ffmpegError);
+          airsMomentRenderStatus = "重い結合処理が失敗したため、軽量モードで整えています。";
+          renderAirsMomentRenderBox();
+          outputBlob = await renderAirsMomentVideoWithRecorder(clips);
+          usedFallback = true;
         }
-        const filter = [
-          "[0:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v0]",
-          "[1:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v1]",
-          "[2:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v2]",
-          "[v0][v1][v2]concat=n=3:v=1:a=0,format=yuv420p[v]"
-        ].join(";");
-        const trims = clips.map((clip) => ({
-          start: String(clip.analysis?.trimStart || 0),
-          duration: String(Math.min(5, Math.max(3, clip.analysis?.trimDuration || 5)))
-        }));
-        await ffmpeg.run(
-          "-ss", trims[0].start, "-t", trims[0].duration, "-i", "cut0.mp4",
-          "-ss", trims[1].start, "-t", trims[1].duration, "-i", "cut1.mp4",
-          "-ss", trims[2].start, "-t", trims[2].duration, "-i", "cut2.mp4",
-          "-filter_complex", filter,
-          "-map", "[v]",
-          "-an",
-          "-t", "15",
-          "-movflags", "faststart",
-          "moment-output.mp4"
-        );
-        const data = ffmpeg.FS("readFile", "moment-output.mp4");
         if (airsMomentRenderedVideoUrl) URL.revokeObjectURL(airsMomentRenderedVideoUrl);
-        airsMomentRenderedVideoUrl = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+        airsMomentRenderedVideoUrl = URL.createObjectURL(outputBlob);
         const download = document.querySelector("#airs-moment-download-video");
         if (download) download.download = airsMomentRenderFilename();
-        airsMomentRenderStatus = "完成しました。端末にダウンロードしてからSNSへ投稿できます。";
+        airsMomentRenderStatus = usedFallback
+          ? "軽量モードで完成しました。端末にダウンロードしてからSNSへ投稿できます。"
+          : "完成しました。端末にダウンロードしてからSNSへ投稿できます。";
         airsMomentRenderError = false;
       } catch (error) {
         console.warn("air-s Moment render failed", error);
         airsMomentRenderedVideoUrl = "";
         airsMomentRenderError = true;
-        airsMomentRenderStatus = "結合に失敗しました。3本の動画を個別に使い、下の投稿文コピーとSNS導線で投稿できます。";
+        airsMomentRenderStatus = `結合に失敗しました。${error?.message ? `理由: ${error.message} ` : ""}3本の動画を個別に使い、下の投稿文コピーとSNS導線で投稿できます。`;
       } finally {
         airsMomentRendering = false;
         renderAirsMomentRenderBox();
