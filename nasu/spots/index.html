@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>那須 観光スポット MAP｜那須どうぶつ王国・サファリパーク・フラワーパークまとめ</title>
+  <meta name="description" content="那須エリアの観光スポット・テーマパーク・体験施設をまとめたMAPです。那須どうぶつ王国、那須ハイランドパーク、那須サファリパークなど家族で楽しめるスポットを紹介します。">
+  <meta name="keywords" content="那須 観光,那須どうぶつ王国,那須ハイランドパーク,那須サファリパーク,那須 テーマパーク,那須高原 観光,栃木 観光 マップ,那須 家族">
+  <meta property="og:title" content="那須 観光スポット MAP｜那須どうぶつ王国・サファリパーク・フラワーパークまとめ">
+  <meta property="og:description" content="那須エリアの観光スポット・テーマパーク・体験施設をまとめたMAPです。那須どうぶつ王国、那須ハイランドパーク、那須サファリパークなど家族で楽しめるスポットを紹介します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://map-s.site/nasu/spots">
+  <meta property="og:site_name" content="map-s">
+  <link rel="canonical" href="https://map-s.site/nasu/spots">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink:     #1C1917;
+      --sage:    #4A7C6F;
+      --sage-lt: #A8C5BB;
+      --cream:   #F7F3EE;
+      --sand:    #E8DDD0;
+      --warm:    #C4A882;
+      --muted:   #78716C;
+      --white:   #FFFFFF;
+      --border:  #DDD5C8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.7; font-size: 15px; }
+    .site-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+    .site-logo { font-family: 'EB Garamond', serif; font-size: 20px; color: var(--sage); text-decoration: none; letter-spacing: 0.05em; }
+    .site-logo span { color: var(--muted); font-size: 13px; font-family: 'Noto Sans JP', sans-serif; margin-left: 8px; font-weight: 300; }
+    .breadcrumb { padding: 12px 24px; font-size: 12px; color: var(--muted); background: var(--cream); border-bottom: 1px solid var(--border); }
+    .breadcrumb a { color: var(--sage); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+    .hero { background: var(--ink); color: var(--white); padding: 56px 24px 48px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; right: 0; width: 40%; height: 100%; background: linear-gradient(135deg, transparent 40%, rgba(74,124,111,0.15) 100%); pointer-events: none; }
+    .hero-inner { max-width: 720px; margin: 0 auto; position: relative; }
+    .hero-tag { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage-lt); border: 1px solid rgba(168,197,187,0.4); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; font-family: 'EB Garamond', serif; }
+    .hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(24px, 5vw, 36px); font-weight: 400; line-height: 1.4; margin-bottom: 16px; letter-spacing: 0.02em; }
+    .hero h1 em { font-style: normal; color: var(--sage-lt); }
+    .hero-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.8; max-width: 520px; }
+    .hero-meta { margin-top: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .hero-count { font-size: 13px; color: var(--sage-lt); }
+    .hero-count strong { font-size: 22px; font-family: 'EB Garamond', serif; color: var(--white); margin-right: 4px; }
+    .hero-area-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .area-tag { font-size: 11px; padding: 3px 10px; border-radius: 100px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    .map-section { padding: 40px 0 32px; }
+    .section-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage); font-family: 'EB Garamond', serif; margin-bottom: 12px; }
+    .map-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
+    .map-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .map-frame-wrap { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 16px rgba(0,0,0,0.06); background: var(--white); }
+    .map-frame-wrap iframe { display: block; width: 100%; height: 480px; border: none; }
+    .map-actions { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-open { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sage); border: 1px solid var(--sage); padding: 8px 16px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; }
+    .btn-open:hover { background: var(--sage); color: var(--white); }
+    .btn-embed { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; text-decoration: none; cursor: pointer; background: none; transition: border-color 0.2s, color 0.2s; }
+    .btn-embed:hover { border-color: var(--sage); color: var(--sage); }
+    .divider { height: 1px; background: var(--border); margin: 8px 0 32px; }
+    .intro-section { padding: 0 0 36px; }
+    .intro-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 14px; letter-spacing: 0.02em; }
+    .intro-section p { font-size: 14px; color: var(--ink); line-height: 1.9; margin-bottom: 12px; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 24px 0 36px; }
+    .feature-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 18px 16px; }
+    .feature-icon { font-size: 20px; margin-bottom: 8px; }
+    .feature-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .feature-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .area-section { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 36px; }
+    .area-section h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
+    .area-list { display: flex; flex-direction: column; gap: 14px; }
+    .area-item { display: flex; gap: 14px; align-items: flex-start; }
+    .area-badge { flex-shrink: 0; font-size: 11px; font-weight: 500; background: var(--sage); color: var(--white); padding: 3px 10px; border-radius: 100px; letter-spacing: 0.04em; margin-top: 2px; }
+    .area-text { font-size: 13px; color: var(--ink); line-height: 1.7; }
+    .area-text strong { display: block; font-weight: 500; margin-bottom: 2px; }
+    .faq-section { margin-bottom: 36px; }
+    .faq-section h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+    .faq-q { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
+    .faq-q::before { content: 'Q'; font-family: 'EB Garamond', serif; font-size: 16px; color: var(--sage); flex-shrink: 0; line-height: 1.4; }
+    .faq-a { font-size: 13px; color: var(--muted); line-height: 1.8; padding-left: 20px; }
+    .cta-section { background: var(--ink); color: var(--white); border-radius: 8px; padding: 32px 24px; margin-bottom: 48px; text-align: center; }
+    .cta-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; margin-bottom: 10px; letter-spacing: 0.02em; }
+    .cta-section p { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 20px; line-height: 1.7; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; background: var(--sage); color: var(--white); font-size: 13px; padding: 10px 24px; border-radius: 6px; text-decoration: none; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { display: inline-block; background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; padding: 10px 24px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); text-decoration: none; transition: border-color 0.2s, color 0.2s; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .other-maps { margin-bottom: 48px; }
+    .other-maps h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 14px; }
+    .map-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+    .map-link-card { display: block; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-decoration: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .map-link-card:hover { border-color: var(--sage); box-shadow: 0 2px 8px rgba(74,124,111,0.1); }
+    .map-link-label { font-size: 11px; color: var(--sage); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'EB Garamond', serif; margin-bottom: 4px; }
+    .map-link-title { font-size: 13px; color: var(--ink); font-weight: 500; }
+    footer { background: var(--white); border-top: 1px solid var(--border); padding: 28px 24px; }
+    .footer-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-logo { font-family: 'EB Garamond', serif; font-size: 18px; color: var(--sage); text-decoration: none; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--sage); }
+    .footer-copy { font-size: 11px; color: var(--muted); width: 100%; margin-top: 8px; }
+    @media (max-width: 600px) { .hero { padding: 40px 20px 36px; } .map-frame-wrap iframe { height: 360px; } .features { grid-template-columns: 1fr 1fr; } .cta-section { padding: 28px 20px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://map-s.site" class="site-logo">map-s<span>店舗MAPを、3分で。</span></a>
+</header>
+
+<nav class="breadcrumb" aria-label="パンくずリスト">
+  <a href="https://map-s.site">map-s</a>
+  <span>›</span>
+  <a href="https://map-s.site/nasu">那須エリア</a>
+  <span>›</span>
+  観光スポット MAP
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Nasu · Spots Map</div>
+    <h1>那須の<em>観光スポット</em>を、<br>まとめて地図で見る。</h1>
+    <p class="hero-desc">那須高原エリアの観光スポット・テーマパーク・体験施設をまとめたMAPです。那須どうぶつ王国、那須ハイランドパーク、那須サファリパークなど、家族で楽しめる場所を幅広く掲載しています。</p>
+    <div class="hero-meta">
+      <div class="hero-count"><strong>7+</strong>店舗掲載中</div>
+      <div class="hero-area-tags">
+        <span class="area-tag">那須高原</span>
+        <span class="area-tag">那須町</span>
+        <span class="area-tag">那須塩原</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <section class="map-section">
+      <div class="section-label">Interactive Map</div>
+      <div class="map-title">那須 観光スポット MAP</div>
+      <p class="map-subtitle">ピンをタップすると店舗詳細とGoogle Mapsへのリンクが開きます。</p>
+      <div class="map-frame-wrap">
+        <!-- Codexさんへ：nasu-spots-2026 を実際のmapIdに差し替えてください -->
+        <iframe src="https://map-s.site/embed/nasu-spots-2026" title="那須 観光スポット MAP" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <div class="map-actions">
+        <a href="https://map-s.site/m/nasu-spots-2026" class="btn-open" target="_blank" rel="noopener">↗ 大きなMAPで見る</a>
+        <button class="btn-embed" onclick="copyEmbed()" type="button">⎘ 埋め込みコードをコピー</button>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="intro-section">
+      <h2>那須の観光スポットを楽しむなら</h2>
+      <p>那須高原は関東圏から日帰り・週末旅行で訪れやすい観光地として人気があります。自然体験から動物とのふれあい、絶叫アトラクションまで、さまざまな楽しみ方ができます。</p>
+      <p>このMAPでは、那須を代表する観光スポットをまとめています。各スポットのGoogle MapsリンクからアクセスやGoogleのレビューも確認できます。</p>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">🦁</div>
+          <div class="feature-title">動物園・サファリ</div>
+          <div class="feature-desc">動物とのふれあいや間近で見られる施設</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎢</div>
+          <div class="feature-title">アトラクション</div>
+          <div class="feature-desc">那須ハイランドパークのアトラクションも</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌸</div>
+          <div class="feature-title">花と自然</div>
+          <div class="feature-desc">那須フラワーパークなど季節の花を楽しめる</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👨‍👩‍👧</div>
+          <div class="feature-title">家族向け</div>
+          <div class="feature-desc">お子様から大人まで楽しめる施設が充実</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="area-section">
+      <h2>エリア別観光スポットガイド</h2>
+      <div class="area-list">
+        <div class="area-item">
+          <span class="area-badge">那須高原</span>
+          <div class="area-text"><strong>那須町・高原エリア</strong>那須どうぶつ王国はアルパカやレッサーパンダなど多くの動物と触れ合える人気施設です。那須ハイランドパークは様々なアトラクションを備えた遊園地で、ファミリーに人気があります。</div>
+        </div>
+        <div class="area-item">
+          <span class="area-badge">那須町</span>
+          <div class="area-text"><strong>那須町エリア</strong>那須サファリパークはバスや車でサファリゾーンを回れる施設です。那須フラワーパークは季節の花が美しく、特に春から秋にかけて人気が高い観光スポットです。</div>
+        </div>
+        <div class="area-item">
+          <span class="area-badge">那須塩原</span>
+          <div class="area-text"><strong>那須塩原市エリア</strong>エピナール那須はリゾートホテルながらプールや温泉を日帰りでも利用できる総合施設です。サンバレー那須も周辺の人気リゾートのひとつです。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <h2>よくある質問</h2>
+      <div class="faq-item">
+        <div class="faq-q">那須どうぶつ王国の入場料はいくらですか？</div>
+        <div class="faq-a">入場料は年齢によって異なります。最新の料金はGoogle Mapsや公式サイトでご確認ください。オンラインで事前購入するとお得な場合があります。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">那須ハイランドパークは何歳から楽しめますか？</div>
+        <div class="faq-a">お子様向けのアトラクションから大人向けの絶叫系まで幅広い年齢層に対応しています。小さなお子様向けのエリアもあります。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">那須の観光スポットは冬も営業していますか？</div>
+        <div class="faq-a">スポットによって異なります。冬季は休業または営業時間を短縮する施設もあります。事前にGoogle Mapsで最新の営業情報をご確認ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">那須の観光スポットへのアクセスは？</div>
+        <div class="faq-a">那須高原は公共交通機関でのアクセスが限られるため、レンタカーや自家用車でのアクセスをおすすめします。東北自動車道の那須ICが最寄りのインターチェンジです。</div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>あなたのお店のMAPも作れます</h2>
+      <p>Google MapsのURLを入れるだけで、3分で公開・埋め込み対応のMAPが作れます。<br>商店街・観光協会・複数店舗の案内にも対応しています。</p>
+      <div class="cta-btns">
+        <a href="https://map-s.site" class="btn-primary">MAPを作ってみる（無料）</a>
+        <a href="https://g-maps.shop/nasu" class="btn-secondary">お店のGoogle Maps見え方を診断</a>
+      </div>
+    </section>
+
+    <section class="other-maps">
+      <h2>那須の他のMAP</h2>
+      <div class="map-links">
+        <a href="https://map-s.site/nasu/cafe" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 カフェ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/lunch" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 ランチ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/ramen" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 ラーメン・中華 MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/bakery" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 パン屋 MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/sweets" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 スイーツ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/dog" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 犬連れ MAP</div>
+    </a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <a href="https://map-s.site" class="footer-logo">map-s</a>
+    <div class="footer-links">
+      <a href="https://map-s.site">トップ</a>
+      <a href="https://map-s.site/nasu">那須エリア</a>
+      <a href="https://g-maps.shop">Google Maps診断</a>
+      <a href="https://okyakusa-ma.com">お客様.COM</a>
+    </div>
+    <div class="footer-copy">© 2026 map-s.site · Powered by なすぱらTV フィールドワーク</div>
+  </div>
+</footer>
+
+
+<script>
+  function copyEmbed() {
+    const code = '<iframe src="https://map-s.site/embed/nasu-spots-2026" width="100%" height="480" style="border:none;border-radius:8px;" loading="lazy"></iframe>';
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.btn-embed');
+      const orig = btn.textContent;
+      btn.textContent = '✓ コピーしました';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

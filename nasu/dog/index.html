@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>那須 犬連れ・ペットOK MAP｜愛犬と一緒に行けるカフェ・スポットまとめ</title>
+  <meta name="description" content="那須・黒磯エリアの犬連れOK・ペット同伴可能なカフェ・レストラン・スポットをまとめたMAPです。テラス席から店内OKまで、愛犬と那須を楽しめる場所を紹介します。">
+  <meta name="keywords" content="那須 犬連れ,那須 ペットOK,那須 愛犬,黒磯 犬連れ カフェ,那須高原 ペット,那須 ドッグラン,栃木 犬連れ マップ,那須 ペット同伴">
+  <meta property="og:title" content="那須 犬連れ・ペットOK MAP｜愛犬と一緒に行けるカフェ・スポットまとめ">
+  <meta property="og:description" content="那須・黒磯エリアの犬連れOK・ペット同伴可能なカフェ・レストラン・スポットをまとめたMAPです。テラス席から店内OKまで、愛犬と那須を楽しめる場所を紹介します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://map-s.site/nasu/dog">
+  <meta property="og:site_name" content="map-s">
+  <link rel="canonical" href="https://map-s.site/nasu/dog">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink:     #1C1917;
+      --sage:    #4A7C6F;
+      --sage-lt: #A8C5BB;
+      --cream:   #F7F3EE;
+      --sand:    #E8DDD0;
+      --warm:    #C4A882;
+      --muted:   #78716C;
+      --white:   #FFFFFF;
+      --border:  #DDD5C8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.7; font-size: 15px; }
+    .site-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+    .site-logo { font-family: 'EB Garamond', serif; font-size: 20px; color: var(--sage); text-decoration: none; letter-spacing: 0.05em; }
+    .site-logo span { color: var(--muted); font-size: 13px; font-family: 'Noto Sans JP', sans-serif; margin-left: 8px; font-weight: 300; }
+    .breadcrumb { padding: 12px 24px; font-size: 12px; color: var(--muted); background: var(--cream); border-bottom: 1px solid var(--border); }
+    .breadcrumb a { color: var(--sage); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+    .hero { background: var(--ink); color: var(--white); padding: 56px 24px 48px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; right: 0; width: 40%; height: 100%; background: linear-gradient(135deg, transparent 40%, rgba(74,124,111,0.15) 100%); pointer-events: none; }
+    .hero-inner { max-width: 720px; margin: 0 auto; position: relative; }
+    .hero-tag { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage-lt); border: 1px solid rgba(168,197,187,0.4); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; font-family: 'EB Garamond', serif; }
+    .hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(24px, 5vw, 36px); font-weight: 400; line-height: 1.4; margin-bottom: 16px; letter-spacing: 0.02em; }
+    .hero h1 em { font-style: normal; color: var(--sage-lt); }
+    .hero-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.8; max-width: 520px; }
+    .hero-meta { margin-top: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .hero-count { font-size: 13px; color: var(--sage-lt); }
+    .hero-count strong { font-size: 22px; font-family: 'EB Garamond', serif; color: var(--white); margin-right: 4px; }
+    .hero-area-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .area-tag { font-size: 11px; padding: 3px 10px; border-radius: 100px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); letter-spacing: 0.05em; }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    .map-section { padding: 40px 0 32px; }
+    .section-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage); font-family: 'EB Garamond', serif; margin-bottom: 12px; }
+    .map-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
+    .map-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .map-frame-wrap { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 16px rgba(0,0,0,0.06); background: var(--white); }
+    .map-frame-wrap iframe { display: block; width: 100%; height: 480px; border: none; }
+    .map-actions { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-open { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sage); border: 1px solid var(--sage); padding: 8px 16px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; }
+    .btn-open:hover { background: var(--sage); color: var(--white); }
+    .btn-embed { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; text-decoration: none; cursor: pointer; background: none; transition: border-color 0.2s, color 0.2s; }
+    .btn-embed:hover { border-color: var(--sage); color: var(--sage); }
+    .divider { height: 1px; background: var(--border); margin: 8px 0 32px; }
+    .intro-section { padding: 0 0 36px; }
+    .intro-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 14px; letter-spacing: 0.02em; }
+    .intro-section p { font-size: 14px; color: var(--ink); line-height: 1.9; margin-bottom: 12px; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 24px 0 36px; }
+    .feature-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 18px 16px; }
+    .feature-icon { font-size: 20px; margin-bottom: 8px; }
+    .feature-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .feature-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .area-section { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 36px; }
+    .area-section h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
+    .area-list { display: flex; flex-direction: column; gap: 14px; }
+    .area-item { display: flex; gap: 14px; align-items: flex-start; }
+    .area-badge { flex-shrink: 0; font-size: 11px; font-weight: 500; background: var(--sage); color: var(--white); padding: 3px 10px; border-radius: 100px; letter-spacing: 0.04em; margin-top: 2px; }
+    .area-text { font-size: 13px; color: var(--ink); line-height: 1.7; }
+    .area-text strong { display: block; font-weight: 500; margin-bottom: 2px; }
+    .faq-section { margin-bottom: 36px; }
+    .faq-section h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+    .faq-q { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
+    .faq-q::before { content: 'Q'; font-family: 'EB Garamond', serif; font-size: 16px; color: var(--sage); flex-shrink: 0; line-height: 1.4; }
+    .faq-a { font-size: 13px; color: var(--muted); line-height: 1.8; padding-left: 20px; }
+    .cta-section { background: var(--ink); color: var(--white); border-radius: 8px; padding: 32px 24px; margin-bottom: 48px; text-align: center; }
+    .cta-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; margin-bottom: 10px; letter-spacing: 0.02em; }
+    .cta-section p { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 20px; line-height: 1.7; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; background: var(--sage); color: var(--white); font-size: 13px; padding: 10px 24px; border-radius: 6px; text-decoration: none; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { display: inline-block; background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; padding: 10px 24px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); text-decoration: none; transition: border-color 0.2s, color 0.2s; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+    .other-maps { margin-bottom: 48px; }
+    .other-maps h2 { font-family: 'Noto Serif JP', serif; font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 14px; }
+    .map-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+    .map-link-card { display: block; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; text-decoration: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .map-link-card:hover { border-color: var(--sage); box-shadow: 0 2px 8px rgba(74,124,111,0.1); }
+    .map-link-label { font-size: 11px; color: var(--sage); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'EB Garamond', serif; margin-bottom: 4px; }
+    .map-link-title { font-size: 13px; color: var(--ink); font-weight: 500; }
+    footer { background: var(--white); border-top: 1px solid var(--border); padding: 28px 24px; }
+    .footer-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-logo { font-family: 'EB Garamond', serif; font-size: 18px; color: var(--sage); text-decoration: none; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--sage); }
+    .footer-copy { font-size: 11px; color: var(--muted); width: 100%; margin-top: 8px; }
+    @media (max-width: 600px) { .hero { padding: 40px 20px 36px; } .map-frame-wrap iframe { height: 360px; } .features { grid-template-columns: 1fr 1fr; } .cta-section { padding: 28px 20px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://map-s.site" class="site-logo">map-s<span>店舗MAPを、3分で。</span></a>
+</header>
+
+<nav class="breadcrumb" aria-label="パンくずリスト">
+  <a href="https://map-s.site">map-s</a>
+  <span>›</span>
+  <a href="https://map-s.site/nasu">那須エリア</a>
+  <span>›</span>
+  犬連れ MAP
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Nasu · Dog Friendly Map</div>
+    <h1>那須の<em>犬連れスポット</em>を、<br>まとめて地図で見る。</h1>
+    <p class="hero-desc">黒磯・那須高原エリアの犬連れOK・ペット同伴可能なカフェ・スポットをまとめたMAPです。テラス席のあるカフェから、愛犬と一緒に楽しめる観光スポットまで幅広く掲載しています。</p>
+    <div class="hero-meta">
+      <div class="hero-count"><strong>8+</strong>店舗掲載中</div>
+      <div class="hero-area-tags">
+        <span class="area-tag">黒磯</span>
+        <span class="area-tag">那須高原</span>
+        <span class="area-tag">那須町</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+
+    <section class="map-section">
+      <div class="section-label">Interactive Map</div>
+      <div class="map-title">那須 犬連れ・ペットOK MAP</div>
+      <p class="map-subtitle">ピンをタップすると店舗詳細とGoogle Mapsへのリンクが開きます。</p>
+      <div class="map-frame-wrap">
+        <!-- Codexさんへ：nasu-dog-2026 を実際のmapIdに差し替えてください -->
+        <iframe src="https://map-s.site/embed/nasu-dog-2026" title="那須 犬連れ・ペットOK MAP" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <div class="map-actions">
+        <a href="https://map-s.site/m/nasu-dog-2026" class="btn-open" target="_blank" rel="noopener">↗ 大きなMAPで見る</a>
+        <button class="btn-embed" onclick="copyEmbed()" type="button">⎘ 埋め込みコードをコピー</button>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="intro-section">
+      <h2>那須で犬連れスポットを探すなら</h2>
+      <p>那須エリアは犬連れ旅行に人気の観光地のひとつです。広大な自然の中にテラス席を持つカフェや、ドッグランを併設した施設が多く、愛犬と一緒に那須の空気を満喫できます。</p>
+      <p>ただし、犬の入店可否は店内・テラスのみ・リード必須など、お店によって条件が異なります。事前にGoogle Mapsや公式サイトで最新の情報をご確認いただくことをおすすめします。</p>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">🐕</div>
+          <div class="feature-title">テラス席あり</div>
+          <div class="feature-desc">愛犬と一緒にテラスで過ごせるお店を含む</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌿</div>
+          <div class="feature-title">自然の中で</div>
+          <div class="feature-desc">那須の緑の中で愛犬と過ごせる場所</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🦮</div>
+          <div class="feature-title">リード必須</div>
+          <div class="feature-desc">入店条件はGoogle Mapsで要確認</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🅿</div>
+          <div class="feature-title">広い駐車場</div>
+          <div class="feature-desc">犬連れでも安心な広めの駐車場が多い</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="area-section">
+      <h2>エリア別犬連れガイド</h2>
+      <div class="area-list">
+        <div class="area-item">
+          <span class="area-badge">黒磯</span>
+          <div class="area-text"><strong>那須塩原市・黒磯エリア</strong>リビングストンをはじめ、犬連れで入りやすいカフェが黒磯エリアに複数あります。オーナーが犬好きのお店も多く、温かい雰囲気で迎えてもらえることが多いです。</div>
+        </div>
+        <div class="area-item">
+          <span class="area-badge">那須高原</span>
+          <div class="area-text"><strong>那須町・高原エリア</strong>那須高原は犬連れ旅行の定番エリアです。NASU PARADISE VILLAGEはドッグランも備えた大型施設で、愛犬と一日楽しめます。</div>
+        </div>
+        <div class="area-item">
+          <span class="area-badge">那須町</span>
+          <div class="area-text"><strong>那須町エリア</strong>ペニーレイン、杉と胡桃など、広いテラスや自然の景色の中で愛犬と過ごせるお店があります。秋の紅葉シーズンは特に人気が高いエリアです。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <h2>よくある質問</h2>
+      <div class="faq-item">
+        <div class="faq-q">那須で犬連れで泊まれる宿はありますか？</div>
+        <div class="faq-a">このMAPはカフェ・食事処・スポット中心の情報ですが、那須エリアにはペット同伴OKの宿泊施設も多くあります。「那須 ペット 宿」で検索すると専門の宿泊予約サイトで見つけやすいです。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">小型犬と大型犬で入店可否が違うことはありますか？</div>
+        <div class="faq-a">はい。お店によっては小型犬のみOK、または抱っこでの入店のみOKといった条件があります。事前にお店のGoogle Mapsや公式SNSでご確認いただくことをおすすめします。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">那須でドッグランがある場所はどこですか？</div>
+        <div class="faq-a">NASU PARADISE VILLAGEはドッグランを備えた施設として知られています。その他の施設については各施設のGoogle Mapsページでご確認ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">犬連れで那須高原を観光する際の注意点は？</div>
+        <div class="faq-a">夏の暑い時期はアスファルトの熱で肉球をやけどするリスクがあります。早朝や夕方の涼しい時間帯の観光をおすすめします。また、観光施設によっては犬の入場を制限している場合があります。</div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>あなたのお店のMAPも作れます</h2>
+      <p>Google MapsのURLを入れるだけで、3分で公開・埋め込み対応のMAPが作れます。<br>商店街・観光協会・複数店舗の案内にも対応しています。</p>
+      <div class="cta-btns">
+        <a href="https://map-s.site" class="btn-primary">MAPを作ってみる（無料）</a>
+        <a href="https://g-maps.shop/nasu" class="btn-secondary">お店のGoogle Maps見え方を診断</a>
+      </div>
+    </section>
+
+    <section class="other-maps">
+      <h2>那須の他のMAP</h2>
+      <div class="map-links">
+        <a href="https://map-s.site/nasu/cafe" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 カフェ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/lunch" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 ランチ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/ramen" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 ラーメン・中華 MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/bakery" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 パン屋 MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/sweets" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 スイーツ MAP</div>
+    </a>
+        <a href="https://map-s.site/nasu/onsen" class="map-link-card">
+      <div class="map-link-label">Nasu</div>
+      <div class="map-link-title">那須 温泉 MAP</div>
+    </a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <a href="https://map-s.site" class="footer-logo">map-s</a>
+    <div class="footer-links">
+      <a href="https://map-s.site">トップ</a>
+      <a href="https://map-s.site/nasu">那須エリア</a>
+      <a href="https://g-maps.shop">Google Maps診断</a>
+      <a href="https://okyakusa-ma.com">お客様.COM</a>
+    </div>
+    <div class="footer-copy">© 2026 map-s.site · Powered by なすぱらTV フィールドワーク</div>
+  </div>
+</footer>
+
+
+<script>
+  function copyEmbed() {
+    const code = '<iframe src="https://map-s.site/embed/nasu-dog-2026" width="100%" height="480" style="border:none;border-radius:8px;" loading="lazy"></iframe>';
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.btn-embed');
+      const orig = btn.textContent;
+      btn.textContent = '✓ コピーしました';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
