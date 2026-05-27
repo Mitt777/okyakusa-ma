@@ -418,6 +418,44 @@
       line-height: 1.45;
     }
 
+    .maps-area-links {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .maps-area-link {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      border: 1px solid #dce9f0;
+      border-radius: 8px;
+      background: #fff;
+      color: #1d2a33;
+      padding: 14px;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(55, 92, 113, .06);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .maps-area-link:hover {
+      border-color: #a8c9bb;
+      box-shadow: 0 14px 30px rgba(55, 92, 113, .1);
+      transform: translateY(-1px);
+    }
+
+    .maps-area-link small {
+      color: #2f7d62;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .maps-area-link strong {
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
     .maps-section {
       margin: 22px 0;
       border: 1px solid #dbe8f0;
@@ -2183,6 +2221,13 @@
       padding: 12px;
     }
 
+    .airs-card.is-moment {
+      border-color: rgba(31, 122, 94, .28);
+      background:
+        linear-gradient(180deg, rgba(238, 249, 243, .86) 0%, rgba(255, 255, 255, .94) 42%);
+      box-shadow: 0 14px 34px rgba(31, 122, 94, .08);
+    }
+
     .airs-card img {
       width: 100%;
       aspect-ratio: 3 / 4;
@@ -2227,6 +2272,36 @@
     .airs-card .airs-card-mood {
       background: #eef2fb;
       color: #3d557a;
+    }
+
+    .airs-moment-memory {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 0;
+      border: 1px solid rgba(31, 122, 94, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .72);
+      padding: 10px;
+    }
+
+    .airs-moment-memory strong {
+      color: #20382d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .airs-moment-memory p {
+      min-height: 0;
+      color: #536157;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .airs-moment-memory .airs-moment-copy-preview {
+      border-left: 3px solid rgba(31, 122, 94, .3);
+      padding-left: 9px;
+      color: #2d493d;
+      white-space: pre-line;
     }
 
     .airs-return-reason {
@@ -4678,6 +4753,10 @@
         font-size: 10px;
       }
 
+      .maps-area-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .maps-builder-output.is-single-shop {
         grid-template-columns: 1fr;
       }
@@ -4770,6 +4849,7 @@
         </div>
         <nav class="maps-nav" aria-label="map-sナビゲーション">
           <a href="#maps-how">作り方</a>
+          <a href="/nasu/">那須MAP</a>
           <a href="#maps-seo">SEO導線</a>
           <a href="#maps-pricing">料金</a>
           <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
@@ -4787,6 +4867,7 @@
           <div class="maps-actions">
             <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
             <a class="maps-button" href="#maps-sample">サンプルを見る</a>
+            <a class="maps-button" href="/nasu/">那須MAP集を見る</a>
           </div>
           <p class="maps-note">
             Googleマイマップより見た目を整えやすく、重い開発より早く公開できる、業務向けの「公開・埋め込み」レイヤーです。
@@ -4878,6 +4959,27 @@
             </a>
             <span>複数店舗はリスト化して表示</span>
           </div>
+        </div>
+      </section>
+
+      <section class="maps-section" id="maps-nasu">
+        <div class="maps-section-head">
+          <div>
+            <span class="maps-kicker">Nasu area pages</span>
+            <h2>那須の地域MAPページを、SEO導線のサンプルとして公開しています。</h2>
+            <p>カフェ、ランチ、温泉、犬連れ、観光スポットなど、用途別の静的MAPページです。地域ページから公開MAP・埋め込みMAPへつなげる入口になります。</p>
+          </div>
+          <a class="maps-button primary" href="/nasu/">那須MAP集を見る</a>
+        </div>
+        <div class="maps-area-links" aria-label="那須エリアMAPへのリンク">
+          <a class="maps-area-link" href="/nasu/cafe"><small>Cafe</small><strong>那須 カフェ MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/lunch"><small>Lunch</small><strong>那須 ランチ MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/ramen"><small>Ramen</small><strong>那須 ラーメン・中華 MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/bakery"><small>Bakery</small><strong>那須 パン屋 MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/sweets"><small>Sweets</small><strong>那須 スイーツ MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/dog"><small>Dog friendly</small><strong>那須 犬連れ MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/onsen"><small>Onsen</small><strong>那須 温泉 MAP</strong></a>
+          <a class="maps-area-link" href="/nasu/spots"><small>Spots</small><strong>那須 観光スポット MAP</strong></a>
         </div>
       </section>
 
@@ -6965,6 +7067,24 @@
       });
     }
 
+    function isAirsMomentItem(item) {
+      return Boolean(item?.momentTemplateKey || item?.momentTemplateTitle);
+    }
+
+    function renderAirsMomentMemory(item) {
+      if (!isAirsMomentItem(item)) return "";
+      const templateTitle = item.momentTemplateTitle || "3カットMoment";
+      const cutCount = item.momentCutCount || 3;
+      const copy = item.momentCopy || "";
+      return `
+        <div class="airs-moment-memory" aria-label="Momentの記憶">
+          <strong>Moment: ${escapeHtml(templateTitle)} / ${escapeHtml(String(cutCount))}カット</strong>
+          <p>動画はair-s内に保存していません。今日のお店の空気だけを、AIRズの記憶として残しています。</p>
+          ${copy ? `<p class="airs-moment-copy-preview">${escapeHtml(copy)}</p>` : ""}
+        </div>
+      `;
+    }
+
     function renderAirsLocker() {
       const list = document.querySelector("#airs-locker-list");
       if (!list) return;
@@ -6984,9 +7104,9 @@
         return;
       }
       list.innerHTML = items.map((item, index) => `
-        <article class="airs-card">
+        <article class="airs-card${isAirsMomentItem(item) ? " is-moment" : ""}">
           <img src="${escapeHtml(item.image || "/assets/worldview-cards/personas/21-1.webp")}" alt="${escapeHtml(item.storeName)}">
-          <small>${item.visibility === "private" ? "非公開" : "公開準備"} / ${escapeHtml(item.timeLabel || "air-s")}</small>
+          <small>${isAirsMomentItem(item) ? "Momentの記憶" : item.visibility === "private" ? "非公開" : "公開準備"} / ${escapeHtml(item.timeLabel || "air-s")}</small>
           <b>${escapeHtml(item.storeName)}</b>
           <div class="airs-memory-tags" aria-label="場所記憶のメタ情報">
             ${item.moodLabel ? `<small class="airs-card-mood">${escapeHtml(item.moodLabel)}</small>` : ""}
@@ -6994,6 +7114,7 @@
           </div>
           <p>${escapeHtml(item.comment || "この空気だった。")}</p>
           ${item.revisitReason ? `<div class="airs-return-reason">また行きたい理由: ${escapeHtml(item.revisitReason)}</div>` : ""}
+          ${renderAirsMomentMemory(item)}
           ${item.photoUrl ? `<p class="airs-card-photo"><img src="${escapeHtml(item.photoUrl)}" alt="${escapeHtml(item.storeName)}の記憶写真"></p>` : ""}
           <p>${item.serverSaved ? "このair-sは保存されています。今はまだ自分だけのLockerに置かれています。" : "この端末内の仮保存です。公開や交流はまだ行いません。"}</p>
           <div class="airs-share">
