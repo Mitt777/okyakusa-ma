@@ -219,15 +219,16 @@
     .map-frame-wrap iframe {
       display: block;
       width: 100%;
-      height: 480px;
+      height: min(82vh, 820px); min-height: 680px;
       border: none;
     }
 
     .map-actions {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 12px;
-      margin-top: 12px;
+      margin: 14px 0 16px;
     }
 
     .btn-open,
@@ -245,13 +246,21 @@
 
     .btn-open {
       border: 1px solid var(--sage);
-      color: var(--sage);
+      background: var(--sage);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      min-height: 46px;
+      padding: 10px 22px;
     }
 
     .btn-open:hover {
-      background: var(--sage);
+      background: var(--ink);
+      border-color: var(--ink);
       color: var(--white);
+      transform: translateY(-1px);
     }
+    .map-hint { color: var(--muted); font-size: 12px; line-height: 1.7; }
 
     .btn-embed {
       border: 1px solid var(--border);
@@ -550,7 +559,9 @@
 
     @media (max-width: 600px) {
       .hero { padding: 40px 20px 36px; }
-      .map-frame-wrap iframe { height: 360px; }
+      .map-frame-wrap iframe { height: 74vh; min-height: 620px; }
+      .map-actions { align-items: stretch; flex-direction: column; }
+      .btn-open, .btn-embed { width: 100%; }
       .features { grid-template-columns: 1fr 1fr; }
       .cta-section { padding: 28px 20px; }
     }
@@ -595,9 +606,13 @@
         <div class="section-label">Interactive Map</div>
         <div class="map-title">那須 カフェ MAP</div>
         <p class="map-subtitle">ピンをタップすると店舗詳細とGoogle Mapsへのリンクが開きます。</p>
+        <div class="map-actions map-actions-primary">
+          <a href="https://map-s.site/m/nasu-cafe-2026" class="btn-open" target="_blank" rel="noopener">大きなMAPで全店舗を見る</a>
+          <span class="map-hint">ページ内MAPはプレビューです。店舗リストまで見る場合は大きなMAPが見やすいです。</span>
+        </div>
         <div class="map-frame-wrap">
           <iframe
-            src="https://map-s.site/embed/nasu-cafe-2026"
+            src="https://map-s.site/m/nasu-cafe-2026"
             title="那須カフェMAP"
             loading="lazy"
             allowfullscreen>
@@ -605,7 +620,7 @@
         </div>
         <div class="map-actions">
           <a href="https://map-s.site/m/nasu-cafe-2026" class="btn-open" target="_blank" rel="noopener">
-            大きなMAPで見る
+            別タブで全体表示
           </a>
           <button class="btn-embed" onclick="copyEmbed()" type="button">
             埋め込みコードをコピー
@@ -770,7 +785,7 @@
 
   <script>
     function copyEmbed() {
-      const code = '<iframe src="https://map-s.site/embed/nasu-cafe-2026" width="100%" height="480" style="border:none;border-radius:8px;" title="那須カフェMAP" loading="lazy"></iframe>';
+      const code = '<iframe src="https://map-s.site/embed/nasu-cafe-2026" width="100%" height="720" style="border:none;border-radius:8px;" title="那須カフェMAP" loading="lazy"></iframe>';
       navigator.clipboard.writeText(code).then(() => {
         const btn = document.querySelector(".btn-embed");
         const original = btn.textContent;

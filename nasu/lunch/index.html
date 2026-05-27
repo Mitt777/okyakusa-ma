@@ -57,10 +57,11 @@
     .map-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
     .map-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
     .map-frame-wrap { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 16px rgba(0,0,0,0.06); background: var(--white); }
-    .map-frame-wrap iframe { display: block; width: 100%; height: 480px; border: none; }
-    .map-actions { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-open { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sage); border: 1px solid var(--sage); padding: 8px 16px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; }
-    .btn-open:hover { background: var(--sage); color: var(--white); }
+    .map-frame-wrap iframe { display: block; width: 100%; height: min(82vh, 820px); min-height: 680px; border: none; }
+    .map-actions { margin: 14px 0 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .btn-open { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; font-size: 15px; font-weight: 700; color: var(--white); background: var(--sage); border: 1px solid var(--sage); padding: 10px 22px; border-radius: 8px; text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.2s; }
+    .btn-open:hover { background: var(--ink); border-color: var(--ink); color: var(--white); transform: translateY(-1px); }
+    .map-hint { color: var(--muted); font-size: 12px; line-height: 1.7; }
     .btn-embed { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; text-decoration: none; cursor: pointer; background: none; transition: border-color 0.2s, color 0.2s; }
     .btn-embed:hover { border-color: var(--sage); color: var(--sage); }
     .divider { height: 1px; background: var(--border); margin: 8px 0 32px; }
@@ -107,7 +108,7 @@
     .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
     .footer-links a:hover { color: var(--sage); }
     .footer-copy { font-size: 11px; color: var(--muted); width: 100%; margin-top: 8px; }
-    @media (max-width: 600px) { .hero { padding: 40px 20px 36px; } .map-frame-wrap iframe { height: 360px; } .features { grid-template-columns: 1fr 1fr; } .cta-section { padding: 28px 20px; } }
+    @media (max-width: 600px) { .hero { padding: 40px 20px 36px; } .map-frame-wrap iframe { height: 74vh; min-height: 620px; } .map-actions { align-items: stretch; flex-direction: column; } .btn-open, .btn-embed { width: 100%; } .map-hint { font-size: 12px; } .features { grid-template-columns: 1fr 1fr; } .cta-section { padding: 28px 20px; } }
 </style>
 </head>
 <body>
@@ -148,12 +149,16 @@
       <div class="section-label">Interactive Map</div>
       <div class="map-title">那須 ランチ MAP</div>
       <p class="map-subtitle">ピンをタップすると店舗詳細とGoogle Mapsへのリンクが開きます。</p>
+        <div class="map-actions map-actions-primary">
+          <a href="https://map-s.site/m/nasu-lunch-2026" class="btn-open" target="_blank" rel="noopener">大きなMAPで全店舗を見る</a>
+          <span class="map-hint">ページ内MAPはプレビューです。店舗リストまで見る場合は大きなMAPが見やすいです。</span>
+        </div>
       <div class="map-frame-wrap">
         <!-- Codexさんへ：nasu-lunch-2026 を実際のmapIdに差し替えてください -->
-        <iframe src="https://map-s.site/embed/nasu-lunch-2026" title="那須 ランチ MAP" loading="lazy" allowfullscreen></iframe>
+        <iframe src="https://map-s.site/m/nasu-lunch-2026" title="那須 ランチ MAP" loading="lazy" allowfullscreen></iframe>
       </div>
       <div class="map-actions">
-        <a href="https://map-s.site/m/nasu-lunch-2026" class="btn-open" target="_blank" rel="noopener">↗ 大きなMAPで見る</a>
+        <a href="https://map-s.site/m/nasu-lunch-2026" class="btn-open" target="_blank" rel="noopener">別タブで全体表示</a>
         <button class="btn-embed" onclick="copyEmbed()" type="button">⎘ 埋め込みコードをコピー</button>
       </div>
     </section>
@@ -286,7 +291,7 @@
 
 <script>
   function copyEmbed() {
-    const code = '<iframe src="https://map-s.site/embed/nasu-lunch-2026" width="100%" height="480" style="border:none;border-radius:8px;" loading="lazy"></iframe>';
+    const code = '<iframe src="https://map-s.site/embed/nasu-lunch-2026" width="100%" height="720" style="border:none;border-radius:8px;" loading="lazy"></iframe>';
     navigator.clipboard.writeText(code).then(() => {
       const btn = document.querySelector('.btn-embed');
       const orig = btn.textContent;
