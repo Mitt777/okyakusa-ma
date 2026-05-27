@@ -1435,6 +1435,131 @@
       line-height: 1.5;
     }
 
+    .official-air-s-notifications,
+    .official-air-s-moment {
+      margin-bottom: 14px;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .official-air-s-notifications {
+      display: grid;
+      gap: 8px;
+      border: 1px solid rgba(63, 138, 109, .22);
+      background: linear-gradient(135deg, rgba(238, 248, 242, .94), rgba(255, 253, 245, .92));
+    }
+
+    .official-air-s-notice {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(63, 138, 109, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      padding: 9px;
+    }
+
+    .official-air-s-notice strong,
+    .official-air-s-notice span,
+    .official-air-s-moment strong,
+    .official-air-s-moment span {
+      display: block;
+    }
+
+    .official-air-s-notice strong {
+      color: #19382e;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .official-air-s-notice span {
+      margin-top: 3px;
+      color: #536458;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .official-air-s-notice button,
+    .official-air-s-moment button {
+      border: 1px solid rgba(63, 138, 109, .36);
+      border-radius: 999px;
+      background: #fff;
+      color: #27624d;
+      padding: 7px 10px;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .official-air-s-moment {
+      border: 1px solid rgba(215, 183, 123, .68);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 247, 230, .95), transparent 36%),
+        linear-gradient(135deg, rgba(255, 253, 245, .96), rgba(238, 248, 242, .94));
+    }
+
+    .official-air-s-moment small {
+      display: inline-flex;
+      margin-bottom: 7px;
+      border-radius: 999px;
+      background: #fff7e6;
+      color: #7b4e13;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .official-air-s-moment strong {
+      color: #19382e;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .official-air-s-moment p {
+      margin: 6px 0 0;
+      color: #4d5f55;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.75;
+    }
+
+    .official-air-s-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .official-air-s-meta span,
+    .official-air-s-meta a {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .76);
+      color: #5b4930;
+      padding: 5px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .official-air-s-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .official-air-s-feedback {
+      min-height: 16px;
+      margin-top: 8px;
+      color: #27624d;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
     .ok-ego-note-source {
       color: #2f8064;
     }
@@ -3188,6 +3313,10 @@
     let officialAirsMessage = "";
     let worldviewQrData = null;
     const WORLDVIEW_CARD_IMAGE_STORAGE_PREFIX = "okyakusama_worldview_card_image:";
+    const OFFICIAL_AIRS_MOMENTS_KEY = "okyakusama_official_airs_moments:v1";
+    const OFFICIAL_AIRS_WATCHERS_KEY = "okyakusama_official_airs_watchers:v1";
+    const OFFICIAL_AIRS_NOTIFICATIONS_KEY = "okyakusama_official_airs_notifications:v1";
+    const OFFICIAL_AIRS_TTL_MS = 60 * 60 * 1000;
 
     function text(value, fallback = "未判定") {
       return value === null || value === undefined || value === "" ? fallback : String(value);
@@ -4085,6 +4214,187 @@
       }
     }
 
+    function readLocalList(key) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeLocalList(key, items, limit = 40) {
+      try {
+        localStorage.setItem(key, JSON.stringify(items.slice(0, limit)));
+      } catch {
+        // localStorageが使えない環境では画面上の表示だけに留めます。
+      }
+    }
+
+    function officialAirsCardId(storeName = "") {
+      return concise([id, storeName, worldviewShareResult?.answerCode].filter(Boolean).join(":"), 140) || "official-card";
+    }
+
+    function officialAirsMapsUrl() {
+      const request = shareContext?.request || {};
+      const maps = shareContext?.maps || {};
+      return request.maps_url || request.google_maps_url || maps.google_maps_url || maps.google_maps_uri || "";
+    }
+
+    function cleanupOfficialAirsMoments() {
+      const now = Date.now();
+      const moments = readLocalList(OFFICIAL_AIRS_MOMENTS_KEY).filter((item) => Number(item.expiresAt || 0) > now);
+      writeLocalList(OFFICIAL_AIRS_MOMENTS_KEY, moments, 50);
+      return moments;
+    }
+
+    function activeOfficialAirsMoment(storeName = "") {
+      const cardId = officialAirsCardId(storeName);
+      const now = Date.now();
+      return cleanupOfficialAirsMoments()
+        .filter((item) => item.cardId === cardId && item.isOfficial && Number(item.expiresAt || 0) > now)
+        .sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0))[0] || null;
+    }
+
+    function formatOfficialAirsTime(value) {
+      const date = new Date(Number(value || Date.now()));
+      return date.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function officialAirsRemainingText(moment) {
+      const remaining = Math.max(0, Number(moment?.expiresAt || 0) - Date.now());
+      const minutes = Math.max(1, Math.ceil(remaining / 60000));
+      return `あと${minutes}分`;
+    }
+
+    function rememberOfficialAirsWatcher(button) {
+      const storeName = shareContext?.storeName || "このお店";
+      const cardId = officialAirsCardId(storeName);
+      const watchers = readLocalList(OFFICIAL_AIRS_WATCHERS_KEY).filter((item) => item.cardId !== cardId);
+      watchers.unshift({
+        watcherId: `watch_${Date.now().toString(36)}`,
+        cardId,
+        storeName,
+        officialCardUrl: worldviewCardShareUrl(),
+        createdAt: Date.now(),
+        channel: "in_app"
+      });
+      writeLocalList(OFFICIAL_AIRS_WATCHERS_KEY, watchers, 80);
+      document.querySelectorAll("[data-official-air-s-feedback]").forEach((feedback) => {
+        feedback.textContent = "このお店の公式air-s通知を、この端末内に予約しました。";
+      });
+      if (button) button.textContent = "通知予約済み";
+    }
+
+    function reserveOfficialAirsNotifications(moment) {
+      const watchers = readLocalList(OFFICIAL_AIRS_WATCHERS_KEY).filter((item) => item.cardId === moment.cardId);
+      if (!watchers.length) return;
+      const existing = readLocalList(OFFICIAL_AIRS_NOTIFICATIONS_KEY);
+      const created = watchers.map((watcher) => ({
+        notificationId: `notice_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+        cardId: moment.cardId,
+        momentId: moment.momentId,
+        storeName: moment.storeName,
+        title: `${moment.storeName}のお店が、今日の公式air-sを出しました`,
+        body: "公式世界観カードが1時間だけ動いています。",
+        officialCardUrl: moment.officialCardUrl,
+        scheduledAt: Date.now(),
+        expiresAt: moment.expiresAt,
+        read: false,
+        channel: "in_app",
+        watcherId: watcher.watcherId
+      }));
+      writeLocalList(OFFICIAL_AIRS_NOTIFICATIONS_KEY, [...created, ...existing], 80);
+    }
+
+    function createOfficialAirsMoment(button) {
+      const storeName = shareContext?.storeName || "このお店";
+      const now = Date.now();
+      const moment = {
+        momentId: `official_moment_${now.toString(36)}`,
+        cardId: officialAirsCardId(storeName),
+        storeName,
+        officialCardUrl: worldviewCardShareUrl(),
+        googleMapsUrl: officialAirsMapsUrl(),
+        title: "今日のお店の空気が届きました",
+        body: "開店前の静かな準備と、入口に流れる今日の空気を1時間だけ置いています。",
+        templateName: "静かな準備",
+        templateId: "quiet_opening_mvp",
+        createdAt: now,
+        expiresAt: now + OFFICIAL_AIRS_TTL_MS,
+        isOfficial: true,
+        source: "local_mvp"
+      };
+      const moments = readLocalList(OFFICIAL_AIRS_MOMENTS_KEY).filter((item) => item.momentId !== moment.momentId);
+      writeLocalList(OFFICIAL_AIRS_MOMENTS_KEY, [moment, ...moments], 50);
+      reserveOfficialAirsNotifications(moment);
+      refreshOfficialAirsUi();
+      if (button) button.textContent = "公式air-s表示中";
+    }
+
+    function renderOfficialAirsNotifications() {
+      const now = Date.now();
+      const notices = readLocalList(OFFICIAL_AIRS_NOTIFICATIONS_KEY)
+        .filter((item) => !item.read && Number(item.expiresAt || 0) > now)
+        .slice(0, 3);
+      if (!notices.length) return "";
+      return `
+        <div class="official-air-s-notifications" id="official-air-s-notifications">
+          ${notices.map((notice) => `
+            <div class="official-air-s-notice">
+              <div>
+                <strong>${escapeHtml(notice.title)}</strong>
+                <span>${escapeHtml(notice.body)}</span>
+              </div>
+              <button type="button" onclick="dismissOfficialAirsNotice('${escapeHtml(notice.notificationId)}')">確認</button>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function dismissOfficialAirsNotice(notificationId) {
+      const notices = readLocalList(OFFICIAL_AIRS_NOTIFICATIONS_KEY).map((item) =>
+        item.notificationId === notificationId ? { ...item, read: true, readAt: Date.now() } : item
+      );
+      writeLocalList(OFFICIAL_AIRS_NOTIFICATIONS_KEY, notices, 80);
+      refreshOfficialAirsUi();
+    }
+
+    function renderOfficialAirsMoment(storeName = "") {
+      const moment = activeOfficialAirsMoment(storeName);
+      if (!moment) return "";
+      const mapsLink = moment.googleMapsUrl
+        ? `<a href="${escapeHtml(moment.googleMapsUrl)}" target="_blank" rel="noopener">Google Maps</a>`
+        : "";
+      return `
+        <div class="official-air-s-moment" id="official-air-s-moment">
+          <small>公式air-s</small>
+          <strong>${escapeHtml(moment.title || "今日のお店の空気が届きました")}</strong>
+          <p>${escapeHtml(concise(moment.body || "", 92))}</p>
+          <div class="official-air-s-meta">
+            <span>${escapeHtml(officialAirsRemainingText(moment))}</span>
+            <span>${escapeHtml(formatOfficialAirsTime(moment.createdAt))} 作成</span>
+            <span>${escapeHtml(moment.templateName || "Moment")}</span>
+            ${mapsLink}
+          </div>
+          <div class="official-air-s-actions">
+            <button type="button" onclick="rememberOfficialAirsWatcher(this)">また行きたい</button>
+            <button type="button" onclick="location.href='${escapeHtml(buildAirsPostUrl(moment.storeName || storeName))}'">AIr-sで記憶する</button>
+          </div>
+          <div class="official-air-s-feedback" data-official-air-s-feedback></div>
+        </div>
+      `;
+    }
+
+    function refreshOfficialAirsUi() {
+      const storeName = shareContext?.storeName || "このお店";
+      const notices = document.querySelector("#official-air-s-notification-slot");
+      if (notices) notices.innerHTML = renderOfficialAirsNotifications();
+      const slot = document.querySelector("#official-air-s-slot");
+      if (slot) slot.innerHTML = renderOfficialAirsMoment(storeName);
+    }
+
     function renderOkyakusamaCard(primaryKey, secondaryKey, typeTitle, personaKey = "") {
       const primary = WORLDVIEW_TYPES[primaryKey];
       const storeName = shareContext?.storeName || "このお店";
@@ -4097,6 +4407,8 @@
 
       return `
         <div class="ok-card-gift" id="okyakusama-card">
+          <div id="official-air-s-notification-slot">${renderOfficialAirsNotifications()}</div>
+          <div id="official-air-s-slot">${renderOfficialAirsMoment(storeName)}</div>
           <div class="ok-card-gift-head">
             <div>
               <h3>お客様.COMカードをプレゼントします</h3>
@@ -4130,9 +4442,12 @@
                 <button type="button" onclick="shareWorldviewCardLine()">お友達に世界観カードを送る</button>
                 <button type="button" onclick="copyWorldviewCardUrl(this)">カード専用URLをコピー</button>
                 <a href="${escapeHtml(airsUrl)}" target="_blank" rel="noopener">air-sする</a>
+                <button type="button" onclick="rememberOfficialAirsWatcher(this)">また行きたい</button>
+                <button type="button" onclick="createOfficialAirsMoment(this)">公式air-sを出すβ</button>
                 <button type="button" onclick="claimOfficialAirs(this)">公式ページとして公開β</button>
                 <a href="${escapeHtml(adminUrl)}" target="_blank" rel="noopener">管理画面βを開く</a>
               </div>
+              <div class="official-air-s-feedback" data-official-air-s-feedback></div>
               ${officialMessage}
               <div class="ok-entry-photos" id="entry-photo-shelf" hidden></div>
               <div class="ok-air-s-letters" id="air-s-letter-shelf" hidden></div>
@@ -6502,6 +6817,9 @@ https://okyakusa-ma.com/
     document.querySelector("#ego-search-run").addEventListener("click", runEgoSearch);
     document.querySelector("#photo-diagnosis-run").addEventListener("click", runPhotoDiagnosis);
     document.querySelector("#photo-diagnosis-clear").addEventListener("click", clearPhotoDiagnosis);
+    window.setInterval(() => {
+      if (document.querySelector("#official-air-s-slot")) refreshOfficialAirsUi();
+    }, 60000);
 
     main().catch((error) => showError(error.message));
   </script>
