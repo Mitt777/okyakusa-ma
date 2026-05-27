@@ -2301,6 +2301,62 @@
       line-height: 1.55;
     }
 
+    .airs-moment-after-shot {
+      display: grid;
+      gap: 5px;
+      margin-top: 10px;
+      border: 1px solid rgba(31, 122, 94, .18);
+      border-radius: 8px;
+      background: rgba(238, 249, 243, .72);
+      padding: 10px;
+    }
+
+    .airs-moment-after-shot strong {
+      color: #20382d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .airs-moment-after-shot p {
+      color: #536157;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.65;
+    }
+
+    .airs-moment-quality {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .airs-moment-quality span {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #fff;
+      color: #536157;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 950;
+      line-height: 1.4;
+    }
+
+    .airs-moment-quality span.is-good {
+      background: #eef9f3;
+      color: #1f7a5e;
+    }
+
+    .airs-moment-quality span.is-warn {
+      background: #fff4df;
+      color: #8a5a16;
+    }
+
+    .airs-moment-quality span.is-bad {
+      background: #fff1ed;
+      color: #9b3b2f;
+    }
+
     .airs-moment-output {
       display: none;
       margin-top: 14px;
@@ -2319,6 +2375,65 @@
       color: #20382d;
       font-size: 17px;
       line-height: 1.45;
+    }
+
+    .airs-moment-render-box {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      border: 1px solid rgba(31, 122, 94, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .74);
+      padding: 12px;
+    }
+
+    .airs-moment-render-box p {
+      color: #536157;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.7;
+    }
+
+    .airs-moment-render-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .airs-moment-render-actions button,
+    .airs-moment-render-actions a {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 9px 12px;
+      text-decoration: none;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .airs-moment-render-actions button.primary {
+      border-color: rgba(31, 122, 94, .28);
+      background: #1f7a5e;
+      color: #fff;
+    }
+
+    .airs-moment-render-actions button:disabled {
+      cursor: wait;
+      opacity: .62;
+    }
+
+    .airs-moment-render-status {
+      color: #1f7a5e;
+      font-size: 12px;
+      font-weight: 950;
+      line-height: 1.6;
+    }
+
+    .airs-moment-render-status.is-error {
+      color: #9b3b2f;
     }
 
     .airs-moment-ready-list,
@@ -5722,6 +5837,15 @@
           <p>動画はair-s内には保存しません。端末にある3カットをSNSで使い、AIr-sには記憶だけ残します。</p>
           <div class="airs-moment-ready-list" id="airs-moment-ready-list" aria-label="撮影済みカット"></div>
           <div class="airs-moment-post-pack" id="airs-moment-post-pack" aria-label="投稿直前パック"></div>
+          <div class="airs-moment-render-box" id="airs-moment-render-box">
+            <strong>1本の縦動画に整えるβ</strong>
+            <p>3本の動画をスマホ内で軽く判定し、明るさと動きが安定した3〜5秒を選んで、15秒以内の9:16動画にします。重い場合は失敗しても大丈夫です。下の個別投稿支援をそのまま使えます。</p>
+            <div class="airs-moment-render-actions">
+              <button class="primary" type="button" id="airs-moment-render-video">AIで1本の縦動画に整えるβ</button>
+              <a id="airs-moment-download-video" hidden download="air-s-moment.mp4">完成動画をダウンロード</a>
+            </div>
+            <div class="airs-moment-render-status" id="airs-moment-render-status">まだ結合していません。</div>
+          </div>
           <div class="airs-moment-platforms" id="airs-moment-platforms" aria-label="投稿先を選ぶ"></div>
           <textarea id="airs-moment-copy" aria-label="Moment投稿文"></textarea>
           <div class="airs-moment-mini-actions">
@@ -6254,7 +6378,7 @@
     const AIRS_MAP_HISTORY_KEY = "airs_map_history_v1";
     const AIRS_MOMENT_DRAFT_KEY = "airs_moment_draft_v1";
     const AIRS_OFFICIAL_AIR_KEY = "airs_official_air_v1";
-    const AIRS_OFFICIAL_AIR_BRIDGE_KEY = "okyakusama_official_air_v1";
+    const AIRS_OFFICIAL_AIR_BRIDGE_KEY = "okyakusama_official_airs_moments:v1";
     const AIRS_OFFICIAL_AIR_TTL = 60 * 60 * 1000;
     const AIRS_PERSONAS = Array.from({ length: 36 }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
@@ -6642,6 +6766,12 @@
     let activeAirsMomentCutIndex = 0;
     let airsMomentCutClips = [];
     let selectedAirsMomentPlatform = AIRS_MOMENT_PLATFORMS[0].key;
+    let airsMomentRenderedVideoUrl = "";
+    let airsMomentRenderStatus = "";
+    let airsMomentRenderError = false;
+    let airsMomentRendering = false;
+    let airsMomentFfmpeg = null;
+    let airsMomentAnalyzingCount = 0;
 
     function isAirsDomain() {
       return location.hostname.replace(/^www\./, "") === "air-s.jp" || location.search.includes("airs-preview=1");
@@ -6772,6 +6902,16 @@
       });
       airsMomentCutClips = [];
       activeAirsMomentCutIndex = 0;
+      resetAirsMomentRenderedVideo();
+    }
+
+    function resetAirsMomentRenderedVideo() {
+      if (airsMomentRenderedVideoUrl) URL.revokeObjectURL(airsMomentRenderedVideoUrl);
+      airsMomentRenderedVideoUrl = "";
+      airsMomentRenderStatus = "";
+      airsMomentRenderError = false;
+      airsMomentRendering = false;
+      renderAirsMomentRenderBox();
     }
 
     function resetAirsMomentDraft() {
@@ -6932,6 +7072,267 @@
       }
     }
 
+    function loadAirsMomentScript(src) {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+          resolve();
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("動画結合ライブラリを読み込めませんでした。"));
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadAirsMomentFfmpeg() {
+      if (airsMomentFfmpeg) return airsMomentFfmpeg;
+      await loadAirsMomentScript("https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js");
+      if (!window.FFmpeg?.createFFmpeg || !window.FFmpeg?.fetchFile) {
+        throw new Error("動画結合ライブラリの準備に失敗しました。");
+      }
+      const ffmpeg = window.FFmpeg.createFFmpeg({
+        log: false,
+        corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
+      });
+      await ffmpeg.load();
+      airsMomentFfmpeg = ffmpeg;
+      return ffmpeg;
+    }
+
+    function renderAirsMomentRenderBox() {
+      const button = document.querySelector("#airs-moment-render-video");
+      const download = document.querySelector("#airs-moment-download-video");
+      const status = document.querySelector("#airs-moment-render-status");
+      if (button) {
+        button.disabled = airsMomentRendering;
+        button.textContent = airsMomentRendering ? "動画を整えています" : airsMomentRenderedVideoUrl ? "もう一度AIで整えるβ" : "AIで1本の縦動画に整えるβ";
+      }
+      if (download) {
+        download.hidden = !airsMomentRenderedVideoUrl;
+        if (airsMomentRenderedVideoUrl) download.href = airsMomentRenderedVideoUrl;
+      }
+      if (status) {
+        status.classList.toggle("is-error", airsMomentRenderError);
+        status.textContent = airsMomentRenderStatus || (airsMomentAnalyzingCount ? "撮れたカットを見ています。" : "まだ結合していません。");
+      }
+    }
+
+    function airsMomentRenderFilename() {
+      const safeStore = (airsMomentValue("#airs-moment-store-name") || "air-s-moment")
+        .replace(/[\\/:*?"<>|]+/g, "")
+        .replace(/\s+/g, "-")
+        .slice(0, 32);
+      return `${safeStore || "air-s-moment"}-15sec.mp4`;
+    }
+
+    function waitForAirsVideoEvent(video, eventName) {
+      return new Promise((resolve, reject) => {
+        const cleanup = () => {
+          video.removeEventListener(eventName, onReady);
+          video.removeEventListener("error", onError);
+        };
+        const onReady = () => {
+          cleanup();
+          resolve();
+        };
+        const onError = () => {
+          cleanup();
+          reject(new Error("動画を読み取れませんでした。"));
+        };
+        video.addEventListener(eventName, onReady, { once: true });
+        video.addEventListener("error", onError, { once: true });
+      });
+    }
+
+    async function captureAirsMomentFrame(video, canvas, time) {
+      video.currentTime = Math.max(0, Math.min(time, Math.max(0, video.duration - 0.1)));
+      await waitForAirsVideoEvent(video, "seeked");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let brightness = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        brightness += (data[i] + data[i + 1] + data[i + 2]) / 3;
+      }
+      brightness /= data.length / 4;
+      return { time, brightness, data };
+    }
+
+    function airsMomentFrameDiff(current, previous) {
+      if (!current || !previous) return 0;
+      let diff = 0;
+      const step = 16;
+      for (let i = 0; i < current.length; i += step) {
+        diff += Math.abs(current[i] - previous[i]);
+      }
+      return diff / (current.length / step);
+    }
+
+    function classifyAirsMomentAnalysis(analysis) {
+      const chips = [];
+      chips.push({
+        label: analysis.duration >= 4 ? "長さOK" : "少し短め",
+        tone: analysis.duration >= 4 ? "good" : "warn"
+      });
+      chips.push({
+        label: analysis.isPortrait ? "縦向きOK" : "横動画を縦に整えます",
+        tone: analysis.isPortrait ? "good" : "warn"
+      });
+      chips.push({
+        label: analysis.brightness < 62 ? "少し暗め" : analysis.brightness > 210 ? "少し明るめ" : "明るさOK",
+        tone: analysis.brightness < 62 || analysis.brightness > 210 ? "warn" : "good"
+      });
+      chips.push({
+        label: analysis.motion > 34 ? "動き多め" : "安定OK",
+        tone: analysis.motion > 34 ? "warn" : "good"
+      });
+      return chips;
+    }
+
+    function airsMomentAnalysisMessage(analysis, cut) {
+      if (!analysis) return "動画を見ています。少しだけ待ってください。";
+      const notes = [];
+      if (analysis.duration < 4) notes.push("少し短めですが、このまま使える範囲です。");
+      if (analysis.brightness < 62) notes.push("少し暗めです。次に撮る時は窓側や明るい席でも大丈夫です。");
+      if (analysis.motion > 34) notes.push("動きが多いので、使いやすい部分だけ短く切り出します。");
+      if (!analysis.isPortrait) notes.push("横向きでも大丈夫です。縦動画の中に収まるよう整えます。");
+      if (!notes.length) return `${cut?.praise || "いい感じです。"} 使いやすい${analysis.trimDuration.toFixed(1)}秒を自動で選びます。`;
+      return `${cut?.praise || "撮れています。"} ${notes.join(" ")}`;
+    }
+
+    async function analyzeAirsMomentClip(index, file, url) {
+      airsMomentAnalyzingCount += 1;
+      updateAirsMomentOutput();
+      try {
+        const video = document.createElement("video");
+        video.preload = "metadata";
+        video.muted = true;
+        video.playsInline = true;
+        video.src = url;
+        await waitForAirsVideoEvent(video, "loadedmetadata");
+        const duration = Number.isFinite(video.duration) ? video.duration : 5;
+        const canvas = document.createElement("canvas");
+        canvas.width = 96;
+        canvas.height = 160;
+        const sampleTimes = [0.2, 0.35, 0.5, 0.65, 0.8]
+          .map((ratio) => Math.max(0.1, Math.min(duration - 0.1, duration * ratio)))
+          .filter((time, itemIndex, list) => itemIndex === 0 || Math.abs(time - list[itemIndex - 1]) > 0.05);
+        const frames = [];
+        let previousData = null;
+        for (const time of sampleTimes) {
+          const frame = await captureAirsMomentFrame(video, canvas, time);
+          frame.motion = airsMomentFrameDiff(frame.data, previousData);
+          previousData = frame.data;
+          frames.push(frame);
+        }
+        const averageBrightness = frames.reduce((sum, frame) => sum + frame.brightness, 0) / Math.max(1, frames.length);
+        const averageMotion = frames.reduce((sum, frame) => sum + frame.motion, 0) / Math.max(1, frames.length);
+        const scoredFrames = frames.map((frame) => {
+          const brightnessScore = 100 - Math.min(100, Math.abs(frame.brightness - 135));
+          const motionScore = 100 - Math.min(100, frame.motion * 2.2);
+          const edgePenalty = frame.time < 0.7 || frame.time > duration - 0.7 ? 18 : 0;
+          return { ...frame, score: brightnessScore * 0.58 + motionScore * 0.42 - edgePenalty };
+        });
+        const bestFrame = scoredFrames.sort((a, b) => b.score - a.score)[0] || frames[Math.floor(frames.length / 2)];
+        const trimDuration = Math.min(5, Math.max(3, duration - 0.6));
+        const trimStart = Math.max(0, Math.min(duration - trimDuration, bestFrame.time - trimDuration / 2));
+        const analysis = {
+          status: "done",
+          duration,
+          width: video.videoWidth || 0,
+          height: video.videoHeight || 0,
+          isPortrait: (video.videoHeight || 0) >= (video.videoWidth || 0),
+          brightness: Math.round(averageBrightness),
+          motion: Math.round(averageMotion),
+          trimStart: Number(trimStart.toFixed(2)),
+          trimDuration: Number(trimDuration.toFixed(2))
+        };
+        if (airsMomentCutClips[index]?.file === file) {
+          airsMomentCutClips[index].analysis = analysis;
+        }
+      } catch (error) {
+        console.warn("air-s Moment analysis failed", error);
+        if (airsMomentCutClips[index]?.file === file) {
+          airsMomentCutClips[index].analysis = {
+            status: "fallback",
+            duration: 5,
+            trimStart: 0,
+            trimDuration: 5,
+            isPortrait: true,
+            brightness: 128,
+            motion: 0
+          };
+        }
+      } finally {
+        airsMomentAnalyzingCount = Math.max(0, airsMomentAnalyzingCount - 1);
+        renderAirsMomentCuts();
+        updateAirsMomentOutput();
+      }
+    }
+
+    async function renderAirsMomentVideo() {
+      const template = currentAirsMomentTemplate();
+      const clips = airsMomentCutClips.slice(0, template?.cuts.length || 0);
+      if (!template || clips.length < 3 || clips.some((clip) => !clip?.file)) {
+        airsMomentRenderError = true;
+        airsMomentRenderStatus = "3本の動画が揃うと、1本の縦動画に整えられます。";
+        renderAirsMomentRenderBox();
+        return;
+      }
+      airsMomentRendering = true;
+      airsMomentRenderError = false;
+      airsMomentRenderStatus = "動画を整えています。初回は少し時間がかかります。";
+      renderAirsMomentRenderBox();
+      try {
+        const ffmpeg = await loadAirsMomentFfmpeg();
+        ["cut0.mp4", "cut1.mp4", "cut2.mp4", "moment-output.mp4"].forEach((name) => {
+          try { ffmpeg.FS("unlink", name); } catch {}
+        });
+        for (let index = 0; index < 3; index += 1) {
+          ffmpeg.FS("writeFile", `cut${index}.mp4`, await window.FFmpeg.fetchFile(clips[index].file));
+        }
+        const filter = [
+          "[0:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v0]",
+          "[1:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v1]",
+          "[2:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v2]",
+          "[v0][v1][v2]concat=n=3:v=1:a=0,format=yuv420p[v]"
+        ].join(";");
+        const trims = clips.map((clip) => ({
+          start: String(clip.analysis?.trimStart || 0),
+          duration: String(Math.min(5, Math.max(3, clip.analysis?.trimDuration || 5)))
+        }));
+        await ffmpeg.run(
+          "-ss", trims[0].start, "-t", trims[0].duration, "-i", "cut0.mp4",
+          "-ss", trims[1].start, "-t", trims[1].duration, "-i", "cut1.mp4",
+          "-ss", trims[2].start, "-t", trims[2].duration, "-i", "cut2.mp4",
+          "-filter_complex", filter,
+          "-map", "[v]",
+          "-an",
+          "-t", "15",
+          "-movflags", "faststart",
+          "moment-output.mp4"
+        );
+        const data = ffmpeg.FS("readFile", "moment-output.mp4");
+        if (airsMomentRenderedVideoUrl) URL.revokeObjectURL(airsMomentRenderedVideoUrl);
+        airsMomentRenderedVideoUrl = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+        const download = document.querySelector("#airs-moment-download-video");
+        if (download) download.download = airsMomentRenderFilename();
+        airsMomentRenderStatus = "完成しました。端末にダウンロードしてからSNSへ投稿できます。";
+        airsMomentRenderError = false;
+      } catch (error) {
+        console.warn("air-s Moment render failed", error);
+        airsMomentRenderedVideoUrl = "";
+        airsMomentRenderError = true;
+        airsMomentRenderStatus = "結合に失敗しました。3本の動画を個別に使い、下の投稿文コピーとSNS導線で投稿できます。";
+      } finally {
+        airsMomentRendering = false;
+        renderAirsMomentRenderBox();
+      }
+    }
+
     function updateAirsMomentFinalNote() {
       const note = document.querySelector("#airs-moment-final-note");
       if (!note) return;
@@ -6962,6 +7363,8 @@
 
     function loadAirsOfficialAirItems() {
       try {
+        const bridgeItems = JSON.parse(localStorage.getItem(AIRS_OFFICIAL_AIR_BRIDGE_KEY) || "[]");
+        if (Array.isArray(bridgeItems) && bridgeItems.length) return bridgeItems;
         return JSON.parse(localStorage.getItem(AIRS_OFFICIAL_AIR_KEY) || "[]");
       } catch {
         return [];
@@ -7067,23 +7470,31 @@
       const createdAt = Date.now();
       const requestId = airsOfficialCardRequestId(officialCardId);
       const officialCardUrl = airsOfficialCardPath(officialCardId);
+      const cardId = requestId || officialCardId;
       const item = {
         id: `official_air_${createdAt.toString(36)}`,
+        momentId: `official_moment_${createdAt.toString(36)}`,
         type: "official_air",
         status: "active",
         active: true,
+        isOfficial: true,
         source: "air-s-moment",
         displaySlot: "official-worldview-card-top",
+        cardId,
         storeName,
         officialCardId,
         requestId,
         officialCardUrl,
         mapsUrl: airsMomentValue("#airs-moment-maps-url"),
+        googleMapsUrl: airsMomentValue("#airs-moment-maps-url"),
         title: airsMomentPostTitle(),
+        body: airsMomentPostText(),
         copy: airsMomentPostText(),
         tags: airsMomentTagsText(),
         templateKey: template.key,
+        templateId: template.key,
         templateTitle: template.title,
+        templateName: template.title,
         patternId: template.patternId,
         patternName: template.patternName,
         platform: selectedAirsMomentPlatform,
@@ -7096,7 +7507,7 @@
           body: "公式世界観カードが1時間だけ動いています。",
           created: false
         },
-        watchTargetKey: requestId || officialCardId,
+        watchTargetKey: cardId,
         createdAt,
         expiresAt: createdAt + AIRS_OFFICIAL_AIR_TTL
       };
@@ -7170,6 +7581,13 @@
         postPack.innerHTML = "";
       }
       if (output) output.classList.toggle("is-open", Boolean(template) && doneCount >= template.cuts.length);
+      renderAirsMomentRenderBox();
+    }
+
+    function scrollAirsMomentOutputIntoView() {
+      const output = document.querySelector("#airs-moment-output");
+      if (!output?.classList.contains("is-open")) return;
+      output.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function renderAirsMomentTemplates() {
@@ -7240,6 +7658,9 @@
       const cut = template.cuts[activeAirsMomentCutIndex];
       const clip = airsMomentCutClips[activeAirsMomentCutIndex];
       const inputId = `airs-moment-cut-file-${activeAirsMomentCutIndex}`;
+      const isLastCut = activeAirsMomentCutIndex >= template.cuts.length - 1;
+      const analysis = clip?.analysis;
+      const analysisChips = analysis ? classifyAirsMomentAnalysis(analysis) : [];
       host.innerHTML = `
         <article class="airs-moment-cut">
           <div>
@@ -7250,11 +7671,24 @@
             <label class="airs-moment-capture-button" for="${inputId}">${clip ? "撮り直す" : "このカットを撮る"}</label>
             <span class="airs-moment-file-name">${clip ? `選択済み: ${escapeHtml(clip.name || `Cut ${activeAirsMomentCutIndex + 1}`)}` : "スマホではカメラが開きます"}</span>
             <div class="airs-moment-praise" data-airs-moment-praise="${activeAirsMomentCutIndex}">
-              ${clip ? escapeHtml(cut.praise || "いい感じです。このカットで十分伝わります。") : "撮れたら、ここで一度ほめます。"}
+              ${clip ? escapeHtml(airsMomentAnalysisMessage(analysis, cut)) : "撮れたら、ここで一度ほめます。"}
             </div>
+            ${clip ? `
+              <div class="airs-moment-quality" aria-label="カットの自動判定">
+                ${analysisChips.length ? analysisChips.map((chip) => `<span class="is-${chip.tone}">${escapeHtml(chip.label)}</span>`).join("") : "<span>動画を見ています</span>"}
+                ${analysis ? `<span class="is-good">使用 ${escapeHtml(String(analysis.trimDuration || 5))}秒</span>` : ""}
+              </div>
+            ` : ""}
+            ${clip ? `
+              <div class="airs-moment-after-shot">
+                <strong>${isLastCut ? "3カット目まで撮れました。" : "このカットで進めます。"}</strong>
+                <p>${isLastCut ? "下に投稿文と投稿準備が出ます。必要ならAIで1本の縦動画に整えられます。" : "気になる場合は撮り直せます。OKなら次のカットへ進みましょう。"}</p>
+              </div>
+            ` : ""}
             <div class="airs-moment-cut-actions">
               ${activeAirsMomentCutIndex > 0 ? `<button type="button" data-airs-moment-prev>前のカット</button>` : ""}
-              ${activeAirsMomentCutIndex < template.cuts.length - 1 ? `<button type="button" data-airs-moment-next>${clip ? "次のカットへ" : "このあと次へ"}</button>` : ""}
+              ${activeAirsMomentCutIndex < template.cuts.length - 1 ? `<button type="button" data-airs-moment-next>${clip ? "このカットでOK・次へ" : "次のガイドを見る"}</button>` : ""}
+              ${isLastCut && clip ? `<button type="button" data-airs-moment-finish>投稿文を見る</button>` : ""}
             </div>
           </div>
           <video playsinline muted controls data-airs-moment-preview="${activeAirsMomentCutIndex}" ${clip ? `src="${escapeHtml(clip.url)}"` : ""}></video>
@@ -7269,19 +7703,16 @@
           if (video && file) {
             if (airsMomentCutClips[index]?.url) URL.revokeObjectURL(airsMomentCutClips[index].url);
             const url = URL.createObjectURL(file);
-            airsMomentCutClips[index] = { name: file.name, url };
+            airsMomentCutClips[index] = { name: file.name, url, file, analysis: { status: "analyzing" } };
+            resetAirsMomentRenderedVideo();
             video.src = url;
+            analyzeAirsMomentClip(index, file, url);
           }
           if (praise && file) {
             praise.textContent = currentAirsMomentTemplate()?.cuts[index]?.praise || "いい感じです。このカットで十分伝わります。";
           }
           updateAirsMomentOutput();
-          if (file && index < (currentAirsMomentTemplate()?.cuts.length || 0) - 1) {
-            setTimeout(() => {
-              activeAirsMomentCutIndex = index + 1;
-              renderAirsMomentCuts();
-            }, 750);
-          }
+          if (file) renderAirsMomentCuts();
         });
       });
       host.querySelector("[data-airs-moment-prev]")?.addEventListener("click", () => {
@@ -7291,6 +7722,10 @@
       host.querySelector("[data-airs-moment-next]")?.addEventListener("click", () => {
         activeAirsMomentCutIndex = Math.min(template.cuts.length - 1, activeAirsMomentCutIndex + 1);
         renderAirsMomentCuts();
+      });
+      host.querySelector("[data-airs-moment-finish]")?.addEventListener("click", () => {
+        updateAirsMomentOutput();
+        scrollAirsMomentOutputIntoView();
       });
       updateAirsMomentOutput();
     }
@@ -7398,6 +7833,7 @@
         saveAirsMomentDraft();
         updateAirsMomentOutput();
       });
+      document.querySelector("#airs-moment-render-video")?.addEventListener("click", renderAirsMomentVideo);
       document.querySelector("#airs-moment-copy-button")?.addEventListener("click", async (event) => {
         await copyAirsMomentText(airsMomentPostText(), event.currentTarget, "投稿文をコピーしてください");
         markAirsMomentStep("copy");
