@@ -2461,6 +2461,84 @@
       margin-top: 12px;
     }
 
+    .airs-official-air-panel {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      border: 1px solid rgba(31, 122, 94, .18);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(238, 249, 243, .9), rgba(255, 255, 255, .86));
+      padding: 12px;
+    }
+
+    .airs-official-air-panel strong {
+      color: #20382d;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .airs-official-air-panel p {
+      color: #5a665d;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.7;
+    }
+
+    .airs-official-air-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .airs-official-air-item {
+      display: grid;
+      gap: 5px;
+      border: 1px solid rgba(58, 92, 73, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .76);
+      padding: 10px;
+    }
+
+    .airs-official-air-item small {
+      color: #1f7a5e;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .airs-official-air-item b {
+      color: #20382d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .airs-official-air-item span {
+      color: #667065;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.6;
+    }
+
+    .airs-official-air-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .airs-official-air-actions a,
+    .airs-official-air-actions button {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 7px 10px;
+      text-decoration: none;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
     .airs-persona-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -5624,6 +5702,10 @@
             <span class="airs-field-title">Google Maps URL <span class="field-optional">任意・最初から紐づけ</span></span>
             <input id="airs-moment-maps-url" type="url" placeholder="https://maps.google.com/...">
           </label>
+          <label>
+            <span class="airs-field-title">公式世界観カードβ ID <span class="field-optional">任意・公式air-s用</span></span>
+            <input id="airs-moment-official-card-id" placeholder="例: official_nasu_livingston">
+          </label>
         </div>
         <div class="airs-moment-place" id="airs-moment-place-status" aria-live="polite"></div>
         <div class="airs-moment-phase-grid" id="airs-moment-phases" aria-label="Momentの目的カテゴリ"></div>
@@ -5651,15 +5733,22 @@
             <label><input type="checkbox" id="airs-moment-step-copy"> 投稿文・タグをコピーした</label>
             <label><input type="checkbox" id="airs-moment-step-sns"> SNS投稿画面を開いた</label>
             <label><input type="checkbox" id="airs-moment-step-memory"> AIr-sに記憶だけ残した</label>
+            <label><input type="checkbox" id="airs-moment-step-official"> 公式air-sを出した</label>
             <div class="airs-moment-final-note" id="airs-moment-final-note">あと少しです。投稿文をコピーして、SNSを開きましょう。</div>
           </div>
           <div class="airs-moment-actions">
             <button class="airs-button primary" type="button" id="airs-moment-copy-button">投稿文をコピー</button>
             <button class="airs-button" type="button" id="airs-moment-save-memory">AIr-sに記憶だけ残す</button>
+            <button class="airs-button" type="button" id="airs-moment-save-official">公式air-sを出すβ</button>
             <a class="airs-button" href="https://www.instagram.com/" target="_blank" rel="noopener" data-airs-moment-sns>Instagramを開く</a>
             <a class="airs-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-airs-moment-sns>TikTokを開く</a>
             <a class="airs-button" href="https://www.youtube.com/" target="_blank" rel="noopener" data-airs-moment-sns>Shortsを開く</a>
           </div>
+        </div>
+        <div class="airs-official-air-panel" id="airs-official-air-panel" aria-live="polite">
+          <strong>公式air-s β 連携準備</strong>
+          <p>公式世界観カードβ IDを入れると、/r/view/ のカード上部で1時間だけ漂わせるための軽量データを作れます。動画ファイルは保存しません。</p>
+          <div class="airs-official-air-list" id="airs-official-air-list"></div>
         </div>
       </section>
 
@@ -6164,6 +6253,9 @@
     const AIRS_STORAGE_KEY = "airs_locker_v1";
     const AIRS_MAP_HISTORY_KEY = "airs_map_history_v1";
     const AIRS_MOMENT_DRAFT_KEY = "airs_moment_draft_v1";
+    const AIRS_OFFICIAL_AIR_KEY = "airs_official_air_v1";
+    const AIRS_OFFICIAL_AIR_BRIDGE_KEY = "okyakusama_official_air_v1";
+    const AIRS_OFFICIAL_AIR_TTL = 60 * 60 * 1000;
     const AIRS_PERSONAS = Array.from({ length: 36 }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
       return {
@@ -6639,6 +6731,7 @@
       const draft = {
         storeName: airsMomentValue("#airs-moment-store-name"),
         mapsUrl: airsMomentValue("#airs-moment-maps-url"),
+        officialCardId: airsMomentValue("#airs-moment-official-card-id"),
         category: selectedAirsMomentCategory,
         template: selectedAirsMomentTemplate,
         platform: selectedAirsMomentPlatform,
@@ -6653,8 +6746,10 @@
       const draft = loadAirsMomentDraft();
       const storeInput = document.querySelector("#airs-moment-store-name");
       const mapsInput = document.querySelector("#airs-moment-maps-url");
+      const officialCardInput = document.querySelector("#airs-moment-official-card-id");
       if (storeInput && draft.storeName) storeInput.value = draft.storeName;
       if (mapsInput && draft.mapsUrl) mapsInput.value = draft.mapsUrl;
+      if (officialCardInput && draft.officialCardId) officialCardInput.value = draft.officialCardId;
       if (AIRS_MOMENT_CATEGORIES.some((category) => category.key === draft.category)) {
         selectedAirsMomentCategory = draft.category;
       }
@@ -6688,8 +6783,10 @@
       localStorage.removeItem(AIRS_MOMENT_DRAFT_KEY);
       const storeInput = document.querySelector("#airs-moment-store-name");
       const mapsInput = document.querySelector("#airs-moment-maps-url");
+      const officialCardInput = document.querySelector("#airs-moment-official-card-id");
       if (storeInput) storeInput.value = "";
       if (mapsInput) mapsInput.value = "";
+      if (officialCardInput) officialCardInput.value = "";
       document.querySelectorAll(".airs-moment-final-steps input").forEach((input) => {
         input.checked = false;
       });
@@ -6841,7 +6938,12 @@
       const copied = document.querySelector("#airs-moment-step-copy")?.checked;
       const snsOpened = document.querySelector("#airs-moment-step-sns")?.checked;
       const memorySaved = document.querySelector("#airs-moment-step-memory")?.checked;
-      if (copied && snsOpened && memorySaved) {
+      const officialSaved = document.querySelector("#airs-moment-step-official")?.checked;
+      if (copied && snsOpened && memorySaved && officialSaved) {
+        note.textContent = "完了です。動画はSNSへ、記憶はAIr-sへ、公式air-s候補は1時間だけ漂わせる準備ができました。";
+      } else if (copied && snsOpened && officialSaved) {
+        note.textContent = "公式air-s候補まで作れました。最後にAIr-sへ記憶だけ残せます。";
+      } else if (copied && snsOpened && memorySaved) {
         note.textContent = "完了です。動画はSNSへ、記憶はAIr-sに残りました。";
       } else if (copied && snsOpened) {
         note.textContent = "投稿まで進めました。最後にAIr-sへ記憶だけ残せます。";
@@ -6856,6 +6958,152 @@
       const checkbox = document.querySelector(`#airs-moment-step-${step}`);
       if (checkbox) checkbox.checked = true;
       updateAirsMomentFinalNote();
+    }
+
+    function loadAirsOfficialAirItems() {
+      try {
+        return JSON.parse(localStorage.getItem(AIRS_OFFICIAL_AIR_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function activeAirsOfficialAirItems() {
+      const now = Date.now();
+      return loadAirsOfficialAirItems().filter((item) => Number(item.expiresAt) > now);
+    }
+
+    function saveAirsOfficialAirItems(items) {
+      const activeItems = items.slice(0, 12);
+      localStorage.setItem(AIRS_OFFICIAL_AIR_KEY, JSON.stringify(activeItems));
+      localStorage.setItem(AIRS_OFFICIAL_AIR_BRIDGE_KEY, JSON.stringify(activeItems));
+    }
+
+    function airsOfficialAirTimeLeft(expiresAt) {
+      const minutes = Math.max(0, Math.ceil((Number(expiresAt) - Date.now()) / 60000));
+      if (minutes >= 60) return "残り約1時間";
+      return `残り約${minutes}分`;
+    }
+
+    function airsOfficialCardPath(officialCardId = "") {
+      const raw = officialCardId.trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw);
+        return url.href;
+      } catch {
+        return `https://okyakusa-ma.com/r/view/?id=${encodeURIComponent(raw)}`;
+      }
+    }
+
+    function airsOfficialCardRequestId(officialCardId = "") {
+      const raw = officialCardId.trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw);
+        return url.searchParams.get("id") || raw;
+      } catch {
+        return raw;
+      }
+    }
+
+    function renderAirsOfficialAirItems() {
+      const host = document.querySelector("#airs-official-air-list");
+      if (!host) return;
+      const items = activeAirsOfficialAirItems();
+      if (items.length !== loadAirsOfficialAirItems().length) {
+        saveAirsOfficialAirItems(items);
+      }
+      if (!items.length) {
+        host.innerHTML = `
+          <div class="airs-official-air-item">
+            <small>まだ候補はありません</small>
+            <b>公式カードIDを入れて、3カット完了後に候補を作れます。</b>
+            <span>okyakusa-ma.com側には、ここで作ったタイトル・投稿文・Maps URL・期限だけを渡す想定です。</span>
+          </div>
+        `;
+        return;
+      }
+      host.innerHTML = items.map((item) => `
+        <div class="airs-official-air-item">
+          <small>公式air-s / ${escapeHtml(airsOfficialAirTimeLeft(item.expiresAt))}</small>
+          <b>${escapeHtml(item.storeName)} / ${escapeHtml(item.title)}</b>
+          <span>カードID: ${escapeHtml(item.requestId || item.officialCardId)} / 動画なし / ${escapeHtml(item.templateTitle || "3カットMoment")}</span>
+          <div class="airs-official-air-actions">
+            ${item.officialCardUrl ? `<a href="${escapeHtml(item.officialCardUrl)}" target="_blank" rel="noopener">公式カードを開く</a>` : ""}
+            <button type="button" data-airs-official-air-copy="${escapeHtml(item.id)}">連携JSONをコピー</button>
+          </div>
+        </div>
+      `).join("");
+      host.querySelectorAll("[data-airs-official-air-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = activeAirsOfficialAirItems().find((entry) => entry.id === button.dataset.airsOfficialAirCopy);
+          if (!item) return;
+          await copyAirsMomentText(JSON.stringify(item, null, 2), button, "公式air-s連携JSONをコピーしてください");
+        });
+      });
+    }
+
+    function saveAirsOfficialAirCandidate() {
+      const template = currentAirsMomentTemplate();
+      if (!template) {
+        window.alert("撮影パターンを選んでください。");
+        return;
+      }
+      if (airsMomentDoneCount() < template.cuts.length) {
+        window.alert("3カットが揃うと、公式air-s候補を作れます。");
+        return;
+      }
+      const storeName = airsMomentValue("#airs-moment-store-name");
+      if (!storeName) {
+        window.alert("お店の名前を入れてください。");
+        return;
+      }
+      const officialCardId = airsMomentValue("#airs-moment-official-card-id");
+      if (!officialCardId) {
+        window.alert("公式世界観カードβ IDを入れてください。");
+        return;
+      }
+      const createdAt = Date.now();
+      const requestId = airsOfficialCardRequestId(officialCardId);
+      const officialCardUrl = airsOfficialCardPath(officialCardId);
+      const item = {
+        id: `official_air_${createdAt.toString(36)}`,
+        type: "official_air",
+        status: "active",
+        active: true,
+        source: "air-s-moment",
+        displaySlot: "official-worldview-card-top",
+        storeName,
+        officialCardId,
+        requestId,
+        officialCardUrl,
+        mapsUrl: airsMomentValue("#airs-moment-maps-url"),
+        title: airsMomentPostTitle(),
+        copy: airsMomentPostText(),
+        tags: airsMomentTagsText(),
+        templateKey: template.key,
+        templateTitle: template.title,
+        patternId: template.patternId,
+        patternName: template.patternName,
+        platform: selectedAirsMomentPlatform,
+        hasVideoFile: false,
+        videoStored: false,
+        notificationDraft: {
+          type: "official_air_active",
+          target: "watchers",
+          title: `${storeName}が公式air-sを出しました`,
+          body: "公式世界観カードが1時間だけ動いています。",
+          created: false
+        },
+        watchTargetKey: requestId || officialCardId,
+        createdAt,
+        expiresAt: createdAt + AIRS_OFFICIAL_AIR_TTL
+      };
+      saveAirsOfficialAirItems([item, ...activeAirsOfficialAirItems()]);
+      markAirsMomentStep("official");
+      renderAirsOfficialAirItems();
+      window.alert("公式air-sを出しました。1時間だけ有効な軽量データです。");
     }
 
     function renderAirsMomentPlatforms() {
@@ -6911,11 +7159,12 @@
       }
       if (postPack && template) {
         const mapsUrl = airsMomentValue("#airs-moment-maps-url");
+        const officialCardId = airsMomentValue("#airs-moment-official-card-id");
         const platform = AIRS_MOMENT_PLATFORMS.find((item) => item.key === selectedAirsMomentPlatform);
         postPack.innerHTML = `
           <span><b>タイトル</b>${escapeHtml(airsMomentPostTitle())}</span>
           <span><b>投稿先</b>${escapeHtml(platform?.label || "Instagram")}用</span>
-          <span><b>お店リンク</b>${mapsUrl ? "Google Maps URLあり" : "未入力でも投稿できます"}</span>
+          <span><b>公式air-s</b>${officialCardId ? "カードIDあり / 1時間表示データOK" : mapsUrl ? "Maps紐付けのみ" : "未入力でも投稿できます"}</span>
         `;
       } else if (postPack) {
         postPack.innerHTML = "";
@@ -7058,6 +7307,7 @@
         return;
       }
       const sourceUrl = airsMomentValue("#airs-moment-maps-url");
+      const officialCardId = airsMomentValue("#airs-moment-official-card-id");
       const inferredStoreName = inferAirsMomentPlaceFromMapsUrl(sourceUrl);
       const item = {
         id: `moment_${Date.now().toString(36)}`,
@@ -7095,6 +7345,8 @@
         momentCopy: airsMomentPostText(),
         momentMapsUrl: sourceUrl,
         moment_maps_url: sourceUrl,
+        momentOfficialCardId: officialCardId,
+        moment_official_card_id: officialCardId,
         momentInferredStoreName: inferredStoreName,
         moment_inferred_store_name: inferredStoreName,
         cardStyleSource: "moment",
@@ -7142,6 +7394,10 @@
         saveAirsMomentDraft();
         updateAirsMomentOutput();
       });
+      document.querySelector("#airs-moment-official-card-id")?.addEventListener("input", () => {
+        saveAirsMomentDraft();
+        updateAirsMomentOutput();
+      });
       document.querySelector("#airs-moment-copy-button")?.addEventListener("click", async (event) => {
         await copyAirsMomentText(airsMomentPostText(), event.currentTarget, "投稿文をコピーしてください");
         markAirsMomentStep("copy");
@@ -7166,10 +7422,12 @@
       document.querySelectorAll("[data-airs-moment-sns]").forEach((link) => {
         link.addEventListener("click", () => markAirsMomentStep("sns"));
       });
-      ["copy", "sns", "memory"].forEach((step) => {
+      ["copy", "sns", "memory", "official"].forEach((step) => {
         document.querySelector(`#airs-moment-step-${step}`)?.addEventListener("change", updateAirsMomentFinalNote);
       });
       document.querySelector("#airs-moment-save-memory")?.addEventListener("click", saveAirsMomentMemory);
+      document.querySelector("#airs-moment-save-official")?.addEventListener("click", saveAirsOfficialAirCandidate);
+      renderAirsOfficialAirItems();
     }
 
     function rememberAirsMap(map, shareUrl, selectedItems = []) {
