@@ -2281,6 +2281,53 @@
       line-height: 1.45;
     }
 
+    .airs-moment-ready-list,
+    .airs-moment-post-pack {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .airs-moment-ready-list span,
+    .airs-moment-post-pack span {
+      border: 1px solid rgba(58, 92, 73, .15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .75);
+      color: #46534a;
+      padding: 9px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
+    .airs-moment-ready-list b,
+    .airs-moment-post-pack b {
+      display: block;
+      color: #20382d;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .airs-moment-mini-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .airs-moment-mini-actions button {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
     .airs-moment-output textarea {
       width: 100%;
       min-height: 150px;
@@ -4822,6 +4869,11 @@
         flex-direction: column;
       }
 
+      .airs-moment-ready-list,
+      .airs-moment-post-pack {
+        grid-template-columns: 1fr;
+      }
+
       .airs-moment-actions .airs-button {
         width: 100%;
       }
@@ -5472,7 +5524,14 @@
         <div class="airs-moment-output" id="airs-moment-output">
           <strong>投稿文ができました。</strong>
           <p>動画はair-s内には保存しません。端末にある3カットをSNSで使い、AIRズには記憶だけ残します。</p>
+          <div class="airs-moment-ready-list" id="airs-moment-ready-list" aria-label="撮影済みカット"></div>
+          <div class="airs-moment-post-pack" id="airs-moment-post-pack" aria-label="投稿直前パック"></div>
           <textarea id="airs-moment-copy" aria-label="Moment投稿文"></textarea>
+          <div class="airs-moment-mini-actions">
+            <button type="button" id="airs-moment-copy-title">タイトルだけコピー</button>
+            <button type="button" id="airs-moment-copy-tags">タグだけコピー</button>
+            <button type="button" id="airs-moment-copy-maps">Maps URLをコピー</button>
+          </div>
           <div class="airs-moment-actions">
             <button class="airs-button primary" type="button" id="airs-moment-copy-button">投稿文をコピー</button>
             <button class="airs-button" type="button" id="airs-moment-save-memory">AIRズに記憶だけ残す</button>
@@ -6356,9 +6415,33 @@
       ].filter(Boolean).join("\n");
     }
 
+    function airsMomentPostTitle() {
+      const template = currentAirsMomentTemplate();
+      const storeName = airsMomentValue("#airs-moment-store-name") || "今日のお店";
+      return template ? `${storeName}の${template.title}` : `${storeName}の今日の空気`;
+    }
+
+    function airsMomentTagsText() {
+      return currentAirsMomentTemplate()?.tags.join(" ") || "";
+    }
+
+    async function copyAirsMomentText(text, button, fallbackLabel = "コピーしてください") {
+      const original = button?.textContent || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        if (button) button.textContent = "コピーしました";
+      } catch {
+        window.prompt(fallbackLabel, text);
+      } finally {
+        if (button) setTimeout(() => { button.textContent = original; }, 1400);
+      }
+    }
+
     function updateAirsMomentOutput() {
       const output = document.querySelector("#airs-moment-output");
       const textarea = document.querySelector("#airs-moment-copy");
+      const readyList = document.querySelector("#airs-moment-ready-list");
+      const postPack = document.querySelector("#airs-moment-post-pack");
       const doneCount = airsMomentDoneCount();
       const template = currentAirsMomentTemplate();
       const progress = document.querySelector("#airs-moment-progress");
@@ -6379,6 +6462,23 @@
       }
       updateAirsMomentPlaceStatus();
       if (textarea) textarea.value = airsMomentPostText();
+      if (readyList && template) {
+        readyList.innerHTML = template.cuts.map((cut, index) => `
+          <span><b>Cut ${index + 1} / ${escapeHtml(String(cut.seconds || 5))}秒</b>${airsMomentCutClips[index] ? "撮影済み" : "未撮影"}: ${escapeHtml(cut.title)}</span>
+        `).join("");
+      } else if (readyList) {
+        readyList.innerHTML = "";
+      }
+      if (postPack && template) {
+        const mapsUrl = airsMomentValue("#airs-moment-maps-url");
+        postPack.innerHTML = `
+          <span><b>タイトル</b>${escapeHtml(airsMomentPostTitle())}</span>
+          <span><b>タグ</b>${escapeHtml(airsMomentTagsText())}</span>
+          <span><b>お店リンク</b>${mapsUrl ? "Google Maps URLあり" : "未入力でも投稿できます"}</span>
+        `;
+      } else if (postPack) {
+        postPack.innerHTML = "";
+      }
       if (output) output.classList.toggle("is-open", Boolean(template) && doneCount >= template.cuts.length);
     }
 
@@ -6577,17 +6677,21 @@
       document.querySelector("#airs-moment-store-name")?.addEventListener("input", updateAirsMomentOutput);
       document.querySelector("#airs-moment-maps-url")?.addEventListener("input", updateAirsMomentOutput);
       document.querySelector("#airs-moment-copy-button")?.addEventListener("click", async (event) => {
-        const button = event.currentTarget;
-        const original = button.textContent;
-        const text = airsMomentPostText();
-        try {
-          await navigator.clipboard.writeText(text);
-          button.textContent = "コピーしました";
-        } catch {
-          window.prompt("投稿文をコピーしてください", text);
-        } finally {
-          setTimeout(() => { button.textContent = original; }, 1400);
+        await copyAirsMomentText(airsMomentPostText(), event.currentTarget, "投稿文をコピーしてください");
+      });
+      document.querySelector("#airs-moment-copy-title")?.addEventListener("click", async (event) => {
+        await copyAirsMomentText(airsMomentPostTitle(), event.currentTarget, "タイトルをコピーしてください");
+      });
+      document.querySelector("#airs-moment-copy-tags")?.addEventListener("click", async (event) => {
+        await copyAirsMomentText(airsMomentTagsText(), event.currentTarget, "タグをコピーしてください");
+      });
+      document.querySelector("#airs-moment-copy-maps")?.addEventListener("click", async (event) => {
+        const mapsUrl = airsMomentValue("#airs-moment-maps-url");
+        if (!mapsUrl) {
+          window.alert("Google Maps URLがまだ入っていません。");
+          return;
         }
+        await copyAirsMomentText(mapsUrl, event.currentTarget, "Maps URLをコピーしてください");
       });
       document.querySelector("#airs-moment-save-memory")?.addEventListener("click", saveAirsMomentMemory);
     }
