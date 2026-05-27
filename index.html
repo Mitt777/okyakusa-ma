@@ -21,6 +21,11 @@
       document.title = "air-s | 好きなお店の空気を、1枚のair-sに。";
       setMeta("description", "好きなお店や場所の空気を、レビューではなく自分の記憶として残すair-s。5つ集めると、自分だけのair-s Mapが育ちます。");
     }
+    if (currentHost === "clip.air-s.jp" || location.search.includes("clip-preview=1")) {
+      document.documentElement.classList.add("clip-domain");
+      document.title = "clip.air-s | 3カットで、今日のお店の空気を。";
+      setMeta("description", "今日のお店の空気を、3カットで15秒動画にしてSNSへ優しく漂流させる投稿完了支援アプリ。動画はサーバー保存しません。");
+    }
     if (currentHost === "map-s.site" || location.search.includes("maps-preview=1")) {
       document.documentElement.classList.add("maps-domain");
       document.title = "map-s | Google MapsのURLだけで店舗MAPを3分作成";
@@ -73,8 +78,18 @@
       background: #f7fbfe;
     }
 
+    .clip-home {
+      display: none;
+      min-height: 100vh;
+      color: #1f2520;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(197, 220, 207, .5), transparent 32%),
+        linear-gradient(180deg, #fbfaf5 0%, #edf5ef 100%);
+    }
+
     .airs-domain .site,
-    .maps-domain .site {
+    .maps-domain .site,
+    .clip-domain .site {
       display: none;
     }
 
@@ -82,8 +97,372 @@
       display: block;
     }
 
+    .airs-domain #airs-moment {
+      display: none;
+    }
+
     .maps-domain .maps-home {
       display: block;
+    }
+
+    .clip-domain .clip-home {
+      display: block;
+    }
+
+    .clip-shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .clip-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0 24px;
+    }
+
+    .clip-brand strong {
+      display: block;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .clip-brand span {
+      display: block;
+      color: #627068;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .clip-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .clip-nav a,
+    .clip-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid rgba(70, 92, 78, .18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .74);
+      color: #2d5145;
+      padding: 9px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(47, 67, 54, .08);
+      cursor: pointer;
+    }
+
+    .clip-button.primary,
+    .clip-nav .primary {
+      border-color: #f2c94c;
+      background: #ffe36a;
+      color: #20251f;
+    }
+
+    .clip-hero {
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(360px, 1.14fr);
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .clip-copy {
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      padding: 34px 8px;
+    }
+
+    .clip-kicker,
+    .clip-pill {
+      display: inline-flex;
+      width: fit-content;
+      border-radius: 999px;
+      background: rgba(75, 121, 101, .12);
+      color: #386152;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-copy h1 {
+      margin: 0;
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .clip-copy p {
+      margin: 0;
+      color: #5e665f;
+      font-size: 16px;
+      font-weight: 760;
+      line-height: 1.85;
+    }
+
+    .clip-promise {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      max-width: 520px;
+    }
+
+    .clip-promise span {
+      border: 1px solid rgba(68, 92, 74, .14);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .64);
+      padding: 12px;
+      color: #2f473c;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .clip-studio {
+      overflow: hidden;
+      border: 1px solid rgba(68, 92, 74, .18);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 28px 80px rgba(48, 64, 51, .12);
+    }
+
+    .clip-studio-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(68, 92, 74, .14);
+      background: #f8faf5;
+      padding: 18px;
+    }
+
+    .clip-studio-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .clip-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border-bottom: 1px solid rgba(68, 92, 74, .14);
+    }
+
+    .clip-step {
+      border-right: 1px solid rgba(68, 92, 74, .12);
+      padding: 12px;
+      color: #657168;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .clip-step:last-child {
+      border-right: 0;
+    }
+
+    .clip-step.is-active {
+      color: #1e3f32;
+      background: rgba(75, 121, 101, .1);
+    }
+
+    .clip-studio-body {
+      display: grid;
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .clip-field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .clip-field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .clip-field span,
+    .clip-panel-title {
+      color: #526158;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-field input,
+    .clip-caption {
+      width: 100%;
+      border: 1px solid rgba(68, 92, 74, .16);
+      border-radius: 14px;
+      background: #fbfdf9;
+      color: #1f2520;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 760;
+      padding: 12px 13px;
+    }
+
+    .clip-caption {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .clip-template-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .clip-template {
+      display: grid;
+      gap: 5px;
+      min-height: 78px;
+      border: 1px solid rgba(68, 92, 74, .16);
+      border-radius: 14px;
+      background: #fbfdf9;
+      color: #1f2520;
+      padding: 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .clip-template small {
+      color: #6c776f;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .clip-template.is-active {
+      border-color: rgba(47, 127, 100, .45);
+      background: #f2fbf5;
+      box-shadow: inset 0 0 0 1px rgba(47, 127, 100, .2);
+    }
+
+    .clip-cuts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .clip-cut {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+      border: 1px solid rgba(68, 92, 74, .16);
+      border-radius: 16px;
+      background: #fbfdf9;
+      padding: 12px;
+    }
+
+    .clip-cut strong {
+      display: block;
+      color: #1f2520;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .clip-cut p {
+      margin: 0;
+      color: #607068;
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.55;
+    }
+
+    .clip-cut input[type="file"] {
+      width: 100%;
+      font-size: 11px;
+    }
+
+    .clip-video-preview {
+      display: grid;
+      place-items: center;
+      min-height: 160px;
+      overflow: hidden;
+      border: 1px dashed rgba(68, 92, 74, .22);
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(75, 121, 101, .1), rgba(246, 224, 140, .16)),
+        #f8faf5;
+      color: #7a857d;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-video-preview video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-height: 220px;
+      object-fit: cover;
+    }
+
+    .clip-praise {
+      min-height: 20px;
+      color: #2e775c;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-render {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(230px, .6fr);
+      gap: 12px;
+      align-items: start;
+      border-top: 1px solid rgba(68, 92, 74, .14);
+      padding-top: 16px;
+    }
+
+    .clip-output-video {
+      display: none;
+      width: 100%;
+      max-height: 360px;
+      border-radius: 16px;
+      background: #111;
+    }
+
+    .clip-output-video.has-video {
+      display: block;
+    }
+
+    .clip-status {
+      min-height: 20px;
+      color: #596861;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.6;
+    }
+
+    .clip-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .clip-note {
+      margin: 0;
+      color: #6d766f;
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.7;
     }
 
     .maps-shell {
@@ -5286,6 +5665,47 @@
         grid-template-columns: 1fr;
       }
 
+      .clip-shell {
+        width: min(100% - 28px, 680px);
+        padding-top: 14px;
+      }
+
+      .clip-topbar,
+      .clip-render {
+        align-items: stretch;
+        grid-template-columns: 1fr;
+      }
+
+      .clip-topbar {
+        flex-direction: column;
+      }
+
+      .clip-nav {
+        justify-content: flex-start;
+      }
+
+      .clip-hero,
+      .clip-field-grid,
+      .clip-cuts {
+        grid-template-columns: 1fr;
+      }
+
+      .clip-copy {
+        padding: 20px 0 8px;
+      }
+
+      .clip-promise {
+        grid-template-columns: 1fr;
+      }
+
+      .clip-template-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .clip-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .maps-shell {
         width: min(100% - 28px, 680px);
       }
@@ -5440,6 +5860,106 @@
   </style>
 </head>
 <body>
+  <section class="clip-home" aria-labelledby="clip-title">
+    <div class="clip-shell">
+      <header class="clip-topbar">
+        <div class="clip-brand">
+          <strong>clip.air-s</strong>
+          <span>今日のお店の空気を、15秒で。</span>
+        </div>
+        <nav class="clip-nav" aria-label="clip.air-sナビゲーション">
+          <a href="#clip-studio">撮影室</a>
+          <a href="https://air-s.jp/">air-sへ</a>
+          <a href="https://map-s.site/">map-sへ</a>
+          <a class="primary" href="#clip-studio">3カットを作る</a>
+        </nav>
+      </header>
+
+      <div class="clip-hero">
+        <div class="clip-copy">
+          <span class="clip-kicker">air clip β / サーバー保存なし</span>
+          <h1 id="clip-title">3カットで、<br>今日のお店の空気を。</h1>
+          <p>
+            動画編集アプリではありません。店主さんが迷わず撮って、
+            1本の縦動画と投稿文まで進めるための、小さな撮影室です。
+          </p>
+          <div class="clip-promise" aria-label="clip.air-sの約束">
+            <span>3本だけ撮る</span>
+            <span>15秒以内に整える</span>
+            <span>SNS投稿を支える</span>
+          </div>
+          <div class="clip-actions">
+            <a class="clip-button primary" href="#clip-studio">撮影室を開く</a>
+            <a class="clip-button" href="https://air-s.jp/">AIRズに戻る</a>
+          </div>
+        </div>
+
+        <div class="clip-studio" id="clip-studio">
+          <div class="clip-studio-head">
+            <div>
+              <span class="clip-pill">small shooting room</span>
+              <h2>今日の投稿を、ここで終わらせる。</h2>
+            </div>
+            <span class="clip-pill">3 cuts / 15 sec</span>
+          </div>
+          <div class="clip-steps" aria-label="作成ステップ">
+            <div class="clip-step is-active">1 店舗</div>
+            <div class="clip-step">2 テンプレ</div>
+            <div class="clip-step">3 撮影</div>
+            <div class="clip-step">4 投稿</div>
+          </div>
+          <div class="clip-studio-body">
+            <div class="clip-field-grid">
+              <label class="clip-field">
+                <span>お店の名前</span>
+                <input id="clip-store-name" placeholder="例: リビングストン / 今日のお店">
+              </label>
+              <label class="clip-field">
+                <span>Google Maps URL</span>
+                <input id="clip-maps-url" type="url" placeholder="https://maps.google.com/...">
+              </label>
+            </div>
+
+            <div>
+              <div class="clip-panel-title">テンプレート</div>
+              <div class="clip-template-grid" id="clip-template-grid" aria-label="動画テンプレート"></div>
+            </div>
+
+            <div>
+              <div class="clip-panel-title">3カット撮影ガイド</div>
+              <div class="clip-cuts" id="clip-cuts"></div>
+            </div>
+
+            <div class="clip-render">
+              <div>
+                <div class="clip-panel-title">完成動画プレビュー</div>
+                <video class="clip-output-video" id="clip-output-video" playsinline controls muted></video>
+                <p class="clip-status" id="clip-status">3カットを選ぶと、ブラウザ内だけで1本に整えます。</p>
+                <div class="clip-actions">
+                  <button class="clip-button primary" type="button" id="clip-render-button">3カットを1本にするβ</button>
+                  <a class="clip-button" id="clip-download" hidden download="air-clip.webm">動画を保存</a>
+                </div>
+              </div>
+              <div>
+                <label class="clip-field">
+                  <span>投稿文</span>
+                  <textarea class="clip-caption" id="clip-caption"></textarea>
+                </label>
+                <div class="clip-actions">
+                  <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
+                  <a class="clip-button" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+                  <a class="clip-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
+                  <a class="clip-button" href="https://www.youtube.com/" target="_blank" rel="noopener">Shorts</a>
+                </div>
+                <p class="clip-note">動画ファイルはサーバーに保存しません。完成動画は端末に保存して、SNSへ投稿してください。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="maps-home" aria-labelledby="maps-title">
 <style id="maps-top-style">
   /* ── TOP改善専用スタイル（既存スタイルを上書きしない範囲で追加）── */
@@ -6287,7 +6807,7 @@
           <span>好きなお店の空気を、1枚のair-sに。</span>
         </div>
         <nav class="airs-nav" aria-label="air-sナビゲーション">
-          <a href="#airs-moment">Moment β</a>
+          <a href="https://clip.air-s.jp/">air clip</a>
           <a href="#airs-post">air-sする</a>
           <a href="#airs-locker">Locker β</a>
           <a href="#airs-map">世界観MAP β</a>
@@ -6317,7 +6837,7 @@
             レビューではなく、好きだから残したくなる世界観カードを、まずは自分だけのLockerに残せます。
           </p>
           <div class="airs-actions">
-            <a class="airs-button primary" href="#airs-moment">15秒Momentを作る</a>
+            <a class="airs-button primary" href="https://clip.air-s.jp/">今日の空気をclipする</a>
             <a class="airs-button primary" href="#airs-post">air-sする</a>
             <a class="airs-button" href="#airs-locker">自分のair-sを見る</a>
             <a class="airs-button" href="#airs-map">世界観MAP β</a>
@@ -11633,6 +12153,375 @@
         });
       }
     });
+
+    (() => {
+      if (!document.documentElement.classList.contains("clip-domain")) return;
+
+      const templates = [
+        {
+          id: "cooking",
+          title: "店主の調理動画",
+          note: "手元と湯気で、今日の温度を伝える",
+          cuts: [
+            ["手元", "包丁、注ぐ手、焼き上がりなど、手が動くところを3〜5秒。"],
+            ["湯気", "料理やコーヒーの近くで、少しだけ寄って3〜5秒。"],
+            ["渡す", "お皿を置く、カップを差し出す瞬間を3〜5秒。"]
+          ]
+        },
+        {
+          id: "food",
+          title: "映え料理撮影",
+          note: "料理を主役に、無理なくおいしそうに",
+          cuts: [
+            ["全体", "料理全体が見える角度で、ゆっくり3〜5秒。"],
+            ["寄り", "ソース、艶、湯気など、好きな一点に寄って3〜5秒。"],
+            ["ひと口前", "フォークや箸が入る直前の動きを3〜5秒。"]
+          ]
+        },
+        {
+          id: "today",
+          title: "今日のおすすめ",
+          note: "迷った時の標準テンプレ",
+          cuts: [
+            ["入口", "お店の入口や看板を、正面から3〜5秒。"],
+            ["おすすめ", "今日見せたい商品や料理を3〜5秒。"],
+            ["空気", "席、光、店内の静かな一角を3〜5秒。"]
+          ]
+        },
+        {
+          id: "light",
+          title: "カフェの光",
+          note: "窓際、影、午後の空気を残す",
+          cuts: [
+            ["窓", "窓際や光が落ちている場所を3〜5秒。"],
+            ["席", "座りたくなる席を、ゆっくり3〜5秒。"],
+            ["一杯", "カップやグラスを中心に3〜5秒。"]
+          ]
+        },
+        {
+          id: "quiet",
+          title: "静かな店内",
+          note: "入りやすさと落ち着きを伝える",
+          cuts: [
+            ["入口", "初めての人が入る前に見たい入口を3〜5秒。"],
+            ["店内", "混みすぎていない、安心できる店内を3〜5秒。"],
+            ["余韻", "最後に看板、席、外の光を3〜5秒。"]
+          ]
+        }
+      ];
+
+      const praise = [
+        "いい感じです。自然な動きです。",
+        "空気が伝わっています。このまま使えます。",
+        "無理に編集しなくて大丈夫です。十分やさしいです。"
+      ];
+      const state = {
+        templateId: templates[0].id,
+        cuts: [null, null, null],
+        outputUrl: ""
+      };
+      const templateGrid = document.querySelector("#clip-template-grid");
+      const cutsHost = document.querySelector("#clip-cuts");
+      const storeInput = document.querySelector("#clip-store-name");
+      const mapsInput = document.querySelector("#clip-maps-url");
+      const captionInput = document.querySelector("#clip-caption");
+      const status = document.querySelector("#clip-status");
+      const renderButton = document.querySelector("#clip-render-button");
+      const outputVideo = document.querySelector("#clip-output-video");
+      const downloadLink = document.querySelector("#clip-download");
+      const copyButton = document.querySelector("#clip-copy-caption");
+
+      function clipTemplate() {
+        return templates.find((template) => template.id === state.templateId) || templates[0];
+      }
+
+      function clipEscape(value) {
+        return String(value || "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[char]));
+      }
+
+      function setClipStatus(message) {
+        if (status) status.textContent = message;
+      }
+
+      function clipCaption() {
+        const store = storeInput?.value.trim() || "今日のお店";
+        const maps = mapsInput?.value.trim() || "";
+        const template = clipTemplate();
+        const lines = [
+          `${store}の今日の空気を、3カットで。`,
+          "",
+          template.note,
+          "初めての方にも、お店の雰囲気が少し伝わりますように。",
+          maps ? `Google Maps: ${maps}` : "",
+          "",
+          "#airs #airclip #今日のお店 #店舗動画 #GoogleMaps",
+          "#localshop #japantravel #cafeclip"
+        ].filter(Boolean);
+        return lines.join("\n");
+      }
+
+      function updateClipCaption() {
+        if (captionInput) captionInput.value = clipCaption();
+      }
+
+      function renderTemplates() {
+        if (!templateGrid) return;
+        templateGrid.innerHTML = templates.map((template) => `
+          <button class="clip-template${template.id === state.templateId ? " is-active" : ""}" type="button" data-clip-template="${clipEscape(template.id)}">
+            ${clipEscape(template.title)}
+            <small>${clipEscape(template.note)}</small>
+          </button>
+        `).join("");
+        templateGrid.querySelectorAll("[data-clip-template]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.templateId = button.dataset.clipTemplate || templates[0].id;
+            state.cuts = [null, null, null];
+            renderTemplates();
+            renderCuts();
+            updateClipCaption();
+            clearClipOutput();
+          });
+        });
+      }
+
+      function renderCuts() {
+        if (!cutsHost) return;
+        const template = clipTemplate();
+        cutsHost.innerHTML = template.cuts.map(([title, guide], index) => `
+          <article class="clip-cut">
+            <div>
+              <span class="clip-pill">cut ${index + 1} / 3〜5秒</span>
+              <strong>${clipEscape(title)}</strong>
+              <p>${clipEscape(guide)}</p>
+            </div>
+            <label class="clip-video-preview" id="clip-preview-${index}">
+              <span>動画を選ぶ / 撮る</span>
+              <input type="file" accept="video/*" capture="environment" data-clip-cut="${index}">
+            </label>
+            <div class="clip-praise" id="clip-praise-${index}"></div>
+            <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
+          </article>
+        `).join("");
+        cutsHost.querySelectorAll("[data-clip-cut]").forEach((input) => {
+          input.addEventListener("change", () => handleCutFile(input));
+        });
+        cutsHost.querySelectorAll("[data-clip-retake]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const index = Number(button.dataset.clipRetake);
+            state.cuts[index] = null;
+            renderCuts();
+            clearClipOutput();
+            setClipStatus("撮り直しできます。3カット揃ったら1本に整えます。");
+          });
+        });
+      }
+
+      async function videoDuration(file) {
+        return new Promise((resolve) => {
+          const video = document.createElement("video");
+          const url = URL.createObjectURL(file);
+          video.preload = "metadata";
+          video.onloadedmetadata = () => {
+            const duration = Number.isFinite(video.duration) ? video.duration : 0;
+            URL.revokeObjectURL(url);
+            resolve(duration);
+          };
+          video.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(0);
+          };
+          video.src = url;
+        });
+      }
+
+      async function handleCutFile(input) {
+        const index = Number(input.dataset.clipCut);
+        const file = input.files?.[0];
+        if (!file) return;
+        const duration = await videoDuration(file);
+        const url = URL.createObjectURL(file);
+        state.cuts[index] = { file, url, duration };
+        const preview = document.querySelector(`#clip-preview-${index}`);
+        const praiseBox = document.querySelector(`#clip-praise-${index}`);
+        if (preview) {
+          preview.innerHTML = `<video src="${clipEscape(url)}" playsinline controls muted></video>`;
+        }
+        if (praiseBox) {
+          const durationHint = duration > 6 ? "少し長めなので、最初の5秒だけ使います。" : "長さもちょうど良いです。";
+          praiseBox.textContent = `${praise[index] || praise[0]} ${durationHint}`;
+        }
+        clearClipOutput();
+        const readyCount = state.cuts.filter(Boolean).length;
+        setClipStatus(`${readyCount}/3カット選択済みです。`);
+      }
+
+      function clearClipOutput() {
+        if (state.outputUrl) URL.revokeObjectURL(state.outputUrl);
+        state.outputUrl = "";
+        outputVideo?.removeAttribute("src");
+        outputVideo?.classList.remove("has-video");
+        if (downloadLink) {
+          downloadLink.hidden = true;
+          downloadLink.removeAttribute("href");
+        }
+      }
+
+      function supportedMime() {
+        const candidates = [
+          "video/webm;codecs=vp9",
+          "video/webm;codecs=vp8",
+          "video/webm"
+        ];
+        return candidates.find((mime) => window.MediaRecorder?.isTypeSupported?.(mime)) || "";
+      }
+
+      function drawCover(ctx, video, width, height) {
+        const sourceWidth = video.videoWidth || width;
+        const sourceHeight = video.videoHeight || height;
+        const sourceRatio = sourceWidth / sourceHeight;
+        const targetRatio = width / height;
+        let drawWidth = width;
+        let drawHeight = height;
+        let drawX = 0;
+        let drawY = 0;
+        if (sourceRatio > targetRatio) {
+          drawHeight = height;
+          drawWidth = height * sourceRatio;
+          drawX = (width - drawWidth) / 2;
+        } else {
+          drawWidth = width;
+          drawHeight = width / sourceRatio;
+          drawY = (height - drawHeight) / 2;
+        }
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(video, drawX, drawY, drawWidth, drawHeight);
+      }
+
+      function waitEvent(target, eventName) {
+        return new Promise((resolve, reject) => {
+          const done = () => {
+            cleanup();
+            resolve();
+          };
+          const fail = () => {
+            cleanup();
+            reject(new Error("動画を読み込めませんでした。"));
+          };
+          const cleanup = () => {
+            target.removeEventListener(eventName, done);
+            target.removeEventListener("error", fail);
+          };
+          target.addEventListener(eventName, done, { once: true });
+          target.addEventListener("error", fail, { once: true });
+        });
+      }
+
+      async function drawClipSegment(ctx, canvas, cut, seconds) {
+        const video = document.createElement("video");
+        video.src = cut.url;
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = "auto";
+        await waitEvent(video, "loadedmetadata");
+        video.currentTime = 0;
+        try {
+          await video.play();
+        } catch (error) {
+          throw new Error("この端末では動画の自動再生が止められました。動画を端末保存して、SNS側で3本を選んでください。");
+        }
+        const start = performance.now();
+        await new Promise((resolve) => {
+          function frame(now) {
+            drawCover(ctx, video, canvas.width, canvas.height);
+            if ((now - start) / 1000 >= seconds || video.ended) {
+              video.pause();
+              resolve();
+              return;
+            }
+            requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
+        });
+      }
+
+      async function renderClipVideo() {
+        const readyCuts = state.cuts.filter(Boolean);
+        if (readyCuts.length < 3) {
+          setClipStatus("まず3カットすべて選んでください。");
+          return;
+        }
+        if (!window.MediaRecorder || typeof HTMLCanvasElement === "undefined" || !HTMLCanvasElement.prototype.captureStream) {
+          setClipStatus("この端末ではブラウザ内結合に未対応です。投稿文コピーと、3本の動画選択で投稿できます。");
+          return;
+        }
+        clearClipOutput();
+        setClipStatus("ブラウザ内で1本に整えています。動画はサーバーに送りません。");
+        renderButton.disabled = true;
+        const canvas = document.createElement("canvas");
+        canvas.width = 720;
+        canvas.height = 1280;
+        const ctx = canvas.getContext("2d");
+        const stream = canvas.captureStream(30);
+        const mime = supportedMime();
+        const recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        const chunks = [];
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data?.size) chunks.push(event.data);
+        });
+        const stopped = new Promise((resolve) => {
+          recorder.addEventListener("stop", resolve, { once: true });
+        });
+        try {
+          recorder.start();
+          for (const cut of readyCuts) {
+            await drawClipSegment(ctx, canvas, cut, Math.min(5, Math.max(3, cut.duration || 4)));
+          }
+          recorder.stop();
+          await stopped;
+          const blob = new Blob(chunks, { type: mime || "video/webm" });
+          state.outputUrl = URL.createObjectURL(blob);
+          if (outputVideo) {
+            outputVideo.src = state.outputUrl;
+            outputVideo.classList.add("has-video");
+            outputVideo.load();
+          }
+          if (downloadLink) {
+            downloadLink.href = state.outputUrl;
+            downloadLink.hidden = false;
+          }
+          setClipStatus("完成しました。端末に保存して、SNSへ投稿できます。");
+        } catch (error) {
+          setClipStatus(error.message || "結合に失敗しました。3本の動画と投稿文コピーで投稿できます。");
+        } finally {
+          renderButton.disabled = false;
+        }
+      }
+
+      renderButton?.addEventListener("click", renderClipVideo);
+      copyButton?.addEventListener("click", async () => {
+        updateClipCaption();
+        try {
+          await navigator.clipboard.writeText(captionInput?.value || "");
+          setClipStatus("投稿文をコピーしました。");
+        } catch (error) {
+          setClipStatus("投稿文を選択してコピーしてください。");
+        }
+      });
+      [storeInput, mapsInput].forEach((input) => {
+        input?.addEventListener("input", updateClipCaption);
+      });
+
+      renderTemplates();
+      renderCuts();
+      updateClipCaption();
+    })();
   </script>
 </body>
 </html>
