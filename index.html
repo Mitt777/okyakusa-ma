@@ -2214,15 +2214,37 @@
       font-weight: 900;
     }
 
-    .airs-moment-cut input {
-      width: 100%;
-      margin-top: 10px;
-      border: 1px solid #cfd9d1;
-      border-radius: 8px;
-      background: #fff;
-      padding: 9px;
-      font: inherit;
-      font-size: 12px;
+    .airs-moment-cut input[type="file"] {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .airs-moment-capture-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+      border: 1px solid rgba(31, 122, 94, .24);
+      border-radius: 999px;
+      background: #1f7a5e;
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .airs-moment-file-name {
+      display: block;
+      margin-top: 8px;
+      color: #6d766e;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.5;
     }
 
     .airs-moment-cut video {
@@ -6547,13 +6569,16 @@
       activeAirsMomentCutIndex = Math.min(activeAirsMomentCutIndex, template.cuts.length - 1);
       const cut = template.cuts[activeAirsMomentCutIndex];
       const clip = airsMomentCutClips[activeAirsMomentCutIndex];
+      const inputId = `airs-moment-cut-file-${activeAirsMomentCutIndex}`;
       host.innerHTML = `
         <article class="airs-moment-cut">
           <div>
             <small>Cut ${activeAirsMomentCutIndex + 1} / 目安 ${airsMomentCutSecondLabel(activeAirsMomentCutIndex)}</small>
             <b>${escapeHtml(cut.title)}</b>
             <span>${escapeHtml(cut.guide)}</span>
-            <input type="file" accept="video/*" capture="environment" data-airs-moment-cut="${activeAirsMomentCutIndex}" aria-label="Cut ${activeAirsMomentCutIndex + 1}の動画">
+            <input id="${inputId}" type="file" accept="video/*" capture="environment" data-airs-moment-cut="${activeAirsMomentCutIndex}" aria-label="Cut ${activeAirsMomentCutIndex + 1}の動画">
+            <label class="airs-moment-capture-button" for="${inputId}">${clip ? "撮り直す" : "このカットを撮る"}</label>
+            <span class="airs-moment-file-name">${clip ? `選択済み: ${escapeHtml(clip.name || `Cut ${activeAirsMomentCutIndex + 1}`)}` : "スマホではカメラが開きます"}</span>
             <div class="airs-moment-praise" data-airs-moment-praise="${activeAirsMomentCutIndex}">
               ${clip ? escapeHtml(cut.praise || "いい感じです。このカットで十分伝わります。") : "撮れたら、ここで一度ほめます。"}
             </div>
@@ -6581,6 +6606,12 @@
             praise.textContent = currentAirsMomentTemplate()?.cuts[index]?.praise || "いい感じです。このカットで十分伝わります。";
           }
           updateAirsMomentOutput();
+          if (file && index < (currentAirsMomentTemplate()?.cuts.length || 0) - 1) {
+            setTimeout(() => {
+              activeAirsMomentCutIndex = index + 1;
+              renderAirsMomentCuts();
+            }, 750);
+          }
         });
       });
       host.querySelector("[data-airs-moment-prev]")?.addEventListener("click", () => {
