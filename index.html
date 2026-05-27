@@ -1986,7 +1986,7 @@
 
     .airs-moment-phase-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin: 12px 0;
     }
@@ -2019,54 +2019,20 @@
       font-weight: 950;
     }
 
-    .airs-moment-phase b,
-    .airs-moment-pattern b {
+    .airs-moment-phase b {
       display: block;
       color: #20382d;
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.45;
     }
 
-    .airs-moment-phase span,
-    .airs-moment-pattern span {
+    .airs-moment-phase span {
       display: block;
       margin-top: 4px;
       color: #667065;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
       line-height: 1.55;
-    }
-
-    .airs-moment-pattern-map {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin: 0 0 12px;
-    }
-
-    .airs-moment-pattern {
-      border: 1px solid rgba(58, 92, 73, .13);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, .58);
-      padding: 10px;
-    }
-
-    .airs-moment-pattern.is-ready {
-      border-color: rgba(31, 122, 94, .28);
-      background: rgba(241, 251, 245, .78);
-    }
-
-    .airs-moment-pattern.is-selected {
-      border-color: rgba(31, 122, 94, .52);
-      box-shadow: inset 0 0 0 1px rgba(31, 122, 94, .16);
-    }
-
-    .airs-moment-pattern small {
-      display: inline-flex;
-      margin-bottom: 6px;
-      color: #1f7a5e;
-      font-size: 10px;
-      font-weight: 950;
     }
 
     .airs-moment-templates {
@@ -4800,7 +4766,6 @@
       }
 
       .airs-moment-phase-grid,
-      .airs-moment-pattern-map,
       .airs-moment-templates,
       .airs-moment-progress {
         grid-template-columns: 1fr;
@@ -5451,8 +5416,7 @@
           </label>
         </div>
         <div class="airs-moment-place" id="airs-moment-place-status" aria-live="polite"></div>
-        <div class="airs-moment-phase-grid" id="airs-moment-phases" aria-label="黄金の16パターン分類"></div>
-        <div class="airs-moment-pattern-map" id="airs-moment-pattern-map" aria-label="選択中カテゴリのパターン"></div>
+        <div class="airs-moment-phase-grid" id="airs-moment-phases" aria-label="Momentの目的カテゴリ"></div>
         <div class="airs-moment-templates" id="airs-moment-templates" aria-label="Momentテンプレート"></div>
         <div class="airs-moment-progress" id="airs-moment-progress" aria-label="3カット進捗"></div>
         <div class="airs-moment-cuts" id="airs-moment-cuts"></div>
@@ -6003,60 +5967,33 @@
       { key: "play", label: "遊ぶように楽しめる空間だった", core: "activation", feelingLabel: "遊ぶように楽しめる空間だった" },
       { key: "taste", label: "味を再び感じたくなる場所だった", core: "return", feelingLabel: "味を再び感じたくなる場所だった" }
     ];
-    const AIRS_MOMENT_PHASES = [
+    const AIRS_MOMENT_CATEGORIES = [
       {
-        key: "hook",
-        range: "01-03",
-        title: "まず見たい",
-        intent: "食・商品・空気で、最初の保存や再生を作る。",
-        patterns: [
-          { id: 1, name: "感性のフック", note: "0.5秒で目を止める商品・質感" },
-          { id: 2, name: "食・商品の訴求", note: "おすすめ、できたて、限定品" },
-          { id: 3, name: "空気感・癒やし", note: "光、音、席、余白、ASMR" }
-        ]
+        key: "show",
+        label: "まず見せる",
+        title: "今日のおすすめを出す",
+        intent: "料理・商品・光を、すぐ投稿できる形にします。",
+        templateKeys: ["today-special", "cafe-light", "local-day"]
       },
       {
-        key: "empathy",
-        range: "04-07",
-        title: "好きになる",
-        intent: "人・理由・舞台裏で、共感と信頼を育てる。",
-        patterns: [
-          { id: 4, name: "舞台裏の物語", note: "準備、手元、挑戦、日常" },
-          { id: 5, name: "短尺ブランディング", note: "3分以内の理念や温度" },
-          { id: 6, name: "長尺ブランディング", note: "深い物語、店主の背景" },
-          { id: 7, name: "Q&A・密着", note: "スタッフの一日、よくある質問" }
-        ]
+        key: "feel",
+        label: "好きになる",
+        title: "お店の空気を伝える",
+        intent: "人・準備・静かな時間で、好きになる理由を残します。",
+        templateKeys: ["waiting-time", "cafe-light", "local-day"]
       },
       {
-        key: "action",
-        range: "08-12",
-        title: "行けそう",
-        intent: "新情報・用途・行き方で、来店前の不安を減らす。",
-        patterns: [
-          { id: 8, name: "新情報・速報", note: "本日のおすすめ、イベント" },
-          { id: 9, name: "用途訴求", note: "ベスト3、初心者ガイド" },
-          { id: 10, name: "季節・旬", note: "紅葉、雨の日、季節商品" },
-          { id: 11, name: "不安解消", note: "駐車場、入口、行き方、席" },
-          { id: 12, name: "参加・UGC", note: "お客様投稿、応援、体験共有" }
-        ]
-      },
-      {
-        key: "coexist",
-        range: "13-16",
-        title: "地域に残る",
-        intent: "地元利用とインバウンドまで、地域の記憶に接続する。",
-        patterns: [
-          { id: 13, name: "地域住民の日常", note: "ランチ、帰り道、いつもの利用" },
-          { id: 14, name: "地域貢献", note: "イベント、地元への想い" },
-          { id: 15, name: "インバウンド利用", note: "注文方法、メニュー、支払い" },
-          { id: 16, name: "文化体験", note: "日本文化、マナー、自然体験" }
-        ]
+        key: "visit",
+        label: "来てもらう",
+        title: "行けそうを作る",
+        intent: "入口・行き方・日常利用を見せて、来店前の不安を減らします。",
+        templateKeys: ["entrance-guide", "today-special", "waiting-time"]
       }
     ];
     const AIRS_MOMENT_TEMPLATES = [
       {
         key: "today-special",
-        phaseKey: "hook",
+        phaseKey: "show",
         patternId: 2,
         patternName: "食・商品の訴求",
         title: "今日のおすすめ",
@@ -6083,7 +6020,7 @@
       },
       {
         key: "cafe-light",
-        phaseKey: "hook",
+        phaseKey: "show",
         patternId: 3,
         patternName: "空気感・癒やし",
         title: "カフェの光",
@@ -6110,7 +6047,7 @@
       },
       {
         key: "waiting-time",
-        phaseKey: "empathy",
+        phaseKey: "feel",
         patternId: 4,
         patternName: "舞台裏の物語",
         title: "お客様を待つ時間",
@@ -6137,7 +6074,7 @@
       },
       {
         key: "entrance-guide",
-        phaseKey: "action",
+        phaseKey: "visit",
         patternId: 11,
         patternName: "不安解消",
         title: "入口と行き方",
@@ -6164,7 +6101,7 @@
       },
       {
         key: "local-day",
-        phaseKey: "coexist",
+        phaseKey: "feel",
         patternId: 13,
         patternName: "地域住民の日常",
         title: "いつもの時間",
@@ -6192,7 +6129,7 @@
     ];
     let selectedAirsPersona = AIRS_PERSONAS[20];
     let selectedAirsFeeling = null;
-    let selectedAirsMomentPhase = AIRS_MOMENT_PHASES[0].key;
+    let selectedAirsMomentCategory = AIRS_MOMENT_CATEGORIES[0].key;
     let selectedAirsMomentTemplate = AIRS_MOMENT_TEMPLATES[0].key;
 
     function isAirsDomain() {
@@ -6234,16 +6171,15 @@
       return AIRS_MOMENT_TEMPLATES.find((template) => template.key === selectedAirsMomentTemplate) || AIRS_MOMENT_TEMPLATES[0];
     }
 
-    function currentAirsMomentPhase() {
-      return AIRS_MOMENT_PHASES.find((phase) => phase.key === selectedAirsMomentPhase) || AIRS_MOMENT_PHASES[0];
+    function airsMomentTemplatesForCategory(categoryKey = selectedAirsMomentCategory) {
+      const category = AIRS_MOMENT_CATEGORIES.find((item) => item.key === categoryKey) || AIRS_MOMENT_CATEGORIES[0];
+      return category.templateKeys
+        .map((key) => AIRS_MOMENT_TEMPLATES.find((template) => template.key === key))
+        .filter(Boolean);
     }
 
-    function airsMomentTemplatesForPhase(phaseKey = selectedAirsMomentPhase) {
-      return AIRS_MOMENT_TEMPLATES.filter((template) => template.phaseKey === phaseKey);
-    }
-
-    function syncAirsMomentTemplateToPhase() {
-      const templates = airsMomentTemplatesForPhase();
+    function syncAirsMomentTemplateToCategory() {
+      const templates = airsMomentTemplatesForCategory();
       if (!templates.some((template) => template.key === selectedAirsMomentTemplate)) {
         selectedAirsMomentTemplate = templates[0]?.key || AIRS_MOMENT_TEMPLATES[0].key;
       }
@@ -6361,11 +6297,11 @@
     function renderAirsMomentTemplates() {
       const host = document.querySelector("#airs-moment-templates");
       if (!host) return;
-      syncAirsMomentTemplateToPhase();
-      const templates = airsMomentTemplatesForPhase();
+      syncAirsMomentTemplateToCategory();
+      const templates = airsMomentTemplatesForCategory();
       host.innerHTML = templates.map((template) => `
         <button class="airs-moment-template${template.key === selectedAirsMomentTemplate ? " is-selected" : ""}" type="button" data-airs-moment-template="${template.key}">
-          <small>No.${escapeHtml(String(template.patternId))} ${escapeHtml(template.patternName)}</small>
+          <small>${escapeHtml(template.patternName)} / No.${escapeHtml(String(template.patternId))}</small>
           <b>${escapeHtml(template.title)}</b>
           <span>${escapeHtml(template.summary)}</span>
         </button>
@@ -6374,49 +6310,32 @@
         button.addEventListener("click", () => {
           selectedAirsMomentTemplate = button.dataset.airsMomentTemplate;
           renderAirsMomentTemplates();
-          renderAirsMomentPatternMap();
           renderAirsMomentCuts();
           updateAirsMomentOutput();
         });
       });
     }
 
-    function renderAirsMomentPhases() {
+    function renderAirsMomentCategories() {
       const host = document.querySelector("#airs-moment-phases");
       if (!host) return;
-      host.innerHTML = AIRS_MOMENT_PHASES.map((phase) => `
-        <button class="airs-moment-phase${phase.key === selectedAirsMomentPhase ? " is-selected" : ""}" type="button" data-airs-moment-phase="${phase.key}">
-          <small>${escapeHtml(phase.range)}</small>
-          <b>${escapeHtml(phase.title)}</b>
-          <span>${escapeHtml(phase.intent)}</span>
+      host.innerHTML = AIRS_MOMENT_CATEGORIES.map((category) => `
+        <button class="airs-moment-phase${category.key === selectedAirsMomentCategory ? " is-selected" : ""}" type="button" data-airs-moment-category="${category.key}">
+          <small>${escapeHtml(category.label)}</small>
+          <b>${escapeHtml(category.title)}</b>
+          <span>${escapeHtml(category.intent)}</span>
         </button>
       `).join("");
-      host.querySelectorAll("[data-airs-moment-phase]").forEach((button) => {
+      host.querySelectorAll("[data-airs-moment-category]").forEach((button) => {
         button.addEventListener("click", () => {
-          selectedAirsMomentPhase = button.dataset.airsMomentPhase;
-          syncAirsMomentTemplateToPhase();
-          renderAirsMomentPhases();
-          renderAirsMomentPatternMap();
+          selectedAirsMomentCategory = button.dataset.airsMomentCategory;
+          selectedAirsMomentTemplate = airsMomentTemplatesForCategory()[0]?.key || AIRS_MOMENT_TEMPLATES[0].key;
+          renderAirsMomentCategories();
           renderAirsMomentTemplates();
           renderAirsMomentCuts();
           updateAirsMomentOutput();
         });
       });
-    }
-
-    function renderAirsMomentPatternMap() {
-      const host = document.querySelector("#airs-moment-pattern-map");
-      if (!host) return;
-      const phase = currentAirsMomentPhase();
-      const readyPatternIds = new Set(airsMomentTemplatesForPhase(phase.key).map((template) => template.patternId));
-      const selectedPatternId = currentAirsMomentTemplate().patternId;
-      host.innerHTML = phase.patterns.map((pattern) => `
-        <div class="airs-moment-pattern${readyPatternIds.has(pattern.id) ? " is-ready" : ""}${pattern.id === selectedPatternId ? " is-selected" : ""}">
-          <small>No.${escapeHtml(String(pattern.id))}${readyPatternIds.has(pattern.id) ? " / 撮影テンプレあり" : ""}</small>
-          <b>${escapeHtml(pattern.name)}</b>
-          <span>${escapeHtml(pattern.note)}</span>
-        </div>
-      `).join("");
     }
 
     function renderAirsMomentCuts() {
@@ -6517,8 +6436,7 @@
     }
 
     function initAirsMoment() {
-      renderAirsMomentPhases();
-      renderAirsMomentPatternMap();
+      renderAirsMomentCategories();
       renderAirsMomentTemplates();
       renderAirsMomentCuts();
       document.querySelector("#airs-moment-store-name")?.addEventListener("input", updateAirsMomentOutput);
