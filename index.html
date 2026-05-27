@@ -5640,6 +5640,58 @@
     gap: 16px;
     margin-bottom: 28px;
   }
+  .mt-showcase-photo {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 28px;
+    border: 1.5px solid #E2DDD6;
+    border-radius: 14px;
+    background: #F8F5F0;
+    box-shadow: 0 24px 70px rgba(65, 50, 35, .12);
+  }
+  .mt-showcase-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0) 34%),
+      radial-gradient(circle at 50% 48%, rgba(255,255,255,0), rgba(247,243,238,.16) 72%);
+    mix-blend-mode: screen;
+  }
+  .mt-showcase-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    filter: saturate(.9) contrast(.9) brightness(1.04);
+  }
+  .mt-showcase-caption {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 1;
+    max-width: min(460px, calc(100% - 32px));
+    border: 1px solid rgba(255,255,255,.56);
+    border-radius: 10px;
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 14px;
+  }
+  .mt-showcase-caption strong {
+    display: block;
+    color: #1A1A18;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .mt-showcase-caption span {
+    display: block;
+    margin-top: 3px;
+    color: #6B6860;
+    font-size: 12px;
+    line-height: 1.6;
+  }
   .mt-type-card {
     border: 1.5px solid #E2DDD6;
     border-radius: 10px;
@@ -5802,6 +5854,17 @@
     .mt-hero-visual { flex-direction: row; width: 100%; }
     .mt-type-pill { width: auto; flex: 1; }
     .mt-type-grid { grid-template-columns: 1fr; }
+    .mt-showcase-photo img { aspect-ratio: 4 / 3; }
+    .mt-showcase-caption {
+      position: static;
+      max-width: none;
+      border: 0;
+      border-top: 1px solid #E2DDD6;
+      border-radius: 0;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
     .mt-features { grid-template-columns: 1fr 1fr; }
     .mt-nasu-grid { grid-template-columns: repeat(2, 1fr); }
   }
@@ -5873,37 +5936,15 @@
     <h2 class="mt-type-h2">1店舗ならショップ情報ページ。<br>複数店舗なら雑誌MAP。</h2>
     <p class="mt-type-desc">登録数に合わせて、公開ページと埋め込みの見え方が変わります。Google Maps由来の情報を、サイトに貼りやすい形へ整えます。</p>
 
-    <div class="mt-type-grid">
-      <div class="mt-type-card">
-        <div class="mt-type-card-head">
-          <span class="mt-type-badge">1 store</span>
-          <span class="mt-type-card-title">1店舗ページ</span>
-        </div>
-        <img
-          src="/assets/map-s-showcase/single-shop-map.jpg"
-          alt="1店舗ページのGoogle Maps表示例"
-          class="mt-type-card-img"
-          loading="lazy"
-        >
-        <div class="mt-type-card-foot">
-          <p class="mt-type-card-note">営業時間・口コミ・駐車場・決済などを「来店前メモ」として整理します。</p>
-        </div>
-      </div>
-
-      <div class="mt-type-card">
-        <div class="mt-type-card-head">
-          <span class="mt-type-badge">multi stores</span>
-          <span class="mt-type-card-title">複数店舗MAP</span>
-        </div>
-        <img
-          src="/assets/map-s-showcase/multi-map-mobile.jpg"
-          alt="複数店舗MAPのスマホ表示例"
-          class="mt-type-card-img"
-          loading="lazy"
-        >
-        <div class="mt-type-card-foot">
-          <p class="mt-type-card-note">地域のカフェ、商店街、観光協会、イベント会場などを軽い雑誌MAP風で公開します。</p>
-        </div>
+    <div class="mt-showcase-photo">
+      <img
+        src="/assets/map-s-showcase/map-s-cafe-hero.jpg"
+        alt="スマートフォンでmap-sの店舗MAPを見ているイメージ"
+        loading="lazy"
+      >
+      <div class="mt-showcase-caption">
+        <strong>作ったMAPは、そのままスマホで見やすい公開ページに。</strong>
+        <span>ショップ情報ページにも、地域のまとめMAPにも使える、軽い設置イメージです。</span>
       </div>
     </div>
 
