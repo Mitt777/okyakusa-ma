@@ -3,408 +3,508 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>那須エリア MAP集｜カフェ・ランチ・温泉・観光スポットまとめ</title>
-  <meta name="description" content="那須・黒磯・那須高原エリアの用途別MAP集です。カフェ、ランチ、パン屋、温泉、犬連れ、観光スポットなど、那須で行きたい場所を地図で探せます。">
-  <meta name="keywords" content="那須 MAP,那須 カフェ,那須 ランチ,那須 観光,那須 温泉,黒磯 カフェ,那須高原 マップ">
-  <meta property="og:title" content="那須エリア MAP集｜カフェ・ランチ・温泉・観光スポットまとめ">
-  <meta property="og:description" content="那須・黒磯・那須高原エリアの用途別MAP集です。カフェ、ランチ、パン屋、温泉、犬連れ、観光スポットなどをまとめています。">
+  <title>那須エリア MAP一覧｜カフェ・ランチ・温泉・観光スポットまとめ</title>
+  <meta name="description" content="那須・黒磯エリアのカフェ・ランチ・ラーメン・パン屋・スイーツ・犬連れ・温泉・観光スポットをカテゴリ別にまとめたMAPです。なすぱらTVのフィールドワークをもとに厳選した137店舗以上を掲載。">
+  <meta name="keywords" content="那須 マップ,那須 観光,那須 カフェ,那須 ランチ,那須 グルメ,黒磯 カフェ,那須高原 観光,栃木 那須,那須 食べる,那須 旅行">
+  <meta property="og:title" content="那須エリア MAP一覧｜カフェ・ランチ・温泉・観光スポットまとめ">
+  <meta property="og:description" content="那須・黒磯エリアのグルメ・観光スポットをカテゴリ別MAPでまとめて探せます。">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://map-s.site/nasu/">
+  <meta property="og:url" content="https://map-s.site/nasu">
   <meta property="og:site_name" content="map-s">
-  <link rel="canonical" href="https://map-s.site/nasu/">
+  <link rel="canonical" href="https://map-s.site/nasu">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500;700&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --ink: #1C1917;
-      --sage: #4A7C6F;
+      --ink:     #1C1917;
+      --sage:    #4A7C6F;
       --sage-lt: #A8C5BB;
-      --cream: #F7F3EE;
-      --sand: #E8DDD0;
-      --muted: #78716C;
-      --white: #FFFFFF;
-      --border: #DDD5C8;
+      --cream:   #F7F3EE;
+      --sand:    #E8DDD0;
+      --muted:   #78716C;
+      --white:   #FFFFFF;
+      --border:  #DDD5C8;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.7; font-size: 15px; }
 
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--ink);
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 15px;
-      line-height: 1.75;
-    }
+    .site-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+    .site-logo { font-family: 'EB Garamond', serif; font-size: 20px; color: var(--sage); text-decoration: none; letter-spacing: 0.05em; }
+    .site-logo span { color: var(--muted); font-size: 13px; font-family: 'Noto Sans JP', sans-serif; margin-left: 8px; font-weight: 300; }
 
-    a { color: inherit; }
-
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--white);
-      padding: 14px 24px;
-    }
-
-    .site-logo {
-      color: var(--sage);
-      font-family: 'EB Garamond', serif;
-      font-size: 22px;
-      letter-spacing: .05em;
-      text-decoration: none;
-    }
-
-    .site-logo span {
-      margin-left: 8px;
-      color: var(--muted);
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-    }
-
-    .site-header nav {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      font-size: 13px;
-    }
-
-    .site-header nav a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .site-header nav a:hover { color: var(--sage); }
-
-    .breadcrumb {
-      border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, .42);
-      padding: 12px 24px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .breadcrumb a {
-      color: var(--sage);
-      text-decoration: none;
-    }
+    .breadcrumb { padding: 12px 24px; font-size: 12px; color: var(--muted); background: var(--cream); border-bottom: 1px solid var(--border); }
+    .breadcrumb a { color: var(--sage); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
 
     .hero {
+      background: var(--ink);
+      color: var(--white);
+      padding: 56px 24px 48px;
       position: relative;
       overflow: hidden;
-      background: var(--ink);
-      color: var(--white);
-      padding: 64px 24px 54px;
     }
-
     .hero::before {
-      content: "";
+      content: '';
       position: absolute;
-      inset: 0 0 0 auto;
-      width: 44%;
-      background: linear-gradient(135deg, transparent 30%, rgba(74, 124, 111, .18));
+      top: 0; right: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 30%, rgba(74,124,111,0.12) 100%);
       pointer-events: none;
     }
+    .hero-inner { max-width: 720px; margin: 0 auto; position: relative; }
+    .hero-tag { display: inline-block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage-lt); border: 1px solid rgba(168,197,187,0.4); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; font-family: 'EB Garamond', serif; }
+    .hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(26px, 5vw, 38px); font-weight: 400; line-height: 1.4; margin-bottom: 16px; letter-spacing: 0.02em; }
+    .hero h1 em { font-style: normal; color: var(--sage-lt); }
+    .hero-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.8; max-width: 520px; margin-bottom: 28px; }
+    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .hero-stat { }
+    .hero-stat-num { font-family: 'EB Garamond', serif; font-size: 28px; color: var(--white); line-height: 1; }
+    .hero-stat-label { font-size: 11px; color: var(--sage-lt); letter-spacing: 0.05em; margin-top: 3px; }
 
-    .hero-inner,
-    .container {
-      width: min(1040px, calc(100% - 40px));
-      margin: 0 auto;
-    }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
 
-    .hero-inner { position: relative; }
-
-    .hero-tag {
-      display: inline-block;
-      margin-bottom: 18px;
-      border: 1px solid rgba(168, 197, 187, .42);
-      border-radius: 999px;
-      color: var(--sage-lt);
-      padding: 4px 12px;
-      font-family: 'EB Garamond', serif;
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      max-width: 760px;
-      margin: 0;
-      font-family: 'Noto Serif JP', serif;
-      font-size: clamp(30px, 5vw, 52px);
-      font-weight: 400;
-      letter-spacing: .02em;
-      line-height: 1.35;
-    }
-
-    h1 em {
-      color: var(--sage-lt);
-      font-style: normal;
-    }
-
-    .hero-desc {
-      max-width: 720px;
-      margin: 18px 0 0;
-      color: rgba(255, 255, 255, .72);
-      font-size: 15px;
-      line-height: 1.95;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+    /* ── SEARCH BAR ── */
+    .search-bar {
       background: var(--white);
-      color: var(--ink);
-      padding: 9px 18px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-
-    .btn:hover {
-      border-color: var(--sage);
-      transform: translateY(-1px);
-    }
-
-    .btn.primary {
-      border-color: var(--sage);
-      background: var(--sage);
-      color: var(--white);
-    }
-
-    .section {
-      padding: 42px 0 0;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .section-label {
-      margin-bottom: 8px;
-      color: var(--sage);
-      font-family: 'EB Garamond', serif;
+    .search-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .search-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
       font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      margin: 0;
-      color: var(--ink);
-      font-family: 'Noto Serif JP', serif;
-      font-size: clamp(22px, 3vw, 30px);
-      font-weight: 400;
-      line-height: 1.45;
-    }
-
-    .section-head p {
-      max-width: 560px;
-      margin: 8px 0 0;
+      padding: 5px 12px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--white);
       color: var(--muted);
-      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Sans JP', sans-serif;
     }
+    .filter-btn:hover, .filter-btn.active { background: var(--sage); color: var(--white); border-color: var(--sage); }
 
-    .map-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
+    /* ── MAP GRID ── */
+    .maps-section { padding: 36px 0 48px; }
+    .section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+    .section-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
+    .section-count { font-size: 12px; color: var(--muted); }
+
+    .maps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 
     .map-card {
-      display: grid;
-      gap: 12px;
-      min-width: 0;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      display: block;
       background: var(--white);
-      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
       text-decoration: none;
-      box-shadow: 0 16px 34px rgba(74, 92, 82, .08);
-      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
-
     .map-card:hover {
-      border-color: var(--sage-lt);
-      box-shadow: 0 18px 42px rgba(74, 92, 82, .12);
+      border-color: var(--sage);
+      box-shadow: 0 4px 16px rgba(74,124,111,0.12);
       transform: translateY(-2px);
     }
-
-    .map-card small {
-      color: var(--sage);
-      font-family: 'EB Garamond', serif;
-      font-size: 12px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
+    .map-card-top {
+      height: 6px;
     }
+    .map-card-body { padding: 18px 18px 14px; }
+    .map-card-icon { font-size: 22px; margin-bottom: 10px; }
+    .map-card-title { font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 400; color: var(--ink); margin-bottom: 6px; letter-spacing: 0.02em; }
+    .map-card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+    .map-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .map-card-count { font-size: 11px; color: var(--sage); }
+    .map-card-arrow { font-size: 12px; color: var(--sage); }
 
-    .map-card strong {
-      color: var(--ink);
-      font-family: 'Noto Serif JP', serif;
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.45;
-    }
+    /* color accents */
+    .accent-sage   { background: #4A7C6F; }
+    .accent-amber  { background: #B8945A; }
+    .accent-coral  { background: #C4694F; }
+    .accent-teal   { background: #2E7D89; }
+    .accent-violet { background: #6B5EA8; }
+    .accent-rose   { background: #A0522D; }
+    .accent-green  { background: #5D8A3C; }
+    .accent-navy   { background: #3D5A80; }
+    .accent-warm   { background: #8B6914; }
+    .accent-rust   { background: #9B4400; }
+    .accent-pine   { background: #2D5016; }
+    .accent-stone  { background: #6B6560; }
 
-    .map-card span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .cta {
-      margin: 42px 0 54px;
-      border-radius: 8px;
-      background: var(--ink);
-      color: var(--white);
-      padding: 34px 28px;
-      text-align: center;
-    }
-
-    .cta h2 { color: var(--white); }
-
-    .cta p {
-      max-width: 640px;
-      margin: 12px auto 22px;
-      color: rgba(255, 255, 255, .68);
-      font-size: 14px;
-    }
-
-    .cta .btn {
-      border-color: rgba(255, 255, 255, .28);
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
+    /* ── AREA SECTION ── */
+    .area-section { padding: 0 0 48px; }
+    .area-title { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
+    .area-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .area-card {
+      display: block;
       background: var(--white);
-      padding: 28px 24px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .footer-inner {
-      width: min(1040px, calc(100% - 40px));
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .footer-inner a {
-      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
       text-decoration: none;
+      transition: border-color 0.2s;
     }
+    .area-card:hover { border-color: var(--sage); }
+    .area-card-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--sage); font-family: 'EB Garamond', serif; margin-bottom: 4px; }
+    .area-card-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .area-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-    .footer-inner a:hover { color: var(--sage); }
+    /* ── INTRO ── */
+    .intro-section { padding: 36px 0 0; }
+    .intro-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 14px; }
+    .intro-section p { font-size: 14px; color: var(--ink); line-height: 1.9; margin-bottom: 12px; }
 
-    @media (max-width: 820px) {
-      .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .section-head { align-items: start; flex-direction: column; }
-    }
+    .divider { height: 1px; background: var(--border); margin: 36px 0; }
 
-    @media (max-width: 560px) {
-      .site-header { align-items: start; flex-direction: column; }
-      .hero { padding: 44px 20px 40px; }
-      .hero-inner,
-      .container,
-      .footer-inner { width: min(100% - 32px, 1040px); }
-      .map-grid { grid-template-columns: 1fr; }
-      .map-card { padding: 16px; }
+    /* ── CTA ── */
+    .cta-section { background: var(--ink); color: var(--white); border-radius: 8px; padding: 32px 24px; margin-bottom: 48px; text-align: center; }
+    .cta-section h2 { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; margin-bottom: 10px; }
+    .cta-section p { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 20px; line-height: 1.7; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; background: var(--sage); color: var(--white); font-size: 13px; padding: 10px 24px; border-radius: 6px; text-decoration: none; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary { display: inline-block; background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; padding: 10px 24px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); text-decoration: none; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: var(--white); }
+
+    footer { background: var(--white); border-top: 1px solid var(--border); padding: 28px 24px; }
+    .footer-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-logo { font-family: 'EB Garamond', serif; font-size: 18px; color: var(--sage); text-decoration: none; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--sage); }
+    .footer-copy { font-size: 11px; color: var(--muted); width: 100%; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 36px; }
+      .maps-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .map-card-body { padding: 14px 14px 12px; }
+      .map-card-title { font-size: 14px; }
     }
   </style>
 </head>
-
 <body>
-  <header class="site-header">
-    <a href="https://map-s.site" class="site-logo">map-s<span>店舗MAPを、3分で。</span></a>
-    <nav aria-label="サイトナビゲーション">
+
+<header class="site-header">
+  <a href="https://map-s.site" class="site-logo">map-s<span>店舗MAPを、3分で。</span></a>
+</header>
+
+<nav class="breadcrumb" aria-label="パンくずリスト">
+  <a href="https://map-s.site">map-s</a>
+  <span>›</span>
+  那須エリア
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Nasu · Tochigi</div>
+    <h1>那須エリアの<em>お店・スポット</em>を、<br>カテゴリ別MAPで探す。</h1>
+    <p class="hero-desc">
+      黒磯・那須高原・那須塩原・那須町エリアのカフェ・グルメ・温泉・観光スポットをまとめたMAPです。
+      なすぱらTVのフィールドワーク7ヶ月分をもとに厳選した情報を、カテゴリ別に整理しています。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">12</div>
+        <div class="hero-stat-label">カテゴリMAP</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">137+</div>
+        <div class="hero-stat-label">掲載店舗・スポット</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4</div>
+        <div class="hero-stat-label">エリア対応</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="search-bar">
+  <div class="search-inner">
+    <span class="search-label">カテゴリで絞る：</span>
+    <div class="filter-btns">
+      <button class="filter-btn active" onclick="filterAll(this)">すべて</button>
+      <button class="filter-btn" onclick="filterTag(this, 'food')">食事・グルメ</button>
+      <button class="filter-btn" onclick="filterTag(this, 'cafe')">カフェ・ドリンク</button>
+      <button class="filter-btn" onclick="filterTag(this, 'spot')">観光・体験</button>
+      <button class="filter-btn" onclick="filterTag(this, 'area')">エリア別</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="container">
+
+    <section class="maps-section">
+      <div class="section-header">
+        <div class="section-title">カテゴリ別 MAP一覧</div>
+        <div class="section-count">12カテゴリ</div>
+      </div>
+
+      <div class="maps-grid" id="mapsGrid">
+
+        <a href="https://map-s.site/nasu/cafe" class="map-card" data-tag="cafe">
+          <div class="map-card-top accent-sage"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">☕</div>
+            <div class="map-card-title">那須 カフェ MAP</div>
+            <div class="map-card-desc">ひとりで過ごせる静かなカフェ、作業・読書向きのカフェをまとめました。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">21店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/lunch" class="map-card" data-tag="food">
+          <div class="map-card-top accent-amber"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🍱</div>
+            <div class="map-card-title">那須 ランチ MAP</div>
+            <div class="map-card-desc">地元の人が通う定食屋から観光客に人気のレストランまで幅広く掲載。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">23店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/ramen" class="map-card" data-tag="food">
+          <div class="map-card-top accent-coral"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🍜</div>
+            <div class="map-card-title">那須 ラーメン・中華 MAP</div>
+            <div class="map-card-desc">地元の人気ラーメン店から、那須近郊の白河ラーメンの名店まで。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">12店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/bakery" class="map-card" data-tag="cafe">
+          <div class="map-card-top accent-warm"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🥐</div>
+            <div class="map-card-title">那須 パン屋 MAP</div>
+            <div class="map-card-desc">Kanel breadをはじめ、那須の素材にこだわった個性派ベーカリー。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">6店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/sweets" class="map-card" data-tag="cafe">
+          <div class="map-card-top accent-rose"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🎂</div>
+            <div class="map-card-title">那須 スイーツ MAP</div>
+            <div class="map-card-desc">那須チーズガーデンから地元の焼き菓子店まで、那須のスイーツを網羅。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">7店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/dog" class="map-card" data-tag="spot">
+          <div class="map-card-top accent-green"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🐕</div>
+            <div class="map-card-title">那須 犬連れ MAP</div>
+            <div class="map-card-desc">テラス席のあるカフェからドッグラン併設施設まで、愛犬と楽しめる場所。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">8店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/dinner" class="map-card" data-tag="food">
+          <div class="map-card-top accent-rust"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🥩</div>
+            <div class="map-card-title">那須 ディナー MAP</div>
+            <div class="map-card-desc">那須和牛のステーキ、焼き肉、バーベキューなど夜の食事スポット。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">7店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/farm" class="map-card" data-tag="spot">
+          <div class="map-card-top accent-pine"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🐄</div>
+            <div class="map-card-title">那須 牧場・農場 MAP</div>
+            <div class="map-card-desc">南ケ丘牧場、森林ノ牧場など那須の自然と食を体験できるスポット。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">7店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/onsen" class="map-card" data-tag="spot">
+          <div class="map-card-top accent-teal"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">♨️</div>
+            <div class="map-card-title">那須 温泉・日帰り湯 MAP</div>
+            <div class="map-card-desc">鹿の湯、北温泉、芦野温泉など1300年の歴史を持つ那須の名湯。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">5店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/spots" class="map-card" data-tag="spot">
+          <div class="map-card-top accent-violet"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🦁</div>
+            <div class="map-card-title">那須 観光スポット MAP</div>
+            <div class="map-card-desc">那須どうぶつ王国、那須ハイランドパーク、サファリパークなど。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">7スポット掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/kuroiso" class="map-card" data-tag="area">
+          <div class="map-card-top accent-navy"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🏘</div>
+            <div class="map-card-title">黒磯エリア MAP</div>
+            <div class="map-card-desc">NASU SHOZO CAFE、リビングストン、Kanel breadなど黒磯の名店を網羅。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">13店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://map-s.site/nasu/takahara" class="map-card" data-tag="area">
+          <div class="map-card-top accent-stone"></div>
+          <div class="map-card-body">
+            <div class="map-card-icon">🏔</div>
+            <div class="map-card-title">那須高原エリア MAP</div>
+            <div class="map-card-desc">那須岳の麓に広がる高原エリアのカフェ・観光スポット・グルメ。</div>
+            <div class="map-card-footer">
+              <span class="map-card-count">9店舗掲載</span>
+              <span class="map-card-arrow">→</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="area-section">
+      <div class="area-title">エリアから探す</div>
+      <div class="area-cards">
+        <a href="https://map-s.site/nasu/kuroiso" class="area-card">
+          <div class="area-card-label">Kuroiso</div>
+          <div class="area-card-title">黒磯・那須塩原市</div>
+          <div class="area-card-desc">カフェ文化の発信地。SHOZO、リビングストン、Kanel breadが集まるエリア。</div>
+        </a>
+        <a href="https://map-s.site/nasu/takahara" class="area-card">
+          <div class="area-card-label">Takahara</div>
+          <div class="area-card-title">那須高原・那須町</div>
+          <div class="area-card-desc">那須岳の麓。Cafe Facile、南ケ丘牧場、どうぶつ王国が点在する高原エリア。</div>
+        </a>
+        <a href="https://map-s.site/nasu/onsen" class="area-card">
+          <div class="area-card-label">Onsen</div>
+          <div class="area-card-title">那須温泉郷</div>
+          <div class="area-card-desc">鹿の湯・北温泉など1300年の歴史を持つ温泉郷。那須岳登山の拠点にも。</div>
+        </a>
+        <a href="https://map-s.site/nasu/ramen" class="area-card">
+          <div class="area-card-label">Shirakawa</div>
+          <div class="area-card-title">白河方面（ラーメン）</div>
+          <div class="area-card-desc">那須から車30〜40分。とら食堂・緑川など全国区の白河ラーメンの聖地。</div>
+        </a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="intro-section">
+      <h2>那須エリアについて</h2>
+      <p>
+        那須エリアは栃木県の北部に位置し、那須岳（茶臼岳）の麓に広がる自然豊かな観光地です。
+        東京から東北新幹線で約1時間20分（那須塩原駅）、関東圏から日帰り・週末旅行でアクセスしやすい人気の観光エリアです。
+      </p>
+      <p>
+        那須塩原市の黒磯エリアはカフェ文化の発信地として近年全国的に注目されています。
+        NASU SHOZO CAFE、リビングストン、SUDA COFFEE、Kanel breadなど、個性的な店舗が集まり、
+        カフェホッピングを楽しむ旅行者が多く訪れます。
+      </p>
+      <p>
+        那須高原エリアは避暑地として古くから親しまれており、Cafe Facile、南ケ丘牧場、
+        那須どうぶつ王国など体験型スポットが充実しています。
+        犬連れ旅行に人気のエリアでもあり、ペットOKの施設が多いのも特徴です。
+      </p>
+      <p>
+        このMAPサイトは、なすぱらTVのフィールドワーク7ヶ月・137店舗以上の実地取材をもとに作成しています。
+        Google Mapsより見やすく、カテゴリ別に整理されたMAPで、那須旅行の計画にお役立てください。
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="cta-section">
+      <h2>あなたのお店のMAPも作れます</h2>
+      <p>Google MapsのURLを入れるだけで、3分で公開・埋め込み対応のMAPが作れます。<br>商店街・観光協会・複数店舗の案内にも対応しています。</p>
+      <div class="cta-btns">
+        <a href="https://map-s.site" class="btn-primary">MAPを作ってみる（無料）</a>
+        <a href="https://g-maps.shop/nasu" class="btn-secondary">お店のGoogle Maps見え方を診断</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <a href="https://map-s.site" class="footer-logo">map-s</a>
+    <div class="footer-links">
       <a href="https://map-s.site">トップ</a>
-      <a href="https://map-s.site/#maps-builder">MAPを作る</a>
-      <a href="https://g-maps.shop/nasu">Google Maps診断</a>
-    </nav>
-  </header>
-
-  <nav class="breadcrumb" aria-label="パンくずリスト">
-    <a href="https://map-s.site">map-s</a>
-    <span> / </span>
-    那須エリア MAP集
-  </nav>
-
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-tag">Nasu area map index</div>
-      <h1>那須の<em>行きたい場所</em>を、用途別MAPで探す。</h1>
-      <p class="hero-desc">那須・黒磯・那須高原エリアのカフェ、ランチ、パン屋、温泉、犬連れ、観光スポットなどをまとめたMAP集です。各ページから地図を開いたり、サイトに埋め込むためのMAP例として確認できます。</p>
-      <div class="hero-actions">
-        <a class="btn primary" href="#maps">MAP一覧を見る</a>
-        <a class="btn" href="https://map-s.site/#maps-builder">自分のMAPを作る</a>
-      </div>
+      <a href="https://g-maps.shop">Google Maps診断</a>
+      <a href="https://okyakusa-ma.com">お客様.COM</a>
+      <a href="https://air-s.jp">air-s</a>
     </div>
-  </section>
+    <div class="footer-copy">© 2026 map-s.site · Powered by なすぱらTV フィールドワーク</div>
+  </div>
+</footer>
 
-  <main class="container">
-    <section class="section" id="maps">
-      <div class="section-head">
-        <div>
-          <div class="section-label">Category maps</div>
-          <h2>那須エリアのMAP</h2>
-          <p>店舗リストは今後ページごとに整えていく前提で、まずは検索流入と導線づくりの土台として公開しています。</p>
-        </div>
-      </div>
+<script>
+  function filterAll(btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.map-card').forEach(c => c.style.display = 'block');
+  }
+  function filterTag(btn, tag) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.map-card').forEach(c => {
+      c.style.display = c.dataset.tag === tag ? 'block' : 'none';
+    });
+  }
+</script>
 
-      <div class="map-grid">
-        <a class="map-card" href="/nasu/cafe"><small>Cafe</small><strong>那須 カフェ MAP</strong><span>静かな時間を過ごせるカフェ・喫茶店まとめ。</span></a>
-        <a class="map-card" href="/nasu/lunch"><small>Lunch</small><strong>那須 ランチ MAP</strong><span>地元民も通うランチ・食事処まとめ。</span></a>
-        <a class="map-card" href="/nasu/ramen"><small>Ramen</small><strong>那須 ラーメン・中華 MAP</strong><span>黒磯・那須高原・白河ラーメンまとめ。</span></a>
-        <a class="map-card" href="/nasu/bakery"><small>Bakery</small><strong>那須 パン屋 MAP</strong><span>黒磯・那須高原のパン屋・ベーカリーまとめ。</span></a>
-        <a class="map-card" href="/nasu/sweets"><small>Sweets</small><strong>那須 スイーツ MAP</strong><span>ケーキ・お菓子・チーズガーデン系スポットまとめ。</span></a>
-        <a class="map-card" href="/nasu/dog"><small>Dog friendly</small><strong>那須 犬連れ MAP</strong><span>愛犬と一緒に行けるカフェ・スポットまとめ。</span></a>
-        <a class="map-card" href="/nasu/farm"><small>Farm</small><strong>那須 牧場・農場 MAP</strong><span>牧場・農場・体験施設まとめ。</span></a>
-        <a class="map-card" href="/nasu/onsen"><small>Onsen</small><strong>那須 温泉 MAP</strong><span>日帰り湯・温泉スポットまとめ。</span></a>
-        <a class="map-card" href="/nasu/dinner"><small>Dinner</small><strong>那須 ディナー MAP</strong><span>那須高原のレストラン・夕食まとめ。</span></a>
-        <a class="map-card" href="/nasu/spots"><small>Spots</small><strong>那須 観光スポット MAP</strong><span>どうぶつ王国、サファリパークなど観光スポットまとめ。</span></a>
-        <a class="map-card" href="/nasu/kuroiso"><small>Kuroiso</small><strong>黒磯エリア MAP</strong><span>那須塩原・黒磯のカフェ・グルメ・ショップまとめ。</span></a>
-        <a class="map-card" href="/nasu/takahara"><small>Takahara</small><strong>那須高原エリア MAP</strong><span>那須岳・高原のカフェ・観光・グルメまとめ。</span></a>
-      </div>
-    </section>
-
-    <section class="cta">
-      <h2>お店や地域のMAPを、map-sで作れます。</h2>
-      <p>Google Maps URLや店名から店舗情報を取り込み、公開URL・iframeコード・QRまで発行できます。那須MAP集は、そのSEO導線サンプルでもあります。</p>
-      <div class="hero-actions" style="justify-content:center;">
-        <a class="btn primary" href="https://map-s.site/#maps-builder">MAPを作る</a>
-        <a class="btn" href="https://g-maps.shop/nasu">Google Mapsの見え方を診断</a>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-      <a href="https://map-s.site">map-s</a>
-      <span>Google Maps由来の情報を、公開しやすいMAPページへ。</span>
-    </div>
-  </footer>
 </body>
 </html>
