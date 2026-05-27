@@ -2095,18 +2095,27 @@
       margin: 14px 0;
     }
 
-    .airs-moment-progress span {
+    .airs-moment-progress button {
       border: 1px solid rgba(58, 92, 73, .16);
       border-radius: 999px;
       background: rgba(255, 255, 255, .72);
       color: #6d766e;
       padding: 7px 10px;
+      font: inherit;
       font-size: 11px;
       font-weight: 900;
       text-align: center;
+      cursor: pointer;
     }
 
-    .airs-moment-progress span.is-done {
+    .airs-moment-progress button.is-current {
+      border-color: rgba(31, 122, 94, .52);
+      background: #fffdf5;
+      color: #20382d;
+      box-shadow: inset 0 0 0 1px rgba(31, 122, 94, .14);
+    }
+
+    .airs-moment-progress button.is-done {
       border-color: rgba(31, 122, 94, .36);
       background: #eef9f3;
       color: #22513f;
@@ -2205,6 +2214,25 @@
       border-radius: 8px;
       background: #20382d;
       object-fit: cover;
+    }
+
+    .airs-moment-cut-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .airs-moment-cut-actions button {
+      border: 1px solid rgba(58, 92, 73, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #24463a;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
     }
 
     .airs-moment-praise {
@@ -6131,6 +6159,8 @@
     let selectedAirsFeeling = null;
     let selectedAirsMomentCategory = AIRS_MOMENT_CATEGORIES[0].key;
     let selectedAirsMomentTemplate = AIRS_MOMENT_TEMPLATES[0].key;
+    let activeAirsMomentCutIndex = 0;
+    let airsMomentCutClips = [];
 
     function isAirsDomain() {
       return location.hostname.replace(/^www\./, "") === "air-s.jp" || location.search.includes("airs-preview=1");
@@ -6189,12 +6219,20 @@
       return document.querySelector(selector)?.value.trim() || "";
     }
 
-    function airsMomentCutInputs() {
-      return Array.from(document.querySelectorAll("[data-airs-moment-cut]"));
+    function airsMomentDoneCount() {
+      return airsMomentCutClips.filter(Boolean).length;
     }
 
-    function airsMomentDoneCount() {
-      return airsMomentCutInputs().filter((input) => input.files?.[0]).length;
+    function resetAirsMomentCuts() {
+      airsMomentCutClips.forEach((clip) => {
+        if (clip?.url) URL.revokeObjectURL(clip.url);
+      });
+      airsMomentCutClips = [];
+      activeAirsMomentCutIndex = 0;
+    }
+
+    function airsMomentCutSecondLabel(index) {
+      return index === 0 ? "2秒" : "3秒";
     }
 
     function cleanAirsMomentPlaceName(value = "") {
@@ -6286,8 +6324,16 @@
       const progress = document.querySelector("#airs-moment-progress");
       if (progress) {
         progress.innerHTML = template.cuts.map((cut, index) => `
-          <span class="${doneCount > index ? "is-done" : ""}">Cut ${index + 1} / ${doneCount > index ? "撮れました" : cut.title}</span>
+          <button type="button" class="${airsMomentCutClips[index] ? "is-done" : ""} ${activeAirsMomentCutIndex === index ? "is-current" : ""}" data-airs-moment-cut-nav="${index}">
+            Cut ${index + 1} / ${airsMomentCutClips[index] ? "撮れました" : cut.title}
+          </button>
         `).join("");
+        progress.querySelectorAll("[data-airs-moment-cut-nav]").forEach((button) => {
+          button.addEventListener("click", () => {
+            activeAirsMomentCutIndex = Number(button.dataset.airsMomentCutNav) || 0;
+            renderAirsMomentCuts();
+          });
+        });
       }
       updateAirsMomentPlaceStatus();
       if (textarea) textarea.value = airsMomentPostText();
@@ -6309,6 +6355,7 @@
       host.querySelectorAll("[data-airs-moment-template]").forEach((button) => {
         button.addEventListener("click", () => {
           selectedAirsMomentTemplate = button.dataset.airsMomentTemplate;
+          resetAirsMomentCuts();
           renderAirsMomentTemplates();
           renderAirsMomentCuts();
           updateAirsMomentOutput();
@@ -6330,6 +6377,7 @@
         button.addEventListener("click", () => {
           selectedAirsMomentCategory = button.dataset.airsMomentCategory;
           selectedAirsMomentTemplate = airsMomentTemplatesForCategory()[0]?.key || AIRS_MOMENT_TEMPLATES[0].key;
+          resetAirsMomentCuts();
           renderAirsMomentCategories();
           renderAirsMomentTemplates();
           renderAirsMomentCuts();
@@ -6342,18 +6390,27 @@
       const host = document.querySelector("#airs-moment-cuts");
       if (!host) return;
       const template = currentAirsMomentTemplate();
-      host.innerHTML = template.cuts.map((cut, index) => `
+      activeAirsMomentCutIndex = Math.min(activeAirsMomentCutIndex, template.cuts.length - 1);
+      const cut = template.cuts[activeAirsMomentCutIndex];
+      const clip = airsMomentCutClips[activeAirsMomentCutIndex];
+      host.innerHTML = `
         <article class="airs-moment-cut">
           <div>
-            <small>Cut ${index + 1} / 目安 ${index === 0 ? "2秒" : "3秒"}</small>
+            <small>Cut ${activeAirsMomentCutIndex + 1} / 目安 ${airsMomentCutSecondLabel(activeAirsMomentCutIndex)}</small>
             <b>${escapeHtml(cut.title)}</b>
             <span>${escapeHtml(cut.guide)}</span>
-            <input type="file" accept="video/*" capture="environment" data-airs-moment-cut="${index}" aria-label="Cut ${index + 1}の動画">
-            <div class="airs-moment-praise" data-airs-moment-praise="${index}">撮れたら、ここで一度ほめます。</div>
+            <input type="file" accept="video/*" capture="environment" data-airs-moment-cut="${activeAirsMomentCutIndex}" aria-label="Cut ${activeAirsMomentCutIndex + 1}の動画">
+            <div class="airs-moment-praise" data-airs-moment-praise="${activeAirsMomentCutIndex}">
+              ${clip ? escapeHtml(cut.praise || "いい感じです。このカットで十分伝わります。") : "撮れたら、ここで一度ほめます。"}
+            </div>
+            <div class="airs-moment-cut-actions">
+              ${activeAirsMomentCutIndex > 0 ? `<button type="button" data-airs-moment-prev>前のカット</button>` : ""}
+              ${activeAirsMomentCutIndex < template.cuts.length - 1 ? `<button type="button" data-airs-moment-next>${clip ? "次のカットへ" : "このあと次へ"}</button>` : ""}
+            </div>
           </div>
-          <video playsinline muted controls data-airs-moment-preview="${index}"></video>
+          <video playsinline muted controls data-airs-moment-preview="${activeAirsMomentCutIndex}" ${clip ? `src="${escapeHtml(clip.url)}"` : ""}></video>
         </article>
-      `).join("");
+      `;
       host.querySelectorAll("[data-airs-moment-cut]").forEach((input) => {
         input.addEventListener("change", () => {
           const index = Number(input.dataset.airsMomentCut);
@@ -6361,15 +6418,24 @@
           const video = host.querySelector(`[data-airs-moment-preview="${index}"]`);
           const praise = host.querySelector(`[data-airs-moment-praise="${index}"]`);
           if (video && file) {
+            if (airsMomentCutClips[index]?.url) URL.revokeObjectURL(airsMomentCutClips[index].url);
             const url = URL.createObjectURL(file);
+            airsMomentCutClips[index] = { name: file.name, url };
             video.src = url;
-            video.onloadeddata = () => URL.revokeObjectURL(url);
           }
           if (praise && file) {
             praise.textContent = currentAirsMomentTemplate().cuts[index]?.praise || "いい感じです。このカットで十分伝わります。";
           }
           updateAirsMomentOutput();
         });
+      });
+      host.querySelector("[data-airs-moment-prev]")?.addEventListener("click", () => {
+        activeAirsMomentCutIndex = Math.max(0, activeAirsMomentCutIndex - 1);
+        renderAirsMomentCuts();
+      });
+      host.querySelector("[data-airs-moment-next]")?.addEventListener("click", () => {
+        activeAirsMomentCutIndex = Math.min(template.cuts.length - 1, activeAirsMomentCutIndex + 1);
+        renderAirsMomentCuts();
       });
       updateAirsMomentOutput();
     }
