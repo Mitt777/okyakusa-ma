@@ -2425,6 +2425,20 @@
       opacity: .62;
     }
 
+    .airs-moment-render-preview {
+      display: none;
+      width: min(100%, 300px);
+      aspect-ratio: 9 / 16;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 8px;
+      background: #20382d;
+      object-fit: cover;
+    }
+
+    .airs-moment-render-preview.is-open {
+      display: block;
+    }
+
     .airs-moment-render-status {
       color: #1f7a5e;
       font-size: 12px;
@@ -5844,6 +5858,7 @@
               <button class="primary" type="button" id="airs-moment-render-video">AIで1本の縦動画に整えるβ</button>
               <a id="airs-moment-download-video" hidden download="air-s-moment.mp4">完成動画をダウンロード</a>
             </div>
+            <video class="airs-moment-render-preview" id="airs-moment-render-preview" playsinline controls muted></video>
             <div class="airs-moment-render-status" id="airs-moment-render-status">まだ結合していません。</div>
           </div>
           <div class="airs-moment-platforms" id="airs-moment-platforms" aria-label="投稿先を選ぶ"></div>
@@ -7105,6 +7120,7 @@
     function renderAirsMomentRenderBox() {
       const button = document.querySelector("#airs-moment-render-video");
       const download = document.querySelector("#airs-moment-download-video");
+      const preview = document.querySelector("#airs-moment-render-preview");
       const status = document.querySelector("#airs-moment-render-status");
       if (button) {
         button.disabled = airsMomentRendering;
@@ -7113,6 +7129,15 @@
       if (download) {
         download.hidden = !airsMomentRenderedVideoUrl;
         if (airsMomentRenderedVideoUrl) download.href = airsMomentRenderedVideoUrl;
+      }
+      if (preview) {
+        preview.classList.toggle("is-open", Boolean(airsMomentRenderedVideoUrl));
+        if (airsMomentRenderedVideoUrl && preview.src !== airsMomentRenderedVideoUrl) {
+          preview.src = airsMomentRenderedVideoUrl;
+        } else if (!airsMomentRenderedVideoUrl) {
+          preview.removeAttribute("src");
+          preview.load();
+        }
       }
       if (status) {
         status.classList.toggle("is-error", airsMomentRenderError);
