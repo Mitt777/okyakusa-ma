@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>那須 カフェ MAP｜静かな時間を過ごせるカフェ・喫茶店まとめ</title>
+  <meta name="description" content="那須・黒磯エリアのカフェ・喫茶店をまとめたMAPです。ひとりで過ごせる静かなカフェ、犬連れOKのテラス席、作業や読書に向いたカフェなど、那須の空気を感じる場所を紹介します。">
+  <meta name="keywords" content="那須 カフェ,黒磯 カフェ,那須高原 カフェ,那須塩原 カフェ,那須 喫茶店,那須 ひとりカフェ,那須 犬連れ カフェ,那須 おすすめカフェ,栃木 カフェ マップ">
+  <meta property="og:title" content="那須 カフェ MAP｜静かな時間を過ごせるカフェまとめ">
+  <meta property="og:description" content="那須・黒磯エリアの個性あるカフェをまとめたMAPです。Google Mapsより見やすく、iframe埋め込みにも対応。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://map-s.site/nasu/cafe">
+  <meta property="og:site_name" content="map-s">
+  <link rel="canonical" href="https://map-s.site/nasu/cafe">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink: #1C1917;
+      --sage: #4A7C6F;
+      --sage-lt: #A8C5BB;
+      --cream: #F7F3EE;
+      --sand: #E8DDD0;
+      --warm: #C4A882;
+      --muted: #78716C;
+      --white: #FFFFFF;
+      --border: #DDD5C8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      padding: 14px 24px;
+    }
+
+    .site-logo {
+      color: var(--sage);
+      font-family: 'EB Garamond', serif;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .site-logo span {
+      margin-left: 8px;
+      color: var(--muted);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+    }
+
+    .breadcrumb {
+      border-bottom: 1px solid var(--border);
+      background: var(--cream);
+      padding: 12px 24px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .breadcrumb a {
+      color: var(--sage);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { margin: 0 6px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--white);
+      padding: 56px 24px 48px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 40%, rgba(74, 124, 111, 0.15) 100%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      margin-bottom: 20px;
+      border: 1px solid rgba(168, 197, 187, 0.4);
+      border-radius: 100px;
+      padding: 4px 12px;
+      color: var(--sage-lt);
+      font-family: 'EB Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin-bottom: 16px;
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.4;
+    }
+
+    .hero h1 em {
+      color: var(--sage-lt);
+      font-style: normal;
+    }
+
+    .hero-desc {
+      max-width: 520px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+      margin-top: 28px;
+    }
+
+    .hero-count {
+      color: var(--sage-lt);
+      font-size: 13px;
+    }
+
+    .hero-count strong {
+      margin-right: 4px;
+      color: var(--white);
+      font-family: 'EB Garamond', serif;
+      font-size: 22px;
+    }
+
+    .hero-area-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .area-tag {
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 10px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .map-section { padding: 40px 0 32px; }
+
+    .section-label {
+      margin-bottom: 12px;
+      color: var(--sage);
+      font-family: 'EB Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .map-title {
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 20px;
+      font-weight: 400;
+    }
+
+    .map-subtitle {
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .map-frame-wrap {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .map-frame-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 480px;
+      border: none;
+    }
+
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn-open,
+    .btn-embed {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font: inherit;
+      font-size: 13px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-open {
+      border: 1px solid var(--sage);
+      color: var(--sage);
+    }
+
+    .btn-open:hover {
+      background: var(--sage);
+      color: var(--white);
+    }
+
+    .btn-embed {
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .btn-embed:hover {
+      border-color: var(--sage);
+      color: var(--sage);
+    }
+
+    .divider {
+      height: 1px;
+      margin: 8px 0 32px;
+      background: var(--border);
+    }
+
+    .intro-section { padding: 0 0 36px; }
+
+    .intro-section h2,
+    .area-section h2,
+    .faq-section h2,
+    .other-maps h2 {
+      margin-bottom: 14px;
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .intro-section p {
+      margin-bottom: 12px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 24px 0 36px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 18px 16px;
+    }
+
+    .feature-icon {
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .feature-title {
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .feature-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .area-section {
+      margin-bottom: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 24px;
+    }
+
+    .area-section h2,
+    .faq-section h2,
+    .other-maps h2 {
+      font-size: 17px;
+    }
+
+    .area-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .area-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .area-badge {
+      flex-shrink: 0;
+      margin-top: 2px;
+      border-radius: 100px;
+      background: var(--sage);
+      color: var(--white);
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .area-text {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .area-text strong {
+      display: block;
+      margin-bottom: 2px;
+      font-weight: 500;
+    }
+
+    .faq-section { margin-bottom: 36px; }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .faq-q {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .faq-q::before {
+      content: "Q";
+      flex-shrink: 0;
+      color: var(--sage);
+      font-family: 'EB Garamond', serif;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .faq-a {
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .cta-section {
+      margin-bottom: 48px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: var(--white);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      margin-bottom: 10px;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .cta-section p {
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .cta-btns {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 13px;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, opacity 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--sage);
+      color: var(--white);
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-secondary {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255, 255, 255, 0.5);
+      color: var(--white);
+    }
+
+    .other-maps { margin-bottom: 48px; }
+
+    .map-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .map-link-card {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .map-link-card:hover {
+      border-color: var(--sage);
+      box-shadow: 0 2px 8px rgba(74, 124, 111, 0.1);
+    }
+
+    .map-link-label {
+      margin-bottom: 4px;
+      color: var(--sage);
+      font-family: 'EB Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .map-link-title {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--white);
+      padding: 28px 24px;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      color: var(--sage);
+      font-family: 'EB Garamond', serif;
+      font-size: 18px;
+      text-decoration: none;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--sage); }
+
+    .footer-copy {
+      width: 100%;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 36px; }
+      .map-frame-wrap iframe { height: 360px; }
+      .features { grid-template-columns: 1fr 1fr; }
+      .cta-section { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="https://map-s.site" class="site-logo">map-s<span>店舗MAPを、3分で。</span></a>
+  </header>
+
+  <nav class="breadcrumb" aria-label="パンくずリスト">
+    <a href="https://map-s.site">map-s</a>
+    <span>></span>
+    <a href="https://map-s.site/nasu">那須エリア</a>
+    <span>></span>
+    カフェ MAP
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">Nasu · Cafe Map</div>
+      <h1>那須の<em>カフェ</em>を、<br>まとめて地図で見る。</h1>
+      <p class="hero-desc">
+        黒磯・那須高原・那須塩原エリアの個性あるカフェ・喫茶店をまとめたMAPです。
+        ひとりで静かに過ごせる場所、犬連れOKのテラス席、旅の途中に寄りたいカフェを紹介します。
+      </p>
+      <div class="hero-meta">
+        <div class="hero-count"><strong>10+</strong>店舗掲載中</div>
+        <div class="hero-area-tags">
+          <span class="area-tag">黒磯</span>
+          <span class="area-tag">那須高原</span>
+          <span class="area-tag">那須塩原</span>
+          <span class="area-tag">那須町</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="container">
+      <section class="map-section">
+        <div class="section-label">Interactive Map</div>
+        <div class="map-title">那須 カフェ MAP</div>
+        <p class="map-subtitle">ピンをタップすると店舗詳細とGoogle Mapsへのリンクが開きます。</p>
+        <div class="map-frame-wrap">
+          <iframe
+            src="https://map-s.site/embed/nasu-cafe-2026"
+            title="那須カフェMAP"
+            loading="lazy"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="map-actions">
+          <a href="https://map-s.site/m/nasu-cafe-2026" class="btn-open" target="_blank" rel="noopener">
+            大きなMAPで見る
+          </a>
+          <button class="btn-embed" onclick="copyEmbed()" type="button">
+            埋め込みコードをコピー
+          </button>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section class="intro-section">
+        <h2>那須でカフェを探すなら</h2>
+        <p>
+          那須エリアは、栃木県の北部に位置する自然豊かな観光地です。
+          那須高原を中心に、黒磯・那須塩原・那須町にかけて、個性あるカフェや喫茶店が点在しています。
+          大型チェーン店が少なく、地元のオーナーが丁寧に運営する一軒家カフェやロードサイドの隠れ家的なお店が多いのが特徴です。
+        </p>
+        <p>
+          このMAPでは、なすぱらTVのフィールドワークをもとに厳選したカフェをまとめています。
+          「那須に来たらどのカフェに行こう」という旅行計画にも、
+          「今日のランチはどこにしよう」という地元の方にも使いやすい形で整理しています。
+        </p>
+
+        <div class="features">
+          <div class="feature-card">
+            <div class="feature-icon">犬</div>
+            <div class="feature-title">犬連れOK</div>
+            <div class="feature-desc">テラス席・ドッグラン併設のカフェを含みます</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">車</div>
+            <div class="feature-title">駐車場あり</div>
+            <div class="feature-desc">車でのアクセスを前提に選んでいます</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">席</div>
+            <div class="feature-title">ひとり利用</div>
+            <div class="feature-desc">ひとりで過ごしやすい空気のお店を優先</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">本</div>
+            <div class="feature-title">作業・読書</div>
+            <div class="feature-desc">静かに長居できるカフェを含みます</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section class="area-section">
+        <h2>エリア別ガイド</h2>
+        <div class="area-list">
+          <div class="area-item">
+            <span class="area-badge">黒磯</span>
+            <div class="area-text">
+              <strong>那須塩原市・黒磯駅周辺</strong>
+              1988年に移転した旧西那須野駅をリノベしたNASU SHOZO CAFEをはじめ、
+              リビングストン、SUDA COFFEEなど独自の世界観を持つカフェが集まるエリアです。
+              那須エリアのカフェ文化の発信地とも言えます。
+            </div>
+          </div>
+          <div class="area-item">
+            <span class="area-badge">那須高原</span>
+            <div class="area-text">
+              <strong>那須町・高久エリア</strong>
+              那須岳の麓に広がる観光エリア。Cafe Facile、Kimagure Coffeeなど、
+              森の中や高原の景色を楽しみながら過ごせるカフェがあります。
+              ドライブの休憩や旅の途中に立ち寄るのに最適です。
+            </div>
+          </div>
+          <div class="area-item">
+            <span class="area-badge">那須塩原</span>
+            <div class="area-text">
+              <strong>那須塩原市・温泉エリア</strong>
+              温泉地として知られる那須塩原エリアにも、地元に根付いたカフェが点在します。
+              観光客だけでなく地元の常連が通う、落ち着いた雰囲気のお店が多いのが特徴です。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq-section">
+        <h2>よくある質問</h2>
+        <div class="faq-item">
+          <div class="faq-q">那須でカフェを探すのにおすすめの時間帯は？</div>
+          <div class="faq-a">
+            週末の午後（13時〜15時）は混雑することが多いため、午前中か平日が狙い目です。
+            特に黒磯エリアのカフェは10時〜11時のオープン直後が席を確保しやすい時間帯です。
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">犬連れで入れるカフェはありますか？</div>
+          <div class="faq-a">
+            はい。このMAPには犬連れOKのカフェも含まれています。
+            ただし店内可否・テラスのみなど条件が異なるため、事前にお店のGoogle Maps情報や公式サイトでご確認ください。
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">那須のカフェは予約が必要ですか？</div>
+          <div class="faq-a">
+            多くのカフェは予約不要で入れますが、週末や連休は混雑します。
+            席数が少ないお店では待ち時間が発生することもあります。
+            Google MapsやInstagramで混雑状況を事前に確認するのがおすすめです。
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">このMAPはどのくらいの頻度で更新されますか？</div>
+          <div class="faq-a">
+            なすぱらTVのフィールドワークをもとに随時更新しています。
+            新しいお店の情報はmap-s.siteのトップページからもご確認いただけます。
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <h2>あなたのお店のMAPも作れます</h2>
+        <p>
+          Google MapsのURLを入れるだけで、3分で公開・埋め込み対応のMAPが作れます。<br>
+          商店街・観光協会・複数店舗の案内にも対応しています。
+        </p>
+        <div class="cta-btns">
+          <a href="https://map-s.site" class="btn-primary">MAPを作ってみる（無料）</a>
+          <a href="https://g-maps.shop/nasu" class="btn-secondary">お店のGoogle Maps見え方を診断</a>
+        </div>
+      </section>
+
+      <section class="other-maps">
+        <h2>那須の他のMAP</h2>
+        <div class="map-links">
+          <a href="https://map-s.site/nasu/lunch" class="map-link-card">
+            <div class="map-link-label">Nasu</div>
+            <div class="map-link-title">那須 ランチ MAP</div>
+          </a>
+          <a href="https://map-s.site/nasu/dog" class="map-link-card">
+            <div class="map-link-label">Nasu</div>
+            <div class="map-link-title">那須 犬連れ MAP</div>
+          </a>
+          <a href="https://map-s.site/nasu/bakery" class="map-link-card">
+            <div class="map-link-label">Nasu</div>
+            <div class="map-link-title">那須 パン屋 MAP</div>
+          </a>
+          <a href="https://map-s.site/nasu/kuroiso" class="map-link-card">
+            <div class="map-link-label">Nasu</div>
+            <div class="map-link-title">黒磯エリア MAP</div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <a href="https://map-s.site" class="footer-logo">map-s</a>
+      <div class="footer-links">
+        <a href="https://map-s.site">トップ</a>
+        <a href="https://map-s.site/nasu">那須エリア</a>
+        <a href="https://g-maps.shop">Google Maps診断</a>
+        <a href="https://okyakusa-ma.com">お客様.COM</a>
+      </div>
+      <div class="footer-copy">© 2026 map-s.site · Powered by なすぱらTV フィールドワーク</div>
+    </div>
+  </footer>
+
+  <script>
+    function copyEmbed() {
+      const code = '<iframe src="https://map-s.site/embed/nasu-cafe-2026" width="100%" height="480" style="border:none;border-radius:8px;" title="那須カフェMAP" loading="lazy"></iframe>';
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector(".btn-embed");
+        const original = btn.textContent;
+        btn.textContent = "コピーしました";
+        setTimeout(() => { btn.textContent = original; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
