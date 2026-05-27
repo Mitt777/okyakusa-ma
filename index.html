@@ -5441,148 +5441,545 @@
 </head>
 <body>
   <section class="maps-home" aria-labelledby="maps-title">
-    <div class="maps-shell">
-      <div class="maps-topbar">
-        <div class="maps-brand">
-          <strong>map-s</strong>
-          <span>Google MapsのURLだけで、店舗MAPを3分作成。</span>
+<style id="maps-top-style">
+  /* ── TOP改善専用スタイル（既存スタイルを上書きしない範囲で追加）── */
+
+  .mt-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid #E2DDD6;
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mt-nav-logo {
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    color: #1A1A18;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .mt-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mt-nav-link {
+    font-size: 13px;
+    color: #6B6860;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .mt-nav-link:hover { background: #F0EDE8; }
+  .mt-nav-cta {
+    background: #F5C842;
+    color: #1A1A18;
+    font-weight: 700;
+    border-color: #D4A820;
+  }
+  .mt-nav-cta:hover { background: #D4A820; }
+
+  /* HERO */
+  .mt-hero {
+    padding: 56px 20px 48px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .mt-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 40px;
+  }
+  .mt-hero-text { flex: 1; max-width: 420px; }
+  .mt-hero-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #3D6B5F;
+    background: #DCF0EA;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+  .mt-hero-h1 {
+    font-size: clamp(26px, 4.5vw, 38px);
+    font-weight: 700;
+    color: #1A1A18;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+  .mt-hero-h1 em {
+    font-style: normal;
+    color: #3D6B5F;
+  }
+  .mt-hero-sub {
+    font-size: 14px;
+    color: #6B6860;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .mt-hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .mt-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F5C842;
+    color: #1A1A18;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 22px;
+    border-radius: 100px;
+    text-decoration: none;
+    border: 2px solid #D4A820;
+    transition: all 0.15s;
+  }
+  .mt-btn-primary:hover { background: #D4A820; transform: translateY(-1px); }
+  .mt-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: #3D3D38;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 100px;
+    text-decoration: none;
+    border: 2px solid #DDD8CF;
+    transition: all 0.15s;
+  }
+  .mt-btn-ghost:hover { border-color: #3D6B5F; color: #3D6B5F; }
+
+  /* HERO VISUAL: type badges */
+  .mt-hero-visual {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mt-type-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #F8F5F0;
+    border: 1px solid #E2DDD6;
+    border-radius: 8px;
+    padding: 10px 14px;
+    width: 220px;
+  }
+  .mt-type-pill-icon { font-size: 16px; }
+  .mt-type-pill-text { }
+  .mt-type-pill-label {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3D6B5F;
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 1px;
+  }
+  .mt-type-pill-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A1A18;
+  }
+
+  /* TYPE SECTION */
+  .mt-type-section {
+    background: #FFFFFF;
+    border-top: 1px solid #E2DDD6;
+    border-bottom: 1px solid #E2DDD6;
+    padding: 48px 20px;
+  }
+  .mt-type-inner { max-width: 860px; margin: 0 auto; }
+  .mt-type-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #3D6B5F;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .mt-type-h2 {
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 700;
+    color: #1A1A18;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .mt-type-desc {
+    font-size: 14px;
+    color: #6B6860;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 520px;
+  }
+  .mt-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .mt-type-card {
+    border: 1.5px solid #E2DDD6;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #F8F5F0;
+    transition: border-color 0.15s;
+  }
+  .mt-type-card:hover { border-color: #3D6B5F; }
+  .mt-type-card-head {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E2DDD6;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mt-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: #DCF0EA;
+    color: #2A5A4E;
+  }
+  .mt-type-card-title { font-size: 13px; font-weight: 700; color: #1A1A18; }
+  .mt-type-card-img {
+    width: 100%;
+    display: block;
+    border-radius: 0;
+  }
+  .mt-type-card-foot {
+    padding: 10px 16px;
+  }
+  .mt-type-card-note {
+    font-size: 12px;
+    color: #6B6860;
+    line-height: 1.6;
+  }
+
+  /* features row */
+  .mt-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .mt-feature {
+    background: #F8F5F0;
+    border: 1px solid #E2DDD6;
+    border-radius: 8px;
+    padding: 16px 14px;
+  }
+  .mt-feature-icon { font-size: 18px; margin-bottom: 6px; }
+  .mt-feature-title { font-size: 13px; font-weight: 700; color: #1A1A18; margin-bottom: 3px; }
+  .mt-feature-desc { font-size: 11px; color: #6B6860; line-height: 1.6; }
+
+  /* NASU SECTION */
+  .mt-nasu {
+    background: #1A1A18;
+    padding: 48px 20px;
+  }
+  .mt-nasu-inner { max-width: 860px; margin: 0 auto; }
+  .mt-nasu-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6B9E90;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .mt-nasu-h2 {
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .mt-nasu-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    max-width: 520px;
+  }
+  .mt-nasu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .mt-nasu-card {
+    display: block;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 12px 12px 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .mt-nasu-card:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.22);
+    transform: translateY(-1px);
+  }
+  .mt-nasu-icon { font-size: 16px; margin-bottom: 4px; }
+  .mt-nasu-title { font-size: 11px; font-weight: 700; color: #FFFFFF; margin-bottom: 1px; line-height: 1.4; }
+  .mt-nasu-count { font-size: 10px; color: rgba(255,255,255,0.35); }
+  .mt-nasu-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #6B9E90;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 100px;
+    transition: all 0.15s;
+  }
+  .mt-nasu-more:hover { border-color: #6B9E90; color: #FFFFFF; }
+  .mt-nasu-credit {
+    margin-top: 16px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.22);
+    line-height: 1.6;
+  }
+
+  /* demo lead */
+  .mt-demo-lead {
+    padding: 40px 20px 8px;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .mt-demo-lead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #3D6B5F;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .mt-demo-lead-h2 {
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    color: #1A1A18;
+    margin-bottom: 8px;
+  }
+  .mt-demo-lead-desc {
+    font-size: 13px;
+    color: #6B6860;
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    .mt-hero-top { flex-direction: column; gap: 20px; }
+    .mt-hero-visual { flex-direction: row; width: 100%; }
+    .mt-type-pill { width: auto; flex: 1; }
+    .mt-type-grid { grid-template-columns: 1fr; }
+    .mt-features { grid-template-columns: 1fr 1fr; }
+    .mt-nasu-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .maps-public-mode .mt-nav,
+  .maps-public-mode .mt-hero,
+  .maps-public-mode .mt-type-section,
+  .maps-public-mode .mt-nasu,
+  .maps-public-mode .mt-demo-lead,
+  .maps-embed-mode .mt-nav,
+  .maps-embed-mode .mt-hero,
+  .maps-embed-mode .mt-type-section,
+  .maps-embed-mode .mt-nasu,
+  .maps-embed-mode .mt-demo-lead {
+    display: none;
+  }
+</style>
+
+<!-- NAV -->
+<nav class="mt-nav">
+  <a href="https://map-s.site" class="mt-nav-logo">map-s</a>
+  <div class="mt-nav-links">
+    <a href="#maps-how" class="mt-nav-link">作り方</a>
+    <a href="#mt-nasu" class="mt-nav-link">那須MAP</a>
+    <a href="#maps-pricing" class="mt-nav-link">料金</a>
+    <a href="#maps-builder" class="mt-nav-link mt-nav-cta">作成デモを試す</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="mt-hero">
+  <div class="mt-hero-top">
+    <div class="mt-hero-text">
+      <span class="mt-hero-badge">β · Form Mailer型 Map公開ツール</span>
+      <h1 class="mt-hero-h1" id="maps-title">Google MapsのURLだけで、<br><em>店舗MAPを3分で公開。</em></h1>
+      <p class="mt-hero-sub">
+        商店街・観光協会・複数店舗の案内に。<br>
+        公開URL・QR・iframe埋め込みまで、専門知識なしで。
+      </p>
+      <div class="mt-hero-actions">
+        <a href="#maps-builder" class="mt-btn-primary">作成デモを試す →</a>
+        <a href="#mt-nasu" class="mt-btn-ghost">那須MAPで見てみる</a>
+      </div>
+    </div>
+
+    <div class="mt-hero-visual">
+      <div class="mt-type-pill">
+        <span class="mt-type-pill-icon">🏪</span>
+        <span class="mt-type-pill-text">
+          <span class="mt-type-pill-label">1 store</span>
+          <span class="mt-type-pill-title">ショップ情報ページ</span>
+        </span>
+      </div>
+      <div class="mt-type-pill">
+        <span class="mt-type-pill-icon">🗺</span>
+        <span class="mt-type-pill-text">
+          <span class="mt-type-pill-label">multi stores</span>
+          <span class="mt-type-pill-title">地域・まとめMAP</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPE SECTION -->
+<section class="mt-type-section">
+  <div class="mt-type-inner">
+    <span class="mt-type-label">Display Type</span>
+    <h2 class="mt-type-h2">1店舗ならショップ情報ページ。<br>複数店舗なら雑誌MAP。</h2>
+    <p class="mt-type-desc">登録数に合わせて、公開ページと埋め込みの見え方が変わります。Google Maps由来の情報を、サイトに貼りやすい形へ整えます。</p>
+
+    <div class="mt-type-grid">
+      <div class="mt-type-card">
+        <div class="mt-type-card-head">
+          <span class="mt-type-badge">1 store</span>
+          <span class="mt-type-card-title">1店舗ページ</span>
         </div>
-        <nav class="maps-nav" aria-label="map-sナビゲーション">
-          <a href="#maps-how">作り方</a>
-          <a href="/nasu/">那須MAP</a>
-          <a href="#maps-seo">SEO導線</a>
-          <a href="#maps-pricing">料金</a>
-          <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
-        </nav>
+        <img
+          src="/assets/map-s-showcase/single-shop-map.jpg"
+          alt="1店舗ページのGoogle Maps表示例"
+          class="mt-type-card-img"
+          loading="lazy"
+        >
+        <div class="mt-type-card-foot">
+          <p class="mt-type-card-note">営業時間・口コミ・駐車場・決済などを「来店前メモ」として整理します。</p>
+        </div>
       </div>
 
-      <section class="maps-hero">
-        <div>
-          <span class="maps-kicker">map-s（マップス）β / Form Mailer型の軽いMap作成サービス</span>
-          <h1 id="maps-title">Google MapsのURLだけで、店舗MAPページを3分で作成・公開。</h1>
-          <p class="maps-lead">
-            商店街、観光協会、複数店舗、イベント会場、周辺案内に。
-            公開URL、QR、サイト埋め込みまで。専門知識なしで、まずは軽くつなぎます。
-          </p>
-          <div class="maps-actions">
-            <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
-            <a class="maps-button" href="#maps-sample">サンプルを見る</a>
-            <a class="maps-button" href="/nasu/">那須MAP集を見る</a>
-          </div>
-          <p class="maps-note">
-            Googleマイマップより見た目を整えやすく、重い開発より早く公開できる、業務向けの「公開・埋め込み」レイヤーです。
-          </p>
+      <div class="mt-type-card">
+        <div class="mt-type-card-head">
+          <span class="mt-type-badge">multi stores</span>
+          <span class="mt-type-card-title">複数店舗MAP</span>
         </div>
-
-        <div class="maps-demo" id="maps-sample" aria-label="map-sサンプル">
-          <div class="maps-demo-head">
-            <div>
-              <strong>那須の静かなカフェMAP</strong>
-              <span>公開URL / iframe / QR 対応予定</span>
-            </div>
-            <span class="maps-pill">Preview</span>
-          </div>
-          <div class="maps-demo-map">
-            <div class="maps-demo-pin"><b>1</b><strong>リビングストン</strong><span>黒磯・静か</span></div>
-            <div class="maps-demo-pin"><b>2</b><strong>Cafe facile</strong><span>那須町</span></div>
-            <div class="maps-demo-pin"><b>3</b><strong>NASU SHOZO CAFE</strong><span>森のカフェ</span></div>
-          </div>
-          <div class="maps-demo-list">
-            <div>
-              <img src="/assets/worldview-cards/personas/21-1.webp" alt="">
-              <span><strong>相対配置で表示</strong>Places由来の座標を軽いMAPに変換</span>
-              <span class="maps-pill">MAP</span>
-            </div>
-            <div>
-              <img src="/assets/worldview-cards/personas/34-1.webp" alt="">
-              <span><strong>公開と埋め込み</strong>URLとiframeをすぐ発行</span>
-              <span class="maps-pill">Embed</span>
-            </div>
-          </div>
-          <div class="maps-demo-actions">
-            <a class="maps-button primary" id="maps-demo-sample" href="#maps-builder">このサンプルMAPをもとに作る</a>
-            <a class="maps-button" href="#maps-how">作り方を見る</a>
-          </div>
+        <img
+          src="/assets/map-s-showcase/multi-map-mobile.jpg"
+          alt="複数店舗MAPのスマホ表示例"
+          class="mt-type-card-img"
+          loading="lazy"
+        >
+        <div class="mt-type-card-foot">
+          <p class="mt-type-card-note">地域のカフェ、商店街、観光協会、イベント会場などを軽い雑誌MAP風で公開します。</p>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="maps-section maps-showcase" id="maps-display-types">
-        <div class="maps-section-head">
-          <div>
-            <span class="maps-kicker">表示タイプ</span>
-            <h2>1店舗ならショップ情報ページ。複数店舗なら雑誌MAP。</h2>
-            <p>登録数に合わせて、公開ページと埋め込みの見え方が変わります。Google Maps由来の情報を、サイトに貼りやすい形へ整えます。</p>
-          </div>
-          <a class="maps-button primary" href="#maps-builder">作成デモを試す</a>
-        </div>
+    <div class="mt-features">
+      <div class="mt-feature">
+        <div class="mt-feature-icon">🔗</div>
+        <div class="mt-feature-title">公開URLを発行</div>
+        <div class="mt-feature-desc">SNSやLINEで共有できる専用URLをすぐ発行。</div>
+      </div>
+      <div class="mt-feature">
+        <div class="mt-feature-icon">📱</div>
+        <div class="mt-feature-title">QRコード生成</div>
+        <div class="mt-feature-desc">店頭・名刺・チラシに貼れるQRを自動生成。</div>
+      </div>
+      <div class="mt-feature">
+        <div class="mt-feature-icon">🖥</div>
+        <div class="mt-feature-title">iframe埋め込み</div>
+        <div class="mt-feature-desc">WordPressにiframeコードを貼るだけで設置。</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="maps-showcase-grid">
-          <article class="maps-showcase-card">
-            <div>
-              <span class="maps-pill">1 store</span>
-              <h3>1店舗ページ</h3>
-              <p>Google Mapsの地図を見せながら、営業時間・口コミ・駐車場・決済などを「来店前メモ」として整理します。</p>
-            </div>
-            <a class="maps-showcase-shot" href="/assets/map-s-showcase/single-shop-map.jpg" target="_blank" rel="noopener">
-              <img src="/assets/map-s-showcase/single-shop-map.jpg" alt="1店舗ページのGoogle Maps表示例" loading="lazy">
-            </a>
-          </article>
+<!-- NASU SHOWCASE -->
+<section class="mt-nasu" id="mt-nasu">
+  <div class="mt-nasu-inner">
+    <span class="mt-nasu-label">Real Example · Nasu Area</span>
+    <h2 class="mt-nasu-h2">那須エリアで、実際に作りました。</h2>
+    <p class="mt-nasu-desc">なすぱらTVのフィールドワーク7ヶ月・137店舗をもとに、カテゴリ別MAPページを公開しています。</p>
 
-          <article class="maps-showcase-card">
-            <div>
-              <span class="maps-pill">multi stores</span>
-              <h3>複数店舗MAP</h3>
-              <p>地域のカフェ、系列店、商店街、イベント会場などを、軽い雑誌MAP風のページとして公開できます。</p>
-            </div>
-            <a class="maps-showcase-shot" href="/assets/map-s-showcase/multi-map-mobile.jpg" target="_blank" rel="noopener">
-              <img src="/assets/map-s-showcase/multi-map-mobile.jpg" alt="複数店舗MAPのスマホ表示例" loading="lazy">
-            </a>
-          </article>
-        </div>
+    <div class="mt-nasu-grid">
+      <a href="https://map-s.site/nasu/cafe" class="mt-nasu-card">
+        <div class="mt-nasu-icon">☕</div>
+        <div class="mt-nasu-title">那須 カフェ MAP</div>
+        <div class="mt-nasu-count">21店舗</div>
+      </a>
+      <a href="https://map-s.site/nasu/lunch" class="mt-nasu-card">
+        <div class="mt-nasu-icon">🍱</div>
+        <div class="mt-nasu-title">那須 ランチ MAP</div>
+        <div class="mt-nasu-count">23店舗</div>
+      </a>
+      <a href="https://map-s.site/nasu/ramen" class="mt-nasu-card">
+        <div class="mt-nasu-icon">🍜</div>
+        <div class="mt-nasu-title">ラーメン・中華</div>
+        <div class="mt-nasu-count">12店舗</div>
+      </a>
+      <a href="https://map-s.site/nasu/dog" class="mt-nasu-card">
+        <div class="mt-nasu-icon">🐕</div>
+        <div class="mt-nasu-title">那須 犬連れ MAP</div>
+        <div class="mt-nasu-count">8店舗</div>
+      </a>
+      <a href="https://map-s.site/nasu/onsen" class="mt-nasu-card">
+        <div class="mt-nasu-icon">♨️</div>
+        <div class="mt-nasu-title">那須 温泉 MAP</div>
+        <div class="mt-nasu-count">5店舗</div>
+      </a>
+      <a href="https://map-s.site/nasu/kuroiso" class="mt-nasu-card">
+        <div class="mt-nasu-icon">🏘</div>
+        <div class="mt-nasu-title">黒磯エリア MAP</div>
+        <div class="mt-nasu-count">13店舗</div>
+      </a>
+    </div>
 
-        <div class="maps-showcase-detail" aria-label="map-s表示例の詳細">
-          <div class="maps-showcase-mini">
-            <a href="/assets/map-s-showcase/single-shop-hours.jpg" target="_blank" rel="noopener">
-              <img src="/assets/map-s-showcase/single-shop-hours.jpg" alt="来店前メモの営業時間表示例" loading="lazy">
-            </a>
-            <span>営業時間を曜日ごとに整列</span>
-          </div>
-          <div class="maps-showcase-mini">
-            <a href="/assets/map-s-showcase/single-shop-note.jpg" target="_blank" rel="noopener">
-              <img src="/assets/map-s-showcase/single-shop-note.jpg" alt="駐車場や決済情報の表示例" loading="lazy">
-            </a>
-            <span>駐車場・決済・サービスを整理</span>
-          </div>
-          <div class="maps-showcase-mini">
-            <a href="/assets/map-s-showcase/multi-store-list.jpg" target="_blank" rel="noopener">
-              <img src="/assets/map-s-showcase/multi-store-list.jpg" alt="複数店舗リストの表示例" loading="lazy">
-            </a>
-            <span>複数店舗はリスト化して表示</span>
-          </div>
-        </div>
-      </section>
+    <a href="https://map-s.site/nasu/" class="mt-nasu-more">那須MAP 12カテゴリをすべて見る →</a>
+    <p class="mt-nasu-credit">なすぱらTV フィールドワーク（2025年9月〜）をもとに作成。Google Mapsの公開情報とPlaces APIを使用。</p>
+  </div>
+</section>
 
-      <section class="maps-section" id="maps-nasu">
-        <div class="maps-section-head">
-          <div>
-            <span class="maps-kicker">Nasu area pages</span>
-            <h2>那須の地域MAPページを、SEO導線のサンプルとして公開しています。</h2>
-            <p>カフェ、ランチ、温泉、犬連れ、観光スポットなど、用途別の静的MAPページです。地域ページから公開MAP・埋め込みMAPへつなげる入口になります。</p>
-          </div>
-          <a class="maps-button primary" href="/nasu/">那須MAP集を見る</a>
-        </div>
-        <div class="maps-area-links" aria-label="那須エリアMAPへのリンク">
-          <a class="maps-area-link" href="/nasu/cafe"><small>Cafe</small><strong>那須 カフェ MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/lunch"><small>Lunch</small><strong>那須 ランチ MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/ramen"><small>Ramen</small><strong>那須 ラーメン・中華 MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/bakery"><small>Bakery</small><strong>那須 パン屋 MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/sweets"><small>Sweets</small><strong>那須 スイーツ MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/dog"><small>Dog friendly</small><strong>那須 犬連れ MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/onsen"><small>Onsen</small><strong>那須 温泉 MAP</strong></a>
-          <a class="maps-area-link" href="/nasu/spots"><small>Spots</small><strong>那須 観光スポット MAP</strong></a>
-        </div>
-      </section>
+<!-- DEMO LEAD -->
+<div class="mt-demo-lead">
+  <span class="mt-demo-lead-label">Try it now</span>
+  <h2 class="mt-demo-lead-h2">作成デモを試してみる。</h2>
+  <p class="mt-demo-lead-desc">Google Maps URLや店名から、Map作成の流れを体験できます。</p>
+</div>
 
+    <div class="maps-shell">
       <section class="maps-section maps-builder" id="maps-builder">
         <div class="maps-section-head">
           <div>
