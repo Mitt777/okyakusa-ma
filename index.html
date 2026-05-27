@@ -7183,11 +7183,9 @@
     }
 
     function drawAirsMomentVideoFrame(ctx, video, width, height) {
-      ctx.fillStyle = "#20382d";
-      ctx.fillRect(0, 0, width, height);
       const sourceWidth = video.videoWidth || width;
       const sourceHeight = video.videoHeight || height;
-      const scale = Math.min(width / sourceWidth, height / sourceHeight);
+      const scale = Math.max(width / sourceWidth, height / sourceHeight);
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
       const x = (width - drawWidth) / 2;
@@ -7230,12 +7228,16 @@
       const mimeType = airsMomentSupportedRecorderMime();
       if (!mimeType) throw new Error("この端末では動画書き出し形式に対応していません。");
       const canvas = document.createElement("canvas");
-      canvas.width = 720;
-      canvas.height = 1280;
+      canvas.width = 1080;
+      canvas.height = 1920;
       const ctx = canvas.getContext("2d");
       const stream = canvas.captureStream(30);
       const chunks = [];
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const recorderOptions = {
+        ...(mimeType ? { mimeType } : {}),
+        videoBitsPerSecond: 8_000_000
+      };
+      const recorder = new MediaRecorder(stream, recorderOptions);
       recorder.ondataavailable = (event) => {
         if (event.data?.size) chunks.push(event.data);
       };
@@ -7380,9 +7382,9 @@
             ffmpeg.FS("writeFile", `cut${index}.mp4`, await window.FFmpeg.fetchFile(clips[index].file));
           }
           const filter = [
-            "[0:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v0]",
-            "[1:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v1]",
-            "[2:v]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v2]",
+            "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30[v0]",
+            "[1:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30[v1]",
+            "[2:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30[v2]",
             "[v0][v1][v2]concat=n=3:v=1:a=0,format=yuv420p[v]"
           ].join(";");
           const trims = clips.map((clip) => ({
@@ -7397,6 +7399,7 @@
             "-map", "[v]",
             "-an",
             "-t", "15",
+            "-b:v", "8000k",
             "-movflags", "faststart",
             "moment-output.mp4"
           );
