@@ -2256,11 +2256,13 @@
       cursor: pointer;
     }
 
-    .airs-moment-file-name {
-      display: block;
+    .airs-moment-file-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       margin-top: 8px;
-      color: #6d766e;
-      font-size: 11px;
+      color: #1f7a5e;
+      font-size: 12px;
       font-weight: 900;
       line-height: 1.5;
     }
@@ -2375,6 +2377,76 @@
       color: #20382d;
       font-size: 17px;
       line-height: 1.45;
+    }
+
+    .airs-moment-complete-panel {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      border: 1px solid rgba(31, 122, 94, .18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      padding: 14px;
+    }
+
+    .airs-moment-complete-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .airs-moment-main-download,
+    .airs-moment-main-copy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      text-align: center;
+      text-decoration: none;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .airs-moment-main-download {
+      border: 1px solid rgba(31, 122, 94, .28);
+      background: #1f7a5e;
+      color: #fff;
+    }
+
+    .airs-moment-main-copy {
+      border: 1px solid rgba(58, 92, 73, .18);
+      background: #fff;
+      color: #24463a;
+    }
+
+    .airs-moment-main-download:disabled,
+    .airs-moment-main-copy:disabled {
+      cursor: wait;
+      opacity: .62;
+    }
+
+    .airs-moment-more {
+      margin-top: 12px;
+    }
+
+    .airs-moment-more summary {
+      display: inline-flex;
+      border: 1px solid rgba(58, 92, 73, .16);
+      border-radius: 999px;
+      background: #fff;
+      color: #536157;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .airs-moment-more summary::-webkit-details-marker {
+      display: none;
     }
 
     .airs-moment-render-box {
@@ -5847,42 +5919,50 @@
         <div class="airs-moment-progress" id="airs-moment-progress" aria-label="3カット進捗"></div>
         <div class="airs-moment-cuts" id="airs-moment-cuts"></div>
         <div class="airs-moment-output" id="airs-moment-output">
-          <strong>投稿文ができました。</strong>
-          <p>動画はair-s内には保存しません。端末にある3カットをSNSで使い、AIr-sには記憶だけ残します。</p>
-          <div class="airs-moment-ready-list" id="airs-moment-ready-list" aria-label="撮影済みカット"></div>
-          <div class="airs-moment-post-pack" id="airs-moment-post-pack" aria-label="投稿直前パック"></div>
-          <div class="airs-moment-render-box" id="airs-moment-render-box">
-            <strong>1本の縦動画に整えるβ</strong>
-            <p>3本の動画をスマホ内で軽く判定し、明るさと動きが安定した3〜5秒を選んで、15秒以内の9:16動画にします。重い場合は失敗しても大丈夫です。下の個別投稿支援をそのまま使えます。</p>
-            <div class="airs-moment-render-actions">
-              <button class="primary" type="button" id="airs-moment-render-video">AIで1本の縦動画に整えるβ</button>
-              <a id="airs-moment-download-video" hidden download="air-s-moment.mp4">完成動画をダウンロード</a>
+          <div class="airs-moment-complete-panel">
+            <strong>3カット、撮れました。</strong>
+            <div class="airs-moment-complete-actions">
+              <button class="airs-moment-main-download" type="button" id="airs-moment-main-download">完成動画をダウンロード</button>
+              <button class="airs-moment-main-copy" type="button" id="airs-moment-main-copy">投稿文をコピー</button>
             </div>
-            <video class="airs-moment-render-preview" id="airs-moment-render-preview" playsinline controls muted></video>
             <div class="airs-moment-render-status" id="airs-moment-render-status">まだ結合していません。</div>
           </div>
-          <div class="airs-moment-platforms" id="airs-moment-platforms" aria-label="投稿先を選ぶ"></div>
-          <textarea id="airs-moment-copy" aria-label="Moment投稿文"></textarea>
-          <div class="airs-moment-mini-actions">
-            <button type="button" id="airs-moment-copy-title">タイトルだけコピー</button>
-            <button type="button" id="airs-moment-copy-tags">タグだけコピー</button>
-            <button type="button" id="airs-moment-copy-maps">Maps URLをコピー</button>
-          </div>
-          <div class="airs-moment-final-steps" aria-label="投稿前チェック">
-            <label><input type="checkbox" id="airs-moment-step-copy"> 投稿文・タグをコピーした</label>
-            <label><input type="checkbox" id="airs-moment-step-sns"> SNS投稿画面を開いた</label>
-            <label><input type="checkbox" id="airs-moment-step-memory"> AIr-sに記憶だけ残した</label>
-            <label><input type="checkbox" id="airs-moment-step-official"> 公式air-sを出した</label>
-            <div class="airs-moment-final-note" id="airs-moment-final-note">あと少しです。投稿文をコピーして、SNSを開きましょう。</div>
-          </div>
-          <div class="airs-moment-actions">
-            <button class="airs-button primary" type="button" id="airs-moment-copy-button">投稿文をコピー</button>
-            <button class="airs-button" type="button" id="airs-moment-save-memory">AIr-sに記憶だけ残す</button>
-            <button class="airs-button" type="button" id="airs-moment-save-official">公式air-sを出すβ</button>
-            <a class="airs-button" href="https://www.instagram.com/" target="_blank" rel="noopener" data-airs-moment-sns>Instagramを開く</a>
-            <a class="airs-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-airs-moment-sns>TikTokを開く</a>
-            <a class="airs-button" href="https://www.youtube.com/" target="_blank" rel="noopener" data-airs-moment-sns>Shortsを開く</a>
-          </div>
+          <details class="airs-moment-more">
+            <summary>もっと見る</summary>
+            <div class="airs-moment-ready-list" id="airs-moment-ready-list" aria-label="撮影済みカット"></div>
+            <div class="airs-moment-post-pack" id="airs-moment-post-pack" aria-label="投稿直前パック"></div>
+            <div class="airs-moment-render-box" id="airs-moment-render-box">
+              <strong>1本の縦動画に整えるβ</strong>
+              <p>3本の動画をスマホ内で軽く判定し、明るさと動きが安定した3〜5秒を選んで、15秒以内の9:16動画にします。重い場合は失敗しても大丈夫です。個別投稿支援もそのまま使えます。</p>
+              <div class="airs-moment-render-actions">
+                <button class="primary" type="button" id="airs-moment-render-video">AIで1本の縦動画に整えるβ</button>
+                <a id="airs-moment-download-video" hidden download="air-s-moment.mp4">完成動画をダウンロード</a>
+              </div>
+              <video class="airs-moment-render-preview" id="airs-moment-render-preview" playsinline controls muted></video>
+            </div>
+            <div class="airs-moment-platforms" id="airs-moment-platforms" aria-label="投稿先を選ぶ"></div>
+            <textarea id="airs-moment-copy" aria-label="Moment投稿文"></textarea>
+            <div class="airs-moment-mini-actions">
+              <button type="button" id="airs-moment-copy-title">タイトルだけコピー</button>
+              <button type="button" id="airs-moment-copy-tags">タグだけコピー</button>
+              <button type="button" id="airs-moment-copy-maps">Maps URLをコピー</button>
+            </div>
+            <div class="airs-moment-final-steps" aria-label="投稿前チェック">
+              <label><input type="checkbox" id="airs-moment-step-copy"> 投稿文・タグをコピーした</label>
+              <label><input type="checkbox" id="airs-moment-step-sns"> SNS投稿画面を開いた</label>
+              <label><input type="checkbox" id="airs-moment-step-memory"> AIr-sに記憶だけ残した</label>
+              <label><input type="checkbox" id="airs-moment-step-official"> 公式air-sを出した</label>
+              <div class="airs-moment-final-note" id="airs-moment-final-note">あと少しです。投稿文をコピーして、SNSを開きましょう。</div>
+            </div>
+            <div class="airs-moment-actions">
+              <button class="airs-button primary" type="button" id="airs-moment-copy-button">投稿文をコピー</button>
+              <button class="airs-button" type="button" id="airs-moment-save-memory">AIr-sに記憶だけ残す</button>
+              <button class="airs-button" type="button" id="airs-moment-save-official">公式air-sを出すβ</button>
+              <a class="airs-button" href="https://www.instagram.com/" target="_blank" rel="noopener" data-airs-moment-sns>Instagramを開く</a>
+              <a class="airs-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-airs-moment-sns>TikTokを開く</a>
+              <a class="airs-button" href="https://www.youtube.com/" target="_blank" rel="noopener" data-airs-moment-sns>Shortsを開く</a>
+            </div>
+          </details>
         </div>
         <div class="airs-official-air-panel" id="airs-official-air-panel" aria-live="polite">
           <strong>公式air-s β 連携準備</strong>
@@ -7119,9 +7199,14 @@
 
     function renderAirsMomentRenderBox() {
       const button = document.querySelector("#airs-moment-render-video");
+      const mainDownload = document.querySelector("#airs-moment-main-download");
       const download = document.querySelector("#airs-moment-download-video");
       const preview = document.querySelector("#airs-moment-render-preview");
       const status = document.querySelector("#airs-moment-render-status");
+      if (mainDownload) {
+        mainDownload.disabled = airsMomentRendering;
+        mainDownload.textContent = airsMomentRendering ? "動画を整えています" : "完成動画をダウンロード";
+      }
       if (button) {
         button.disabled = airsMomentRendering;
         button.textContent = airsMomentRendering ? "動画を整えています" : airsMomentRenderedVideoUrl ? "もう一度AIで整えるβ" : "AIで1本の縦動画に整えるβ";
@@ -7142,6 +7227,19 @@
       if (status) {
         status.classList.toggle("is-error", airsMomentRenderError);
         status.textContent = airsMomentRenderStatus || (airsMomentAnalyzingCount ? "撮れたカットを見ています。" : "まだ結合していません。");
+      }
+    }
+
+    async function downloadOrRenderAirsMomentVideo() {
+      if (!airsMomentRenderedVideoUrl) {
+        await renderAirsMomentVideo();
+      }
+      if (!airsMomentRenderedVideoUrl) return;
+      const download = document.querySelector("#airs-moment-download-video");
+      if (download) {
+        download.href = airsMomentRenderedVideoUrl;
+        download.download = airsMomentRenderFilename();
+        download.click();
       }
     }
 
@@ -7184,6 +7282,29 @@
       }
       brightness /= data.length / 4;
       return { time, brightness, data };
+    }
+
+    async function createAirsMomentPoster(index, file, url) {
+      try {
+        const video = document.createElement("video");
+        video.preload = "auto";
+        video.muted = true;
+        video.playsInline = true;
+        video.src = url;
+        await waitForAirsVideoEvent(video, "loadedmetadata");
+        video.currentTime = Math.min(0.2, Math.max(0, (video.duration || 1) - 0.1));
+        await waitForAirsVideoEvent(video, "seeked");
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 360;
+        canvas.height = video.videoHeight || 640;
+        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+        if (airsMomentCutClips[index]?.file === file) {
+          airsMomentCutClips[index].poster = canvas.toDataURL("image/jpeg", 0.82);
+          renderAirsMomentCuts();
+        }
+      } catch (error) {
+        console.warn("air-s Moment poster failed", error);
+      }
     }
 
     function airsMomentFrameDiff(current, previous) {
@@ -7429,7 +7550,7 @@
             "moment-output.mp4"
           );
           const data = ffmpeg.FS("readFile", "moment-output.mp4");
-          outputBlob = new Blob([data.buffer], { type: "video/mp4" });
+          outputBlob = new Blob([data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)], { type: "video/mp4" });
         } catch (ffmpegError) {
           console.warn("air-s Moment ffmpeg render failed, trying recorder fallback", ffmpegError);
           airsMomentRenderStatus = "重い結合処理が失敗したため、軽量モードで整えています。";
@@ -7792,7 +7913,7 @@
             <span>${escapeHtml(cut.guide)}</span>
             <input id="${inputId}" type="file" accept="video/*" capture="environment" data-airs-moment-cut="${activeAirsMomentCutIndex}" aria-label="Cut ${activeAirsMomentCutIndex + 1}の動画">
             <label class="airs-moment-capture-button" for="${inputId}">${clip ? "撮り直す" : "このカットを撮る"}</label>
-            <span class="airs-moment-file-name">${clip ? `選択済み: ${escapeHtml(clip.name || `Cut ${activeAirsMomentCutIndex + 1}`)}` : "スマホではカメラが開きます"}</span>
+            <span class="airs-moment-file-status">${clip ? `✓ Cut ${activeAirsMomentCutIndex + 1} 撮影完了` : "スマホではカメラが開きます"}</span>
             <div class="airs-moment-praise" data-airs-moment-praise="${activeAirsMomentCutIndex}">
               ${clip ? escapeHtml(airsMomentAnalysisMessage(analysis, cut)) : "撮れたら、ここで一度ほめます。"}
             </div>
@@ -7814,7 +7935,7 @@
               ${isLastCut && clip ? `<button type="button" data-airs-moment-finish>投稿文を見る</button>` : ""}
             </div>
           </div>
-          <video playsinline muted controls data-airs-moment-preview="${activeAirsMomentCutIndex}" ${clip ? `src="${escapeHtml(clip.url)}"` : ""}></video>
+          <video playsinline muted controls data-airs-moment-preview="${activeAirsMomentCutIndex}" ${clip ? `src="${escapeHtml(clip.url)}"` : ""} ${clip?.poster ? `poster="${escapeHtml(clip.poster)}"` : ""}></video>
         </article>
       `;
       host.querySelectorAll("[data-airs-moment-cut]").forEach((input) => {
@@ -7826,9 +7947,10 @@
           if (video && file) {
             if (airsMomentCutClips[index]?.url) URL.revokeObjectURL(airsMomentCutClips[index].url);
             const url = URL.createObjectURL(file);
-            airsMomentCutClips[index] = { name: file.name, url, file, analysis: { status: "analyzing" } };
+            airsMomentCutClips[index] = { url, file, analysis: { status: "analyzing" } };
             resetAirsMomentRenderedVideo();
             video.src = url;
+            createAirsMomentPoster(index, file, url);
             analyzeAirsMomentClip(index, file, url);
           }
           if (praise && file) {
@@ -7955,6 +8077,11 @@
       document.querySelector("#airs-moment-official-card-id")?.addEventListener("input", () => {
         saveAirsMomentDraft();
         updateAirsMomentOutput();
+      });
+      document.querySelector("#airs-moment-main-download")?.addEventListener("click", downloadOrRenderAirsMomentVideo);
+      document.querySelector("#airs-moment-main-copy")?.addEventListener("click", async (event) => {
+        await copyAirsMomentText(airsMomentPostText(), event.currentTarget, "投稿文をコピーしてください");
+        markAirsMomentStep("copy");
       });
       document.querySelector("#airs-moment-render-video")?.addEventListener("click", renderAirsMomentVideo);
       document.querySelector("#airs-moment-copy-button")?.addEventListener("click", async (event) => {
