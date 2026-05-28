@@ -109,6 +109,11 @@
       display: block;
     }
 
+    .clip-domain .airs-home,
+    .clip-domain .maps-home {
+      display: none !important;
+    }
+
     .clip-shell {
       width: min(1180px, calc(100% - 36px));
       margin: 0 auto;
@@ -12558,11 +12563,7 @@
           "お客様を待つ時間。",
           "今日ならではの一瞬を、短く残しました。",
           "",
-          storeTag,
-          "#",
-          "#",
-          "#",
-          "#"
+          storeTag
         ].filter(Boolean);
         return lines.join("\n");
       }
