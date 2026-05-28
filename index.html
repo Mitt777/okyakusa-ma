@@ -184,9 +184,7 @@
       overflow: hidden;
       border: 1px solid rgba(68, 92, 74, .12);
       border-radius: 22px;
-      background:
-        linear-gradient(90deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .62)),
-        url("/assets/air-clip/clip-hero-cafe.jpg") center / cover no-repeat;
+      background: rgba(255, 255, 255, .72);
       box-shadow: 0 24px 70px rgba(48, 64, 51, .1);
       padding: 34px;
       isolation: isolate;
@@ -197,8 +195,17 @@
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: rgba(255, 255, 255, .18);
-      backdrop-filter: saturate(.92) blur(1px);
+      background: url("/assets/air-clip/clip-hero-cafe.jpg") center / cover no-repeat;
+      opacity: .6;
+      pointer-events: none;
+    }
+
+    .clip-copy::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 28% 48%, rgba(255, 255, 255, .24), transparent 48%);
       pointer-events: none;
     }
 
