@@ -183,8 +183,8 @@
     }
 
     .clip-button.save:not([hidden]) {
-      border-color: rgba(242, 201, 76, .74);
-      background: #ffe36a;
+      border-color: rgba(223, 176, 36, .86);
+      background: linear-gradient(180deg, #ffe56d, #f3c944);
       color: #20251f;
       box-shadow: 0 14px 30px rgba(185, 145, 35, .18);
     }
@@ -553,6 +553,33 @@
       width: 100%;
       min-height: 52px;
       font-size: 15px;
+    }
+
+    .clip-post-actions .clip-button.save {
+      min-height: 62px;
+      font-size: 17px;
+      border-width: 2px;
+    }
+
+    .clip-save-required {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      margin-right: 8px;
+      border-radius: 999px;
+      background: rgba(32, 37, 31, .92);
+      color: #fff;
+      padding: 2px 8px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .clip-post-actions [data-clip-sns]:not(.is-disabled) {
+      border-color: rgba(61, 132, 104, .48);
+      background: #2f7f64;
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(47, 127, 100, .2);
     }
 
     .clip-template-grid {
@@ -6628,11 +6655,11 @@
                   <div class="clip-ai-hint" id="clip-ai-hint">小さく相談できます。使わなくても、そのまま投稿できます。</div>
                 </div>
                 <div class="clip-actions clip-post-actions">
-                  <button class="clip-button save" type="button" id="clip-share-video-post" hidden>スマホに保存する</button>
+                  <button class="clip-button save" type="button" id="clip-share-video-post" hidden><span class="clip-save-required">必須</span>スマホに保存する</button>
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
                   <a class="clip-button is-disabled" href="https://www.instagram.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Instagram</a>
                   <a class="clip-button is-disabled" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">TikTok</a>
-                  <a class="clip-button is-disabled" href="https://www.youtube.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Shorts</a>
+                  <a class="clip-button is-disabled" href="https://www.youtube.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">YouTube Shorts</a>
                 </div>
                 <p class="clip-note" id="clip-save-note">先に「スマホに保存する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。</p>
                 <div class="clip-step-actions">
@@ -12986,12 +13013,14 @@
           link.setAttribute("aria-disabled", state.saved ? "false" : "true");
         });
         if (shareVideoPostButton) {
-          shareVideoPostButton.textContent = state.saved ? "スマホに保存済み" : "スマホに保存する";
+          shareVideoPostButton.innerHTML = state.saved
+            ? "スマホに保存済み"
+            : '<span class="clip-save-required">必須</span>スマホに保存する';
         }
         if (saveNote) {
           saveNote.textContent = state.saved
-            ? "共有画面を開きました。写真アプリやSNSへ保存できたら、投稿文をコピーして投稿してください。"
-            : "先に「スマホに保存する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。";
+            ? "保存できたら、投稿文をコピーしてInstagram・TikTok・YouTube Shortsへ進めます。"
+            : "先に保存してください。iPhoneでは共有画面で「ビデオを保存」を選ぶと写真アプリに入ります。";
         }
       }
 
@@ -13098,7 +13127,10 @@
         bindTrimDrag(index);
         trimFocus.querySelector("[data-clip-focus-close]")?.addEventListener("click", () => {
           trimFocus.classList.remove("is-open");
+          trimFocus.innerHTML = "";
           renderTrimList();
+          trimList?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+          setClipStatus(`Cut ${index + 1} を決定しました。必要なら他のカットも整えられます。`);
         });
       }
 
