@@ -334,12 +334,16 @@
     .clip-screen {
       display: none;
       gap: 18px;
-      min-height: min(560px, calc(100vh - 210px));
+      min-height: min(500px, calc(100vh - 210px));
       align-content: center;
     }
 
     .clip-screen.is-active {
       display: grid;
+    }
+
+    .clip-screen[data-clip-screen="1"] {
+      min-height: auto;
     }
 
     .clip-screen-copy {
@@ -360,6 +364,41 @@
       font-size: 14px;
       font-weight: 760;
       line-height: 1.75;
+    }
+
+    .clip-cut-overview {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .clip-cut-teaser {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      border: 1px solid rgba(68, 92, 74, .15);
+      border-radius: 14px;
+      background: rgba(248, 250, 245, .86);
+      padding: 10px;
+    }
+
+    .clip-cut-teaser b {
+      color: #2f7f64;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .clip-cut-teaser strong {
+      color: #1f2520;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .clip-cut-teaser span {
+      color: #66736b;
+      font-size: 11px;
+      font-weight: 760;
+      line-height: 1.45;
     }
 
     .clip-step-actions {
@@ -450,7 +489,9 @@
     }
 
     .clip-cuts {
-      display: contents;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
     }
 
     .clip-cut {
@@ -464,9 +505,14 @@
     }
 
     .clip-cut.clip-screen {
+      display: none;
       align-content: center;
-      min-height: min(560px, calc(100vh - 210px));
+      min-height: min(500px, calc(100vh - 210px));
       padding: 18px;
+    }
+
+    .clip-cut.clip-screen.is-active {
+      display: grid;
     }
 
     .clip-cut strong {
@@ -492,7 +538,7 @@
     .clip-video-preview {
       display: grid;
       place-items: center;
-      min-height: 160px;
+      min-height: 130px;
       overflow: hidden;
       border: 1px dashed rgba(68, 92, 74, .22);
       border-radius: 12px;
@@ -5783,17 +5829,155 @@
       }
 
       .clip-hero,
-      .clip-field-grid,
       .clip-cuts {
         grid-template-columns: 1fr;
       }
 
+      .clip-hero {
+        gap: 12px;
+      }
+
+      .clip-studio-head {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 12px;
+      }
+
+      .clip-studio-head h2 {
+        font-size: 16px;
+      }
+
+      .clip-progress {
+        justify-content: flex-start;
+        min-width: 0;
+      }
+
+      .clip-studio-body {
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .clip-screen,
+      .clip-cut.clip-screen {
+        gap: 12px;
+        min-height: auto;
+        align-content: start;
+      }
+
+      .clip-screen-copy {
+        gap: 5px;
+      }
+
+      .clip-screen-copy h3 {
+        font-size: 20px;
+      }
+
+      .clip-screen-copy p {
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
       .clip-copy {
-        padding: 28px 22px 22px;
+        gap: 12px;
+        min-height: 42vh;
+        padding: 26px 22px 20px;
+      }
+
+      .clip-copy h1 {
+        font-size: clamp(32px, 10vw, 46px);
+      }
+
+      .clip-copy p {
+        font-size: 13px;
+        line-height: 1.65;
       }
 
       .clip-promise {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .clip-promise span {
+        padding: 8px 6px;
+        font-size: 10px;
+      }
+
+      .clip-cut-overview {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .clip-cuts {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .clip-cut {
+        gap: 6px;
+        padding: 8px 6px;
+      }
+
+      .clip-cut strong {
+        font-size: 11px;
+      }
+
+      .clip-cut p {
+        display: none;
+      }
+
+      .clip-cut .clip-pill {
+        padding: 5px 7px;
+        font-size: 9px;
+      }
+
+      .clip-video-preview {
+        min-height: 92px;
+        font-size: 10px;
+      }
+
+      .clip-cut input[type="file"] {
+        font-size: 9px;
+      }
+
+      .clip-cut-teaser {
+        gap: 4px;
+        padding: 8px 6px;
+      }
+
+      .clip-cut-teaser b {
+        font-size: 9px;
+      }
+
+      .clip-cut-teaser strong {
+        font-size: 11px;
+      }
+
+      .clip-cut-teaser span {
+        display: none;
+      }
+
+      .clip-field-grid {
         grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .clip-field input,
+      .clip-caption {
+        padding: 10px 11px;
+        font-size: 13px;
+      }
+
+      .clip-step-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .clip-step-actions > span {
+        display: none;
+      }
+
+      .clip-step-actions .clip-button {
+        width: 100%;
       }
 
       .clip-template-grid {
@@ -6000,8 +6184,20 @@
           <div class="clip-studio-body">
             <section class="clip-screen is-active" data-clip-screen="1">
               <div class="clip-screen-copy">
+                <h3>3つだけ撮る</h3>
+                <p>料理でも、席でも、入口でも。今日のお店の空気を、短く3本だけ選んでください。</p>
+              </div>
+              <div class="clip-cuts" id="clip-cuts"></div>
+              <div class="clip-step-actions">
+                <span></span>
+                <button class="clip-button primary" type="button" id="clip-start-button">3カット完了 →</button>
+              </div>
+            </section>
+
+            <section class="clip-screen" data-clip-screen="5">
+              <div class="clip-screen-copy">
                 <h3>お店を入れる</h3>
-                <p>店名を入れたら、すぐ撮影に進めます。Google Maps URLは空欄でも大丈夫です。</p>
+                <p>投稿文に入れるお店の名前を入れてください。Google Maps URLは空欄でも大丈夫です。</p>
               </div>
               <div class="clip-field-grid">
                 <label class="clip-field">
@@ -6013,17 +6209,8 @@
                   <input id="clip-maps-url" type="url" placeholder="https://maps.google.com/...">
                 </label>
               </div>
-              <div class="clip-step-actions">
-                <span></span>
-                <button class="clip-button primary" type="button" id="clip-start-button" disabled>撮影を始める →</button>
-              </div>
-            </section>
-
-            <div id="clip-cuts"></div>
-
-            <section class="clip-screen" data-clip-screen="5">
               <div class="clip-screen-copy">
-                <h3>3カット、揃いました。</h3>
+                <h3>動画を整える</h3>
                 <p>1本の縦動画に整えます。ブラウザ内だけで処理します。サーバーには送りません。</p>
               </div>
               <p class="clip-status" id="clip-status">3カットを選ぶと、ブラウザ内だけで1本に整えます。</p>
@@ -12332,7 +12519,7 @@
 
       function renderProgress() {
         if (!progress) return;
-        const label = state.step >= 2 && state.step <= 4 ? `Cut ${state.step - 1} / 3` : ["お店", "Cut 1 / 3", "Cut 2 / 3", "Cut 3 / 3", "整える", "投稿"][state.step - 1];
+        const label = state.step === 1 ? "3カット" : ["3カット", "", "", "", "整える", "投稿"][state.step - 1];
         progress.innerHTML = `
           ${Array.from({ length: 6 }, (_, index) => `<span class="clip-progress-dot${index < state.step ? " is-active" : ""}"></span>`).join("")}
           <span>${clipEscape(label)}</span>
@@ -12350,13 +12537,13 @@
       }
 
       function syncStartButton() {
-        if (startButton) startButton.disabled = !(storeInput?.value.trim());
+        if (startButton) startButton.disabled = false;
       }
 
       function renderCuts() {
         if (!cutsHost) return;
         cutsHost.innerHTML = fixedCuts.map(([title, guide], index) => `
-          <article class="clip-cut clip-screen" data-clip-screen="${index + 2}">
+          <article class="clip-cut">
             <div>
               <span class="clip-pill">Cut ${index + 1} / 3</span>
               <strong>${clipEscape(title)}</strong>
@@ -12367,13 +12554,7 @@
               <input type="file" accept="video/*" capture="environment" data-clip-cut="${index}">
             </label>
             <div class="clip-praise" id="clip-praise-${index}"></div>
-            <div class="clip-step-actions">
-              <button class="clip-button" type="button" data-clip-back>← 戻る</button>
-              <div class="clip-actions">
-                <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
-                <button class="clip-button primary" type="button" data-clip-next>${index === 2 ? "3カット完了 →" : "次のカットへ →"}</button>
-              </div>
-            </div>
+            <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
           </article>
         `).join("");
         cutsHost.querySelectorAll("[data-clip-cut]").forEach((input) => {
@@ -12388,10 +12569,6 @@
             setClipStatus("撮り直しできます。3カット揃ったら1本に整えます。");
           });
         });
-        cutsHost.querySelectorAll("[data-clip-next]").forEach((button) => {
-          button.addEventListener("click", () => showClipStep(state.step + 1));
-        });
-        bindBackButtons();
       }
 
       async function videoDuration(file) {
@@ -12603,8 +12780,7 @@
       });
       storeInput?.addEventListener("input", syncStartButton);
       startButton?.addEventListener("click", () => {
-        if (!storeInput?.value.trim()) return;
-        showClipStep(2);
+        showClipStep(5);
       });
       resetButton?.addEventListener("click", () => {
         state.cuts.forEach((cut) => {
