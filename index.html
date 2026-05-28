@@ -303,10 +303,72 @@
       background: rgba(75, 121, 101, .1);
     }
 
+    .clip-progress {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+      min-width: 170px;
+      color: #526158;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(82, 97, 88, .22);
+    }
+
+    .clip-progress-dot.is-active {
+      background: #2f7f64;
+    }
+
     .clip-studio-body {
       display: grid;
       gap: 18px;
       padding: 18px;
+    }
+
+    .clip-screen {
+      display: none;
+      gap: 18px;
+      min-height: min(560px, calc(100vh - 210px));
+      align-content: center;
+    }
+
+    .clip-screen.is-active {
+      display: grid;
+    }
+
+    .clip-screen-copy {
+      display: grid;
+      gap: 8px;
+    }
+
+    .clip-screen-copy h3 {
+      margin: 0;
+      color: #1f2520;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.24;
+    }
+
+    .clip-screen-copy p {
+      margin: 0;
+      color: #607068;
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.75;
+    }
+
+    .clip-step-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid rgba(68, 92, 74, .14);
+      padding-top: 14px;
     }
 
     .clip-field-grid {
@@ -325,6 +387,12 @@
     .clip-panel-title {
       color: #526158;
       font-size: 12px;
+      font-weight: 900;
+    }
+
+    .clip-field b {
+      color: #88928c;
+      font-size: 10px;
       font-weight: 900;
     }
 
@@ -382,9 +450,7 @@
     }
 
     .clip-cuts {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+      display: contents;
     }
 
     .clip-cut {
@@ -395,6 +461,12 @@
       border-radius: 16px;
       background: #fbfdf9;
       padding: 12px;
+    }
+
+    .clip-cut.clip-screen {
+      align-content: center;
+      min-height: min(560px, calc(100vh - 210px));
+      padding: 18px;
     }
 
     .clip-cut strong {
@@ -5894,10 +5966,7 @@
           <span>今日のお店の空気を、15秒で。</span>
         </div>
         <nav class="clip-nav" aria-label="clip.air-sナビゲーション">
-          <a href="#clip-studio">撮影室</a>
           <a href="https://air-s.jp/">air-sへ</a>
-          <a href="https://map-s.site/">map-sへ</a>
-          <a class="primary" href="#clip-studio">3カットを作る</a>
         </nav>
       </header>
 
@@ -5923,48 +5992,57 @@
         <div class="clip-studio" id="clip-studio">
           <div class="clip-studio-head">
             <div>
-              <span class="clip-pill">small shooting room</span>
-              <h2>今日の投稿を、ここで終わらせる。</h2>
+              <span class="clip-pill">air clip β</span>
+              <h2>今日のお店の空気を、15秒で。</h2>
             </div>
-            <span class="clip-pill">3 cuts / 15 sec</span>
-          </div>
-          <div class="clip-steps" aria-label="作成ステップ">
-            <div class="clip-step is-active">1 店舗</div>
-            <div class="clip-step">2 テンプレ</div>
-            <div class="clip-step">3 撮影</div>
-            <div class="clip-step">4 投稿</div>
+            <div class="clip-progress" id="clip-progress" aria-label="進捗"></div>
           </div>
           <div class="clip-studio-body">
-            <div class="clip-field-grid">
-              <label class="clip-field">
-                <span>お店の名前</span>
-                <input id="clip-store-name" placeholder="例: リビングストン / 今日のお店">
-              </label>
-              <label class="clip-field">
-                <span>Google Maps URL</span>
-                <input id="clip-maps-url" type="url" placeholder="https://maps.google.com/...">
-              </label>
-            </div>
+            <section class="clip-screen is-active" data-clip-screen="1">
+              <div class="clip-screen-copy">
+                <h3>お店を入れる</h3>
+                <p>店名を入れたら、すぐ撮影に進めます。Google Maps URLは空欄でも大丈夫です。</p>
+              </div>
+              <div class="clip-field-grid">
+                <label class="clip-field">
+                  <span>お店の名前 <b>必須</b></span>
+                  <input id="clip-store-name" placeholder="例: リビングストン">
+                </label>
+                <label class="clip-field">
+                  <span>Google Maps URL <b>任意</b></span>
+                  <input id="clip-maps-url" type="url" placeholder="https://maps.google.com/...">
+                </label>
+              </div>
+              <div class="clip-step-actions">
+                <span></span>
+                <button class="clip-button primary" type="button" id="clip-start-button" disabled>撮影を始める →</button>
+              </div>
+            </section>
 
-            <div>
-              <div class="clip-panel-title">テンプレート</div>
-              <div class="clip-template-grid" id="clip-template-grid" aria-label="動画テンプレート"></div>
-            </div>
+            <div id="clip-cuts"></div>
 
-            <div>
-              <div class="clip-panel-title">3カット撮影ガイド</div>
-              <div class="clip-cuts" id="clip-cuts"></div>
-            </div>
-
-            <div class="clip-render">
-              <div>
-                <div class="clip-panel-title">完成動画プレビュー</div>
-                <video class="clip-output-video" id="clip-output-video" playsinline controls muted></video>
-                <p class="clip-status" id="clip-status">3カットを選ぶと、ブラウザ内だけで1本に整えます。</p>
+            <section class="clip-screen" data-clip-screen="5">
+              <div class="clip-screen-copy">
+                <h3>3カット、揃いました。</h3>
+                <p>1本の縦動画に整えます。ブラウザ内だけで処理します。サーバーには送りません。</p>
+              </div>
+              <p class="clip-status" id="clip-status">3カットを選ぶと、ブラウザ内だけで1本に整えます。</p>
+              <div class="clip-step-actions">
+                <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
                   <button class="clip-button primary" type="button" id="clip-render-button">3カットを1本にするβ</button>
                   <a class="clip-button" id="clip-download" hidden download="air-clip.webm">動画を保存</a>
                 </div>
+              </div>
+            </section>
+
+            <section class="clip-screen" data-clip-screen="6">
+              <div>
+                <div class="clip-screen-copy">
+                  <h3>できました。</h3>
+                  <p>投稿文をコピーして、端末に保存した動画をSNSへ投稿してください。</p>
+                </div>
+                <video class="clip-output-video" id="clip-output-video" playsinline controls muted></video>
               </div>
               <div>
                 <label class="clip-field">
@@ -5973,13 +6051,18 @@
                 </label>
                 <div class="clip-actions">
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
+                  <a class="clip-button" id="clip-download-post" hidden download="air-clip.webm">動画を保存</a>
                   <a class="clip-button" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
                   <a class="clip-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
                   <a class="clip-button" href="https://www.youtube.com/" target="_blank" rel="noopener">Shorts</a>
                 </div>
                 <p class="clip-note">動画ファイルはサーバーに保存しません。完成動画は端末に保存して、SNSへ投稿してください。</p>
+                <div class="clip-step-actions">
+                  <button class="clip-button" type="button" data-clip-back>← 戻る</button>
+                  <button class="clip-button" type="button" id="clip-reset-button">もう一度作る</button>
+                </div>
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </div>
@@ -12183,57 +12266,10 @@
     (() => {
       if (!document.documentElement.classList.contains("clip-domain")) return;
 
-      const templates = [
-        {
-          id: "cooking",
-          title: "店主の調理動画",
-          note: "手元と湯気で、今日の温度を伝える",
-          cuts: [
-            ["手元", "包丁、注ぐ手、焼き上がりなど、手が動くところを3〜5秒。"],
-            ["湯気", "料理やコーヒーの近くで、少しだけ寄って3〜5秒。"],
-            ["渡す", "お皿を置く、カップを差し出す瞬間を3〜5秒。"]
-          ]
-        },
-        {
-          id: "food",
-          title: "映え料理撮影",
-          note: "料理を主役に、無理なくおいしそうに",
-          cuts: [
-            ["全体", "料理全体が見える角度で、ゆっくり3〜5秒。"],
-            ["寄り", "ソース、艶、湯気など、好きな一点に寄って3〜5秒。"],
-            ["ひと口前", "フォークや箸が入る直前の動きを3〜5秒。"]
-          ]
-        },
-        {
-          id: "today",
-          title: "今日のおすすめ",
-          note: "迷った時の標準テンプレ",
-          cuts: [
-            ["入口", "お店の入口や看板を、正面から3〜5秒。"],
-            ["おすすめ", "今日見せたい商品や料理を3〜5秒。"],
-            ["空気", "席、光、店内の静かな一角を3〜5秒。"]
-          ]
-        },
-        {
-          id: "light",
-          title: "カフェの光",
-          note: "窓際、影、午後の空気を残す",
-          cuts: [
-            ["窓", "窓際や光が落ちている場所を3〜5秒。"],
-            ["席", "座りたくなる席を、ゆっくり3〜5秒。"],
-            ["一杯", "カップやグラスを中心に3〜5秒。"]
-          ]
-        },
-        {
-          id: "quiet",
-          title: "静かな店内",
-          note: "入りやすさと落ち着きを伝える",
-          cuts: [
-            ["入口", "初めての人が入る前に見たい入口を3〜5秒。"],
-            ["店内", "混みすぎていない、安心できる店内を3〜5秒。"],
-            ["余韻", "最後に看板、席、外の光を3〜5秒。"]
-          ]
-        }
+      const fixedCuts = [
+        ["今日一番伝えたいものを撮る", "料理・飲み物・手元・店内のどれでも。3〜5秒でOKです。"],
+        ["お店の雰囲気を撮る", "窓の光・席・カウンター・入口など。3〜5秒でOKです。"],
+        ["今日ならではの一瞬を撮る", "準備中・仕込み・営業前の静かな時間など。3〜5秒でOKです。"]
       ];
 
       const praise = [
@@ -12242,11 +12278,10 @@
         "無理に編集しなくて大丈夫です。十分やさしいです。"
       ];
       const state = {
-        templateId: templates[0].id,
+        step: 1,
         cuts: [null, null, null],
         outputUrl: ""
       };
-      const templateGrid = document.querySelector("#clip-template-grid");
       const cutsHost = document.querySelector("#clip-cuts");
       const storeInput = document.querySelector("#clip-store-name");
       const mapsInput = document.querySelector("#clip-maps-url");
@@ -12255,11 +12290,11 @@
       const renderButton = document.querySelector("#clip-render-button");
       const outputVideo = document.querySelector("#clip-output-video");
       const downloadLink = document.querySelector("#clip-download");
+      const downloadPostLink = document.querySelector("#clip-download-post");
       const copyButton = document.querySelector("#clip-copy-caption");
-
-      function clipTemplate() {
-        return templates.find((template) => template.id === state.templateId) || templates[0];
-      }
+      const startButton = document.querySelector("#clip-start-button");
+      const resetButton = document.querySelector("#clip-reset-button");
+      const progress = document.querySelector("#clip-progress");
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -12278,16 +12313,15 @@
       function clipCaption() {
         const store = storeInput?.value.trim() || "今日のお店";
         const maps = mapsInput?.value.trim() || "";
-        const template = clipTemplate();
         const lines = [
           `${store}の今日の空気を、3カットで。`,
           "",
-          template.note,
-          "初めての方にも、お店の雰囲気が少し伝わりますように。",
+          "お客様を待つ時間。",
+          "今日ならではの一瞬を、短く残しました。",
           maps ? `Google Maps: ${maps}` : "",
           "",
-          "#airs #airclip #今日のお店 #店舗動画 #GoogleMaps",
-          "#localshop #japantravel #cafeclip"
+          "#airclip #今日のお店 #店舗動画",
+          "#localshop #japantravel"
         ].filter(Boolean);
         return lines.join("\n");
       }
@@ -12296,33 +12330,35 @@
         if (captionInput) captionInput.value = clipCaption();
       }
 
-      function renderTemplates() {
-        if (!templateGrid) return;
-        templateGrid.innerHTML = templates.map((template) => `
-          <button class="clip-template${template.id === state.templateId ? " is-active" : ""}" type="button" data-clip-template="${clipEscape(template.id)}">
-            ${clipEscape(template.title)}
-            <small>${clipEscape(template.note)}</small>
-          </button>
-        `).join("");
-        templateGrid.querySelectorAll("[data-clip-template]").forEach((button) => {
-          button.addEventListener("click", () => {
-            state.templateId = button.dataset.clipTemplate || templates[0].id;
-            state.cuts = [null, null, null];
-            renderTemplates();
-            renderCuts();
-            updateClipCaption();
-            clearClipOutput();
-          });
+      function renderProgress() {
+        if (!progress) return;
+        const label = state.step >= 2 && state.step <= 4 ? `Cut ${state.step - 1} / 3` : ["お店", "Cut 1 / 3", "Cut 2 / 3", "Cut 3 / 3", "整える", "投稿"][state.step - 1];
+        progress.innerHTML = `
+          ${Array.from({ length: 6 }, (_, index) => `<span class="clip-progress-dot${index < state.step ? " is-active" : ""}"></span>`).join("")}
+          <span>${clipEscape(label)}</span>
+        `;
+      }
+
+      function showClipStep(step) {
+        state.step = Math.max(1, Math.min(6, step));
+        document.querySelectorAll("[data-clip-screen]").forEach((screen) => {
+          screen.classList.toggle("is-active", Number(screen.dataset.clipScreen) === state.step);
         });
+        renderProgress();
+        updateClipCaption();
+        if (state.step === 6 && outputVideo?.src) outputVideo.classList.add("has-video");
+      }
+
+      function syncStartButton() {
+        if (startButton) startButton.disabled = !(storeInput?.value.trim());
       }
 
       function renderCuts() {
         if (!cutsHost) return;
-        const template = clipTemplate();
-        cutsHost.innerHTML = template.cuts.map(([title, guide], index) => `
-          <article class="clip-cut">
+        cutsHost.innerHTML = fixedCuts.map(([title, guide], index) => `
+          <article class="clip-cut clip-screen" data-clip-screen="${index + 2}">
             <div>
-              <span class="clip-pill">cut ${index + 1} / 3〜5秒</span>
+              <span class="clip-pill">Cut ${index + 1} / 3</span>
               <strong>${clipEscape(title)}</strong>
               <p>${clipEscape(guide)}</p>
             </div>
@@ -12331,7 +12367,13 @@
               <input type="file" accept="video/*" capture="environment" data-clip-cut="${index}">
             </label>
             <div class="clip-praise" id="clip-praise-${index}"></div>
-            <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
+            <div class="clip-step-actions">
+              <button class="clip-button" type="button" data-clip-back>← 戻る</button>
+              <div class="clip-actions">
+                <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
+                <button class="clip-button primary" type="button" data-clip-next>${index === 2 ? "3カット完了 →" : "次のカットへ →"}</button>
+              </div>
+            </div>
           </article>
         `).join("");
         cutsHost.querySelectorAll("[data-clip-cut]").forEach((input) => {
@@ -12346,6 +12388,10 @@
             setClipStatus("撮り直しできます。3カット揃ったら1本に整えます。");
           });
         });
+        cutsHost.querySelectorAll("[data-clip-next]").forEach((button) => {
+          button.addEventListener("click", () => showClipStep(state.step + 1));
+        });
+        bindBackButtons();
       }
 
       async function videoDuration(file) {
@@ -12387,15 +12433,22 @@
         setClipStatus(`${readyCount}/3カット選択済みです。`);
       }
 
+      function bindBackButtons() {
+        document.querySelectorAll("[data-clip-back]").forEach((button) => {
+          button.onclick = () => showClipStep(state.step - 1);
+        });
+      }
+
       function clearClipOutput() {
         if (state.outputUrl) URL.revokeObjectURL(state.outputUrl);
         state.outputUrl = "";
         outputVideo?.removeAttribute("src");
         outputVideo?.classList.remove("has-video");
-        if (downloadLink) {
-          downloadLink.hidden = true;
-          downloadLink.removeAttribute("href");
-        }
+        [downloadLink, downloadPostLink].forEach((link) => {
+          if (!link) return;
+          link.hidden = true;
+          link.removeAttribute("href");
+        });
       }
 
       function supportedMime() {
@@ -12522,7 +12575,12 @@
             downloadLink.href = state.outputUrl;
             downloadLink.hidden = false;
           }
+          if (downloadPostLink) {
+            downloadPostLink.href = state.outputUrl;
+            downloadPostLink.hidden = false;
+          }
           setClipStatus("完成しました。端末に保存して、SNSへ投稿できます。");
+          showClipStep(6);
         } catch (error) {
           setClipStatus(error.message || "結合に失敗しました。3本の動画と投稿文コピーで投稿できます。");
         } finally {
@@ -12543,10 +12601,28 @@
       [storeInput, mapsInput].forEach((input) => {
         input?.addEventListener("input", updateClipCaption);
       });
+      storeInput?.addEventListener("input", syncStartButton);
+      startButton?.addEventListener("click", () => {
+        if (!storeInput?.value.trim()) return;
+        showClipStep(2);
+      });
+      resetButton?.addEventListener("click", () => {
+        state.cuts.forEach((cut) => {
+          if (cut?.url) URL.revokeObjectURL(cut.url);
+        });
+        state.cuts = [null, null, null];
+        clearClipOutput();
+        renderCuts();
+        updateClipCaption();
+        setClipStatus("3カットを選ぶと、ブラウザ内だけで1本に整えます。");
+        showClipStep(1);
+      });
 
-      renderTemplates();
       renderCuts();
+      bindBackButtons();
       updateClipCaption();
+      syncStartButton();
+      showClipStep(1);
     })();
   </script>
 </body>
