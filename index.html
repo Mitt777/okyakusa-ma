@@ -487,9 +487,20 @@
     }
 
     .clip-caption {
-      min-height: 150px;
+      min-height: 112px;
       resize: vertical;
       line-height: 1.65;
+    }
+
+    .clip-post-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .clip-post-actions .clip-button {
+      width: 100%;
+      min-height: 52px;
+      font-size: 15px;
     }
 
     .clip-template-grid {
@@ -6252,8 +6263,6 @@
                 <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
                   <button class="clip-button primary" type="button" id="clip-render-button">3カットを1本にするβ</button>
-                  <button class="clip-button save" type="button" id="clip-share-video" hidden>スマホに保存・共有する</button>
-                  <a class="clip-button" id="clip-download" hidden download="air-clip.webm">保存リンク</a>
                 </div>
               </div>
             </section>
@@ -6272,15 +6281,14 @@
                   <textarea class="clip-caption" id="clip-caption"></textarea>
                 </label>
                 <p class="clip-note">※タグ（#）の後ろに名詞を入れると検索されやすくなります。例えば、「栃木_グルメ」や「那須_ラーメン」などです。InstagramやTikTokでは5つまで登録できます。</p>
-                <div class="clip-actions">
+                <div class="clip-actions clip-post-actions">
+                  <button class="clip-button save" type="button" id="clip-share-video-post" hidden>スマホに保存する</button>
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
-                  <button class="clip-button save" type="button" id="clip-share-video-post" hidden>まずスマホに保存・共有する</button>
-                  <a class="clip-button" id="clip-download-post" hidden download="air-clip.webm">保存リンク</a>
                   <a class="clip-button is-disabled" href="https://www.instagram.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Instagram</a>
                   <a class="clip-button is-disabled" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">TikTok</a>
                   <a class="clip-button is-disabled" href="https://www.youtube.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Shorts</a>
                 </div>
-                <p class="clip-note" id="clip-save-note">先に「スマホに保存・共有する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。</p>
+                <p class="clip-note" id="clip-save-note">先に「スマホに保存する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。</p>
                 <div class="clip-step-actions">
                   <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                   <button class="clip-button" type="button" id="clip-reset-button">もう一度作る</button>
@@ -12514,9 +12522,6 @@
       const status = document.querySelector("#clip-status");
       const renderButton = document.querySelector("#clip-render-button");
       const outputVideo = document.querySelector("#clip-output-video");
-      const downloadLink = document.querySelector("#clip-download");
-      const downloadPostLink = document.querySelector("#clip-download-post");
-      const shareVideoButton = document.querySelector("#clip-share-video");
       const shareVideoPostButton = document.querySelector("#clip-share-video-post");
       const copyButton = document.querySelector("#clip-copy-caption");
       const startButton = document.querySelector("#clip-start-button");
@@ -12555,14 +12560,12 @@
 
       function clipCaption() {
         const store = storeInput?.value.trim() || "";
-        const storeTag = store ? `#${store.replace(/[＃#\s　、。，．,.!?！？/\\|"'“”‘’()（）［］\[\]{}]/g, "")}` : "#";
+        const storeTag = store ? `#${store.replace(/[＃#\s　、。，．,.!?！？/\\|"'“”‘’()（）［］\[\]{}]/g, "")}` : "";
         const opening = store ? `${store}　那須の今日の空気を、3カットで。` : "那須の今日の空気を、3カットで。";
         const lines = [
           opening,
-          "",
           "お客様を待つ時間。",
           "今日ならではの一瞬を、短く残しました。",
-          "",
           storeTag
         ].filter(Boolean);
         return lines.join("\n");
@@ -12597,21 +12600,13 @@
           link.classList.toggle("is-disabled", !state.saved);
           link.setAttribute("aria-disabled", state.saved ? "false" : "true");
         });
-        if (downloadPostLink) {
-          downloadPostLink.textContent = "保存リンク";
-        }
-        [shareVideoButton, shareVideoPostButton].forEach((button) => {
-          if (button) {
-            button.textContent = state.saved ? "スマホに保存・共有済み" : "スマホに保存・共有する";
-          }
-        });
-        if (shareVideoPostButton && !state.saved) {
-          shareVideoPostButton.textContent = "まずスマホに保存・共有する";
+        if (shareVideoPostButton) {
+          shareVideoPostButton.textContent = state.saved ? "スマホに保存済み" : "スマホに保存する";
         }
         if (saveNote) {
           saveNote.textContent = state.saved
-            ? "共有画面を開きました。写真アプリやSNSへ保存・共有できたら、投稿文をコピーして投稿してください。"
-            : "先に「スマホに保存・共有する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。";
+            ? "共有画面を開きました。写真アプリやSNSへ保存できたら、投稿文をコピーして投稿してください。"
+            : "先に「スマホに保存する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。";
         }
       }
 
@@ -12702,14 +12697,7 @@
         state.saved = false;
         outputVideo?.removeAttribute("src");
         outputVideo?.classList.remove("has-video");
-        [downloadLink, downloadPostLink].forEach((link) => {
-          if (!link) return;
-          link.hidden = true;
-          link.removeAttribute("href");
-        });
-        [shareVideoButton, shareVideoPostButton].forEach((button) => {
-          if (button) button.hidden = true;
-        });
+        if (shareVideoPostButton) shareVideoPostButton.hidden = true;
         updateClipSaveState();
       }
 
@@ -12831,28 +12819,15 @@
           const blob = new Blob(chunks, { type: mime || "video/webm" });
           state.outputBlob = blob;
           state.outputUrl = URL.createObjectURL(blob);
-          const extension = clipVideoExtension(blob.type);
           if (outputVideo) {
             outputVideo.src = state.outputUrl;
             outputVideo.classList.add("has-video");
             outputVideo.load();
           }
-          if (downloadLink) {
-            downloadLink.href = state.outputUrl;
-            downloadLink.download = `air-clip.${extension}`;
-            downloadLink.hidden = false;
-          }
-          if (downloadPostLink) {
-            downloadPostLink.href = state.outputUrl;
-            downloadPostLink.download = `air-clip.${extension}`;
-            downloadPostLink.hidden = false;
-          }
-          [shareVideoButton, shareVideoPostButton].forEach((button) => {
-            if (button) button.hidden = false;
-          });
+          if (shareVideoPostButton) shareVideoPostButton.hidden = false;
           state.saved = false;
           updateClipSaveState();
-          setClipStatus("完成しました。まずスマホに保存・共有してください。");
+          setClipStatus("完成しました。まずスマホに保存してください。");
           showClipStep(6);
         } catch (error) {
           setClipStatus(error.message || "結合に失敗しました。3本の動画と投稿文コピーで投稿できます。");
@@ -12916,18 +12891,9 @@
             }
           }
         }
-        setClipStatus("この端末では共有画面に直接渡せません。下の保存リンクから保存してください。");
+        setClipStatus("この端末では共有画面に直接渡せません。別のブラウザでお試しください。");
       }
-      [shareVideoButton, shareVideoPostButton].forEach((button) => {
-        button?.addEventListener("click", shareClipVideo);
-      });
-      [downloadLink, downloadPostLink].forEach((link) => {
-        link?.addEventListener("click", () => {
-          state.saved = true;
-          updateClipSaveState();
-          setClipStatus("保存リンクを開きました。スマホでSNSに出ない場合は、共有画面から写真アプリへ保存してください。");
-        });
-      });
+      shareVideoPostButton?.addEventListener("click", shareClipVideo);
 
       renderCuts();
       bindBackButtons();
