@@ -13464,6 +13464,9 @@
 
       async function loadClipFfmpeg() {
         if (clipFfmpeg) return clipFfmpeg;
+        if (!window.SharedArrayBuffer || !window.crossOriginIsolated) {
+          throw new Error("音声つき出力の準備中です。デプロイ後にページを再読み込みして、もう一度お試しください。");
+        }
         await loadClipScript("https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js");
         if (!window.FFmpeg?.createFFmpeg || !window.FFmpeg?.fetchFile) {
           throw new Error("音声つき動画の準備に失敗しました。");
