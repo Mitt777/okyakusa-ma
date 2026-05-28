@@ -584,6 +584,43 @@
       font-size: 11px;
     }
 
+    .clip-file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .clip-video-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .clip-video-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      border: 1px solid rgba(70, 92, 78, .18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      color: #2d5145;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(47, 67, 54, .06);
+      cursor: pointer;
+    }
+
+    .clip-video-action.primary {
+      border-color: #f2c94c;
+      background: #ffe36a;
+      color: #20251f;
+    }
+
     .clip-video-preview {
       display: grid;
       place-items: center;
@@ -5984,7 +6021,14 @@
         font-size: 10px;
       }
 
-      .clip-cut input[type="file"] {
+      .clip-video-actions {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .clip-video-action {
+        min-height: 31px;
+        padding: 5px 7px;
         font-size: 9px;
       }
 
@@ -6235,6 +6279,7 @@
               <div class="clip-screen-copy">
                 <h3>3つだけ撮る</h3>
                 <p>料理でも、席でも、入口でも。今日のお店の空気を、短く3本だけ選んでください。</p>
+                <p class="clip-note">画質が気になる場合は、スマホのカメラアプリで動画を撮影し、「ファイルから選ぶ」で入れてください。</p>
               </div>
               <div class="clip-cuts" id="clip-cuts"></div>
               <div class="clip-step-actions">
@@ -6256,7 +6301,8 @@
               </div>
               <div class="clip-screen-copy">
                 <h3>動画を整える</h3>
-                <p>3つの動画を、1本の縦動画に整えます。</p>
+                <p>3つの動画を、1本の縦動画に整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
+                <p class="clip-note">AI確認βは次の段階で追加します。使う場合は、動画をAI確認に送信することを明示してから行います。</p>
               </div>
               <p class="clip-status" id="clip-status">3カットを選ぶと、1本の動画に整えます。</p>
               <div class="clip-step-actions">
@@ -12505,9 +12551,9 @@
       ];
 
       const praise = [
-        "いい感じです。自然な動きです。",
-        "空気が伝わっています。このまま使えます。",
-        "無理に編集しなくて大丈夫です。十分やさしいです。"
+        "1カット目、入りました。",
+        "2カット目、入りました。",
+        "3カット目、入りました。"
       ];
       const state = {
         step: 1,
@@ -12624,9 +12670,18 @@
               <p>${clipEscape(guide)}</p>
             </div>
             <label class="clip-video-preview" id="clip-preview-${index}">
-              <span>動画を選ぶ / 撮る</span>
-              <input type="file" accept="video/*" capture="environment" data-clip-cut="${index}">
+              <span>まだ動画が入っていません</span>
             </label>
+            <div class="clip-video-actions">
+              <label class="clip-video-action primary">
+                撮る
+                <input class="clip-file-input" type="file" accept="video/*" capture="environment" data-clip-cut="${index}">
+              </label>
+              <label class="clip-video-action">
+                ファイルから選ぶ
+                <input class="clip-file-input" type="file" accept="video/*" data-clip-cut="${index}">
+              </label>
+            </div>
             <div class="clip-praise" id="clip-praise-${index}"></div>
             <button class="clip-button" type="button" data-clip-retake="${index}">撮り直す</button>
           </article>
@@ -12677,7 +12732,7 @@
         }
         if (praiseBox) {
           const durationHint = duration > 6 ? "少し長めなので、最初の5秒だけ使います。" : "長さもちょうど良いです。";
-          praiseBox.textContent = `${praise[index] || praise[0]} ${durationHint}`;
+          praiseBox.textContent = `${praise[index] || "カットが入りました。"} ${durationHint} 暗い・粗いと感じたら、スマホのカメラで撮った動画を「ファイルから選ぶ」で入れ直せます。`;
         }
         clearClipOutput();
         const readyCount = state.cuts.filter(Boolean).length;
@@ -12796,12 +12851,15 @@
         setClipStatus("1本の動画に整えています。");
         renderButton.disabled = true;
         const canvas = document.createElement("canvas");
-        canvas.width = 720;
-        canvas.height = 1280;
+        canvas.width = 1080;
+        canvas.height = 1920;
         const ctx = canvas.getContext("2d");
         const stream = canvas.captureStream(30);
         const mime = supportedMime();
-        const recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        const recorderOptions = mime
+          ? { mimeType: mime, videoBitsPerSecond: 6500000 }
+          : { videoBitsPerSecond: 6500000 };
+        const recorder = new MediaRecorder(stream, recorderOptions);
         const chunks = [];
         recorder.addEventListener("dataavailable", (event) => {
           if (event.data?.size) chunks.push(event.data);
