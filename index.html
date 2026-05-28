@@ -6594,7 +6594,8 @@
               <div class="clip-step-actions">
                 <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
-                  <button class="clip-button primary" type="button" id="clip-render-button">選んだカットを1本にするβ</button>
+                  <button class="clip-button primary" type="button" id="clip-render-audio-button">音声つきで1本にするβ</button>
+                  <button class="clip-button" type="button" id="clip-render-button">すばやく1本にするβ</button>
                 </div>
               </div>
             </section>
@@ -6605,7 +6606,7 @@
                   <h3>できました。</h3>
                   <p>投稿文をコピーして、端末に保存した動画をSNSへ投稿してください。</p>
                 </div>
-                <video class="clip-output-video" id="clip-output-video" playsinline controls muted></video>
+                <video class="clip-output-video" id="clip-output-video" playsinline controls></video>
               </div>
               <div>
                 <label class="clip-field">
@@ -12866,6 +12867,7 @@
       const previewButton = document.querySelector("#clip-preview-button");
       const trimPreview = document.querySelector("#clip-trim-preview");
       const renderButton = document.querySelector("#clip-render-button");
+      const renderAudioButton = document.querySelector("#clip-render-audio-button");
       const outputVideo = document.querySelector("#clip-output-video");
       const shareVideoPostButton = document.querySelector("#clip-share-video-post");
       const copyButton = document.querySelector("#clip-copy-caption");
@@ -12880,6 +12882,7 @@
       const aiHint = document.querySelector("#clip-ai-hint");
       let focusPreviewTimer = null;
       let clipRecognition = null;
+      let clipFfmpeg = null;
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -13444,6 +13447,90 @@
         ]);
       }
 
+      function loadClipScript(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = src;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("音声つき動画の準備に失敗しました。"));
+          document.head.appendChild(script);
+        });
+      }
+
+      async function loadClipFfmpeg() {
+        if (clipFfmpeg) return clipFfmpeg;
+        await loadClipScript("https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js");
+        if (!window.FFmpeg?.createFFmpeg || !window.FFmpeg?.fetchFile) {
+          throw new Error("音声つき動画の準備に失敗しました。");
+        }
+        const ffmpeg = window.FFmpeg.createFFmpeg({
+          log: false,
+          corePath: "https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
+        });
+        await ffmpeg.load();
+        clipFfmpeg = ffmpeg;
+        return ffmpeg;
+      }
+
+      function clipFsUnlink(ffmpeg, name) {
+        try { ffmpeg.FS("unlink", name); } catch {}
+      }
+
+      function clipTextFile(text) {
+        return new TextEncoder().encode(text);
+      }
+
+      function clipOutputName(index) {
+        return `clip-cut-${index}.mp4`;
+      }
+
+      async function renderClipCutWithFfmpeg(ffmpeg, cut, index) {
+        const range = cutWindow(cut);
+        const input = `clip-input-${index}`;
+        const output = clipOutputName(index);
+        const seconds = Math.max(.5, range.length);
+        clipFsUnlink(ffmpeg, input);
+        clipFsUnlink(ffmpeg, output);
+        ffmpeg.FS("writeFile", input, await window.FFmpeg.fetchFile(cut.file));
+        const videoFilter = "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30,format=yuv420p";
+        const audioFilter = `aresample=44100,apad,atrim=0:${seconds.toFixed(2)}`;
+        try {
+          await ffmpeg.run(
+            "-ss", range.start.toFixed(2),
+            "-t", seconds.toFixed(2),
+            "-i", input,
+            "-filter_complex", `[0:v]${videoFilter}[v];[0:a]${audioFilter}[a]`,
+            "-map", "[v]",
+            "-map", "[a]",
+            "-shortest",
+            "-movflags", "faststart",
+            output
+          );
+        } catch (error) {
+          clipFsUnlink(ffmpeg, output);
+          await ffmpeg.run(
+            "-ss", range.start.toFixed(2),
+            "-t", seconds.toFixed(2),
+            "-i", input,
+            "-f", "lavfi",
+            "-t", seconds.toFixed(2),
+            "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
+            "-filter_complex", `[0:v]${videoFilter}[v];[1:a]atrim=0:${seconds.toFixed(2)}[a]`,
+            "-map", "[v]",
+            "-map", "[a]",
+            "-shortest",
+            "-movflags", "faststart",
+            output
+          );
+        }
+        return output;
+      }
+
       async function drawClipSegment(ctx, canvas, cut, startAt, seconds, audioContext, audioDestination) {
         const video = document.createElement("video");
         video.src = cut.url;
@@ -13452,6 +13539,7 @@
         video.playsInline = true;
         video.preload = "auto";
         await waitEvent(video, "loadedmetadata");
+        let audioConnected = false;
         if (audioContext && audioDestination) {
           try {
             const source = audioContext.createMediaElementSource(video);
@@ -13459,6 +13547,7 @@
             gain.gain.value = 1;
             source.connect(gain);
             gain.connect(audioDestination);
+            audioConnected = true;
           } catch (error) {
             // Some browsers reject audio routing for certain picked files. Keep the video render moving.
           }
@@ -13469,7 +13558,14 @@
         try {
           await video.play();
         } catch (error) {
-          throw new Error("この端末では動画の自動再生が止められました。動画を端末保存して、SNS側で選んでください。");
+          video.muted = true;
+          video.volume = 0;
+          try {
+            await video.play();
+            audioConnected = false;
+          } catch (retryError) {
+            throw new Error("この端末では動画の自動再生が止められました。動画を端末保存して、SNS側で選んでください。");
+          }
         }
         const start = performance.now();
         await new Promise((resolve) => {
@@ -13484,6 +13580,7 @@
           }
           requestAnimationFrame(frame);
         });
+        return audioConnected && !video.muted;
       }
 
       async function renderClipVideo() {
@@ -13503,7 +13600,7 @@
           return;
         }
         clearClipOutput();
-          setClipStatus("動画と音声を1本に整えています。");
+        setClipStatus("動画と音声を1本に整えています。");
         renderButton.disabled = true;
         const canvas = document.createElement("canvas");
         canvas.width = 1080;
@@ -13531,9 +13628,11 @@
         });
         try {
           recorder.start();
+          let renderedWithAudio = Boolean(audioDestination);
           for (const cut of selectedCuts) {
             const window = cutWindow(cut);
-            await drawClipSegment(ctx, canvas, cut, window.start, window.length, audioContext, audioDestination);
+            const clipHasAudio = await drawClipSegment(ctx, canvas, cut, window.start, window.length, audioContext, audioDestination);
+            if (!clipHasAudio) renderedWithAudio = false;
           }
           recorder.stop();
           await stopped;
@@ -13548,7 +13647,9 @@
           if (shareVideoPostButton) shareVideoPostButton.hidden = false;
           state.saved = false;
           updateClipSaveState();
-          setClipStatus("完成しました。まずスマホに保存してください。");
+          setClipStatus(renderedWithAudio
+            ? "音声入りで完成しました。まずスマホに保存してください。"
+            : "この端末では音声が許可されなかったため、映像だけで完成しました。まずスマホに保存してください。");
           showClipStep(6);
         } catch (error) {
           setClipStatus(error.message || "結合に失敗しました。選んだ動画と投稿文コピーで投稿できます。");
@@ -13558,7 +13659,70 @@
         }
       }
 
+      async function renderClipVideoWithFfmpeg() {
+        const selectedCuts = readyCuts();
+        if (selectedCuts.length < 1) {
+          setClipStatus("まず1カット以上選んでください。");
+          return;
+        }
+        if (totalClipSeconds() > 20) {
+          renderTrimSummary();
+          setClipStatus("20秒を超えています。使うところを少し短くしてから、1本にしてください。");
+          showClipStep(5);
+          return;
+        }
+        clearClipOutput();
+        setClipStatus("音声つきで整えています。初回だけ少し時間がかかります。");
+        if (renderAudioButton) renderAudioButton.disabled = true;
+        if (renderButton) renderButton.disabled = true;
+        try {
+          const ffmpeg = await loadClipFfmpeg();
+          [
+            "clip-output.mp4",
+            "clip-list.txt",
+            ...selectedCuts.flatMap((_, index) => [`clip-input-${index}`, clipOutputName(index)])
+          ].forEach((name) => clipFsUnlink(ffmpeg, name));
+          const outputs = [];
+          for (let index = 0; index < selectedCuts.length; index += 1) {
+            setClipStatus(`音声つきで Cut ${index + 1} を整えています。`);
+            outputs.push(await renderClipCutWithFfmpeg(ffmpeg, selectedCuts[index], index));
+          }
+          const list = outputs.map((name) => `file '${name}'`).join("\n");
+          ffmpeg.FS("writeFile", "clip-list.txt", clipTextFile(list));
+          setClipStatus("音声つきで1本にまとめています。");
+          await ffmpeg.run(
+            "-f", "concat",
+            "-safe", "0",
+            "-i", "clip-list.txt",
+            "-c", "copy",
+            "-movflags", "faststart",
+            "clip-output.mp4"
+          );
+          const data = ffmpeg.FS("readFile", "clip-output.mp4");
+          const blob = new Blob([data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)], { type: "video/mp4" });
+          state.outputBlob = blob;
+          state.outputUrl = URL.createObjectURL(blob);
+          if (outputVideo) {
+            outputVideo.src = state.outputUrl;
+            outputVideo.classList.add("has-video");
+            outputVideo.load();
+          }
+          if (shareVideoPostButton) shareVideoPostButton.hidden = false;
+          state.saved = false;
+          updateClipSaveState();
+          setClipStatus("音声つきで完成しました。まずスマホに保存してください。");
+          showClipStep(6);
+        } catch (error) {
+          console.warn("clip ffmpeg render failed", error);
+          setClipStatus(error.message || "音声つきの整えに失敗しました。すばやく1本にするβで作れます。");
+        } finally {
+          if (renderAudioButton) renderAudioButton.disabled = false;
+          if (renderButton) renderButton.disabled = false;
+        }
+      }
+
       renderButton?.addEventListener("click", renderClipVideo);
+      renderAudioButton?.addEventListener("click", renderClipVideoWithFfmpeg);
       previewButton?.addEventListener("click", playTrimPreview);
       async function askClipCaptionAi() {
         const description = aiBriefInput?.value.trim() || "";
