@@ -169,6 +169,27 @@
       color: #20251f;
     }
 
+    .clip-button.save {
+      transform-origin: center;
+    }
+
+    .clip-button.save:not([hidden]) {
+      border-color: rgba(242, 201, 76, .74);
+      background: #ffe36a;
+      color: #20251f;
+      box-shadow: 0 14px 30px rgba(185, 145, 35, .18);
+    }
+
+    .clip-button.save:not([hidden]):hover {
+      transform: scale(1.04);
+    }
+
+    .clip-button.is-disabled {
+      opacity: .44;
+      pointer-events: none;
+      filter: grayscale(.18);
+    }
+
     .clip-hero {
       display: grid;
       grid-template-columns: minmax(0, .86fr) minmax(360px, 1.14fr);
@@ -416,6 +437,11 @@
       gap: 12px;
     }
 
+    .clip-screen[data-clip-screen="5"] .clip-field-grid {
+      grid-template-columns: 1fr;
+      max-width: 520px;
+    }
+
     .clip-field {
       display: grid;
       gap: 6px;
@@ -433,6 +459,13 @@
       color: #88928c;
       font-size: 10px;
       font-weight: 900;
+    }
+
+    .clip-caption-help {
+      margin-left: 6px;
+      color: #7b857f;
+      font-size: 11px;
+      font-weight: 850;
     }
 
     .clip-field input,
@@ -6196,29 +6229,25 @@
 
             <section class="clip-screen" data-clip-screen="5">
               <div class="clip-screen-copy">
-                <h3>お店を入れる</h3>
-                <p>投稿文に入れるお店の名前を入れてください。Google Maps URLは空欄でも大丈夫です。</p>
+                <h3>お店の名前を入れる</h3>
+                <p>こちらに入れた店名は投稿するSNSに入れる参考文章の冒頭に付きます。</p>
               </div>
               <div class="clip-field-grid">
                 <label class="clip-field">
-                  <span>お店の名前 <b>必須</b></span>
+                  <span>お店の名前 <b>任意</b></span>
                   <input id="clip-store-name" placeholder="例: リビングストン">
-                </label>
-                <label class="clip-field">
-                  <span>Google Maps URL <b>任意</b></span>
-                  <input id="clip-maps-url" type="url" placeholder="https://maps.google.com/...">
                 </label>
               </div>
               <div class="clip-screen-copy">
                 <h3>動画を整える</h3>
-                <p>1本の縦動画に整えます。ブラウザ内だけで処理します。サーバーには送りません。</p>
+                <p>3つの動画を、1本の縦動画に整えます。</p>
               </div>
-              <p class="clip-status" id="clip-status">3カットを選ぶと、ブラウザ内だけで1本に整えます。</p>
+              <p class="clip-status" id="clip-status">3カットを選ぶと、1本の動画に整えます。</p>
               <div class="clip-step-actions">
                 <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
                   <button class="clip-button primary" type="button" id="clip-render-button">3カットを1本にするβ</button>
-                  <a class="clip-button" id="clip-download" hidden download="air-clip.webm">動画を保存</a>
+                  <a class="clip-button save" id="clip-download" hidden download="air-clip.webm">大きく動画を保存する</a>
                 </div>
               </div>
             </section>
@@ -6233,17 +6262,18 @@
               </div>
               <div>
                 <label class="clip-field">
-                  <span>投稿文</span>
+                  <span>投稿文 <small class="clip-caption-help">※ご自身で編集できます</small></span>
                   <textarea class="clip-caption" id="clip-caption"></textarea>
                 </label>
+                <p class="clip-note">※タグ（#）の後ろに名詞を入れると検索されやすくなります。例えば、「栃木_グルメ」や「那須_ラーメン」などです。InstagramやTikTokでは5つまで登録できます。</p>
                 <div class="clip-actions">
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
-                  <a class="clip-button" id="clip-download-post" hidden download="air-clip.webm">動画を保存</a>
-                  <a class="clip-button" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
-                  <a class="clip-button" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
-                  <a class="clip-button" href="https://www.youtube.com/" target="_blank" rel="noopener">Shorts</a>
+                  <a class="clip-button save" id="clip-download-post" hidden download="air-clip.webm">まず動画を保存する</a>
+                  <a class="clip-button is-disabled" href="https://www.instagram.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Instagram</a>
+                  <a class="clip-button is-disabled" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">TikTok</a>
+                  <a class="clip-button is-disabled" href="https://www.youtube.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Shorts</a>
                 </div>
-                <p class="clip-note">動画ファイルはサーバーに保存しません。完成動画は端末に保存して、SNSへ投稿してください。</p>
+                <p class="clip-note" id="clip-save-note">先に動画を保存してください。保存後、SNSを開いて端末に保存した動画を選びます。SNSで選べない時は、ファイルから写真アプリへ保存してから投稿してください。</p>
                 <div class="clip-step-actions">
                   <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                   <button class="clip-button" type="button" id="clip-reset-button">もう一度作る</button>
@@ -12467,11 +12497,11 @@
       const state = {
         step: 1,
         cuts: [null, null, null],
-        outputUrl: ""
+        outputUrl: "",
+        saved: false
       };
       const cutsHost = document.querySelector("#clip-cuts");
       const storeInput = document.querySelector("#clip-store-name");
-      const mapsInput = document.querySelector("#clip-maps-url");
       const captionInput = document.querySelector("#clip-caption");
       const status = document.querySelector("#clip-status");
       const renderButton = document.querySelector("#clip-render-button");
@@ -12482,6 +12512,8 @@
       const startButton = document.querySelector("#clip-start-button");
       const resetButton = document.querySelector("#clip-reset-button");
       const progress = document.querySelector("#clip-progress");
+      const saveNote = document.querySelector("#clip-save-note");
+      const snsLinks = Array.from(document.querySelectorAll("[data-clip-sns]"));
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -12498,17 +12530,20 @@
       }
 
       function clipCaption() {
-        const store = storeInput?.value.trim() || "今日のお店";
-        const maps = mapsInput?.value.trim() || "";
+        const store = storeInput?.value.trim() || "";
+        const storeTag = store ? `#${store.replace(/[＃#\s　、。，．,.!?！？/\\|"'“”‘’()（）［］\[\]{}]/g, "")}` : "#";
+        const opening = store ? `${store}　那須の今日の空気を、3カットで。` : "那須の今日の空気を、3カットで。";
         const lines = [
-          `${store}の今日の空気を、3カットで。`,
+          opening,
           "",
           "お客様を待つ時間。",
           "今日ならではの一瞬を、短く残しました。",
-          maps ? `Google Maps: ${maps}` : "",
           "",
-          "#airclip #今日のお店 #店舗動画",
-          "#localshop #japantravel"
+          storeTag,
+          "#",
+          "#",
+          "#",
+          "#"
         ].filter(Boolean);
         return lines.join("\n");
       }
@@ -12533,7 +12568,23 @@
         });
         renderProgress();
         updateClipCaption();
+        updateClipSaveState();
         if (state.step === 6 && outputVideo?.src) outputVideo.classList.add("has-video");
+      }
+
+      function updateClipSaveState() {
+        snsLinks.forEach((link) => {
+          link.classList.toggle("is-disabled", !state.saved);
+          link.setAttribute("aria-disabled", state.saved ? "false" : "true");
+        });
+        if (downloadPostLink) {
+          downloadPostLink.textContent = state.saved ? "動画を保存済み" : "まず動画を保存する";
+        }
+        if (saveNote) {
+          saveNote.textContent = state.saved
+            ? "動画を保存しました。SNSを開いて、端末に保存した動画を選んでください。SNSで選べない時は、ファイルから写真アプリへ保存してから投稿してください。"
+            : "先に動画を保存してください。保存後、SNSを開いて端末に保存した動画を選びます。SNSで選べない時は、ファイルから写真アプリへ保存してから投稿してください。";
+        }
       }
 
       function syncStartButton() {
@@ -12718,7 +12769,7 @@
           return;
         }
         clearClipOutput();
-        setClipStatus("ブラウザ内で1本に整えています。動画はサーバーに送りません。");
+        setClipStatus("1本の動画に整えています。");
         renderButton.disabled = true;
         const canvas = document.createElement("canvas");
         canvas.width = 720;
@@ -12756,7 +12807,9 @@
             downloadPostLink.href = state.outputUrl;
             downloadPostLink.hidden = false;
           }
-          setClipStatus("完成しました。端末に保存して、SNSへ投稿できます。");
+          state.saved = false;
+          updateClipSaveState();
+          setClipStatus("完成しました。まず動画を保存してください。");
           showClipStep(6);
         } catch (error) {
           setClipStatus(error.message || "結合に失敗しました。3本の動画と投稿文コピーで投稿できます。");
@@ -12775,7 +12828,7 @@
           setClipStatus("投稿文を選択してコピーしてください。");
         }
       });
-      [storeInput, mapsInput].forEach((input) => {
+      [storeInput].forEach((input) => {
         input?.addEventListener("input", updateClipCaption);
       });
       storeInput?.addEventListener("input", syncStartButton);
@@ -12787,11 +12840,20 @@
           if (cut?.url) URL.revokeObjectURL(cut.url);
         });
         state.cuts = [null, null, null];
+        state.saved = false;
         clearClipOutput();
         renderCuts();
         updateClipCaption();
-        setClipStatus("3カットを選ぶと、ブラウザ内だけで1本に整えます。");
+        updateClipSaveState();
+        setClipStatus("3カットを選ぶと、1本の動画に整えます。");
         showClipStep(1);
+      });
+      [downloadLink, downloadPostLink].forEach((link) => {
+        link?.addEventListener("click", () => {
+          state.saved = true;
+          updateClipSaveState();
+          setClipStatus("動画を保存しました。SNSを開いて投稿できます。");
+        });
       });
 
       renderCuts();
