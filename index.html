@@ -23,8 +23,8 @@
     }
     if (currentHost === "clip.air-s.jp" || location.search.includes("clip-preview=1")) {
       document.documentElement.classList.add("clip-domain");
-      document.title = "clip.air-s | 3カットで、今日のお店の空気を。";
-      setMeta("description", "今日のお店の空気を、3カットで15秒動画にしてSNSへ優しく漂流させる投稿完了支援アプリ。動画はサーバー保存しません。");
+      document.title = "clip.air-s | 1〜3カットで、今日のお店の空気を。";
+      setMeta("description", "今日のお店の空気を、1〜3カットで15秒前後の動画にしてSNSへ優しく漂流させる投稿完了支援アプリ。動画はサーバー保存しません。");
     }
     if (currentHost === "map-s.site" || location.search.includes("maps-preview=1")) {
       document.documentElement.classList.add("maps-domain");
@@ -771,6 +771,12 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 6px;
+    }
+
+    .clip-trim-card .clip-button {
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 11px;
     }
 
     .clip-trim-actions button {
@@ -6471,13 +6477,13 @@
       <div class="clip-hero">
         <div class="clip-copy">
           <span class="clip-kicker">air clip β / サーバー保存なし</span>
-          <h1 id="clip-title">3カットで、<br>今日のお店の空気を。</h1>
+          <h1 id="clip-title">1〜3カットで、<br>今日のお店の空気を。</h1>
           <p>
             動画編集アプリではありません。店主さんが迷わず撮って、
             1本の縦動画と投稿文まで進めるための、小さな撮影室です。
           </p>
           <div class="clip-promise" aria-label="clip.air-sの約束">
-            <span>3本だけ撮る</span>
+            <span>1〜3本で作れる</span>
             <span>15秒以内に整える</span>
             <span>SNS投稿を支える</span>
           </div>
@@ -6498,14 +6504,14 @@
           <div class="clip-studio-body">
             <section class="clip-screen is-active" data-clip-screen="1">
               <div class="clip-screen-copy">
-                <h3>3つだけ撮る</h3>
-                <p>料理でも、席でも、入口でも。今日のお店の空気を、短く3本だけ選んでください。</p>
+                <h3>1〜3カット撮る</h3>
+                <p>料理でも、席でも、入口でも。今日のお店の空気を、短く1〜3本で選んでください。</p>
                 <p class="clip-note">画質が気になる場合は、スマホのカメラアプリで動画を撮影し、「ファイルから選ぶ」で入れてください。</p>
               </div>
               <div class="clip-cuts" id="clip-cuts"></div>
               <div class="clip-step-actions">
                 <span></span>
-                <button class="clip-button primary" type="button" id="clip-start-button">3カット完了 →</button>
+                <button class="clip-button primary" type="button" id="clip-start-button">使うところへ →</button>
               </div>
             </section>
 
@@ -6522,21 +6528,21 @@
               </div>
               <div class="clip-screen-copy">
                 <h3>使うところを選ぶ</h3>
-                <p>3つの動画の始めと終わりを、少しだけ整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
+                <p>選んだ動画の始めと終わりを、少しだけ整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
                 <p class="clip-note">AI確認βは次の段階で追加します。使う場合は、動画をAI確認に送信することを明示してから行います。</p>
               </div>
-              <div class="clip-trim-summary" id="clip-trim-summary">3カットを選ぶと、使う秒数を調整できます。</div>
+              <div class="clip-trim-summary" id="clip-trim-summary">1〜3カットを選ぶと、使う秒数を調整できます。</div>
               <div class="clip-trim-list" id="clip-trim-list"></div>
               <div class="clip-trim-focus" id="clip-trim-focus"></div>
               <div class="clip-preview-box">
-                <button class="clip-button" type="button" id="clip-preview-button">この3カットを確認再生</button>
+                <button class="clip-button" type="button" id="clip-preview-button">選んだカットを確認再生</button>
                 <video class="clip-trim-preview" id="clip-trim-preview" playsinline controls muted></video>
               </div>
               <p class="clip-status" id="clip-status">使うところを選ぶと、1本の動画に整えます。</p>
               <div class="clip-step-actions">
                 <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
-                  <button class="clip-button primary" type="button" id="clip-render-button">この3カットを1本にするβ</button>
+                  <button class="clip-button primary" type="button" id="clip-render-button">選んだカットを1本にするβ</button>
                 </div>
               </div>
             </section>
@@ -12841,7 +12847,9 @@
       function clipCaption() {
         const store = storeInput?.value.trim() || "";
         const storeTag = store ? `#${store.replace(/[＃#\s　、。，．,.!?！？/\\|"'“”‘’()（）［］\[\]{}]/g, "")}` : "";
-        const opening = store ? `${store}　那須の今日の空気を、3カットで。` : "那須の今日の空気を、3カットで。";
+        const count = Math.max(1, state.cuts.filter(Boolean).length);
+        const cutLabel = `${count}カット`;
+        const opening = store ? `${store}　那須の今日の空気を、${cutLabel}で。` : `那須の今日の空気を、${cutLabel}で。`;
         const lines = [
           opening,
           "お客様を待つ時間。",
@@ -12871,13 +12879,17 @@
         return state.cuts.reduce((sum, cut) => sum + (cut ? cutLength(cut) : 0), 0);
       }
 
+      function readyCuts() {
+        return state.cuts.filter(Boolean);
+      }
+
       function formatSeconds(value) {
         return `${Math.max(0, value || 0).toFixed(1)}秒`;
       }
 
       function renderProgress() {
         if (!progress) return;
-        const label = state.step === 1 ? "3カット" : ["3カット", "", "", "", "整える", "投稿"][state.step - 1];
+        const label = state.step === 1 ? "1〜3カット" : ["1〜3カット", "", "", "", "整える", "投稿"][state.step - 1];
         progress.innerHTML = `
           ${Array.from({ length: 6 }, (_, index) => `<span class="clip-progress-dot${index < state.step ? " is-active" : ""}"></span>`).join("")}
           <span>${clipEscape(label)}</span>
@@ -12922,13 +12934,14 @@
 
       function renderTrimSummary() {
         if (!trimSummary) return;
-        const readyCount = state.cuts.filter(Boolean).length;
+        const readyCount = readyCuts().length;
         const total = totalClipSeconds();
+        const tooLong = total > 20;
         const warning = total > 15;
         trimSummary.classList.toggle("is-warning", warning);
         trimSummary.innerHTML = `
-          <strong>${readyCount}/3カット / 合計 ${formatSeconds(total)}${warning ? " / 15秒を少し超えています" : " / 15秒以内"}</strong>
-          <span>${warning ? "少し短くすると投稿しやすくなります。" : "このまま整えられます。必要なら各カットの使うところを選べます。"}</span>
+          <strong>${readyCount}/1〜3カット / 合計 ${formatSeconds(total)}${tooLong ? " / 20秒を超えています" : warning ? " / 15秒推奨です" : " / 15秒以内"}</strong>
+          <span>${tooLong ? "20秒以内に短くすると、投稿しやすい1本に整えられます。" : warning ? "このままでも整えられます。短くすると、さらに見やすくなります。" : "このまま整えられます。必要なら各カットの使うところを選べます。"}</span>
         `;
       }
 
@@ -12956,13 +12969,27 @@
               <div class="clip-trim-bar" aria-hidden="true">
                 <span class="clip-trim-range" style="--clip-trim-left:${trimPercent(cut, window.start)};--clip-trim-width:${trimPercent(cut, window.length)}"></span>
               </div>
+              <button class="clip-button primary" type="button" data-clip-use-as-is="${index}">このまま使う</button>
               <button class="clip-button" type="button" data-clip-focus="${index}">使うところを選ぶ</button>
             </article>
           `;
         }).join("");
+        trimList.querySelectorAll("[data-clip-use-as-is]").forEach((button) => {
+          button.addEventListener("click", () => useClipAsIs(Number(button.dataset.clipUseAsIs)));
+        });
         trimList.querySelectorAll("[data-clip-focus]").forEach((button) => {
           button.addEventListener("click", () => renderTrimFocus(Number(button.dataset.clipFocus)));
         });
+      }
+
+      function useClipAsIs(index) {
+        const cut = state.cuts[index];
+        if (!cut) return;
+        cut.start = 0;
+        cut.end = Math.min(Math.max(cut.duration || 4, 1), 5);
+        clearClipOutput();
+        renderTrimList();
+        setClipStatus(`Cut ${index + 1} はこのまま使います。`);
       }
 
       function renderTrimFocus(index) {
@@ -13181,7 +13208,7 @@
             state.cuts[index] = null;
             renderCuts();
             clearClipOutput();
-            setClipStatus("撮り直しできます。3カット揃ったら1本に整えます。");
+            setClipStatus("撮り直しできます。1カットだけでも1本に整えられます。");
           });
         });
       }
@@ -13224,8 +13251,8 @@
         }
         clearClipOutput();
         renderTrimList();
-        const readyCount = state.cuts.filter(Boolean).length;
-        setClipStatus(`${readyCount}/3カット選択済みです。`);
+        const readyCount = readyCuts().length;
+        setClipStatus(`${readyCount}/1〜3カット選択済みです。`);
       }
 
       function bindBackButtons() {
@@ -13285,14 +13312,14 @@
       }
 
       async function playTrimPreview() {
-        const readyCuts = state.cuts.filter(Boolean);
-        if (!trimPreview || readyCuts.length < 3) {
-          setClipStatus("まず3カットすべて選んでください。");
+        const selectedCuts = readyCuts();
+        if (!trimPreview || selectedCuts.length < 1) {
+          setClipStatus("まず1カット以上選んでください。");
           return;
         }
         trimPreview.classList.add("has-video");
-        for (let index = 0; index < readyCuts.length; index += 1) {
-          const cut = readyCuts[index];
+        for (let index = 0; index < selectedCuts.length; index += 1) {
+          const cut = selectedCuts[index];
           const window = cutWindow(cut);
           trimPreview.src = cut.url;
           await waitEventWithTimeout(trimPreview, "loadedmetadata", 450);
@@ -13319,7 +13346,7 @@
             requestAnimationFrame(tick);
           });
         }
-        setClipStatus("確認再生が終わりました。この3カットで整えられます。");
+        setClipStatus("確認再生が終わりました。このカットで整えられます。");
       }
 
       function waitEvent(target, eventName) {
@@ -13361,7 +13388,7 @@
         try {
           await video.play();
         } catch (error) {
-          throw new Error("この端末では動画の自動再生が止められました。動画を端末保存して、SNS側で3本を選んでください。");
+          throw new Error("この端末では動画の自動再生が止められました。動画を端末保存して、SNS側で選んでください。");
         }
         const start = performance.now();
         await new Promise((resolve) => {
@@ -13379,13 +13406,19 @@
       }
 
       async function renderClipVideo() {
-        const readyCuts = state.cuts.filter(Boolean);
-        if (readyCuts.length < 3) {
-          setClipStatus("まず3カットすべて選んでください。");
+        const selectedCuts = readyCuts();
+        if (selectedCuts.length < 1) {
+          setClipStatus("まず1カット以上選んでください。");
           return;
         }
         if (!window.MediaRecorder || typeof HTMLCanvasElement === "undefined" || !HTMLCanvasElement.prototype.captureStream) {
-          setClipStatus("この端末ではブラウザ内結合に未対応です。投稿文コピーと、3本の動画選択で投稿できます。");
+          setClipStatus("この端末ではブラウザ内結合に未対応です。投稿文コピーと、選んだ動画で投稿できます。");
+          return;
+        }
+        if (totalClipSeconds() > 20) {
+          renderTrimSummary();
+          setClipStatus("20秒を超えています。使うところを少し短くしてから、1本にしてください。");
+          showClipStep(5);
           return;
         }
         clearClipOutput();
@@ -13410,7 +13443,7 @@
         });
         try {
           recorder.start();
-          for (const cut of readyCuts) {
+          for (const cut of selectedCuts) {
             const window = cutWindow(cut);
             await drawClipSegment(ctx, canvas, cut, window.start, window.length);
           }
@@ -13430,7 +13463,7 @@
           setClipStatus("完成しました。まずスマホに保存してください。");
           showClipStep(6);
         } catch (error) {
-          setClipStatus(error.message || "結合に失敗しました。3本の動画と投稿文コピーで投稿できます。");
+          setClipStatus(error.message || "結合に失敗しました。選んだ動画と投稿文コピーで投稿できます。");
         } finally {
           renderButton.disabled = false;
         }
@@ -13452,6 +13485,10 @@
       });
       storeInput?.addEventListener("input", syncStartButton);
       startButton?.addEventListener("click", () => {
+        if (readyCuts().length < 1) {
+          setClipStatus("まず1カットだけ入れてください。1本だけでも作れます。");
+          return;
+        }
         showClipStep(5);
       });
       resetButton?.addEventListener("click", () => {
@@ -13469,13 +13506,13 @@
         renderCuts();
         updateClipCaption();
         updateClipSaveState();
-        setClipStatus("3カットを選ぶと、1本の動画に整えます。");
+        setClipStatus("1〜3カットを選ぶと、1本の動画に整えます。");
         showClipStep(1);
       });
       async function shareClipVideo() {
         const file = clipVideoFile();
         if (!file) {
-          setClipStatus("先に3カットを1本にしてください。");
+          setClipStatus("先に選んだカットを1本にしてください。");
           return;
         }
         updateClipCaption();
@@ -13484,7 +13521,7 @@
             await navigator.share({
               files: [file],
               title: "air clip",
-              text: captionInput?.value || "今日のお店の空気を、3カットで。"
+              text: captionInput?.value || "今日のお店の空気を、1〜3カットで。"
             });
             state.saved = true;
             updateClipSaveState();
