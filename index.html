@@ -651,6 +651,137 @@
       font-weight: 900;
     }
 
+    .clip-trim-summary {
+      display: grid;
+      gap: 6px;
+      border: 1px solid rgba(68, 92, 74, .14);
+      border-radius: 14px;
+      background: rgba(248, 250, 245, .82);
+      padding: 12px;
+      color: #526158;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .clip-trim-summary.is-warning {
+      border-color: rgba(190, 120, 45, .34);
+      background: rgba(255, 244, 214, .88);
+      color: #775526;
+    }
+
+    .clip-trim-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .clip-trim-card {
+      display: grid;
+      gap: 8px;
+      border: 1px solid rgba(68, 92, 74, .14);
+      border-radius: 14px;
+      background: #fbfdf9;
+      padding: 12px;
+    }
+
+    .clip-trim-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .clip-trim-card video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9 / 12;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #111;
+    }
+
+    .clip-trim-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #1f2520;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .clip-trim-bar {
+      position: relative;
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(68, 92, 74, .11);
+    }
+
+    .clip-trim-range {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--clip-trim-left, 0%);
+      width: var(--clip-trim-width, 55%);
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3f8468, #ffe36a);
+    }
+
+    .clip-trim-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .clip-trim-actions button {
+      min-height: 34px;
+      border: 1px solid rgba(70, 92, 78, .16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      color: #2d5145;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .clip-preview-box {
+      display: grid;
+      gap: 8px;
+      border-top: 1px solid rgba(68, 92, 74, .14);
+      padding-top: 12px;
+    }
+
+    .clip-trim-focus {
+      display: none;
+      gap: 10px;
+      border: 1px solid rgba(68, 92, 74, .18);
+      border-radius: 16px;
+      background: rgba(248, 250, 245, .92);
+      padding: 12px;
+    }
+
+    .clip-trim-focus.is-open {
+      display: grid;
+    }
+
+    .clip-trim-focus video {
+      width: 100%;
+      max-height: 360px;
+      border-radius: 14px;
+      background: #111;
+      object-fit: contain;
+    }
+
+    .clip-trim-preview {
+      display: none;
+      width: 100%;
+      max-height: 220px;
+      border-radius: 14px;
+      background: #111;
+    }
+
+    .clip-trim-preview.has-video {
+      display: block;
+    }
+
     .clip-render {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(230px, .6fr);
@@ -6032,6 +6163,31 @@
         font-size: 9px;
       }
 
+      .clip-trim-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .clip-trim-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .clip-trim-card {
+        padding: 8px 6px;
+      }
+
+      .clip-trim-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 10px;
+      }
+
+      .clip-trim-actions button {
+        min-height: 32px;
+        font-size: 10px;
+      }
+
       .clip-cut-teaser {
         gap: 4px;
         padding: 8px 6px;
@@ -6300,15 +6456,22 @@
                 </label>
               </div>
               <div class="clip-screen-copy">
-                <h3>動画を整える</h3>
-                <p>3つの動画を、1本の縦動画に整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
+                <h3>使うところを選ぶ</h3>
+                <p>3つの動画の始めと終わりを、少しだけ整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
                 <p class="clip-note">AI確認βは次の段階で追加します。使う場合は、動画をAI確認に送信することを明示してから行います。</p>
               </div>
-              <p class="clip-status" id="clip-status">3カットを選ぶと、1本の動画に整えます。</p>
+              <div class="clip-trim-summary" id="clip-trim-summary">3カットを選ぶと、使う秒数を調整できます。</div>
+              <div class="clip-trim-list" id="clip-trim-list"></div>
+              <div class="clip-trim-focus" id="clip-trim-focus"></div>
+              <div class="clip-preview-box">
+                <button class="clip-button" type="button" id="clip-preview-button">この3カットを確認再生</button>
+                <video class="clip-trim-preview" id="clip-trim-preview" playsinline controls muted></video>
+              </div>
+              <p class="clip-status" id="clip-status">使うところを選ぶと、1本の動画に整えます。</p>
               <div class="clip-step-actions">
                 <button class="clip-button" type="button" data-clip-back>← 戻る</button>
                 <div class="clip-actions">
-                  <button class="clip-button primary" type="button" id="clip-render-button">3カットを1本にするβ</button>
+                  <button class="clip-button primary" type="button" id="clip-render-button">この3カットを1本にするβ</button>
                 </div>
               </div>
             </section>
@@ -12566,6 +12729,11 @@
       const storeInput = document.querySelector("#clip-store-name");
       const captionInput = document.querySelector("#clip-caption");
       const status = document.querySelector("#clip-status");
+      const trimSummary = document.querySelector("#clip-trim-summary");
+      const trimList = document.querySelector("#clip-trim-list");
+      const trimFocus = document.querySelector("#clip-trim-focus");
+      const previewButton = document.querySelector("#clip-preview-button");
+      const trimPreview = document.querySelector("#clip-trim-preview");
       const renderButton = document.querySelector("#clip-render-button");
       const outputVideo = document.querySelector("#clip-output-video");
       const shareVideoPostButton = document.querySelector("#clip-share-video-post");
@@ -12621,6 +12789,26 @@
         if (captionInput) captionInput.value = clipCaption();
       }
 
+      function cutWindow(cut) {
+        if (!cut) return { start: 0, end: 0, length: 0 };
+        const duration = Math.max(0, cut.duration || 0);
+        const start = Math.max(0, Math.min(cut.start || 0, duration));
+        const end = Math.max(start + .5, Math.min(cut.end || Math.min(duration, 5), duration || start + .5));
+        return { start, end, length: Math.max(.5, end - start) };
+      }
+
+      function cutLength(cut) {
+        return cutWindow(cut).length;
+      }
+
+      function totalClipSeconds() {
+        return state.cuts.reduce((sum, cut) => sum + (cut ? cutLength(cut) : 0), 0);
+      }
+
+      function formatSeconds(value) {
+        return `${Math.max(0, value || 0).toFixed(1)}秒`;
+      }
+
       function renderProgress() {
         if (!progress) return;
         const label = state.step === 1 ? "3カット" : ["3カット", "", "", "", "整える", "投稿"][state.step - 1];
@@ -12638,6 +12826,7 @@
         renderProgress();
         updateClipCaption();
         updateClipSaveState();
+        if (state.step === 5) renderTrimList();
         if (state.step === 6 && outputVideo?.src) outputVideo.classList.add("has-video");
       }
 
@@ -12658,6 +12847,116 @@
 
       function syncStartButton() {
         if (startButton) startButton.disabled = false;
+      }
+
+      function trimPercent(cut, value) {
+        const duration = Math.max(.1, cut?.duration || 0);
+        return `${Math.max(0, Math.min(100, (value / duration) * 100))}%`;
+      }
+
+      function renderTrimSummary() {
+        if (!trimSummary) return;
+        const readyCount = state.cuts.filter(Boolean).length;
+        const total = totalClipSeconds();
+        const warning = total > 15;
+        trimSummary.classList.toggle("is-warning", warning);
+        trimSummary.innerHTML = `
+          <strong>${readyCount}/3カット / 合計 ${formatSeconds(total)}${warning ? " / 15秒を少し超えています" : " / 15秒以内"}</strong>
+          <span>${warning ? "少し短くすると投稿しやすくなります。" : "このまま整えられます。必要なら各カットの使うところを選べます。"}</span>
+        `;
+      }
+
+      function renderTrimList() {
+        renderTrimSummary();
+        if (!trimList) return;
+        trimList.innerHTML = state.cuts.map((cut, index) => {
+          const [title] = fixedCuts[index] || [`Cut ${index + 1}`];
+          if (!cut) {
+            return `
+              <article class="clip-trim-card">
+                <div class="clip-trim-head"><strong>Cut ${index + 1}</strong><span>未選択</span></div>
+                <div class="clip-video-preview"><span>1画面目で動画を入れてください</span></div>
+              </article>
+            `;
+          }
+          const window = cutWindow(cut);
+          return `
+            <article class="clip-trim-card">
+              <div class="clip-trim-head">
+                <strong>${clipEscape(title)}</strong>
+                <span>${formatSeconds(window.start)}〜${formatSeconds(window.end)} / ${formatSeconds(window.length)}</span>
+              </div>
+              <video src="${clipEscape(cut.url)}" playsinline controls muted></video>
+              <div class="clip-trim-bar" aria-hidden="true">
+                <span class="clip-trim-range" style="--clip-trim-left:${trimPercent(cut, window.start)};--clip-trim-width:${trimPercent(cut, window.length)}"></span>
+              </div>
+              <button class="clip-button" type="button" data-clip-focus="${index}">使うところを選ぶ</button>
+            </article>
+          `;
+        }).join("");
+        trimList.querySelectorAll("[data-clip-focus]").forEach((button) => {
+          button.addEventListener("click", () => renderTrimFocus(Number(button.dataset.clipFocus)));
+        });
+      }
+
+      function renderTrimFocus(index) {
+        if (!trimFocus) return;
+        const cut = state.cuts[index];
+        if (!cut) return;
+        const [title, guide] = fixedCuts[index] || [`Cut ${index + 1}`, ""];
+        const window = cutWindow(cut);
+        trimFocus.classList.add("is-open");
+        trimFocus.innerHTML = `
+          <div class="clip-trim-head">
+            <strong>${clipEscape(title)}</strong>
+            <span>${formatSeconds(window.start)}〜${formatSeconds(window.end)} / ${formatSeconds(window.length)}</span>
+          </div>
+          <video src="${clipEscape(cut.url)}" playsinline controls muted></video>
+          <p class="clip-note">${clipEscape(guide)} 使う始めと終わりだけ、少し整えます。</p>
+          <div class="clip-trim-bar" aria-hidden="true">
+            <span class="clip-trim-range" style="--clip-trim-left:${trimPercent(cut, window.start)};--clip-trim-width:${trimPercent(cut, window.length)}"></span>
+          </div>
+          <div class="clip-trim-actions">
+            <button type="button" data-clip-trim="${index}" data-trim-action="earlier">少し前</button>
+            <button type="button" data-clip-trim="${index}" data-trim-action="later">少し後</button>
+            <button type="button" data-clip-trim="${index}" data-trim-action="shorter">短く</button>
+            <button type="button" data-clip-trim="${index}" data-trim-action="longer">長く</button>
+          </div>
+          <button class="clip-button primary" type="button" data-clip-focus-close>このカットはOK</button>
+        `;
+        trimFocus.querySelectorAll("[data-clip-trim]").forEach((button) => {
+          button.addEventListener("click", () => adjustTrim(Number(button.dataset.clipTrim), button.dataset.trimAction));
+        });
+        trimFocus.querySelector("[data-clip-focus-close]")?.addEventListener("click", () => {
+          trimFocus.classList.remove("is-open");
+          renderTrimList();
+        });
+      }
+
+      function adjustTrim(index, action) {
+        const cut = state.cuts[index];
+        if (!cut) return;
+        const duration = Math.max(.5, cut.duration || 0);
+        let start = Math.max(0, cut.start || 0);
+        let end = Math.max(start + .5, cut.end || Math.min(duration, 5));
+        if (action === "earlier") {
+          start = Math.max(0, start - .5);
+        } else if (action === "later") {
+          start = Math.min(Math.max(0, duration - .5), start + .5);
+          if (end <= start + .5) end = Math.min(duration, start + .5);
+        } else if (action === "shorter") {
+          end = Math.max(start + 1, end - .5);
+        } else if (action === "longer") {
+          end = Math.min(duration, end + .5);
+        }
+        if (end > duration) end = duration;
+        if (start >= end) start = Math.max(0, end - .5);
+        cut.start = start;
+        cut.end = end;
+        clearClipOutput();
+        renderTrimList();
+        renderTrimFocus(index);
+        setClipStatus(`Cut ${index + 1} を ${formatSeconds(cutLength(cut))} に整えました。`);
       }
 
       function renderCuts() {
@@ -12724,7 +13023,9 @@
         if (!file) return;
         const duration = await videoDuration(file);
         const url = URL.createObjectURL(file);
-        state.cuts[index] = { file, url, duration };
+        const start = 0;
+        const end = Math.min(Math.max(duration || 4, 1), 5);
+        state.cuts[index] = { file, url, duration, start, end };
         const preview = document.querySelector(`#clip-preview-${index}`);
         const praiseBox = document.querySelector(`#clip-praise-${index}`);
         if (preview) {
@@ -12735,6 +13036,7 @@
           praiseBox.textContent = `${praise[index] || "カットが入りました。"} ${durationHint} 暗い・粗いと感じたら、スマホのカメラで撮った動画を「ファイルから選ぶ」で入れ直せます。`;
         }
         clearClipOutput();
+        renderTrimList();
         const readyCount = state.cuts.filter(Boolean).length;
         setClipStatus(`${readyCount}/3カット選択済みです。`);
       }
@@ -12753,6 +13055,11 @@
         outputVideo?.removeAttribute("src");
         outputVideo?.classList.remove("has-video");
         if (shareVideoPostButton) shareVideoPostButton.hidden = true;
+        if (trimPreview) {
+          trimPreview.pause();
+          trimPreview.removeAttribute("src");
+          trimPreview.classList.remove("has-video");
+        }
         updateClipSaveState();
       }
 
@@ -12790,6 +13097,42 @@
         ctx.drawImage(video, drawX, drawY, drawWidth, drawHeight);
       }
 
+      async function playTrimPreview() {
+        const readyCuts = state.cuts.filter(Boolean);
+        if (!trimPreview || readyCuts.length < 3) {
+          setClipStatus("まず3カットすべて選んでください。");
+          return;
+        }
+        trimPreview.classList.add("has-video");
+        for (let index = 0; index < readyCuts.length; index += 1) {
+          const cut = readyCuts[index];
+          const window = cutWindow(cut);
+          trimPreview.src = cut.url;
+          trimPreview.currentTime = window.start;
+          setClipStatus(`Cut ${index + 1} を確認再生しています。`);
+          try {
+            await trimPreview.play();
+          } catch (error) {
+            setClipStatus("再生ボタンを押すと確認できます。");
+            return;
+          }
+          await new Promise((resolve) => {
+            const started = performance.now();
+            const tick = () => {
+              const elapsed = (performance.now() - started) / 1000;
+              if (elapsed >= window.length || trimPreview.currentTime >= window.end || trimPreview.ended) {
+                trimPreview.pause();
+                resolve();
+                return;
+              }
+              requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          });
+        }
+        setClipStatus("確認再生が終わりました。この3カットで整えられます。");
+      }
+
       function waitEvent(target, eventName) {
         return new Promise((resolve, reject) => {
           const done = () => {
@@ -12809,14 +13152,15 @@
         });
       }
 
-      async function drawClipSegment(ctx, canvas, cut, seconds) {
+      async function drawClipSegment(ctx, canvas, cut, startAt, seconds) {
         const video = document.createElement("video");
         video.src = cut.url;
         video.muted = true;
         video.playsInline = true;
         video.preload = "auto";
         await waitEvent(video, "loadedmetadata");
-        video.currentTime = 0;
+        video.currentTime = Math.max(0, startAt || 0);
+        await waitEvent(video, "seeked").catch(() => {});
         try {
           await video.play();
         } catch (error) {
@@ -12870,7 +13214,8 @@
         try {
           recorder.start();
           for (const cut of readyCuts) {
-            await drawClipSegment(ctx, canvas, cut, Math.min(5, Math.max(3, cut.duration || 4)));
+            const window = cutWindow(cut);
+            await drawClipSegment(ctx, canvas, cut, window.start, window.length);
           }
           recorder.stop();
           await stopped;
@@ -12895,6 +13240,7 @@
       }
 
       renderButton?.addEventListener("click", renderClipVideo);
+      previewButton?.addEventListener("click", playTrimPreview);
       copyButton?.addEventListener("click", async () => {
         updateClipCaption();
         try {
@@ -12918,6 +13264,11 @@
         state.cuts = [null, null, null];
         state.saved = false;
         clearClipOutput();
+        if (trimFocus) {
+          trimFocus.classList.remove("is-open");
+          trimFocus.innerHTML = "";
+        }
+        renderTrimList();
         renderCuts();
         updateClipCaption();
         updateClipSaveState();
