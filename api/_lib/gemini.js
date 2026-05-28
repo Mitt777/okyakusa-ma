@@ -214,6 +214,114 @@ function fallbackLivingCardCopy(place) {
   };
 }
 
+function sanitizeTag(value) {
+  return String(value || "")
+    .replace(/^#+/, "")
+    .replace(/[＃#\s　、。，．,.!?！？/\\|"'“”‘’()（）［］\[\]{}]/g, "")
+    .trim();
+}
+
+function fallbackClipCaptionAdvice(input = {}) {
+  const storeName = String(input.storeName || "").trim();
+  const description = String(input.description || "").trim();
+  const base = description || "今日のお店の空気";
+  const title = storeName ? `${storeName}の今日の空気` : "今日のお店の空気";
+  const storeTag = sanitizeTag(storeName);
+  const tags = [
+    storeTag,
+    "今日のお店",
+    "店舗動画",
+    "那須_グルメ",
+    "localshop"
+  ].filter(Boolean).slice(0, 5).map((tag) => `#${tag}`);
+
+  return {
+    generated_by: "fallback",
+    title,
+    caption: [
+      storeName ? `${storeName}　${base}を、短く残しました。` : `${base}を、短く残しました。`,
+      "今日ならではの一瞬です。",
+      tags.join(" ")
+    ].join("\n"),
+    tags,
+    short_hint: "投稿前に、お店名・地域名・料理名など検索されやすい名詞を1つ足すと見つけてもらいやすくなります。"
+  };
+}
+
+function buildClipCaptionPrompt(input = {}) {
+  return `
+あなたは clip.air-s.jp の投稿文相談係です。
+地方のお店の店主が、1〜3カットで撮った短い縦動画をSNSへ投稿できるように、静かに背中を押すタイトル・投稿文・タグを整えてください。
+
+重要:
+- 動画そのものは見ていない。入力された説明文だけを根拠にする
+- 断定しすぎない
+- 煽らない、売り込みすぎない
+- 店主がそのまま少し直して使える自然な日本語にする
+- Instagram/TikTok/Shorts向けに短くする
+- ハッシュタグは最大5つ
+- 店名がある場合はタグに1つ入れる。ただし長すぎる場合は自然に短くする
+- Google、公式、保証、安全、効能のような誤解される表現は禁止
+
+入力:
+${JSON.stringify(input, null, 2)}
+
+次のJSONだけを返してください。余計な説明は禁止です。
+{
+  "generated_by": "gemini",
+  "title": "20文字前後の投稿タイトル",
+  "caption": "SNS投稿本文。3〜5行。最後にタグを1行で入れる",
+  "tags": ["#タグ1", "#タグ2", "#タグ3", "#タグ4", "#タグ5"],
+  "short_hint": "店主への短い助言を1文"
+}`;
+}
+
+async function generateClipCaptionAdvice(input = {}) {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+  if (!apiKey) return fallbackClipCaptionAdvice(input);
+
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: buildClipCaptionPrompt(input) }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.55,
+          responseMimeType: "application/json"
+        }
+      })
+    });
+
+    if (!response.ok) return fallbackClipCaptionAdvice(input);
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("") || "";
+    const advice = extractJson(text);
+    const tags = Array.isArray(advice.tags) ? advice.tags.map((tag) => {
+      const cleaned = sanitizeTag(tag);
+      return cleaned ? `#${cleaned}` : "";
+    }).filter(Boolean).slice(0, 5) : [];
+    return {
+      generated_by: advice.generated_by || "gemini",
+      title: String(advice.title || "").trim() || fallbackClipCaptionAdvice(input).title,
+      caption: String(advice.caption || "").trim() || fallbackClipCaptionAdvice(input).caption,
+      tags,
+      short_hint: String(advice.short_hint || "").trim()
+    };
+  } catch (error) {
+    return fallbackClipCaptionAdvice(input);
+  }
+}
+
 function buildLivingCardPrompt(place) {
   return `
 あなたは okyakusa-ma.com の Living Shop Card コピーライターです。
@@ -286,5 +394,6 @@ async function generateLivingCardCopy(place) {
 module.exports = {
   fallbackDiagnosis,
   generateDiagnosisJson,
+  generateClipCaptionAdvice,
   generateLivingCardCopy
 };

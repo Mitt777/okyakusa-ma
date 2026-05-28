@@ -1,5 +1,5 @@
 const { fetchPlacesObservation } = require("./_lib/places");
-const { generateLivingCardCopy } = require("./_lib/gemini");
+const { generateClipCaptionAdvice, generateLivingCardCopy } = require("./_lib/gemini");
 const { readJsonBody, sendJson } = require("./_lib/response");
 
 function compact(value) {
@@ -314,6 +314,33 @@ async function sendLivingCard(request, response) {
   });
 }
 
+async function sendClipCaption(request, response) {
+  const body = await readJsonBody(request);
+  const description = compact(body.description);
+  const storeName = compact(body.storeName || body.store_name);
+  const currentCaption = compact(body.currentCaption || body.current_caption);
+  const cutCount = Math.max(1, Math.min(3, Number(body.cutCount || body.cut_count || 1)));
+
+  if (!description && !storeName && !currentCaption) {
+    return sendJson(response, 400, {
+      ok: false,
+      message: "投稿文にしたい内容を短く入力してください。"
+    });
+  }
+
+  const advice = await generateClipCaptionAdvice({
+    storeName,
+    description,
+    currentCaption,
+    cutCount
+  });
+
+  return sendJson(response, 200, {
+    ok: true,
+    advice
+  });
+}
+
 module.exports = async function handler(request, response) {
   try {
     const action = compact(request.query?.action);
@@ -331,6 +358,10 @@ module.exports = async function handler(request, response) {
 
     if (action === "aerial-card") {
       return sendAerialCard(request, response);
+    }
+
+    if (action === "clip-caption") {
+      return sendClipCaption(request, response);
     }
 
     const body = await readJsonBody(request);

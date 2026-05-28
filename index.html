@@ -496,6 +496,54 @@
       line-height: 1.65;
     }
 
+    .clip-ai-panel {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0;
+      padding: 13px;
+      border: 1px solid rgba(68, 92, 74, .14);
+      border-radius: 16px;
+      background: rgba(247, 251, 245, .82);
+    }
+
+    .clip-ai-panel h4 {
+      margin: 0;
+      color: #1f2520;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .clip-ai-panel p {
+      margin: 0;
+      color: #66726b;
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.7;
+    }
+
+    .clip-ai-input {
+      min-height: 82px;
+    }
+
+    .clip-ai-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .clip-ai-actions .clip-button {
+      min-height: 42px;
+      padding: 9px 13px;
+      font-size: 13px;
+    }
+
+    .clip-ai-hint {
+      color: #4b6f5b;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.6;
+    }
+
     .clip-post-actions {
       align-items: stretch;
       flex-direction: column;
@@ -6533,7 +6581,7 @@
               <div class="clip-screen-copy">
                 <h3>使うところを選ぶ</h3>
                 <p>選んだ動画の始めと終わりを、少しだけ整えます。画質を優先する場合は、スマホのカメラで撮った動画を使ってください。</p>
-                <p class="clip-note">AI確認βは次の段階で追加します。使う場合は、動画をAI確認に送信することを明示してから行います。</p>
+                <p class="clip-note">投稿文の相談βは、完成後の画面で使えます。動画は送らず、説明文だけを使います。</p>
               </div>
               <div class="clip-trim-summary" id="clip-trim-summary">1〜3カットを選ぶと、使う秒数を調整できます。</div>
               <div class="clip-trim-list" id="clip-trim-list"></div>
@@ -6565,6 +6613,19 @@
                   <textarea class="clip-caption" id="clip-caption"></textarea>
                 </label>
                 <p class="clip-note">※タグ（#）の後ろに名詞を入れると検索されやすくなります。例えば、「栃木_グルメ」や「那須_ラーメン」などです。InstagramやTikTokでは5つまで登録できます。</p>
+                <div class="clip-ai-panel" aria-label="投稿文相談β">
+                  <h4>投稿文を相談するβ</h4>
+                  <p>動画は送りません。今日撮った内容をひとことで書くか、スマホの音声入力で話してください。</p>
+                  <label class="clip-field">
+                    <span>今日の動画はどんな内容ですか？ <b>任意</b></span>
+                    <textarea class="clip-caption clip-ai-input" id="clip-ai-brief" placeholder="例: 雨の日の静かな店内と、今日のランチの湯気を撮りました。"></textarea>
+                  </label>
+                  <div class="clip-ai-actions">
+                    <button class="clip-button" type="button" id="clip-ai-voice" hidden>音声で入れる</button>
+                    <button class="clip-button primary" type="button" id="clip-ai-caption">AIに整えてもらうβ</button>
+                  </div>
+                  <div class="clip-ai-hint" id="clip-ai-hint">小さく相談できます。使わなくても、そのまま投稿できます。</div>
+                </div>
                 <div class="clip-actions clip-post-actions">
                   <button class="clip-button save" type="button" id="clip-share-video-post" hidden>スマホに保存する</button>
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
@@ -12813,7 +12874,12 @@
       const progress = document.querySelector("#clip-progress");
       const saveNote = document.querySelector("#clip-save-note");
       const snsLinks = Array.from(document.querySelectorAll("[data-clip-sns]"));
+      const aiBriefInput = document.querySelector("#clip-ai-brief");
+      const aiCaptionButton = document.querySelector("#clip-ai-caption");
+      const aiVoiceButton = document.querySelector("#clip-ai-voice");
+      const aiHint = document.querySelector("#clip-ai-hint");
       let focusPreviewTimer = null;
+      let clipRecognition = null;
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -12860,6 +12926,10 @@
 
       function updateClipCaption() {
         if (captionInput) captionInput.value = clipCaption();
+      }
+
+      function setClipAiHint(message) {
+        if (aiHint) aiHint.textContent = message;
       }
 
       function cutWindow(cut) {
@@ -13374,13 +13444,25 @@
         ]);
       }
 
-      async function drawClipSegment(ctx, canvas, cut, startAt, seconds) {
+      async function drawClipSegment(ctx, canvas, cut, startAt, seconds, audioContext, audioDestination) {
         const video = document.createElement("video");
         video.src = cut.url;
-        video.muted = true;
+        video.muted = false;
+        video.volume = 1;
         video.playsInline = true;
         video.preload = "auto";
         await waitEvent(video, "loadedmetadata");
+        if (audioContext && audioDestination) {
+          try {
+            const source = audioContext.createMediaElementSource(video);
+            const gain = audioContext.createGain();
+            gain.gain.value = 1;
+            source.connect(gain);
+            gain.connect(audioDestination);
+          } catch (error) {
+            // Some browsers reject audio routing for certain picked files. Keep the video render moving.
+          }
+        }
         const seekTo = Math.max(0, startAt || 0);
         video.currentTime = seekTo;
         if (seekTo > .05) await waitEventWithTimeout(video, "seeked", 450);
@@ -13421,13 +13503,20 @@
           return;
         }
         clearClipOutput();
-        setClipStatus("1本の動画に整えています。");
+          setClipStatus("動画と音声を1本に整えています。");
         renderButton.disabled = true;
         const canvas = document.createElement("canvas");
         canvas.width = 1080;
         canvas.height = 1920;
         const ctx = canvas.getContext("2d");
         const stream = canvas.captureStream(30);
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        const audioContext = AudioContextClass ? new AudioContextClass() : null;
+        if (audioContext?.state === "suspended") await audioContext.resume().catch(() => {});
+        const audioDestination = audioContext?.createMediaStreamDestination?.() || null;
+        if (audioDestination) {
+          audioDestination.stream.getAudioTracks().forEach((track) => stream.addTrack(track));
+        }
         const mime = supportedMime();
         const recorderOptions = mime
           ? { mimeType: mime, videoBitsPerSecond: 6500000 }
@@ -13444,7 +13533,7 @@
           recorder.start();
           for (const cut of selectedCuts) {
             const window = cutWindow(cut);
-            await drawClipSegment(ctx, canvas, cut, window.start, window.length);
+            await drawClipSegment(ctx, canvas, cut, window.start, window.length, audioContext, audioDestination);
           }
           recorder.stop();
           await stopped;
@@ -13464,12 +13553,87 @@
         } catch (error) {
           setClipStatus(error.message || "結合に失敗しました。選んだ動画と投稿文コピーで投稿できます。");
         } finally {
+          await audioContext?.close?.().catch(() => {});
           renderButton.disabled = false;
         }
       }
 
       renderButton?.addEventListener("click", renderClipVideo);
       previewButton?.addEventListener("click", playTrimPreview);
+      async function askClipCaptionAi() {
+        const description = aiBriefInput?.value.trim() || "";
+        const storeName = storeInput?.value.trim() || "";
+        const currentCaption = captionInput?.value.trim() || clipCaption();
+        if (!description && !storeName) {
+          setClipAiHint("ひとことだけで大丈夫です。例: 今日のランチの湯気を撮りました。");
+          aiBriefInput?.focus();
+          return;
+        }
+        if (aiCaptionButton) aiCaptionButton.disabled = true;
+        setClipAiHint("投稿文を静かに整えています。");
+        try {
+          const response = await fetch("/api/place-search?action=clip-caption", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              storeName,
+              description,
+              currentCaption,
+              cutCount: readyCuts().length || 1
+            })
+          });
+          const data = await response.json();
+          if (!response.ok || !data.ok) throw new Error(data.message || "投稿文を整えられませんでした。");
+          const advice = data.advice || {};
+          if (captionInput && advice.caption) captionInput.value = advice.caption;
+          setClipAiHint(advice.short_hint || "投稿文を整えました。必要ならそのまま直せます。");
+          setClipStatus("投稿文を整えました。");
+        } catch (error) {
+          setClipAiHint(error.message || "今回は通常の投稿文をそのままお使いください。");
+        } finally {
+          if (aiCaptionButton) aiCaptionButton.disabled = false;
+        }
+      }
+
+      function setupClipVoiceInput() {
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Recognition || !aiVoiceButton || !aiBriefInput) return;
+        aiVoiceButton.hidden = false;
+        clipRecognition = new Recognition();
+        clipRecognition.lang = "ja-JP";
+        clipRecognition.interimResults = false;
+        clipRecognition.maxAlternatives = 1;
+        clipRecognition.addEventListener("result", (event) => {
+          const text = event.results?.[0]?.[0]?.transcript || "";
+          if (!text) return;
+          aiBriefInput.value = aiBriefInput.value
+            ? `${aiBriefInput.value.trim()} ${text}`.trim()
+            : text.trim();
+          setClipAiHint("入りました。必要なら少し直してから整えられます。");
+        });
+        clipRecognition.addEventListener("end", () => {
+          aiVoiceButton.disabled = false;
+          aiVoiceButton.textContent = "音声で入れる";
+        });
+        clipRecognition.addEventListener("error", () => {
+          aiVoiceButton.disabled = false;
+          aiVoiceButton.textContent = "音声で入れる";
+          setClipAiHint("音声入力が使えませんでした。文字入力でも大丈夫です。");
+        });
+        aiVoiceButton.addEventListener("click", () => {
+          try {
+            aiVoiceButton.disabled = true;
+            aiVoiceButton.textContent = "聞いています";
+            clipRecognition.start();
+          } catch (error) {
+            aiVoiceButton.disabled = false;
+            aiVoiceButton.textContent = "音声で入れる";
+            setClipAiHint("音声入力を開始できませんでした。文字入力でお使いください。");
+          }
+        });
+      }
+
+      aiCaptionButton?.addEventListener("click", askClipCaptionAi);
       copyButton?.addEventListener("click", async () => {
         updateClipCaption();
         try {
@@ -13538,6 +13702,7 @@
       shareVideoPostButton?.addEventListener("click", shareClipVideo);
 
       renderCuts();
+      setupClipVoiceInput();
       bindBackButtons();
       updateClipCaption();
       syncStartButton();
