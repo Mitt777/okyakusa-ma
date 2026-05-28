@@ -714,6 +714,21 @@
       background: rgba(68, 92, 74, .11);
     }
 
+    .clip-trim-focus .clip-trim-bar {
+      height: 34px;
+      overflow: visible;
+      margin: 6px 14px;
+      touch-action: none;
+    }
+
+    .clip-trim-help {
+      margin: 0;
+      color: #66736a;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.7;
+    }
+
     .clip-trim-range {
       position: absolute;
       top: 0;
@@ -722,6 +737,34 @@
       width: var(--clip-trim-width, 55%);
       border-radius: 999px;
       background: linear-gradient(90deg, #3f8468, #ffe36a);
+    }
+
+    .clip-trim-focus .clip-trim-range {
+      top: 11px;
+      bottom: 11px;
+    }
+
+    .clip-trim-handle {
+      position: absolute;
+      top: 50%;
+      left: var(--clip-handle-left, 0%);
+      width: 32px;
+      height: 32px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #2f7f64;
+      box-shadow: 0 8px 18px rgba(35, 58, 47, .22);
+      transform: translate(-50%, -50%);
+      cursor: grab;
+    }
+
+    .clip-trim-handle.is-end {
+      background: #f0c73e;
+    }
+
+    .clip-trim-handle:active {
+      cursor: grabbing;
+      transform: translate(-50%, -50%) scale(1.08);
     }
 
     .clip-trim-actions {
@@ -6176,6 +6219,10 @@
         padding: 8px 6px;
       }
 
+      .clip-trim-card video {
+        aspect-ratio: 9 / 13;
+      }
+
       .clip-trim-head {
         align-items: flex-start;
         flex-direction: column;
@@ -6186,6 +6233,24 @@
       .clip-trim-actions button {
         min-height: 32px;
         font-size: 10px;
+      }
+
+      .clip-trim-focus {
+        padding: 10px;
+      }
+
+      .clip-trim-focus video {
+        max-height: 52vh;
+      }
+
+      .clip-trim-focus .clip-trim-bar {
+        height: 44px;
+        margin: 8px 18px;
+      }
+
+      .clip-trim-handle {
+        width: 40px;
+        height: 40px;
       }
 
       .clip-cut-teaser {
@@ -12743,6 +12808,7 @@
       const progress = document.querySelector("#clip-progress");
       const saveNote = document.querySelector("#clip-save-note");
       const snsLinks = Array.from(document.querySelectorAll("[data-clip-sns]"));
+      let focusPreviewTimer = null;
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -12913,8 +12979,11 @@
           </div>
           <video src="${clipEscape(cut.url)}" playsinline controls muted></video>
           <p class="clip-note">${clipEscape(guide)} 使う始めと終わりだけ、少し整えます。</p>
-          <div class="clip-trim-bar" aria-hidden="true">
+          <p class="clip-trim-help">緑のつまみが始まり、黄色のつまみが終わりです。スマホでは指で直接動かせます。</p>
+          <div class="clip-trim-bar" data-clip-trim-bar="${index}" aria-label="使う範囲">
             <span class="clip-trim-range" style="--clip-trim-left:${trimPercent(cut, window.start)};--clip-trim-width:${trimPercent(cut, window.length)}"></span>
+            <button class="clip-trim-handle" type="button" data-clip-trim-handle="${index}" data-trim-edge="start" style="--clip-handle-left:${trimPercent(cut, window.start)}" aria-label="始まりを動かす"></button>
+            <button class="clip-trim-handle is-end" type="button" data-clip-trim-handle="${index}" data-trim-edge="end" style="--clip-handle-left:${trimPercent(cut, window.end)}" aria-label="終わりを動かす"></button>
           </div>
           <div class="clip-trim-actions">
             <button type="button" data-clip-trim="${index}" data-trim-action="earlier">少し前</button>
@@ -12927,6 +12996,7 @@
         trimFocus.querySelectorAll("[data-clip-trim]").forEach((button) => {
           button.addEventListener("click", () => adjustTrim(Number(button.dataset.clipTrim), button.dataset.trimAction));
         });
+        bindTrimDrag(index);
         trimFocus.querySelector("[data-clip-focus-close]")?.addEventListener("click", () => {
           trimFocus.classList.remove("is-open");
           renderTrimList();
@@ -12957,6 +13027,123 @@
         renderTrimList();
         renderTrimFocus(index);
         setClipStatus(`Cut ${index + 1} を ${formatSeconds(cutLength(cut))} に整えました。`);
+      }
+
+      function updateFocusedTrimDom(index) {
+        const cut = state.cuts[index];
+        if (!trimFocus || !cut) return;
+        const window = cutWindow(cut);
+        const head = trimFocus.querySelector(".clip-trim-head span");
+        const range = trimFocus.querySelector(".clip-trim-range");
+        const startHandle = trimFocus.querySelector('[data-trim-edge="start"]');
+        const endHandle = trimFocus.querySelector('[data-trim-edge="end"]');
+        if (head) head.textContent = `${formatSeconds(window.start)}〜${formatSeconds(window.end)} / ${formatSeconds(window.length)}`;
+        if (range) {
+          range.style.setProperty("--clip-trim-left", trimPercent(cut, window.start));
+          range.style.setProperty("--clip-trim-width", trimPercent(cut, window.length));
+        }
+        if (startHandle) startHandle.style.setProperty("--clip-handle-left", trimPercent(cut, window.start));
+        if (endHandle) endHandle.style.setProperty("--clip-handle-left", trimPercent(cut, window.end));
+      }
+
+      function setTrimFromPoint(index, edge, clientX, bar) {
+        const cut = state.cuts[index];
+        if (!cut || !bar) return;
+        const rect = bar.getBoundingClientRect();
+        const duration = Math.max(.5, cut.duration || 0);
+        const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+        const value = ratio * duration;
+        const current = cutWindow(cut);
+        if (edge === "start") {
+          cut.start = Math.max(0, Math.min(value, current.end - .5));
+          cut.end = current.end;
+        } else {
+          cut.start = current.start;
+          cut.end = Math.max(current.start + .5, Math.min(value, duration));
+        }
+        clearClipOutput();
+        updateFocusedTrimDom(index);
+        renderTrimSummary();
+        setClipStatus(`Cut ${index + 1} を ${formatSeconds(cutLength(cut))} に整えました。`);
+      }
+
+      function nearestTrimEdge(index, clientX, bar) {
+        const cut = state.cuts[index];
+        if (!cut || !bar) return "end";
+        const rect = bar.getBoundingClientRect();
+        const duration = Math.max(.5, cut.duration || 0);
+        const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+        const value = ratio * duration;
+        const window = cutWindow(cut);
+        return Math.abs(value - window.start) < Math.abs(value - window.end) ? "start" : "end";
+      }
+
+      function scheduleFocusPreview(index) {
+        window.clearTimeout(focusPreviewTimer);
+        focusPreviewTimer = window.setTimeout(() => {
+          playSingleTrimPreview(index);
+        }, 900);
+      }
+
+      async function playSingleTrimPreview(index) {
+        const cut = state.cuts[index];
+        if (!trimFocus || !cut) return;
+        const video = trimFocus.querySelector("video");
+        if (!video) return;
+        const window = cutWindow(cut);
+        video.currentTime = window.start;
+        if (window.start > .05) await waitEventWithTimeout(video, "seeked", 300);
+        try {
+          await video.play();
+        } catch (error) {
+          return;
+        }
+        const started = performance.now();
+        await new Promise((resolve) => {
+          const tick = () => {
+            const elapsed = (performance.now() - started) / 1000;
+            if (elapsed >= window.length || video.currentTime >= window.end || video.ended) {
+              video.pause();
+              resolve();
+              return;
+            }
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }
+
+      function bindTrimDrag(index) {
+        const bindMove = (edge, startEvent) => {
+          const bar = trimFocus.querySelector(`[data-clip-trim-bar="${index}"]`);
+          if (!bar) return;
+          setTrimFromPoint(index, edge, startEvent.clientX, bar);
+          const move = (moveEvent) => {
+            moveEvent.preventDefault?.();
+            setTrimFromPoint(index, edge, moveEvent.clientX, bar);
+          };
+          const up = () => {
+            window.removeEventListener("pointermove", move);
+            window.removeEventListener("pointerup", up);
+            renderTrimList();
+            updateFocusedTrimDom(index);
+            scheduleFocusPreview(index);
+          };
+          window.addEventListener("pointermove", move, { passive: false });
+          window.addEventListener("pointerup", up, { once: true });
+        };
+        trimFocus?.querySelector(`[data-clip-trim-bar="${index}"]`)?.addEventListener("pointerdown", (event) => {
+          if (event.target?.closest?.("[data-clip-trim-handle]")) return;
+          event.preventDefault?.();
+          bindMove(nearestTrimEdge(index, event.clientX, event.currentTarget), event);
+        });
+        trimFocus?.querySelectorAll("[data-clip-trim-handle]").forEach((handle) => {
+          handle.addEventListener("pointerdown", (event) => {
+            event.preventDefault?.();
+            handle.setPointerCapture?.(event.pointerId);
+            bindMove(handle.dataset.trimEdge, event);
+          });
+        });
       }
 
       function renderCuts() {
@@ -13108,7 +13295,9 @@
           const cut = readyCuts[index];
           const window = cutWindow(cut);
           trimPreview.src = cut.url;
+          await waitEventWithTimeout(trimPreview, "loadedmetadata", 450);
           trimPreview.currentTime = window.start;
+          if (window.start > .05) await waitEventWithTimeout(trimPreview, "seeked", 300);
           setClipStatus(`Cut ${index + 1} を確認再生しています。`);
           try {
             await trimPreview.play();
@@ -13152,6 +13341,13 @@
         });
       }
 
+      function waitEventWithTimeout(target, eventName, timeout = 300) {
+        return Promise.race([
+          waitEvent(target, eventName).catch(() => {}),
+          new Promise((resolve) => window.setTimeout(resolve, timeout))
+        ]);
+      }
+
       async function drawClipSegment(ctx, canvas, cut, startAt, seconds) {
         const video = document.createElement("video");
         video.src = cut.url;
@@ -13159,8 +13355,9 @@
         video.playsInline = true;
         video.preload = "auto";
         await waitEvent(video, "loadedmetadata");
-        video.currentTime = Math.max(0, startAt || 0);
-        await waitEvent(video, "seeked").catch(() => {});
+        const seekTo = Math.max(0, startAt || 0);
+        video.currentTime = seekTo;
+        if (seekTo > .05) await waitEventWithTimeout(video, "seeked", 450);
         try {
           await video.play();
         } catch (error) {
