@@ -12995,6 +12995,15 @@
         `;
       }
 
+      function scrollToClipStudioHead() {
+        window.requestAnimationFrame(() => {
+          document.querySelector(".clip-studio-head")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+      }
+
       function showClipStep(step) {
         state.step = Math.max(1, Math.min(6, step));
         document.querySelectorAll("[data-clip-screen]").forEach((screen) => {
@@ -13004,7 +13013,10 @@
         updateClipCaption();
         updateClipSaveState();
         if (state.step === 5) renderTrimList();
-        if (state.step === 6 && outputVideo?.src) outputVideo.classList.add("has-video");
+        if (state.step === 6 && outputVideo?.src) {
+          outputVideo.classList.add("has-video");
+          scrollToClipStudioHead();
+        }
       }
 
       function updateClipSaveState() {
