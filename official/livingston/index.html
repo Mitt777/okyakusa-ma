@@ -231,7 +231,7 @@
       --tilt-y: 0deg;
       --glare-x: 50%;
       --glare-y: 22%;
-      --glare-opacity: .08;
+      --glare-opacity: .12;
       position: relative;
       width: 100%;
       aspect-ratio: 9 / 16;
@@ -239,6 +239,10 @@
       transform: rotateX(var(--tilt-x)) rotateY(calc(var(--flip-y) + var(--tilt-y)));
       transition: transform .7s cubic-bezier(.2, .8, .2, 1);
       will-change: transform;
+    }
+
+    .shop-card.is-tracking {
+      transition: transform .14s ease-out;
     }
 
     .shop-card.is-flipped {
@@ -334,7 +338,7 @@
       inset: 0;
       z-index: 1;
       background:
-        radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.28), rgba(255,255,255,.07) 18%, transparent 42%);
+        radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.38), rgba(255,255,255,.10) 19%, transparent 44%);
       opacity: var(--glare-opacity);
       mix-blend-mode: soft-light;
       pointer-events: none;
@@ -1057,26 +1061,35 @@
       const card = document.querySelector("#official-shop-card");
       if (!stage || !card) return;
 
-      stage.addEventListener("pointermove", (event) => {
+      const moveCard = (event) => {
         const rect = stage.getBoundingClientRect();
         const x = (event.clientX - rect.left) / rect.width;
         const y = (event.clientY - rect.top) / rect.height;
-        const tiltY = (x - .5) * 7;
-        const tiltX = (.5 - y) * 5;
+        const tiltY = (x - .5) * 12;
+        const tiltX = (.5 - y) * 8;
+        card.classList.add("is-tracking");
         card.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
         card.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
         card.style.setProperty("--glare-x", `${(x * 100).toFixed(1)}%`);
         card.style.setProperty("--glare-y", `${(y * 100).toFixed(1)}%`);
-        card.style.setProperty("--glare-opacity", ".18");
-      });
+        card.style.setProperty("--glare-opacity", ".28");
+      };
 
-      stage.addEventListener("pointerleave", () => {
+      const resetCard = () => {
+        card.classList.remove("is-tracking");
         card.style.setProperty("--tilt-x", "0deg");
         card.style.setProperty("--tilt-y", "0deg");
         card.style.setProperty("--glare-x", "50%");
         card.style.setProperty("--glare-y", "22%");
-        card.style.setProperty("--glare-opacity", ".08");
-      });
+        card.style.setProperty("--glare-opacity", ".12");
+      };
+
+      stage.addEventListener("pointerenter", moveCard);
+      stage.addEventListener("pointermove", moveCard);
+      stage.addEventListener("pointerdown", moveCard);
+      stage.addEventListener("pointerleave", resetCard);
+      stage.addEventListener("pointerup", resetCard);
+      stage.addEventListener("pointercancel", resetCard);
     }
 
     document.querySelector("#knock-button").addEventListener("click", saveKnock);
