@@ -148,9 +148,9 @@
 
     .clip-brand span {
       display: block;
-      color: #627068;
+      color: #3f5047;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       letter-spacing: .08em;
     }
 
@@ -274,9 +274,9 @@
 
     .clip-copy p {
       margin: 0;
-      color: #5e665f;
+      color: #3f4f45;
       font-size: 16px;
-      font-weight: 300;
+      font-weight: 400;
       letter-spacing: .04em;
       line-height: 1.95;
     }
@@ -295,7 +295,7 @@
       padding: 12px;
       color: #2f473c;
       font-size: 12px;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: .06em;
       text-align: center;
     }
@@ -337,10 +337,10 @@
     .clip-step {
       border-right: 1px solid rgba(68, 92, 74, .12);
       padding: 12px;
-      color: #657168;
+      color: #435349;
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: .1em;
       text-align: center;
     }
@@ -360,10 +360,10 @@
       justify-content: flex-end;
       gap: 7px;
       min-width: 170px;
-      color: #526158;
+      color: #384b41;
       font-family: 'DM Mono', monospace;
       font-size: 12px;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: .08em;
     }
 
@@ -416,9 +416,9 @@
 
     .clip-screen-copy p {
       margin: 0;
-      color: #607068;
+      color: #3f5047;
       font-size: 14px;
-      font-weight: 300;
+      font-weight: 400;
       letter-spacing: .04em;
       line-height: 1.85;
     }
@@ -457,9 +457,9 @@
     }
 
     .clip-cut-teaser span {
-      color: #66736b;
+      color: #435349;
       font-size: 11px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.45;
     }
 
@@ -491,9 +491,9 @@
 
     .clip-field span,
     .clip-panel-title {
-      color: #526158;
+      color: #384b41;
       font-size: 13px;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: .04em;
     }
 
@@ -551,9 +551,9 @@
 
     .clip-ai-panel p {
       margin: 0;
-      color: #66726b;
+      color: #435349;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.7;
     }
 
@@ -693,9 +693,9 @@
 
     .clip-cut p {
       margin: 0;
-      color: #607068;
+      color: #3f5047;
       font-size: 13px;
-      font-weight: 300;
+      font-weight: 400;
       letter-spacing: .03em;
       line-height: 1.75;
     }
@@ -752,9 +752,9 @@
       background:
         linear-gradient(145deg, rgba(75, 121, 101, .1), rgba(246, 224, 140, .16)),
         #f8faf5;
-      color: #7a857d;
+      color: #4a5a50;
       font-size: 13px;
-      font-weight: 400;
+      font-weight: 500;
     }
 
     .clip-video-preview video {
@@ -765,11 +765,17 @@
       object-fit: cover;
     }
 
+    .clip-video-preview.is-filled {
+      border-style: solid;
+      border-color: rgba(47, 127, 100, .34);
+      background: #111;
+    }
+
     .clip-praise {
       min-height: 20px;
       color: #2e775c;
       font-size: 13px;
-      font-weight: 400;
+      font-weight: 500;
     }
 
     .clip-trim-summary {
@@ -779,9 +785,9 @@
       border-radius: 14px;
       background: rgba(248, 250, 245, .82);
       padding: 12px;
-      color: #526158;
+      color: #384b41;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
     }
 
     .clip-trim-summary.is-warning {
@@ -844,9 +850,9 @@
 
     .clip-trim-help {
       margin: 0;
-      color: #66736a;
+      color: #435349;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.7;
     }
 
@@ -975,9 +981,9 @@
 
     .clip-status {
       min-height: 20px;
-      color: #596861;
+      color: #384b41;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.6;
     }
 
@@ -990,9 +996,9 @@
 
     .clip-note {
       margin: 0;
-      color: #6d766f;
+      color: #44554b;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.7;
     }
 
@@ -12953,6 +12959,7 @@
       let focusPreviewTimer = null;
       let clipRecognition = null;
       let clipFfmpeg = null;
+      let clipCaptionEdited = false;
 
       function clipEscape(value) {
         return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -12997,8 +13004,17 @@
         return lines.join("\n");
       }
 
-      function updateClipCaption() {
-        if (captionInput) captionInput.value = clipCaption();
+      function updateClipCaption(force = false) {
+        if (!captionInput || (clipCaptionEdited && !force)) return;
+        captionInput.value = clipCaption();
+      }
+
+      function currentClipCaptionText() {
+        const current = captionInput?.value || "";
+        if (current.trim()) return current;
+        const fallback = clipCaption();
+        if (captionInput) captionInput.value = fallback;
+        return fallback;
       }
 
       function setClipAiHint(message) {
@@ -13121,7 +13137,7 @@
                 <strong>${clipEscape(title)}</strong>
                 <span>${formatSeconds(window.start)}〜${formatSeconds(window.end)} / ${formatSeconds(window.length)}</span>
               </div>
-              <video src="${clipEscape(cut.url)}" playsinline controls muted></video>
+              <video src="${clipEscape(cut.url)}" ${cut.poster ? `poster="${clipEscape(cut.poster)}"` : ""} playsinline controls muted></video>
               <div class="clip-trim-bar" aria-hidden="true">
                 <span class="clip-trim-range" style="--clip-trim-left:${trimPercent(cut, window.start)};--clip-trim-width:${trimPercent(cut, window.length)}"></span>
               </div>
@@ -13160,7 +13176,7 @@
             <strong>${clipEscape(title)}</strong>
             <span>${formatSeconds(window.start)}〜${formatSeconds(window.end)} / ${formatSeconds(window.length)}</span>
           </div>
-          <video src="${clipEscape(cut.url)}" playsinline controls muted></video>
+          <video src="${clipEscape(cut.url)}" ${cut.poster ? `poster="${clipEscape(cut.poster)}"` : ""} playsinline controls muted></video>
           <p class="clip-note">${clipEscape(guide)} 使う始めと終わりだけ、少し整えます。</p>
           <p class="clip-trim-help">緑のつまみが始まり、黄色のつまみが終わりです。スマホでは指で直接動かせます。</p>
           <div class="clip-trim-bar" data-clip-trim-bar="${index}" aria-label="使う範囲">
@@ -13341,8 +13357,10 @@
               <strong>${clipEscape(title)}</strong>
               <p>${clipEscape(guide)}</p>
             </div>
-            <label class="clip-video-preview" id="clip-preview-${index}">
-              <span>まだ動画が入っていません</span>
+            <label class="clip-video-preview${state.cuts[index] ? " is-filled" : ""}" id="clip-preview-${index}">
+              ${state.cuts[index]
+                ? `<video src="${clipEscape(state.cuts[index].url)}" ${state.cuts[index].poster ? `poster="${clipEscape(state.cuts[index].poster)}"` : ""} playsinline controls muted></video>`
+                : "<span>まだ動画が入っていません</span>"}
             </label>
             <div class="clip-video-actions">
               <label class="clip-video-action primary">
@@ -13390,6 +13408,27 @@
         });
       }
 
+      async function createClipPoster(file, url) {
+        try {
+          const video = document.createElement("video");
+          video.preload = "auto";
+          video.muted = true;
+          video.playsInline = true;
+          video.src = url;
+          await waitEventWithTimeout(video, "loadedmetadata", 1200);
+          video.currentTime = Math.min(0.25, Math.max(0, (video.duration || 1) - 0.1));
+          await waitEventWithTimeout(video, "seeked", 1200);
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 360;
+          canvas.height = video.videoHeight || 640;
+          canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL("image/jpeg", 0.82);
+        } catch (error) {
+          console.warn("clip poster failed", error);
+          return "";
+        }
+      }
+
       async function handleCutFile(input) {
         const index = Number(input.dataset.clipCut);
         const file = input.files?.[0];
@@ -13398,12 +13437,21 @@
         const url = URL.createObjectURL(file);
         const start = 0;
         const end = Math.min(Math.max(duration || 4, 1), 5);
-        state.cuts[index] = { file, url, duration, start, end };
+        state.cuts[index] = { file, url, duration, start, end, poster: "" };
         const preview = document.querySelector(`#clip-preview-${index}`);
         const praiseBox = document.querySelector(`#clip-praise-${index}`);
         if (preview) {
+          preview.classList.add("is-filled");
           preview.innerHTML = `<video src="${clipEscape(url)}" playsinline controls muted></video>`;
         }
+        createClipPoster(file, url).then((poster) => {
+          if (!poster || state.cuts[index]?.file !== file) return;
+          state.cuts[index].poster = poster;
+          const currentPreview = document.querySelector(`#clip-preview-${index}`);
+          const currentVideo = currentPreview?.querySelector("video");
+          if (currentVideo) currentVideo.poster = poster;
+          renderTrimList();
+        });
         if (praiseBox) {
           const durationHint = duration > 6 ? "少し長めなので、最初の5秒だけ使います。" : "長さもちょうど良いです。";
           praiseBox.textContent = `${praise[index] || "カットが入りました。"} ${durationHint} 暗い・粗いと感じたら、スマホのカメラで撮った動画を「ファイルから選ぶ」で入れ直せます。`;
@@ -13855,7 +13903,10 @@
           const data = await response.json();
           if (!response.ok || !data.ok) throw new Error(data.message || "投稿文を整えられませんでした。");
           const advice = data.advice || {};
-          if (captionInput && advice.caption) captionInput.value = advice.caption;
+          if (captionInput && advice.caption) {
+            captionInput.value = advice.caption;
+            clipCaptionEdited = true;
+          }
           setClipAiHint(advice.short_hint || "投稿文を整えました。必要ならそのまま直せます。");
           setClipStatus("投稿文を整えました。");
         } catch (error) {
@@ -13905,16 +13956,18 @@
 
       aiCaptionButton?.addEventListener("click", askClipCaptionAi);
       copyButton?.addEventListener("click", async () => {
-        updateClipCaption();
         try {
-          await navigator.clipboard.writeText(captionInput?.value || "");
+          await navigator.clipboard.writeText(currentClipCaptionText());
           setClipStatus("投稿文をコピーしました。");
         } catch (error) {
           setClipStatus("投稿文を選択してコピーしてください。");
         }
       });
+      captionInput?.addEventListener("input", () => {
+        clipCaptionEdited = true;
+      });
       [storeInput].forEach((input) => {
-        input?.addEventListener("input", updateClipCaption);
+        input?.addEventListener("input", () => updateClipCaption());
       });
       storeInput?.addEventListener("input", syncStartButton);
       startButton?.addEventListener("click", () => {
@@ -13930,6 +13983,7 @@
         });
         state.cuts = [null, null, null];
         state.saved = false;
+        clipCaptionEdited = false;
         clearClipOutput();
         if (trimFocus) {
           trimFocus.classList.remove("is-open");
@@ -13937,7 +13991,7 @@
         }
         renderTrimList();
         renderCuts();
-        updateClipCaption();
+        updateClipCaption(true);
         updateClipSaveState();
         setClipStatus("1〜3カットを選ぶと、1本の動画に整えます。");
         showClipStep(1);
@@ -13948,13 +14002,12 @@
           setClipStatus("先に選んだカットを1本にしてください。");
           return;
         }
-        updateClipCaption();
         if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
           try {
             await navigator.share({
               files: [file],
               title: "air clip",
-              text: captionInput?.value || "今日のお店の空気を、1〜3カットで。"
+              text: currentClipCaptionText()
             });
             state.saved = true;
             updateClipSaveState();
