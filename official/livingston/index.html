@@ -231,13 +231,13 @@
       --tilt-y: 0deg;
       --glare-x: 50%;
       --glare-y: 22%;
-      --glare-opacity: .12;
+      --glare-opacity: .24;
       position: relative;
       width: 100%;
       aspect-ratio: 9 / 16;
       transform-style: preserve-3d;
       transform: rotateX(var(--tilt-x)) rotateY(calc(var(--flip-y) + var(--tilt-y)));
-      transition: transform .7s cubic-bezier(.2, .8, .2, 1);
+      transition: transform .18s ease-out;
       will-change: transform;
     }
 
@@ -327,9 +327,9 @@
       inset: -20%;
       z-index: 1;
       background:
-        linear-gradient(115deg, transparent 20%, rgba(255,255,255,.18) 39%, rgba(255,255,255,.04) 48%, transparent 64%);
-      opacity: .34;
-      transform: translateX(-18%);
+        linear-gradient(115deg, transparent 18%, rgba(255,255,255,.34) 39%, rgba(255,255,255,.08) 49%, transparent 64%);
+      opacity: .46;
+      transform: translateX(calc(-18% + var(--tilt-y) * 1.8));
       pointer-events: none;
     }
 
@@ -338,9 +338,9 @@
       inset: 0;
       z-index: 1;
       background:
-        radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.38), rgba(255,255,255,.10) 19%, transparent 44%);
+        radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.58), rgba(255,255,255,.16) 18%, transparent 46%);
       opacity: var(--glare-opacity);
-      mix-blend-mode: soft-light;
+      mix-blend-mode: screen;
       pointer-events: none;
       transition: opacity .22s ease;
     }
@@ -1060,28 +1060,55 @@
       const stage = document.querySelector(".shop-card-stage");
       const card = document.querySelector("#official-shop-card");
       if (!stage || !card) return;
+      let isTracking = false;
+      let lastTouch = 0;
+
+      const applyMotion = ({ tiltX, tiltY, glareX, glareY, glareOpacity }) => {
+        card.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
+        card.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
+        card.style.setProperty("--glare-x", `${glareX.toFixed(1)}%`);
+        card.style.setProperty("--glare-y", `${glareY.toFixed(1)}%`);
+        card.style.setProperty("--glare-opacity", glareOpacity);
+      };
 
       const moveCard = (event) => {
         const rect = stage.getBoundingClientRect();
         const x = (event.clientX - rect.left) / rect.width;
         const y = (event.clientY - rect.top) / rect.height;
-        const tiltY = (x - .5) * 12;
-        const tiltX = (.5 - y) * 8;
+        const tiltY = (x - .5) * 18;
+        const tiltX = (.5 - y) * 12;
+        isTracking = true;
+        lastTouch = Date.now();
         card.classList.add("is-tracking");
-        card.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
-        card.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
-        card.style.setProperty("--glare-x", `${(x * 100).toFixed(1)}%`);
-        card.style.setProperty("--glare-y", `${(y * 100).toFixed(1)}%`);
-        card.style.setProperty("--glare-opacity", ".28");
+        applyMotion({
+          tiltX,
+          tiltY,
+          glareX: x * 100,
+          glareY: y * 100,
+          glareOpacity: ".44"
+        });
       };
 
       const resetCard = () => {
+        isTracking = false;
         card.classList.remove("is-tracking");
-        card.style.setProperty("--tilt-x", "0deg");
-        card.style.setProperty("--tilt-y", "0deg");
-        card.style.setProperty("--glare-x", "50%");
-        card.style.setProperty("--glare-y", "22%");
-        card.style.setProperty("--glare-opacity", ".12");
+      };
+
+      const runIdleMotion = () => {
+        const now = Date.now();
+        if (!isTracking && now - lastTouch > 420) {
+          const t = now / 1000;
+          const tiltY = Math.sin(t * .85) * 5.6;
+          const tiltX = Math.cos(t * .72) * 3.4;
+          applyMotion({
+            tiltX,
+            tiltY,
+            glareX: 50 + Math.sin(t * .85) * 26,
+            glareY: 28 + Math.cos(t * .7) * 18,
+            glareOpacity: ".26"
+          });
+        }
+        requestAnimationFrame(runIdleMotion);
       };
 
       stage.addEventListener("pointerenter", moveCard);
@@ -1090,6 +1117,22 @@
       stage.addEventListener("pointerleave", resetCard);
       stage.addEventListener("pointerup", resetCard);
       stage.addEventListener("pointercancel", resetCard);
+
+      window.addEventListener("deviceorientation", (event) => {
+        if (isTracking || event.beta == null || event.gamma == null) return;
+        const gamma = Math.max(-18, Math.min(18, event.gamma));
+        const beta = Math.max(-16, Math.min(16, event.beta - 45));
+        applyMotion({
+          tiltX: beta * -.42,
+          tiltY: gamma * .62,
+          glareX: 50 + gamma * 1.5,
+          glareY: 42 + beta * 1.2,
+          glareOpacity: ".36"
+        });
+        lastTouch = Date.now();
+      });
+
+      runIdleMotion();
     }
 
     document.querySelector("#knock-button").addEventListener("click", saveKnock);
