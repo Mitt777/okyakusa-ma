@@ -418,21 +418,6 @@
       box-shadow: 0 12px 34px rgba(41,34,24,.08);
     }
 
-    .tilt-control {
-      display: inline-flex;
-      min-height: 34px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(179,138,68,.24);
-      border-radius: 999px;
-      background: rgba(255,255,255,.54);
-      color: #7a5b24;
-      padding: 7px 12px;
-      font-size: 11px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
     .layout {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 360px;
@@ -827,7 +812,6 @@
       </div>
 
       <button class="button flip-control" type="button" id="flip-card">裏面を見る</button>
-      <button class="tilt-control" type="button" id="enable-tilt">傾きON</button>
     </section>
 
     <div class="layout">
@@ -1075,14 +1059,9 @@
     function setupCardMotion() {
       const stage = document.querySelector(".shop-card-stage");
       const card = document.querySelector("#official-shop-card");
-      const tiltButton = document.querySelector("#enable-tilt");
       if (!stage || !card) return;
       let isTracking = false;
       let lastTouch = 0;
-      let tiltPermissionAsked = false;
-      let tiltEnabled = false;
-      let baseline = null;
-      let motionBaseline = null;
 
       const applyMotion = ({ tiltX, tiltY, glareX, glareY, glareOpacity }) => {
         card.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
@@ -1110,28 +1089,6 @@
         });
       };
 
-      const enableDeviceTilt = async () => {
-        if (tiltPermissionAsked) return;
-        tiltPermissionAsked = true;
-        try {
-          if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
-            const permission = await DeviceOrientationEvent.requestPermission();
-            tiltEnabled = permission === "granted";
-          } else {
-            tiltEnabled = typeof DeviceOrientationEvent !== "undefined" || typeof DeviceMotionEvent !== "undefined";
-          }
-          if (tiltEnabled) {
-            showToast("端末の傾きに反応します");
-            if (tiltButton) tiltButton.textContent = "傾きON 済";
-          } else if (tiltButton) {
-            tiltButton.textContent = "傾き未対応";
-          }
-        } catch {
-          tiltEnabled = false;
-          if (tiltButton) tiltButton.textContent = "傾き未対応";
-        }
-      };
-
       const resetCard = () => {
         isTracking = false;
         card.classList.remove("is-tracking");
@@ -1156,55 +1113,21 @@
 
       stage.addEventListener("pointerenter", moveCard);
       stage.addEventListener("pointermove", moveCard);
-      stage.addEventListener("pointerdown", (event) => {
-        moveCard(event);
-        enableDeviceTilt();
-      });
+      stage.addEventListener("pointerdown", moveCard);
       stage.addEventListener("pointerleave", resetCard);
       stage.addEventListener("pointerup", resetCard);
       stage.addEventListener("pointercancel", resetCard);
-      if (tiltButton) {
-        tiltButton.addEventListener("click", enableDeviceTilt);
-      }
 
       window.addEventListener("deviceorientation", (event) => {
-        if (!tiltEnabled || isTracking || event.beta == null || event.gamma == null) return;
-        if (!baseline) {
-          baseline = { beta: event.beta, gamma: event.gamma };
-          if (tiltButton) tiltButton.textContent = "傾きON 済";
-          return;
-        }
-        const gammaDelta = Math.max(-30, Math.min(30, event.gamma - baseline.gamma));
-        const betaDelta = Math.max(-28, Math.min(28, event.beta - baseline.beta));
-        const tiltY = gammaDelta * 1.25;
-        const tiltX = betaDelta * -.95;
+        if (isTracking || event.beta == null || event.gamma == null) return;
+        const gamma = Math.max(-18, Math.min(18, event.gamma));
+        const beta = Math.max(-16, Math.min(16, event.beta - 45));
         applyMotion({
-          tiltX,
-          tiltY,
-          glareX: 50 + gammaDelta * 2.2,
-          glareY: 38 + betaDelta * 2.0,
-          glareOpacity: ".62"
-        });
-        lastTouch = Date.now();
-      });
-
-      window.addEventListener("devicemotion", (event) => {
-        if (!tiltEnabled || isTracking || !event.accelerationIncludingGravity) return;
-        const acc = event.accelerationIncludingGravity;
-        if (acc.x == null || acc.y == null) return;
-        if (!motionBaseline) {
-          motionBaseline = { x: acc.x, y: acc.y };
-          if (tiltButton) tiltButton.textContent = "傾きON 済";
-          return;
-        }
-        const xDelta = Math.max(-7, Math.min(7, acc.x - motionBaseline.x));
-        const yDelta = Math.max(-7, Math.min(7, acc.y - motionBaseline.y));
-        applyMotion({
-          tiltX: yDelta * 2.4,
-          tiltY: xDelta * -3.4,
-          glareX: 50 + xDelta * -8,
-          glareY: 38 + yDelta * 7,
-          glareOpacity: ".64"
+          tiltX: beta * -.42,
+          tiltY: gamma * .62,
+          glareX: 50 + gamma * 1.5,
+          glareY: 42 + beta * 1.2,
+          glareOpacity: ".36"
         });
         lastTouch = Date.now();
       });
