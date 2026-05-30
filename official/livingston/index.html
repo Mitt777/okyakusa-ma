@@ -225,6 +225,37 @@
       perspective: 1300px;
     }
 
+    .shop-card-shell {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .shop-card-serial-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #9f6f19;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 12px rgba(198, 143, 52, .28);
+    }
+
+    .shop-card-serial-row::before,
+    .shop-card-serial-row::after {
+      content: "";
+      height: 2px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, rgba(177, 119, 28, .92), rgba(242, 201, 109, .74), transparent);
+    }
+
+    .shop-card-serial-row span {
+      white-space: nowrap;
+    }
+
     .shop-card {
       --flip-y: 0deg;
       --tilt-x: 0deg;
@@ -261,6 +292,40 @@
       box-shadow: 0 28px 70px rgba(41, 34, 24, .16);
       backface-visibility: hidden;
       isolation: isolate;
+    }
+
+    .shop-card::before,
+    .shop-card::after {
+      content: "";
+      position: absolute;
+      top: 3%;
+      bottom: 3%;
+      width: 12px;
+      z-index: -1;
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(255,236,177,.72), rgba(155,98,22,.58) 45%, rgba(255,225,148,.66));
+      box-shadow: 0 0 18px rgba(197, 139, 39, .24);
+      opacity: 0;
+      transition: opacity .24s ease;
+      pointer-events: none;
+    }
+
+    .shop-card::before {
+      left: -5px;
+      transform: rotateY(88deg);
+      transform-origin: right center;
+    }
+
+    .shop-card::after {
+      right: -5px;
+      transform: rotateY(-88deg);
+      transform-origin: left center;
+    }
+
+    .shop-card.is-flipped::before,
+    .shop-card:not(.is-flipped)::after {
+      opacity: .62;
     }
 
     .shop-card-face.front {
@@ -312,13 +377,14 @@
 
     .shop-card-edge {
       position: absolute;
-      inset: 10px;
+      inset: 9px;
       z-index: 1;
-      border: 1px solid rgba(255,255,255,.28);
+      border: 2px solid rgba(218, 166, 61, .72);
       border-radius: 20px;
       box-shadow:
-        inset 0 0 0 1px rgba(78, 73, 61, .08),
-        inset 0 16px 44px rgba(255,255,255,.06);
+        inset 0 0 0 1px rgba(255, 242, 194, .32),
+        inset 0 16px 44px rgba(255, 228, 154, .10),
+        0 0 22px rgba(213, 158, 55, .22);
       pointer-events: none;
     }
 
@@ -358,6 +424,61 @@
       pointer-events: none;
     }
 
+    .shop-card-dust {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .shop-card-dust::before,
+    .shop-card-dust::after {
+      content: "";
+      position: absolute;
+      inset: -10%;
+      background-image:
+        radial-gradient(circle, rgba(255,224,142,.74) 0 1.2px, transparent 2px),
+        radial-gradient(circle, rgba(236,183,82,.52) 0 1.3px, transparent 2.1px),
+        radial-gradient(circle, rgba(255,244,205,.42) 0 1px, transparent 1.8px),
+        radial-gradient(circle, rgba(198,143,52,.34) 0 .9px, transparent 1.7px);
+      background-position: 8% 18%, 72% 34%, 46% 78%, 24% 58%;
+      background-size: 96px 132px, 142px 176px, 188px 222px, 248px 286px;
+      opacity: .42;
+      filter: drop-shadow(0 0 6px rgba(227, 177, 88, .26));
+      transform: translate3d(0, 0, 0);
+      animation: memory-dust 13s linear infinite;
+    }
+
+    .shop-card-dust::after {
+      opacity: .28;
+      background-size: 124px 170px, 180px 230px, 232px 282px, 310px 350px;
+      animation-duration: 19s;
+      animation-direction: reverse;
+    }
+
+    @keyframes memory-dust {
+      0% {
+        transform: translate3d(-1%, 2%, 0);
+      }
+      50% {
+        transform: translate3d(2%, -2%, 0);
+      }
+      100% {
+        transform: translate3d(-1%, 2%, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shop-card,
+      .shop-card-dust::before,
+      .shop-card-dust::after {
+        animation: none;
+        transition: none;
+      }
+    }
+
     .shop-card-content {
       position: relative;
       z-index: 1;
@@ -370,13 +491,26 @@
 
     .shop-card-kicker {
       width: fit-content;
-      border: 1px solid rgba(255,255,255,.44);
+      border: 1px solid rgba(235, 184, 78, .86);
       border-radius: 999px;
-      background: rgba(255,255,255,.14);
+      background: rgba(48, 35, 15, .24);
+      color: #ffe3a0;
       padding: 7px 10px;
       font-size: 11px;
       font-weight: 900;
+      text-shadow: 0 1px 10px rgba(80, 49, 6, .42);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 244, 210, .18),
+        0 0 16px rgba(214, 160, 58, .22);
       backdrop-filter: blur(12px);
+    }
+
+    .shop-card-side-label {
+      width: fit-content;
+      color: rgba(255,255,255,.72);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.6;
     }
 
     .shop-card-content h3 {
@@ -416,6 +550,45 @@
       background: rgba(255,255,255,.72);
       color: #6e4e18;
       box-shadow: 0 12px 34px rgba(41,34,24,.08);
+    }
+
+    .card-side-switch {
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      width: min(260px, 100%);
+      border: 1px solid rgba(179,138,68,.24);
+      border-radius: 999px;
+      background: rgba(255,255,255,.58);
+      padding: 4px;
+      box-shadow: 0 12px 34px rgba(41,34,24,.08);
+    }
+
+    .shop-card-note {
+      max-width: 360px;
+      margin: 0 auto;
+      color: rgba(80, 70, 50, .68);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .side-button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #7a5b24;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .side-button.is-active {
+      background: #fffaf1;
+      color: var(--green-dark);
+      box-shadow: 0 6px 18px rgba(41,34,24,.08);
     }
 
     .layout {
@@ -766,52 +939,63 @@
 
     <section class="card-lab" aria-labelledby="shop-card-lab-title">
       <div class="card-lab-head">
-        <span>Layer 0 / 1 / 2 / material</span>
+        <span>Layer 0 / 1 / 2 / material / memory light</span>
         <h2 id="shop-card-lab-title">Livingston公式世界観ショップカード</h2>
         <p>まずは写真をAI加工せず、そのまま表と裏に置きます。表は外の記憶、裏は中に入った後の記憶です。</p>
       </div>
 
       <div class="shop-card-stage">
-        <div class="shop-card" id="official-shop-card">
-          <article class="shop-card-face front" style="--card-photo: url('/assets/livingston/livingston-front.jpg'); --photo-position: 52% center; --photo-filter: brightness(1.08) contrast(.98) saturate(.98)" aria-label="Livingston card front">
-            <div class="shop-card-wash"></div>
-            <div class="shop-card-sheen"></div>
-            <div class="shop-card-glare"></div>
-            <div class="shop-card-edge"></div>
-            <div class="shop-card-grain"></div>
-            <div class="shop-card-content">
-              <span class="shop-card-kicker">Official AIRS No.001</span>
-              <h3>Livingston</h3>
-              <p>那須の街角で、訪れる前から少しだけ記憶になるお店。</p>
-              <div class="shop-card-meta" aria-label="front tags">
-                <span>Nasu</span>
-                <span>Cafe & Goods</span>
-                <span>Local Memory</span>
+        <div class="shop-card-shell">
+          <div class="shop-card-serial-row"><span>Official AIRS 001</span></div>
+          <div class="shop-card" id="official-shop-card">
+            <article class="shop-card-face front" style="--card-photo: url('/assets/livingston/livingston-front.jpg'); --photo-position: 52% center; --photo-filter: brightness(1.08) contrast(.98) saturate(.98)" aria-label="Livingston card front">
+              <div class="shop-card-wash"></div>
+              <div class="shop-card-sheen"></div>
+              <div class="shop-card-glare"></div>
+              <div class="shop-card-edge"></div>
+              <div class="shop-card-grain"></div>
+              <div class="shop-card-dust"></div>
+              <div class="shop-card-content">
+                <span class="shop-card-kicker">Official AIRS No.001</span>
+                <div class="shop-card-side-label">Front side / 外の記憶</div>
+                <h3>Livingston</h3>
+                <p>那須の街角で、訪れる前から少しだけ記憶になるお店。</p>
+                <div class="shop-card-meta" aria-label="front tags">
+                  <span>Nasu</span>
+                  <span>Cafe & Goods</span>
+                  <span>Local Memory</span>
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
 
-          <article class="shop-card-face back" style="--card-photo: url('/assets/livingston/livingston-back.png'); --photo-position: center center; --photo-filter: brightness(.99) contrast(.96) saturate(.93)" aria-label="Livingston card back">
-            <div class="shop-card-wash"></div>
-            <div class="shop-card-sheen"></div>
-            <div class="shop-card-glare"></div>
-            <div class="shop-card-edge"></div>
-            <div class="shop-card-grain"></div>
-            <div class="shop-card-content">
-              <span class="shop-card-kicker">Inside Memory</span>
-              <h3>窓際の時間</h3>
-              <p>外の光がやわらかく入って、ひとこと残したくなる場所。</p>
-              <div class="shop-card-meta" aria-label="back tags">
-                <span>Quiet</span>
-                <span>Warm</span>
-                <span>Xgg</span>
+            <article class="shop-card-face back" style="--card-photo: url('/assets/livingston/livingston-back.png'); --photo-position: center center; --photo-filter: brightness(.99) contrast(.96) saturate(.93)" aria-label="Livingston card back">
+              <div class="shop-card-wash"></div>
+              <div class="shop-card-sheen"></div>
+              <div class="shop-card-glare"></div>
+              <div class="shop-card-edge"></div>
+              <div class="shop-card-grain"></div>
+              <div class="shop-card-dust"></div>
+              <div class="shop-card-content">
+                <span class="shop-card-kicker">Inside Memory</span>
+                <div class="shop-card-side-label">Back side / 中の記憶</div>
+                <h3>窓際の時間</h3>
+                <p>外の光がやわらかく入って、ひとこと残したくなる場所。</p>
+                <div class="shop-card-meta" aria-label="back tags">
+                  <span>Quiet</span>
+                  <span>Warm</span>
+                  <span>Xgg</span>
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
+          </div>
+          <p class="shop-card-note">場所が記憶になるまでの、最初の公式カード。</p>
         </div>
       </div>
 
-      <button class="button flip-control" type="button" id="flip-card">裏面を見る</button>
+      <div class="card-side-switch" aria-label="カード面切替">
+        <button class="side-button is-active" type="button" data-card-side="front">表面</button>
+        <button class="side-button" type="button" data-card-side="back">裏面</button>
+      </div>
     </section>
 
     <div class="layout">
@@ -1137,10 +1321,17 @@
 
     document.querySelector("#knock-button").addEventListener("click", saveKnock);
     document.querySelector("#xgg-form").addEventListener("submit", saveXgg);
-    document.querySelector("#flip-card").addEventListener("click", () => {
+    function setCardSide(side) {
       const card = document.querySelector("#official-shop-card");
-      const flipped = card.classList.toggle("is-flipped");
-      document.querySelector("#flip-card").textContent = flipped ? "表面を見る" : "裏面を見る";
+      const showBack = side === "back";
+      card.classList.toggle("is-flipped", showBack);
+      document.querySelectorAll("[data-card-side]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.cardSide === side);
+      });
+    }
+
+    document.querySelectorAll("[data-card-side]").forEach((button) => {
+      button.addEventListener("click", () => setCardSide(button.dataset.cardSide));
     });
     document.querySelector("#copy-post").addEventListener("click", () => {
       if (!latestXgg) return;
