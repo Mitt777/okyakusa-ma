@@ -7,6 +7,7 @@ function compact(value) {
 }
 
 function candidatePayload(place) {
+  const photos = Array.isArray(place.photos) ? place.photos : [];
   return {
     place_id: place.place_id || "",
     name: place.name || "",
@@ -22,6 +23,8 @@ function candidatePayload(place) {
     phone: place.phone || "",
     business_status: place.business_status || "",
     photos_count: place.photos_count || 0,
+    photos,
+    first_photo: photos[0] || null,
     weekday_descriptions: place.current_weekday_descriptions?.length
       ? place.current_weekday_descriptions
       : place.weekday_descriptions || [],
@@ -37,6 +40,7 @@ function normalizeCardPlace(input) {
   const location = input.location || {};
   const latitude = Number(location.latitude ?? location.lat ?? input.lat);
   const longitude = Number(location.longitude ?? location.lng ?? input.lng);
+  const photos = Array.isArray(input.photos) ? input.photos : [];
   return {
     place_id: compact(input.place_id),
     name: compact(input.name),
@@ -48,6 +52,8 @@ function normalizeCardPlace(input) {
     google_maps_url: compact(input.google_maps_url || input.google_maps_uri),
     website_url: compact(input.website_url || input.website_uri),
     business_status: compact(input.business_status),
+    photos,
+    first_photo: input.first_photo || photos[0] || null,
     location: Number.isFinite(latitude) && Number.isFinite(longitude)
       ? { latitude, longitude }
       : null
@@ -56,6 +62,10 @@ function normalizeCardPlace(input) {
 
 function streetViewApiKey() {
   return process.env.GOOGLE_STREET_VIEW_API_KEY || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
+}
+
+function placesApiKey() {
+  return process.env.GOOGLE_PLACES_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
 }
 
 function aerialViewApiKey() {
@@ -285,6 +295,39 @@ async function sendStreetView(request, response) {
   }
 }
 
+async function sendPlacePhoto(request, response) {
+  const apiKey = placesApiKey();
+  const photoName = compact(request.query.photoName || request.query.photo_name || request.query.name);
+  if (!apiKey || !/^places\/[^/]+\/photos\/[^/]+$/.test(photoName)) {
+    response.status(404).send("Place photo is not available.");
+    return;
+  }
+
+  const width = Math.max(400, Math.min(1600, Number(request.query.width || request.query.maxWidthPx || 1200)));
+  const height = Math.max(300, Math.min(1600, Number(request.query.height || request.query.maxHeightPx || 900)));
+  const url = new URL(`https://places.googleapis.com/v1/${photoName}/media`);
+  url.searchParams.set("maxWidthPx", String(width));
+  url.searchParams.set("maxHeightPx", String(height));
+
+  try {
+    const upstream = await fetch(url, {
+      headers: { "X-Goog-Api-Key": apiKey }
+    });
+    if (!upstream.ok) {
+      response.status(upstream.status).send("Place photo is not available.");
+      return;
+    }
+
+    const contentType = upstream.headers.get("content-type") || "image/jpeg";
+    const buffer = Buffer.from(await upstream.arrayBuffer());
+    response.setHeader("content-type", contentType);
+    response.setHeader("cache-control", "no-store");
+    response.status(200).send(buffer);
+  } catch (error) {
+    response.status(502).send("Place photo fetch failed.");
+  }
+}
+
 async function sendLivingCard(request, response) {
   const body = await readJsonBody(request);
   const place = normalizeCardPlace(body.place || body.candidate || {});
@@ -297,15 +340,22 @@ async function sendLivingCard(request, response) {
   const streetViewImageUrl = streetViewAvailable
     ? `/api/place-search?action=street-view&lat=${encodeURIComponent(place.location.latitude)}&lng=${encodeURIComponent(place.location.longitude)}`
     : "";
+  const firstPhoto = place.first_photo || place.photos?.[0] || null;
+  const placePhotoImageUrl = firstPhoto?.name
+    ? `/api/place-search?action=place-photo&photoName=${encodeURIComponent(firstPhoto.name)}`
+    : "";
 
   return sendJson(response, 200, {
     ok: true,
     place,
     copy,
     visual: {
+      place_photo_available: Boolean(placePhotoImageUrl),
+      place_photo_image_url: placePhotoImageUrl,
+      place_photo_attributions: firstPhoto?.author_attributions || [],
       street_view_available: streetViewAvailable,
       street_view_image_url: streetViewImageUrl,
-      fallback: !streetViewAvailable
+      fallback: !placePhotoImageUrl && !streetViewAvailable
     },
     attribution: {
       text: "Map data and Street View imagery: Google Maps",
@@ -346,6 +396,9 @@ module.exports = async function handler(request, response) {
     const action = compact(request.query?.action);
     if (request.method === "GET" && action === "street-view") {
       return sendStreetView(request, response);
+    }
+    if (request.method === "GET" && action === "place-photo") {
+      return sendPlacePhoto(request, response);
     }
 
     if (request.method !== "POST") {

@@ -100,6 +100,21 @@ function normalizeReview(review) {
   };
 }
 
+function normalizePhoto(photo) {
+  return {
+    name: photo.name || "",
+    width_px: typeof photo.widthPx === "number" ? photo.widthPx : null,
+    height_px: typeof photo.heightPx === "number" ? photo.heightPx : null,
+    author_attributions: Array.isArray(photo.authorAttributions)
+      ? photo.authorAttributions.map((author) => ({
+        display_name: author.displayName || "",
+        uri: author.uri || "",
+        photo_uri: author.photoUri || ""
+      }))
+      : []
+  };
+}
+
 function normalizePlace(place) {
   const serviceOptions = {
     allows_dogs: place.allowsDogs,
@@ -147,6 +162,7 @@ function normalizePlace(place) {
     lat: typeof place.location?.latitude === "number" ? place.location.latitude : null,
     lng: typeof place.location?.longitude === "number" ? place.location.longitude : null,
     photos_count: Array.isArray(place.photos) ? place.photos.length : 0,
+    photos: Array.isArray(place.photos) ? place.photos.map(normalizePhoto).filter((photo) => photo.name).slice(0, 10) : [],
     weekday_descriptions: place.regularOpeningHours?.weekdayDescriptions || [],
     current_weekday_descriptions: place.currentOpeningHours?.weekdayDescriptions || place.regularOpeningHours?.weekdayDescriptions || [],
     secondary_hours_count: Array.isArray(place.regularSecondaryOpeningHours) ? place.regularSecondaryOpeningHours.length : 0,
