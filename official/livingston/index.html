@@ -48,12 +48,12 @@
     }
 
     .hero {
-      min-height: 86svh;
+      min-height: clamp(190px, 21svh, 250px);
       display: grid;
-      align-items: end;
+      align-items: center;
       position: relative;
       overflow: hidden;
-      padding: 28px;
+      padding: 4px 28px 14px;
       color: #fff;
       isolation: isolate;
     }
@@ -81,7 +81,7 @@
     .hero-inner {
       width: min(1080px, 100%);
       margin: 0 auto;
-      padding-bottom: clamp(22px, 7vh, 74px);
+      padding-bottom: 0;
     }
 
     .serial {
@@ -97,23 +97,23 @@
 
     h1 {
       max-width: 850px;
-      margin: 18px 0 14px;
-      font-size: clamp(48px, 10vw, 118px);
+      margin: 0 0 8px;
+      font-size: clamp(64px, 10vw, 112px);
       line-height: .92;
       letter-spacing: 0;
     }
 
     .hero-copy {
-      max-width: 720px;
+      max-width: 980px;
       margin: 0;
       color: rgba(255,255,255,.88);
-      font-size: clamp(17px, 2.4vw, 25px);
+      font-size: clamp(18px, 2.15vw, 27px);
       font-weight: 750;
-      line-height: 1.8;
+      line-height: 1.55;
     }
 
     .hero-actions {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 24px;
@@ -142,16 +142,20 @@
     }
 
     main {
-      width: min(1080px, calc(100% - 32px));
+      display: flex;
+      flex-direction: column;
+      width: 100%;
       margin: 0 auto;
-      padding: 34px 0 70px;
+      padding: 0 0 70px;
     }
 
     .thought {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
       display: grid;
       gap: 10px;
       border-bottom: 1px solid var(--line);
-      padding: 10px 0 30px;
+      padding: 34px 0 30px;
     }
 
     .thought span {
@@ -169,12 +173,14 @@
     }
 
     .card-lab {
+      order: -1;
       display: grid;
       justify-items: center;
       gap: 18px;
       position: relative;
       overflow: hidden;
-      padding: 40px 0 42px;
+      width: 100%;
+      padding: 28px 14px 42px;
       border-bottom: 1px solid var(--line);
       isolation: isolate;
     }
@@ -192,7 +198,7 @@
     }
 
     .card-lab-head {
-      display: grid;
+      display: none;
       justify-items: center;
       gap: 8px;
       max-width: 660px;
@@ -221,14 +227,8 @@
     }
 
     .shop-card-stage {
-      width: min(390px, 100%);
+      width: min(560px, calc(100vw - 28px));
       perspective: 1300px;
-    }
-
-    .shop-card-shell {
-      display: grid;
-      gap: 10px;
-      width: 100%;
     }
 
     .shop-card-serial-row {
@@ -236,6 +236,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      width: min(560px, calc(100vw - 28px));
       color: #9f6f19;
       font-size: 11px;
       font-weight: 900;
@@ -564,16 +565,6 @@
       box-shadow: 0 12px 34px rgba(41,34,24,.08);
     }
 
-    .shop-card-note {
-      max-width: 360px;
-      margin: 0 auto;
-      color: rgba(80, 70, 50, .68);
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.7;
-      text-align: center;
-    }
-
     .side-button {
       min-height: 38px;
       border: 0;
@@ -592,11 +583,12 @@
     }
 
     .layout {
+      width: min(1080px, calc(100% - 32px));
+      margin: 26px auto 0;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 360px;
       gap: 20px;
       align-items: start;
-      margin-top: 26px;
     }
 
     .section {
@@ -894,8 +886,8 @@
 
     @media (max-width: 860px) {
       .hero {
-        min-height: 78svh;
-        padding: 18px;
+        min-height: 205px;
+        padding: 4px 18px 14px;
       }
 
       .layout,
@@ -909,7 +901,16 @@
       }
 
       h1 {
-        font-size: clamp(46px, 16vw, 78px);
+        font-size: clamp(48px, 16vw, 78px);
+      }
+
+      .hero-copy {
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .shop-card-stage {
+        width: min(100%, calc(100vw - 18px));
       }
 
       .shop-card-face {
@@ -921,7 +922,6 @@
 <body>
   <header class="hero">
     <div class="hero-inner">
-      <span class="serial">Livingston Official AIRS No.001</span>
       <h1>Livingston</h1>
       <p class="hero-copy">味は思い出を食べている。黒磯の街角で、場所が記憶になるまでの最初の導線をここから始めます。</p>
       <div class="hero-actions">
@@ -945,52 +945,50 @@
       </div>
 
       <div class="shop-card-stage">
-        <div class="shop-card-shell">
-          <div class="shop-card-serial-row"><span>Official AIRS 001</span></div>
-          <div class="shop-card" id="official-shop-card">
-            <article class="shop-card-face front" style="--card-photo: url('/assets/livingston/livingston-front.jpg'); --photo-position: 52% center; --photo-filter: brightness(1.08) contrast(.98) saturate(.98)" aria-label="Livingston card front">
-              <div class="shop-card-wash"></div>
-              <div class="shop-card-sheen"></div>
-              <div class="shop-card-glare"></div>
-              <div class="shop-card-edge"></div>
-              <div class="shop-card-grain"></div>
-              <div class="shop-card-dust"></div>
-              <div class="shop-card-content">
-                <span class="shop-card-kicker">Official AIRS No.001</span>
-                <div class="shop-card-side-label">Front side / 外の記憶</div>
-                <h3>Livingston</h3>
-                <p>那須の街角で、訪れる前から少しだけ記憶になるお店。</p>
-                <div class="shop-card-meta" aria-label="front tags">
-                  <span>Nasu</span>
-                  <span>Cafe & Goods</span>
-                  <span>Local Memory</span>
-                </div>
+        <div class="shop-card" id="official-shop-card">
+          <article class="shop-card-face front" style="--card-photo: url('/assets/livingston/livingston-front.jpg'); --photo-position: 52% center; --photo-filter: brightness(1.08) contrast(.98) saturate(.98)" aria-label="Livingston card front">
+            <div class="shop-card-wash"></div>
+            <div class="shop-card-sheen"></div>
+            <div class="shop-card-glare"></div>
+            <div class="shop-card-edge"></div>
+            <div class="shop-card-grain"></div>
+            <div class="shop-card-dust"></div>
+            <div class="shop-card-content">
+              <span class="shop-card-kicker">Official AIRS No.001</span>
+              <div class="shop-card-side-label">Front side / 外の記憶</div>
+              <h3>Livingston</h3>
+              <p>那須の街角で、訪れる前から少しだけ記憶になるお店。</p>
+              <div class="shop-card-meta" aria-label="front tags">
+                <span>Nasu</span>
+                <span>Cafe & Goods</span>
+                <span>Local Memory</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="shop-card-face back" style="--card-photo: url('/assets/livingston/livingston-back.png'); --photo-position: center center; --photo-filter: brightness(.99) contrast(.96) saturate(.93)" aria-label="Livingston card back">
-              <div class="shop-card-wash"></div>
-              <div class="shop-card-sheen"></div>
-              <div class="shop-card-glare"></div>
-              <div class="shop-card-edge"></div>
-              <div class="shop-card-grain"></div>
-              <div class="shop-card-dust"></div>
-              <div class="shop-card-content">
-                <span class="shop-card-kicker">Inside Memory</span>
-                <div class="shop-card-side-label">Back side / 中の記憶</div>
-                <h3>窓際の時間</h3>
-                <p>外の光がやわらかく入って、ひとこと残したくなる場所。</p>
-                <div class="shop-card-meta" aria-label="back tags">
-                  <span>Quiet</span>
-                  <span>Warm</span>
-                  <span>Xgg</span>
-                </div>
+          <article class="shop-card-face back" style="--card-photo: url('/assets/livingston/livingston-back.png'); --photo-position: center center; --photo-filter: brightness(.99) contrast(.96) saturate(.93)" aria-label="Livingston card back">
+            <div class="shop-card-wash"></div>
+            <div class="shop-card-sheen"></div>
+            <div class="shop-card-glare"></div>
+            <div class="shop-card-edge"></div>
+            <div class="shop-card-grain"></div>
+            <div class="shop-card-dust"></div>
+            <div class="shop-card-content">
+              <span class="shop-card-kicker">Inside Memory</span>
+              <div class="shop-card-side-label">Back side / 中の記憶</div>
+              <h3>窓際の時間</h3>
+              <p>外の光がやわらかく入って、ひとこと残したくなる場所。</p>
+              <div class="shop-card-meta" aria-label="back tags">
+                <span>Quiet</span>
+                <span>Warm</span>
+                <span>Xgg</span>
               </div>
-            </article>
-          </div>
-          <p class="shop-card-note">場所が記憶になるまでの、最初の公式カード。</p>
+            </div>
+          </article>
         </div>
       </div>
+
+      <div class="shop-card-serial-row"><span>Official AIRS 001</span></div>
 
       <div class="card-side-switch" aria-label="カード面切替">
         <button class="side-button is-active" type="button" data-card-side="front">表面</button>
