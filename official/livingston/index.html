@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livingston Official AIRS No.001 | お客様.COM</title>
+  <meta name="description" content="Livingston Official AIRS No.001。場所が記憶になるまでの導線を試す、最初の公式AIRSカードです。">
+  <meta property="og:title" content="Livingston Official AIRS No.001">
+  <meta property="og:description" content="味は思い出を食べている。Livingstonから始まるOfficial AIRSの最初の原型。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f6f1e8">
+  <style>
+    :root {
+      --ink: #1d2630;
+      --muted: #687266;
+      --paper: #f7f2e8;
+      --paper-soft: #fffaf1;
+      --line: rgba(78, 73, 61, .16);
+      --green: #2f7d63;
+      --green-dark: #174534;
+      --gold: #b38a44;
+      --shadow: 0 24px 70px rgba(41, 34, 24, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(247,242,232,.94)),
+        var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    .hero {
+      min-height: 86svh;
+      display: grid;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+      padding: 28px;
+      color: #fff;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        url("/assets/worldview-cards/worldview_immersion-restaurant.jpg") center / cover;
+      transform: scale(1.03);
+      filter: saturate(.9) contrast(.98);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(15, 18, 17, .12) 0%, rgba(15, 18, 17, .42) 52%, rgba(15, 18, 17, .82) 100%);
+    }
+
+    .hero-inner {
+      width: min(1080px, 100%);
+      margin: 0 auto;
+      padding-bottom: clamp(22px, 7vh, 74px);
+    }
+
+    .serial {
+      display: inline-flex;
+      border: 1px solid rgba(255,255,255,.48);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 900;
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 18px 0 14px;
+      font-size: clamp(48px, 10vw, 118px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(17px, 2.4vw, 25px);
+      font-weight: 750;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--green-dark);
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      backdrop-filter: blur(14px);
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 70px;
+    }
+
+    .thought {
+      display: grid;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0 30px;
+    }
+
+    .thought span {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .thought strong {
+      display: block;
+      max-width: 760px;
+      color: #222a2d;
+      font-size: clamp(25px, 4vw, 46px);
+      line-height: 1.35;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+      margin-top: 26px;
+    }
+
+    .section {
+      display: grid;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 250, 241, .78);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .section + .section,
+    .rail-block + .rail-block {
+      margin-top: 16px;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .section-head span {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      line-height: 1.25;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.8;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .info-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+      padding: 13px;
+    }
+
+    .info-item span,
+    .tagline span,
+    .memory-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .info-item strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tags span {
+      border-radius: 999px;
+      background: #edf6f1;
+      color: #286048;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .quote {
+      border-left: 3px solid var(--gold);
+      padding-left: 14px;
+      color: #3e3628;
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.8;
+    }
+
+    .rail {
+      position: sticky;
+      top: 16px;
+    }
+
+    .rail-block {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 18px 50px rgba(41, 34, 24, .09);
+      padding: 18px;
+    }
+
+    .rail-block h3 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .rail-block p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.75;
+    }
+
+    .knock-state,
+    .xgg-state {
+      display: none;
+      margin-top: 10px;
+      border: 1px solid rgba(47, 125, 99, .24);
+      border-radius: 8px;
+      background: #f1faf5;
+      color: var(--green-dark);
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+
+    .knock-state.is-visible,
+    .xgg-state.is-visible {
+      display: block;
+    }
+
+    .form {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: #343b35;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    textarea,
+    input {
+      width: 100%;
+      border: 1px solid rgba(78, 73, 61, .22);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 12px;
+      font-size: 15px;
+      line-height: 1.55;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .memory-card {
+      display: none;
+      border: 1px solid rgba(179, 138, 68, .46);
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(255,250,241,.94), rgba(239,247,241,.8));
+      padding: 16px;
+    }
+
+    .memory-card.is-visible {
+      display: grid;
+      gap: 10px;
+    }
+
+    .memory-card strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.45;
+    }
+
+    .memory-card p {
+      margin: 0;
+      color: #3f473f;
+      font-size: 15px;
+      font-weight: 780;
+      line-height: 1.8;
+    }
+
+    .mini-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .mini-actions .button {
+      min-height: 42px;
+      border-color: rgba(47,125,99,.22);
+      background: #eef8f2;
+      color: var(--green-dark);
+      padding: 9px 13px;
+      font-size: 12px;
+    }
+
+    .memory-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .memory-list article {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.72);
+      padding: 10px;
+    }
+
+    .memory-list p {
+      margin: 0;
+      color: #3f473f;
+      font-size: 13px;
+      font-weight: 780;
+      line-height: 1.65;
+    }
+
+    .memory-list small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .future {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .future div {
+      border: 1px dashed rgba(179, 138, 68, .54);
+      border-radius: 10px;
+      background: rgba(255,255,255,.5);
+      padding: 18px;
+    }
+
+    .future strong {
+      display: block;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .future span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.7;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 10;
+      transform: translate(-50%, 140%);
+      border: 1px solid rgba(47,125,99,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.94);
+      color: var(--green-dark);
+      box-shadow: 0 18px 54px rgba(28, 39, 33, .16);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 900;
+      transition: transform .25s ease;
+    }
+
+    .toast.is-visible {
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        min-height: 78svh;
+        padding: 18px;
+      }
+
+      .layout,
+      .info-grid,
+      .future {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        position: static;
+      }
+
+      h1 {
+        font-size: clamp(46px, 16vw, 78px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="serial">Livingston Official AIRS No.001</span>
+      <h1>Livingston</h1>
+      <p class="hero-copy">味は思い出を食べている。黒磯の街角で、場所が記憶になるまでの最初の導線をここから始めます。</p>
+      <div class="hero-actions">
+        <a class="button" href="#knock">このお店を残す <small>&nbsp;Knock</small></a>
+        <a class="button secondary" href="#xgg">この記憶を残す <small>&nbsp;Xgg</small></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="thought" aria-label="AIRS concept">
+      <span>AIRS = 場所が記憶になるまでの導線</span>
+      <strong>これは店舗紹介ではなく、ひとつの場所が誰かの記憶になるまでを受け止める最初の原型です。</strong>
+    </section>
+
+    <div class="layout">
+      <div>
+        <section class="section" aria-labelledby="official-card-title">
+          <div class="section-head">
+            <span>Official AIRS Card</span>
+            <h2 id="official-card-title">公式AIRSカード</h2>
+            <p>Universal AIRSから、店舗の空気を公式に整える最初の一枚。ここでは情報よりも、消したくない余白を大切にします。</p>
+          </div>
+
+          <div class="info-grid" aria-label="店舗情報">
+            <div class="info-item"><span>店名</span><strong>リビングストン</strong></div>
+            <div class="info-item"><span>Official AIRS ID</span><strong>livingston-official-airs-001</strong></div>
+            <div class="info-item"><span>住所</span><strong>栃木県那須塩原市高砂町6-21</strong></div>
+            <div class="info-item"><span>カテゴリ</span><strong>カフェ・喫茶 / 街角の記憶</strong></div>
+            <div class="info-item"><span>営業時間</span><strong>公式情報をご確認ください</strong></div>
+            <div class="info-item"><span>駐車場・決済</span><strong>店頭・Google Mapsで確認</strong></div>
+          </div>
+
+          <p class="quote">「味は思い出を食べている」</p>
+
+          <div class="tags" aria-label="世界観タグ">
+            <span>黒磯</span>
+            <span>静かな時間</span>
+            <span>常連の記憶</span>
+            <span>街角</span>
+            <span>Official AIRS No.001</span>
+          </div>
+
+          <div class="mini-actions">
+            <a class="button" href="https://www.google.com/maps/search/?api=1&query=%E3%83%AA%E3%83%93%E3%83%B3%E3%82%B0%E3%82%B9%E3%83%88%E3%83%B3%20%E9%82%A3%E9%A0%88%E5%A1%A9%E5%8E%9F" target="_blank" rel="noopener">Google Mapsを見る</a>
+            <a class="button" href="/">お客様.COMへ</a>
+          </div>
+        </section>
+
+        <section class="section" id="xgg" aria-labelledby="xgg-title">
+          <div class="section-head">
+            <span>Xgg</span>
+            <h2 id="xgg-title">この場所で記憶を残す</h2>
+            <p>レビューではなく、その時の空気をひとことだけ残します。今日の席、窓の光、マスターの声、雨の匂い。</p>
+          </div>
+
+          <form class="form" id="xgg-form">
+            <label>
+              ひとことメモ
+              <textarea id="memory-text" maxlength="160" placeholder="例: 雨の日の窓際が好きだった"></textarea>
+            </label>
+            <label>
+              写真リンク 任意
+              <input id="photo-link" type="url" placeholder="https://...">
+            </label>
+            <button class="button" type="submit">この記憶を残す <small>&nbsp;Xgg</small></button>
+          </form>
+
+          <div class="memory-card" id="xgg-complete" aria-live="polite">
+            <span>残した記憶 / Xggs</span>
+            <strong>記憶を残しました</strong>
+            <p id="xgg-complete-text"></p>
+            <div class="mini-actions">
+              <button class="button" type="button" id="copy-post">投稿文をコピー</button>
+              <button class="button" type="button" id="copy-url">URLをコピー</button>
+              <button class="button" type="button" id="view-airs">air-sで見る</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="future-title">
+          <div class="section-head">
+            <span>Future</span>
+            <h2 id="future-title">次に育つもの</h2>
+          </div>
+          <div class="future">
+            <div>
+              <strong>Season AIRS</strong>
+              <span>季節ごとにお店が発行する、ファン向けの静かなカード。Coming soon.</span>
+            </div>
+            <div>
+              <strong>Pocket</strong>
+              <span>残したお店と記憶を、自分だけの小さな帳面にしまう場所。Coming soon.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="rail" id="knock" aria-label="Knock and memories">
+        <div class="rail-block">
+          <h3>このお店を残す</h3>
+          <p>好きなお店として、自分のair-sにそっと残します。最初はこの端末内だけの保存です。</p>
+          <div class="mini-actions">
+            <button class="button" type="button" id="knock-button">このお店を残す <small>&nbsp;Knock</small></button>
+          </div>
+          <div class="knock-state" id="knock-state">air-sに残しました</div>
+        </div>
+
+        <div class="rail-block">
+          <h3>残した記憶</h3>
+          <p>この端末に残っているLivingstonのXggsです。</p>
+          <div class="memory-list" id="memory-list"></div>
+        </div>
+
+        <div class="rail-block">
+          <h3>知る → 残す → 記憶になる</h3>
+          <p>map-sで見つけ、okyakusa-maで世界観を整え、air-sで記憶として残る。Livingstonはその最初の場所です。</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const SHOP = {
+      shopId: "livingston",
+      placeId: "google_place_id_livingston_placeholder",
+      officialAirsId: "livingston-official-airs-001",
+      name: "リビングストン",
+      season: "summer"
+    };
+    const KNOCK_KEY = "airs_knocks_v1";
+    const XGGS_KEY = "airs_xggs_v1";
+    let latestXgg = null;
+
+    function readList(key) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeList(key, items) {
+      localStorage.setItem(key, JSON.stringify(items.slice(0, 80)));
+    }
+
+    function isoNow() {
+      return new Date().toISOString();
+    }
+
+    function showToast(message) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = message;
+      toast.classList.add("is-visible");
+      window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
+    }
+
+    function officialUrl() {
+      return new URL(location.pathname, location.origin).toString();
+    }
+
+    function knockData() {
+      return {
+        shopId: SHOP.shopId,
+        placeId: SHOP.placeId,
+        officialAirsId: SHOP.officialAirsId,
+        savedAt: isoNow(),
+        source: "official_airs"
+      };
+    }
+
+    function saveKnock() {
+      const knocks = readList(KNOCK_KEY).filter((item) => item.officialAirsId !== SHOP.officialAirsId);
+      const item = knockData();
+      writeList(KNOCK_KEY, [item, ...knocks]);
+      renderKnock();
+      showToast("air-sに残しました");
+    }
+
+    function renderKnock() {
+      const saved = readList(KNOCK_KEY).some((item) => item.officialAirsId === SHOP.officialAirsId);
+      const state = document.querySelector("#knock-state");
+      const button = document.querySelector("#knock-button");
+      state.classList.toggle("is-visible", saved);
+      if (button) button.textContent = saved ? "air-sに残しました" : "このお店を残す  Knock";
+    }
+
+    function buildShareText(memoryText) {
+      return `Livingstonで今日の記憶をair-sに残しました。\n「${memoryText}」\n${officialUrl()}`;
+    }
+
+    function saveXgg(event) {
+      event.preventDefault();
+      const memoryText = document.querySelector("#memory-text").value.trim();
+      const photoLink = document.querySelector("#photo-link").value.trim();
+      if (!memoryText) {
+        showToast("ひとことメモを入力してください");
+        return;
+      }
+      const createdAt = isoNow();
+      const item = {
+        xggId: `xgg_${Date.now().toString(36)}`,
+        shopId: SHOP.shopId,
+        placeId: SHOP.placeId,
+        officialAirsId: SHOP.officialAirsId,
+        visitedAt: createdAt,
+        season: SHOP.season,
+        memoryText,
+        photoLink,
+        shareText: buildShareText(memoryText),
+        shareUrl: officialUrl(),
+        source: "official_airs",
+        createdAt,
+        isSynced: false
+      };
+      latestXgg = item;
+      writeList(XGGS_KEY, [item, ...readList(XGGS_KEY)]);
+      document.querySelector("#xgg-complete-text").textContent = memoryText;
+      document.querySelector("#xgg-complete").classList.add("is-visible");
+      document.querySelector("#xgg-form").reset();
+      renderMemories();
+      showToast("記憶を残しました");
+    }
+
+    function renderMemories() {
+      const list = document.querySelector("#memory-list");
+      const items = readList(XGGS_KEY).filter((item) => item.officialAirsId === SHOP.officialAirsId).slice(0, 6);
+      if (!items.length) {
+        list.innerHTML = "<article><p>まだ記憶はありません。</p><small>最初のひとことを残せます。</small></article>";
+        return;
+      }
+      list.innerHTML = items.map((item) => `
+        <article>
+          <p>${escapeHtml(item.memoryText)}</p>
+          <small>${new Date(item.createdAt).toLocaleString("ja-JP", { dateStyle: "medium", timeStyle: "short" })}</small>
+        </article>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    async function copyText(text, done) {
+      await navigator.clipboard.writeText(text);
+      showToast(done);
+    }
+
+    document.querySelector("#knock-button").addEventListener("click", saveKnock);
+    document.querySelector("#xgg-form").addEventListener("submit", saveXgg);
+    document.querySelector("#copy-post").addEventListener("click", () => {
+      if (!latestXgg) return;
+      copyText(latestXgg.shareText, "投稿文をコピーしました");
+    });
+    document.querySelector("#copy-url").addEventListener("click", () => {
+      copyText(officialUrl(), "URLをコピーしました");
+    });
+    document.querySelector("#view-airs").addEventListener("click", () => {
+      const url = new URL("/", location.origin);
+      url.searchParams.set("airs-preview", "1");
+      url.hash = "airs-locker";
+      location.href = url.toString();
+    });
+
+    renderKnock();
+    renderMemories();
+  </script>
+</body>
+</html>
