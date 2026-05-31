@@ -6795,9 +6795,10 @@
                 <div class="clip-actions clip-post-actions">
                   <button class="clip-button save" type="button" id="clip-share-video-post" hidden><span class="clip-save-required">必須</span>スマホに保存する</button>
                   <button class="clip-button primary" type="button" id="clip-copy-caption">投稿文をコピー</button>
-                  <a class="clip-button is-disabled" href="https://www.instagram.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">Instagram</a>
-                  <a class="clip-button is-disabled" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">TikTok</a>
-                  <a class="clip-button is-disabled" href="https://www.youtube.com/" target="_blank" rel="noopener" data-clip-sns aria-disabled="true">YouTube Shorts</a>
+                  <a class="clip-button is-disabled" href="https://www.instagram.com/" target="_blank" rel="noopener" data-clip-sns="instagram" aria-disabled="true">Instagram</a>
+                  <a class="clip-button is-disabled" href="https://www.tiktok.com/upload" target="_blank" rel="noopener" data-clip-sns="tiktok" aria-disabled="true">TikTok投稿</a>
+                  <a class="clip-button is-disabled" href="https://www.youtube.com/upload" target="_blank" rel="noopener" data-clip-sns="youtube" aria-disabled="true">YouTube Shorts</a>
+                  <a class="clip-button is-disabled" href="https://line.me/R/msg/text/" target="_blank" rel="noopener" data-clip-sns="line" aria-disabled="true">LINEで送る</a>
                 </div>
                 <p class="clip-note" id="clip-save-note">先に「スマホに保存する」を押してください。共有画面から写真アプリやSNSへ渡せる場合があります。</p>
                 <div class="clip-step-actions">
@@ -13106,6 +13107,22 @@
         return fallback;
       }
 
+      function clipSnsUrl(platform) {
+        const caption = currentClipCaptionText();
+        if (platform === "line") {
+          return `https://line.me/R/msg/text/?${encodeURIComponent(caption)}`;
+        }
+        if (platform === "tiktok") return "https://www.tiktok.com/upload";
+        if (platform === "youtube") return "https://www.youtube.com/upload";
+        return "https://www.instagram.com/";
+      }
+
+      function updateClipSnsLinks() {
+        snsLinks.forEach((link) => {
+          link.href = clipSnsUrl(link.dataset.clipSns);
+        });
+      }
+
       function setClipAiHint(message) {
         if (aiHint) aiHint.textContent = message;
       }
@@ -13184,6 +13201,7 @@
       }
 
       function updateClipSaveState() {
+        updateClipSnsLinks();
         snsLinks.forEach((link) => {
           link.classList.toggle("is-disabled", !state.saved);
           link.setAttribute("aria-disabled", state.saved ? "false" : "true");
@@ -14168,6 +14186,23 @@
         setClipStatus("この端末では共有画面に直接渡せません。別のブラウザでお試しください。");
       }
       shareVideoPostButton?.addEventListener("click", shareClipVideo);
+      snsLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          if (!state.saved) {
+            event.preventDefault();
+            setClipStatus("先にスマホに保存してください。保存後にSNSへ進めます。");
+            return;
+          }
+          updateClipSnsLinks();
+          if (link.dataset.clipSns === "line") {
+            setClipStatus("LINEを開きます。動画を送る場合は保存済み動画を選んでください。");
+            return;
+          }
+          navigator.clipboard?.writeText(currentClipCaptionText())
+            .then(() => setClipStatus("投稿文をコピーしました。開いた投稿画面で保存済み動画を選んでください。"))
+            .catch(() => setClipStatus("開いた投稿画面で保存済み動画を選び、投稿文を貼り付けてください。"));
+        });
+      });
 
       renderCuts();
       setupClipVoiceInput();
