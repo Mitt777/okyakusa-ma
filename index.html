@@ -810,12 +810,17 @@
       text-align: center;
     }
 
-    .clip-video-preview video {
+    .clip-video-preview video,
+    .clip-video-preview img {
       display: block;
       width: 100%;
       height: 100%;
       max-height: 220px;
       object-fit: cover;
+    }
+
+    .clip-video-preview img {
+      min-height: 100%;
     }
 
     .clip-video-preview.is-filled {
@@ -13145,8 +13150,19 @@
         });
       }
 
+      function normalizeClipStep(step) {
+        if (step <= 1) return 1;
+        if (step >= 6) return 6;
+        return 5;
+      }
+
+      function previousClipStep() {
+        if (state.step >= 6) return 5;
+        return 1;
+      }
+
       function showClipStep(step) {
-        state.step = Math.max(1, Math.min(6, step));
+        state.step = normalizeClipStep(Number(step) || 1);
         document.querySelectorAll("[data-clip-screen]").forEach((screen) => {
           screen.classList.toggle("is-active", Number(screen.dataset.clipScreen) === state.step);
         });
@@ -13450,7 +13466,9 @@
             </div>
             <label class="clip-video-preview${clip ? " is-filled" : ""}" id="clip-preview-${index}">
               ${clip
-                ? `<video src="${clipEscape(clip.url)}" ${clip.poster ? `poster="${clipEscape(clip.poster)}"` : ""} playsinline controls muted></video>`
+                ? clip.poster
+                  ? `<img src="${clipEscape(clip.poster)}" alt="Cut ${index + 1}のサムネイル">`
+                  : `<span>サムネを作成中です</span>`
                 : `<span>${isActive ? "ここに動画を入れます" : "空き枠"}</span>`}
             </label>
             <div class="clip-video-actions">
@@ -13507,12 +13525,16 @@
           video.muted = true;
           video.playsInline = true;
           video.src = url;
-          await waitEventWithTimeout(video, "loadedmetadata", 1200);
+          video.load?.();
+          await waitEventWithTimeout(video, "loadedmetadata", 2500);
+          if (!video.videoWidth) await waitEventWithTimeout(video, "loadeddata", 2500);
           video.currentTime = Math.min(0.25, Math.max(0, (video.duration || 1) - 0.1));
-          await waitEventWithTimeout(video, "seeked", 1200);
+          await waitEventWithTimeout(video, "seeked", 2500);
+          if (!video.videoWidth) await waitEventWithTimeout(video, "loadeddata", 2500);
           const canvas = document.createElement("canvas");
           canvas.width = video.videoWidth || 360;
           canvas.height = video.videoHeight || 640;
+          await new Promise((resolve) => requestAnimationFrame(resolve));
           canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
           return canvas.toDataURL("image/jpeg", 0.82);
         } catch (error) {
@@ -13534,15 +13556,18 @@
         const praiseBox = document.querySelector(`#clip-praise-${index}`);
         if (preview) {
           preview.classList.add("is-filled");
-          preview.innerHTML = `<video src="${clipEscape(url)}" playsinline controls muted></video>`;
+          preview.innerHTML = "<span>サムネを作成中です</span>";
         }
         createClipPoster(file, url).then((poster) => {
           if (!poster || state.cuts[index]?.file !== file) return;
           state.cuts[index].poster = poster;
           const currentPreview = document.querySelector(`#clip-preview-${index}`);
-          const currentVideo = currentPreview?.querySelector("video");
-          if (currentVideo) currentVideo.poster = poster;
+          if (currentPreview) {
+            currentPreview.classList.add("is-filled");
+            currentPreview.innerHTML = `<img src="${clipEscape(poster)}" alt="Cut ${index + 1}のサムネイル">`;
+          }
           renderTrimList();
+          renderCuts();
         });
         if (praiseBox) {
           const durationHint = duration > 6 ? "少し長めなので、最初の5秒だけ使います。" : "長さもちょうど良いです。";
@@ -13557,7 +13582,10 @@
 
       function bindBackButtons() {
         document.querySelectorAll("[data-clip-back]").forEach((button) => {
-          button.onclick = () => showClipStep(state.step - 1);
+          button.onclick = () => {
+            showClipStep(previousClipStep());
+            scrollToClipStudioHead();
+          };
         });
       }
 
