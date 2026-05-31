@@ -13398,8 +13398,7 @@
         const video = trimFocus.querySelector("video");
         if (!video) return;
         const window = cutWindow(cut);
-        video.currentTime = window.start;
-        if (window.start > .05) await waitEventWithTimeout(video, "seeked", 300);
+        await seekClipVideo(video, window.start);
         try {
           await video.play();
         } catch (error) {
@@ -13657,9 +13656,8 @@
           const cut = selectedCuts[index];
           const window = cutWindow(cut);
           trimPreview.src = cut.url;
-          await waitEventWithTimeout(trimPreview, "loadedmetadata", 450);
-          trimPreview.currentTime = window.start;
-          if (window.start > .05) await waitEventWithTimeout(trimPreview, "seeked", 300);
+          await waitEventWithTimeout(trimPreview, "loadedmetadata", 1200);
+          await seekClipVideo(trimPreview, window.start);
           setClipStatus(`Cut ${index + 1} を確認再生しています。`);
           try {
             await trimPreview.play();
@@ -13707,6 +13705,26 @@
         return Promise.race([
           waitEvent(target, eventName).catch(() => {}),
           new Promise((resolve) => window.setTimeout(resolve, timeout))
+        ]);
+      }
+
+      async function seekClipVideo(video, time, timeout = 2500) {
+        const target = Math.max(0, Number(time) || 0);
+        if (video.readyState < 1) await waitEventWithTimeout(video, "loadedmetadata", timeout);
+        video.currentTime = target;
+        const start = performance.now();
+        await Promise.race([
+          waitEvent(video, "seeked").catch(() => {}),
+          new Promise((resolve) => {
+            const tick = () => {
+              if (Math.abs((video.currentTime || 0) - target) < 0.08 || performance.now() - start >= timeout) {
+                resolve();
+                return;
+              }
+              requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          })
         ]);
       }
 
@@ -13775,9 +13793,9 @@
         const audioFilter = `aresample=44100,apad,atrim=0:${seconds.toFixed(2)}`;
         try {
           await ffmpeg.run(
+            "-i", input,
             "-ss", range.start.toFixed(2),
             "-t", seconds.toFixed(2),
-            "-i", input,
             "-filter_complex", `[0:v]${videoFilter}[v];[0:a]${audioFilter}[a]`,
             "-map", "[v]",
             "-map", "[a]",
@@ -13792,9 +13810,9 @@
         } catch (error) {
           clipFsUnlink(ffmpeg, output);
           await ffmpeg.run(
+            "-i", input,
             "-ss", range.start.toFixed(2),
             "-t", seconds.toFixed(2),
-            "-i", input,
             "-f", "lavfi",
             "-t", seconds.toFixed(2),
             "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
@@ -13835,8 +13853,7 @@
           }
         }
         const seekTo = Math.max(0, startAt || 0);
-        video.currentTime = seekTo;
-        if (seekTo > .05) await waitEventWithTimeout(video, "seeked", 450);
+        await seekClipVideo(video, seekTo, 3000);
         try {
           await video.play();
         } catch (error) {
