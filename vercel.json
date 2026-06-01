@@ -22,6 +22,106 @@
   ],
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "g-maps.shop"
+        }
+      ],
+      "destination": "/sitemap-gmaps.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "map-s.site"
+        }
+      ],
+      "destination": "/sitemap-maps.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "okyakusa-ma.com"
+        }
+      ],
+      "destination": "/sitemap-okyakusama.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "air-s.jp"
+        }
+      ],
+      "destination": "/sitemap-airs.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "clip.air-s.jp"
+        }
+      ],
+      "destination": "/sitemap-clip.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "g-maps.shop"
+        }
+      ],
+      "destination": "/robots-gmaps.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "map-s.site"
+        }
+      ],
+      "destination": "/robots-maps.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "okyakusa-ma.com"
+        }
+      ],
+      "destination": "/robots-okyakusama.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "air-s.jp"
+        }
+      ],
+      "destination": "/robots-airs.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "clip.air-s.jp"
+        }
+      ],
+      "destination": "/robots-clip.txt"
+    },
+    {
       "source": "/m/:mapId",
       "destination": "/api/maps?public=1&mapId=:mapId"
     },

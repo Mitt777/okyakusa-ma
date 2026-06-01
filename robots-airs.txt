@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://air-s.jp/sitemap.xml

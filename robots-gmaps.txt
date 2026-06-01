@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://g-maps.shop/sitemap.xml
