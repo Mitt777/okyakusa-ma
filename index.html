@@ -38,6 +38,16 @@
       document.title = "map-s | Google MapsのURLだけで店舗MAPを3分作成";
       setMeta("description", "Google MapsのURLを貼るだけで、店舗MAPページを3分で作成・公開。商店街、観光協会、複数店舗、イベント会場、周辺案内に。埋め込み、QR、共有URL対応予定。");
     }
+    if (currentHost === "g-maps.shop" || location.search.includes("gmaps-preview=1")) {
+      document.documentElement.classList.add("gmaps-domain");
+      document.title = "g-maps.shop | 観光地のお店のGoogle Maps見え方診断";
+      setMeta("description", "観光地や地方のお店が、Google Maps、写真、口コミ、営業時間、入口、駐車場、検索でどう見えているかを無料で診断します。");
+    }
+    if (currentHost === "okyakusa-ma.com" || location.search.includes("okm-preview=1")) {
+      document.documentElement.classList.add("okm-domain");
+      document.title = "お客様.COM | お店の世界観と来店前体験を診断";
+      setMeta("description", "Google MapsやSNSの見え方から、お店の世界観、入りやすさ、来店前不安、初めてのお客様に届く言葉を無料で診断します。");
+    }
   </script>
   <style>
     :root {
@@ -7897,8 +7907,8 @@
   <main class="site">
     <header>
       <div class="brand">
-        <strong>お客様.COM</strong>
-        <span>えらばれる店スコア診断</span>
+        <strong id="service-brand-name">お客様.COM</strong>
+        <span id="service-brand-subtitle">えらばれる店スコア診断</span>
       </div>
       <nav aria-label="主要ナビゲーション">
         <a href="#diagnosis-scope">診断でわかること</a>
@@ -7909,9 +7919,9 @@
     </header>
 
     <section class="hero" aria-labelledby="main-title">
-      <div class="eyebrow">無料診断 β / 店舗向け</div>
+      <div class="eyebrow" id="service-eyebrow">無料診断 β / 店舗向け</div>
       <h1 id="main-title">Google Mapsから、あなたのお店の一枚ショップカードを。</h1>
-      <p class="lead">
+      <p class="lead" id="service-lead">
         店名を入れるだけ。Google Mapsの公開情報とお店の空気をもとに、
         初めてのお客様に伝わる “動く一枚ショップカード” をつくります。
       </p>
@@ -7926,9 +7936,9 @@
           </div>
         </div>
         <div class="worldview-card-teaser-copy">
-          <span>お客様.COMカード β</span>
-          <strong>お店の世界観カードを作れます。</strong>
-          <p>診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
+          <span id="service-teaser-kicker">お客様.COMカード β</span>
+          <strong id="service-teaser-title">お店の世界観カードを作れます。</strong>
+          <p id="service-teaser-text">診断後に7問へ答えると、点数ではなく「うちらしさ」を1枚にしたショップカードをプレゼントします。</p>
         </div>
       </div>
 
@@ -7940,8 +7950,8 @@
 
         <div class="search-main">
           <div class="prompt">
-            <strong>診断したいお店を教えてください <span class="field-required">必須</span></strong>
-            <span>まずは店名だけでも大丈夫です。地域名やURLがあると、候補確認がより正確になります。</span>
+            <strong><span id="service-form-title">診断したいお店を教えてください</span> <span class="field-required">必須</span></strong>
+            <span id="service-form-help">まずは店名だけでも大丈夫です。地域名やURLがあると、候補確認がより正確になります。</span>
           </div>
           <form id="diagnosis-form" action="/api/diagnosis" method="post">
             <div class="search-box">
@@ -8041,7 +8051,7 @@
           </form>
           <div class="next-questions" aria-label="続く入力項目">
             <span>次に行うこと:</span>
-            店舗特定、Google Maps観測、AI検索/GEO、SNS導線、入りやすさ、世界観タイプを順に確認します。
+            <span id="service-next-questions">店舗特定、Google Maps観測、AI検索/GEO、SNS導線、入りやすさ、世界観タイプを順に確認します。</span>
           </div>
         </div>
 
@@ -8150,9 +8160,9 @@
     <section class="diagnosis-scope" id="diagnosis-scope" aria-labelledby="diagnosis-scope-title">
       <div class="diagnosis-scope-head">
         <div>
-          <span class="diagnosis-scope-kicker">無料 / だいたい1分 / でも奥は深い</span>
+          <span class="diagnosis-scope-kicker" id="service-scope-kicker">無料 / だいたい1分 / でも奥は深い</span>
           <h2 id="diagnosis-scope-title">この診断でわかること</h2>
-          <p class="diagnosis-scope-lead">
+          <p class="diagnosis-scope-lead" id="service-scope-lead">
             入り口はかんたん。店舗名、地域、URLを入れるだけで、Google Maps、口コミ、検索、SNS、AI検索での見え方、
             そしてお店の世界観までまとめて確認します。遊び感覚で試せて、結果はそのままお店づくりのヒントになります。
           </p>
@@ -12393,6 +12403,54 @@
     }
 
     initMapsBuilder();
+
+    function setText(selector, value) {
+      const element = document.querySelector(selector);
+      if (element) element.textContent = value;
+    }
+
+    function applyServiceTopCopy() {
+      const host = location.hostname.replace(/^www\./, "");
+      const isGmaps = host === "g-maps.shop" || location.search.includes("gmaps-preview=1");
+      const isOkm = host === "okyakusa-ma.com" || location.search.includes("okm-preview=1") || (!isGmaps && host !== "air-s.jp" && host !== "clip.air-s.jp" && host !== "map-s.site");
+
+      if (isGmaps) {
+        setText("#service-brand-name", "g-maps.shop");
+        setText("#service-brand-subtitle", "観光地のお店のGoogle Maps見え方診断");
+        setText("#service-eyebrow", "無料診断 β / 観光地・地方店舗向け");
+        setText("#main-title", "Google Mapsで、あなたのお店はどう見えているか。");
+        setText("#service-lead", "店名を入れるだけ。写真、口コミ、営業時間、入口、駐車場、検索での見え方を確認し、初めてのお客様が入りやすくなる改善ポイントを整理します。");
+        setText("#service-teaser-kicker", "Google Maps見え方カード β");
+        setText("#service-teaser-title", "診断結果を、1枚の見え方カードに。");
+        setText("#service-teaser-text", "観光地のお店が来店前に比較されるポイントを、点数だけでなく、今日直せる改善案としてまとめます。");
+        setText("#service-form-title", "Google Mapsで見え方を診断したいお店を教えてください");
+        setText("#service-form-help", "店名だけでも始められます。地域名やGoogle Maps URLがあると、候補確認がより正確になります。");
+        setText("#form-step-hint", "店名だけでも始められます。候補を確認してお店を選び、お名前・メールを足したら、下の「無料診断を申し込む」へ進んでください。");
+        setText("#service-next-questions", "店舗特定、Google Maps観測、写真、口コミ、営業時間、入口、駐車場、検索での見え方を順に確認します。");
+        setText("#service-scope-kicker", "無料 / だいたい1分 / Mapsから見える弱点を整理");
+        setText("#diagnosis-scope-title", "g-maps.shopの診断でわかること");
+        setText("#service-scope-lead", "Google Maps上の公開情報をもとに、写真、口コミ、営業時間、Web導線、入口・駐車場・価格感など、初めてのお客様が来店前に見ている情報を確認します。");
+        setText("#living-card-title", "診断結果を、SNSで共有できるカードに。");
+        setText("#living-card-headline", "Google Maps上の見え方から、改善ポイントを一枚にします。");
+      } else if (isOkm) {
+        setText("#service-brand-name", "お客様.COM");
+        setText("#service-brand-subtitle", "世界観と来店前体験の無料診断");
+        setText("#service-eyebrow", "無料診断 β / お店の世界観・入りやすさ");
+        setText("#main-title", "お店の世界観を、初めてのお客様に届く言葉へ。");
+        setText("#service-lead", "Google MapsやSNSに見えている情報から、お店の人格、入りやすさ、来店前不安、そして「また行きたい」と思われる理由を診断します。");
+        setText("#service-teaser-kicker", "お客様.COMカード β");
+        setText("#service-teaser-title", "点数ではなく、お店らしさを1枚に。");
+        setText("#service-teaser-text", "診断後に7問へ答えると、お店の世界観を伝えるショップカードを作れます。公式air-sや場所の記憶ともつながる入口です。");
+        setText("#service-form-title", "世界観を診断したいお店を教えてください");
+        setText("#service-form-help", "まずは店名だけでも大丈夫です。Google MapsやSNS情報があると、お店らしさの診断が深くなります。");
+        setText("#service-next-questions", "店舗特定、Google Maps観測、AI検索/GEO、SNS導線、入りやすさ、世界観タイプを順に確認します。");
+        setText("#service-scope-kicker", "無料 / だいたい1分 / 世界観まで深掘り");
+        setText("#diagnosis-scope-title", "お客様.COMの診断でわかること");
+        setText("#service-scope-lead", "入り口はかんたん。店舗名、地域、URLを入れるだけで、Google Maps、口コミ、検索、SNS、AI検索での見え方、そしてお店の世界観までまとめて確認します。");
+      }
+    }
+
+    applyServiceTopCopy();
 
     const form = document.querySelector("#diagnosis-form");
     const message = document.querySelector("#form-message");
