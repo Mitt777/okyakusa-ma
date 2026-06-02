@@ -130,9 +130,9 @@
 </head>
 <body>
   <main>
-    <div class="brand">お客様どっと混む / えらばれる店スコア診断</div>
-    <h1>無料診断を受け付けました。</h1>
-    <p>
+    <div class="brand" id="thanks-brand">お客様どっと混む / えらばれる店スコア診断</div>
+    <h1 id="thanks-title">無料診断を受け付けました。</h1>
+    <p id="thanks-lead">
       店舗特定を確認したうえで、Google Maps、簡易SEO、SNS、来店前不安、Save/Plan/Impulseの観点から診断します。
       結果ページは短いURLで発行し、LINEやメールで共有できる形にします。
     </p>
@@ -156,6 +156,13 @@
   </main>
 
   <script>
+    const host = location.hostname.replace(/^www\./, "");
+    if (host === "g-maps.shop") {
+      document.title = "Google Maps見え方診断を受け付けました | g-maps.shop";
+      document.querySelector("#thanks-brand").textContent = "g-maps.shop / 観光地Google Maps見え方診断";
+      document.querySelector("#thanks-title").textContent = "Google Maps見え方診断を受け付けました。";
+      document.querySelector("#thanks-lead").textContent = "店舗特定を確認したうえで、Google Maps、写真、口コミ、営業時間、入口、駐車場、検索での見え方を診断します。結果ページでは、お客様.COMで世界観まで深掘りできる導線も表示します。";
+    }
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     document.querySelector("#request-id").textContent = id || "未取得";

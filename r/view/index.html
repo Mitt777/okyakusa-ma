@@ -343,6 +343,158 @@
       margin-top: 8px;
     }
 
+    .gmaps-phase-panel {
+      display: none;
+      margin: 20px 28px 0;
+      border: 1px solid #b7dfd1;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f7fffb 0%, #fffaf1 100%);
+      padding: 22px;
+    }
+
+    .gmaps-phase-panel.is-open {
+      display: block;
+    }
+
+    .gmaps-phase-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .gmaps-phase-head span {
+      display: inline-flex;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #dcebe5;
+      color: #12614e;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .gmaps-phase-head h2 {
+      margin: 0 0 8px;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.35;
+    }
+
+    .gmaps-phase-head p {
+      margin: 0;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .gmaps-phase-score {
+      min-width: 104px;
+      border: 1px solid rgba(31, 138, 112, .24);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .gmaps-phase-score strong {
+      display: block;
+      color: var(--green);
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .gmaps-phase-score small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .gmaps-phase-grid,
+    .okm-bridge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .gmaps-phase-card,
+    .okm-bridge-card {
+      border: 1px solid rgba(216, 222, 231, .95);
+      border-radius: 8px;
+      background: rgba(255,255,255,.84);
+      padding: 14px;
+    }
+
+    .gmaps-phase-card span,
+    .okm-bridge-card span {
+      display: block;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .gmaps-phase-card strong,
+    .okm-bridge-card strong {
+      display: block;
+      margin: 5px 0 8px;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .gmaps-phase-card p,
+    .okm-bridge-card p {
+      margin: 0;
+      color: #475467;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .okm-bridge {
+      display: none;
+      margin-top: 18px;
+      border-top: 1px solid rgba(31, 138, 112, .22);
+      padding-top: 18px;
+    }
+
+    .okm-bridge.is-open {
+      display: block;
+    }
+
+    .okm-bridge-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .okm-bridge-head h3 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+
+    .okm-bridge-head p {
+      margin: 0;
+      color: #475467;
+      font-size: 13px;
+    }
+
+    .okm-bridge-head a {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      padding: 10px 14px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
     .premium-hint {
       display: inline-flex;
       align-items: center;
@@ -2766,6 +2918,9 @@
       .summary,
       .metric p,
       .score-explain p,
+      .gmaps-phase-head p,
+      .gmaps-phase-card p,
+      .okm-bridge-card p,
       .improvement-card ol,
       .panel li,
       .worldview-result p,
@@ -2830,6 +2985,10 @@
       .metrics,
       .video-grid,
       .score-explain-grid,
+      .gmaps-phase-grid,
+      .okm-bridge-grid,
+      .gmaps-phase-head,
+      .okm-bridge-head,
       .improvement-grid,
       .worldview-intro,
       .worldview-options,
@@ -2846,6 +3005,11 @@
       .ai-lab-result-grid,
       .referral-cta {
         grid-template-columns: 1fr;
+      }
+
+      .gmaps-phase-panel {
+        margin: 16px 16px 0;
+        padding: 16px;
       }
 
       .ok-card-qr {
@@ -3115,6 +3279,8 @@
       </section>
 
       <section class="metrics" id="metrics"></section>
+
+      <section class="gmaps-phase-panel" id="gmaps-phase-panel" aria-label="Google Maps見え方診断フェーズ"></section>
 
       <section class="grid">
         <div class="panel full worldview-panel">
@@ -3515,6 +3681,107 @@
           </div>
         </div>
       `;
+    }
+
+    function isGmapsReportSource(request = {}) {
+      const host = location.hostname.replace(/^www\./, "");
+      return host === "g-maps.shop"
+        || location.search.includes("gmaps-preview=1")
+        || String(request.source || request.service_source || "").includes("g-maps.shop");
+    }
+
+    function gmapsSignal(label, value, positiveText, missingText) {
+      const ok = hasValue(value);
+      return `${label}: ${ok ? positiveText : missingText}`;
+    }
+
+    function gmapsPhaseCard(kicker, title, body) {
+      return `
+        <div class="gmaps-phase-card">
+          <span>${escapeHtml(kicker)}</span>
+          <strong>${escapeHtml(title)}</strong>
+          <p>${escapeHtml(body)}</p>
+        </div>
+      `;
+    }
+
+    function okmBridgeCard(label, title, body) {
+      return `
+        <div class="okm-bridge-card">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(title)}</strong>
+          <p>${escapeHtml(body)}</p>
+        </div>
+      `;
+    }
+
+    function renderGmapsPhasePanel(request, maps, ai) {
+      const panel = document.querySelector("#gmaps-phase-panel");
+      if (!panel) return;
+      if (!isGmapsReportSource(request)) {
+        panel.classList.remove("is-open");
+        panel.innerHTML = "";
+        return;
+      }
+
+      const mapsScore = Number(ai.maps_score || maps.maps_score || 0);
+      const entryScore = Number(ai.entry_ease_score || ai.previsit_anxiety_score || 0);
+      const geoScore = Number(ai.geo_score || 0);
+      const seoScore = Number(ai.seo_score || 0);
+      const phaseScore = Math.round([
+        mapsScore || 55,
+        entryScore || 52,
+        geoScore || 50,
+        seoScore || (request.website_url ? 50 : 42)
+      ].reduce((sum, value) => sum + value, 0) / 4);
+      const missing = parseJson(maps.maps_missing_items, []);
+      const missingText = Array.isArray(missing) && missing.length ? missing.slice(0, 3).join("、") : "";
+      const category = firstFilled(maps.maps_category, request.category);
+      const hours = firstFilled(maps.current_opening_hours, maps.weekday_descriptions);
+      const website = firstFilled(request.website_url, maps.website_url, maps.website_uri);
+      const parking = firstFilled(maps.parking_options);
+      const reviews = Number(maps.user_rating_count || 0);
+      const topFix = ai.top_fix || "入口・駐車場・営業時間・代表写真を、初めてのお客様向けに整える";
+      const okmUrl = "https://okyakusa-ma.com/";
+
+      panel.innerHTML = `
+        <div class="gmaps-phase-head">
+          <div>
+            <span>g-maps.shop Phase 2 β</span>
+            <h2>観光地のお店として、Google Maps上でどう見えているか。</h2>
+            <p>
+              この診断は、味や技術ではなく、初めてのお客様がGoogle Mapsで比較した時に
+              「見つけられるか」「迷わず行けるか」「安心して入れるか」を見る入口診断です。
+            </p>
+          </div>
+          <div class="gmaps-phase-score">
+            <strong>${escapeHtml(text(phaseScore || "--"))}</strong>
+            <small>見え方スコア</small>
+          </div>
+        </div>
+        <div class="gmaps-phase-grid">
+          ${gmapsPhaseCard("Find", "発見される土台", `${gmapsSignal("カテゴリ", category, "確認できます", "もう少し明確にしたい")}。${gmapsSignal("公式導線", website, "接続があります", "未確認です")}。Mapsスコアは${text(mapsScore || maps.maps_score)}点です。`)}
+          ${gmapsPhaseCard("Plan", "来店前の安心", `${gmapsSignal("営業時間", hours, "確認できます", "見えにくい可能性があります")}。${gmapsSignal("駐車場", parking, "情報があります", "写真や説明で補強したい")}。入口・席・価格感の説明が来店直前の不安を下げます。`)}
+          ${gmapsPhaseCard("Tourist Ready", "観光客に親切か", `地域名は「${text(request.area, "未入力")}」、業種は「${text(request.category || category, "未入力")}」。観光地では、入口・駐車場・混雑時間・予約可否が見えるほど選ばれやすくなります。`)}
+          ${gmapsPhaseCard("AI / GEO", "AI検索に説明されやすいか", `AI検索/GEOは${text(geoScore || ai.geo_score)}点。${missingText ? `未確認候補は「${missingText}」。` : "基本情報は一定確認できます。"}「誰に、どんな時に、なぜ良い店か」を短く明文化すると強くなります。`)}
+        </div>
+        <div class="okm-bridge is-open">
+          <div class="okm-bridge-head">
+            <div>
+              <h3>次に、お店の世界観まで整える。</h3>
+              <p>Google Maps診断で入口を整えたあと、お客様.COMでは“お店らしさ”と“また行きたい理由”を深掘りできます。</p>
+            </div>
+            <a href="${okmUrl}" target="_blank" rel="noopener">お客様.COMで深掘りする</a>
+          </div>
+          <div class="okm-bridge-grid">
+            ${okmBridgeCard("g-maps.shop", "Google Mapsで見たこと", `写真・口コミ・営業時間・入口・駐車場・検索導線。まず直す1点は「${topFix}」です。`)}
+            ${okmBridgeCard("okyakusa-ma.com", "世界観診断で深掘り", "どんなお客様に届きやすいか、来店前の不安はどこか、また行きたい理由は何かを7問で整理します。")}
+            ${okmBridgeCard("Official Card", "公式ショップカードへ", "診断結果を、お店の人格が伝わるカードとしてSNS・LINE・QRで共有できる形にします。")}
+            ${okmBridgeCard("AIRS", "記憶と公式air-sへ", "お客様の「好き」「また行きたい」をレビューではなく、応援の記憶として受け取る導線へつなげます。")}
+          </div>
+        </div>
+      `;
+      panel.classList.add("is-open");
     }
 
     function toggleDeepDive(button) {
@@ -6696,6 +6963,7 @@ https://okyakusa-ma.com/
       const aiRaw = payload.raw?.ai_diagnosis?.diagnosis || payload.raw?.ai_diagnosis || {};
       const ai = mergeAiDiagnosis(payload.ai_diagnosis || {}, aiRaw);
       const monthlyRaw = payload.raw?.monthly_report || {};
+      const isGmapsReport = isGmapsReportSource(request);
 
       const storeName = text(ai.store_name || request.store_name, "診断店舗");
       const totalScore = Number(ai.total_score || monthly.total_score || aiRaw.total_score || 0);
@@ -6708,6 +6976,14 @@ https://okyakusa-ma.com/
       document.querySelector("#total-score").textContent = totalScore || "--";
       document.querySelector("#score-ring").style.setProperty("--value", totalScore || 0);
       document.querySelector("#meta").textContent = `受付ID: ${id} / β診断 / ${REPORT_VIEW_VERSION}`;
+      if (isGmapsReport) {
+        document.querySelector(".brand strong").textContent = "g-maps.shop";
+        document.querySelector(".brand span").textContent = "観光地Google Maps見え方診断 β";
+        document.querySelector(".home-return-banner strong").textContent = "Google Mapsの見え方を整えたら、次はお店の世界観へ。";
+        document.querySelector(".home-return-banner span").textContent = "お客様.COMでは、お店らしさ・来店前体験・また行きたい理由まで無料で深掘りできます。";
+        document.querySelector(".home-return-banner a").textContent = "お客様.COMへ";
+        document.querySelector(".home-return-banner a").href = "https://okyakusa-ma.com/";
+      }
 
       const radarScores = [
         { label: "Mapsスコア", value: ai.maps_score || maps.maps_score, color: "#2f9b7b" },
@@ -6722,6 +6998,7 @@ https://okyakusa-ma.com/
         scoreRadarChart(radarScores),
         metric("今すぐ直すべき1点", topFixText, "最優先で確認したい改善ポイントです。", "urgent-metric")
       ].join("");
+      renderGmapsPhasePanel(request, maps, ai);
 
       document.querySelector("#score-explanations").innerHTML = [
         scoreCard("Mapsスコア", `${text(ai.maps_score || maps.maps_score)}点`, mapsScoreComment(maps, ai), "店舗特定、カテゴリ、営業時間、口コミ、Web導線、電話、写真を確認"),

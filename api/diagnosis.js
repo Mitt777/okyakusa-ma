@@ -24,6 +24,16 @@ function normalizePayload(body) {
   return payload;
 }
 
+function requestSource(payload, request) {
+  const source = String(payload.service_source || payload.source || "").trim();
+  if (source) return source;
+  const host = String(request.headers.host || "").replace(/^www\./, "");
+  if (host.includes("g-maps.shop")) return "g-maps.shop";
+  if (host.includes("map-s.site")) return "map-s.site";
+  if (host.includes("air-s.jp")) return "air-s.jp";
+  return "okyakusa-ma.com";
+}
+
 function enabled(value, fallback = false) {
   const normalized = String(value ?? "").trim().toLowerCase().replace(/^["']|["']$/g, "");
   if (!normalized) return fallback;
@@ -108,7 +118,7 @@ module.exports = async function handler(request, response) {
     owner_name: payload.owner_name,
     email: payload.email,
     user_agent: request.headers["user-agent"] || "",
-    source: "okyakusa-ma.com"
+    source: requestSource(payload, request)
   };
 
   let enrichment = {};

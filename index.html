@@ -8015,6 +8015,7 @@
                     <input name="tiktok_url" type="url" placeholder="https://www.tiktok.com/...">
                   </label>
                   <input name="sns_url" type="hidden">
+                  <input name="service_source" type="hidden" value="okyakusa-ma.com">
                   <div class="url-help-box" id="url-help-box" hidden></div>
                 </div>
               </details>
@@ -12418,6 +12419,8 @@
       const isOkm = host === "okyakusa-ma.com" || location.search.includes("okm-preview=1") || (!isGmaps && host !== "air-s.jp" && host !== "clip.air-s.jp" && host !== "map-s.site");
 
       if (isGmaps) {
+        const sourceInput = document.querySelector('input[name="service_source"]');
+        if (sourceInput) sourceInput.value = "g-maps.shop";
         setText("#service-brand-name", "g-maps.shop");
         setText("#service-brand-subtitle", "観光地のお店のGoogle Maps見え方診断");
         setText("#service-eyebrow", "無料診断 β / 観光地・地方店舗向け");
@@ -12436,6 +12439,8 @@
         setText("#living-card-title", "診断結果を、SNSで共有できるカードに。");
         setText("#living-card-headline", "Google Maps上の見え方から、改善ポイントを一枚にします。");
       } else if (isOkm) {
+        const sourceInput = document.querySelector('input[name="service_source"]');
+        if (sourceInput) sourceInput.value = "okyakusa-ma.com";
         setText("#service-brand-name", "お客様.COM");
         setText("#service-brand-subtitle", "世界観と来店前体験の無料診断");
         setText("#service-eyebrow", "無料診断 β / お店の世界観・入りやすさ");
