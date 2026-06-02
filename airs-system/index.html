@@ -107,6 +107,59 @@
       padding-left: 18px;
       border-left: 3px solid var(--gold);
     }
+    .area-board {
+      display: grid;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .area-rank {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+    .area-rank:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .area-rank-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .area-rank-head b {
+      color: var(--green);
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .area-rank-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .area-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .area-list li {
+      padding: 5px 10px;
+      border: 1px solid rgba(47,128,103,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: #34443b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
     .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
     .button {
       display: inline-flex;
@@ -200,6 +253,104 @@
               <b>clip.air-s.jp</b>
               <p>今日の空気を漂わせる。1〜3カットで、その日の店の空気を15秒の縦動画と投稿文に整える撮影室。</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card">
+          <div class="label">Tourism Memory Zone 50</div>
+          <h2>観光記憶圏のエリア50箇所</h2>
+          <p>
+            AIRSでは、地域別MAP、Google Maps診断、Airsカード、公式air-s、場所記憶UIを展開するための仮説的な対象地域として、以下の50エリアを出発点にします。
+            選定方法と七指標については、kansei.infoの第七章に掲載しています。
+          </p>
+
+          <div class="area-board" aria-label="観光記憶圏候補50地域">
+            <div class="area-rank">
+              <div class="area-rank-head">
+                <b>S Rank / 10</b>
+                <span>地域全体が一つの物語空間になっている候補</span>
+              </div>
+              <ul class="area-list">
+                <li>那須</li>
+                <li>軽井沢</li>
+                <li>湯布院</li>
+                <li>尾道</li>
+                <li>京都東山</li>
+                <li>直島</li>
+                <li>屋久島</li>
+                <li>石垣島</li>
+                <li>しまなみ海道</li>
+                <li>黒川温泉</li>
+              </ul>
+            </div>
+
+            <div class="area-rank">
+              <div class="area-rank-head">
+                <b>A Rank / 15</b>
+                <span>強い世界観を持つ地域候補</span>
+              </div>
+              <ul class="area-list">
+                <li>箱根</li>
+                <li>金沢</li>
+                <li>飛騨高山</li>
+                <li>伊豆高原</li>
+                <li>日光</li>
+                <li>小布施</li>
+                <li>道後温泉</li>
+                <li>奈良</li>
+                <li>鎌倉</li>
+                <li>松本</li>
+                <li>萩</li>
+                <li>城崎温泉</li>
+                <li>別府</li>
+                <li>富良野・美瑛</li>
+                <li>阿蘇</li>
+              </ul>
+            </div>
+
+            <div class="area-rank">
+              <div class="area-rank-head">
+                <b>B Rank / 25</b>
+                <span>強力な象徴を持つ地域候補</span>
+              </div>
+              <ul class="area-list">
+                <li>河口湖・富士五湖</li>
+                <li>草津温泉</li>
+                <li>小樽</li>
+                <li>宮島</li>
+                <li>熱海</li>
+                <li>出雲</li>
+                <li>知床</li>
+                <li>白川郷</li>
+                <li>上高地</li>
+                <li>那智・熊野</li>
+                <li>五島列島</li>
+                <li>天草</li>
+                <li>壱岐</li>
+                <li>種子島</li>
+                <li>竹富島</li>
+                <li>久高島</li>
+                <li>奄美大島</li>
+                <li>礼文島</li>
+                <li>十和田</li>
+                <li>角館</li>
+                <li>山寺</li>
+                <li>遠野</li>
+                <li>会津若松</li>
+                <li>松江</li>
+                <li>津和野</li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="note">
+            この50エリアは観光客数や売上規模のランキングではなく、「なぜ人はその場所を忘れないのか」を検証するための作業仮説です。
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://kansei.info/books/tourism-memory-zone/chapter-7">50エリアの選定方法を見る</a>
+            <a class="button" href="https://kansei.info/books/tourism-memory-zone">観光記憶圏試論を読む</a>
           </div>
         </div>
       </section>
