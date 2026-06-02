@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script>
     const currentHost = location.hostname.replace(/^www\./, "");
+    const localDefaultGmapsPreview = location.protocol === "file:" && !location.search;
     function setMeta(name, content, attr = "name") {
       let meta = document.querySelector(`meta[${attr}="${name}"]`);
       if (!meta) {
@@ -38,7 +39,7 @@
       document.title = "map-s | Google MapsのURLだけで店舗MAPを3分作成";
       setMeta("description", "Google MapsのURLを貼るだけで、店舗MAPページを3分で作成・公開。商店街、観光協会、複数店舗、イベント会場、周辺案内に。埋め込み、QR、共有URL対応予定。");
     }
-    if (currentHost === "g-maps.shop" || location.search.includes("gmaps-preview=1")) {
+    if (currentHost === "g-maps.shop" || location.search.includes("gmaps-preview=1") || localDefaultGmapsPreview) {
       document.documentElement.classList.add("gmaps-domain");
       document.title = "g-maps.shop | 観光地のお店のGoogle Maps見え方診断";
       setMeta("description", "観光地や地方のお店が、Google Maps、写真、口コミ、営業時間、入口、駐車場、検索でどう見えているかを無料で診断します。");
@@ -8080,8 +8081,8 @@
       <div class="eyebrow" id="service-eyebrow">無料診断 β / 店舗向け</div>
       <h1 id="main-title">Google Mapsから、あなたのお店の一枚ショップカードを。</h1>
       <div class="gmaps-hero-visual" aria-hidden="true">
-        <img src="/assets/gmaps/gmaps-hero-1.jpg" alt="">
-        <img src="/assets/gmaps/gmaps-hero-2.jpg" alt="">
+        <img src="assets/gmaps/gmaps-hero-1.jpg" alt="">
+        <img src="assets/gmaps/gmaps-hero-2.jpg" alt="">
       </div>
       <p class="lead" id="service-lead">
         店名を入れるだけ。Google Mapsの公開情報とお店の空気をもとに、
@@ -12597,7 +12598,7 @@
 
     function applyServiceTopCopy() {
       const host = location.hostname.replace(/^www\./, "");
-      const isGmaps = host === "g-maps.shop" || location.search.includes("gmaps-preview=1");
+      const isGmaps = host === "g-maps.shop" || location.search.includes("gmaps-preview=1") || (location.protocol === "file:" && !location.search);
       const isOkm = host === "okyakusa-ma.com" || location.search.includes("okm-preview=1") || (!isGmaps && host !== "air-s.jp" && host !== "clip.air-s.jp" && host !== "map-s.site");
 
       if (isGmaps) {
