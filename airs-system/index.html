@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIRSシステム憲章 | 場所の記憶を残すための設計思想</title>
+  <meta name="description" content="map-s.site、g-maps.shop、お客様.COM、air-s.jpをつなぐAIRSシステムの設計思想。観光記憶圏、場所の記憶、発見、診断、人格化、記憶化、発信の役割を整理します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;1,400&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1b2520;
+      --muted: #65736b;
+      --line: #dce5de;
+      --paper: #fffdfa;
+      --soft: #f2f7f3;
+      --green: #2f8067;
+      --gold: #c59b38;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fbfaf5, #eef6f0 60%, #f9fbf8);
+      font-family: "Noto Serif JP", serif;
+      line-height: 1.85;
+    }
+    a { color: inherit; }
+    .shell { width: min(100% - 36px, 980px); margin: 0 auto; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 0;
+      font-family: "DM Mono", monospace;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    header a { color: var(--muted); text-decoration: none; }
+    .hero { padding: 72px 0 54px; }
+    .label {
+      color: var(--green);
+      font-family: "DM Mono", monospace;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 18px 0 0;
+      font-family: "EB Garamond", "Noto Serif JP", serif;
+      font-size: clamp(38px, 8vw, 76px);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: .01em;
+      line-height: 1.05;
+    }
+    .lead {
+      max-width: 680px;
+      margin: 26px 0 0;
+      color: #34443b;
+      font-size: clamp(17px, 2.6vw, 22px);
+      font-weight: 300;
+      line-height: 2;
+    }
+    .card {
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 22px 60px rgba(35, 55, 45, .08);
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .section { padding: 34px 0; }
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(22px, 3.4vw, 32px);
+      font-weight: 400;
+      line-height: 1.45;
+    }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0; color: var(--muted); }
+    .role-list { display: grid; gap: 12px; margin-top: 18px; }
+    .role {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+    .role b { font-family: "DM Mono", monospace; color: var(--green); font-size: 13px; }
+    .current-role {
+      border-color: rgba(47,128,103,.42);
+      background: rgba(232, 246, 238, .92);
+    }
+    .axiom {
+      display: grid;
+      gap: 12px;
+      font-size: 18px;
+      color: var(--ink);
+    }
+    .axiom span {
+      display: block;
+      padding-left: 18px;
+      border-left: 3px solid var(--gold);
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .button.primary { background: var(--green); border-color: var(--green); color: #fff; }
+    footer { padding: 56px 0 36px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .role { grid-template-columns: 1fr; gap: 4px; }
+      header { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a id="home-link" href="/">AIRS System</a>
+      <nav>
+        <a href="https://kansei.info/books/tourism-memory-zone">Full Text</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="label">AIRS System Charter</div>
+        <h1>場所を消費するのではなく、場所と関係を作る。</h1>
+        <p class="lead">
+          AIRSシステムは、観光記憶圏という仮説から生まれた、場所の発見・診断・人格化・記憶化・発信をつなぐための小さな実験装置です。
+        </p>
+      </section>
+
+      <section class="section">
+        <div class="card axiom">
+          <span>観光記憶圏とは、人が意図的に移動し、記憶を生成し、再訪理由を持つ地域である。</span>
+          <span>AIRSは、Place Attachmentをアンケートだけでなく、行動の痕跡から観測しようとする。</span>
+          <span>保存する。計画する。移動する。再訪する。思い出す。誰かに話す。その小さな行動の集積が、場所への愛着を示している可能性がある。</span>
+        </div>
+      </section>
+
+      <section class="section grid">
+        <div class="card">
+          <div class="label">Current Site</div>
+          <h2 id="current-title">このサイトの役割</h2>
+          <p id="current-copy">AIRSシステムの中で、このサイトが担う役割を表示します。</p>
+        </div>
+        <div class="card">
+          <div class="label">Research Source</div>
+          <h2>観光記憶圏試論</h2>
+          <p>
+            完全版は kansei.info に章別全文として掲載します。4サイトの設計思想、ページ追加、SEO、診断、記憶UIの基準として扱います。
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://kansei.info/books/tourism-memory-zone">全文を読む</a>
+            <a class="button" href="https://kansei.info/books/tourism-memory-zone/chapter-9">AIRS章を読む</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card">
+          <div class="label">Service Roles</div>
+          <h2>AIRSシステムの役割分担</h2>
+          <div class="role-list">
+            <div class="role" data-service-role="map-s.site">
+              <b>map-s.site</b>
+              <p>場所を見つける。観光客や地域の人が、用途別・地域別に場所を発見するための軽いMAP。</p>
+            </div>
+            <div class="role" data-service-role="g-maps.shop">
+              <b>g-maps.shop</b>
+              <p>発見される状態を整える。Google Maps、写真、口コミ、営業時間、入口、駐車場の見え方を診断する入口。</p>
+            </div>
+            <div class="role" data-service-role="okyakusa-ma.com">
+              <b>okyakusa-ma.com</b>
+              <p>店の人格を言語化する。世界観、来店前体験、公式air-s、ショップカードを扱う深掘り診断。</p>
+            </div>
+            <div class="role" data-service-role="air-s.jp">
+              <b>air-s.jp</b>
+              <p>記憶として残す。レビューではなく、好きだった場所の空気と再訪理由をLockerに残す場所記憶UI。</p>
+            </div>
+            <div class="role" data-service-role="clip.air-s.jp">
+              <b>clip.air-s.jp</b>
+              <p>今日の空気を漂わせる。1〜3カットで、その日の店の空気を15秒の縦動画と投稿文に整える撮影室。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      AIRS System Charter / Based on Tourism Memory Zone Theory by Mitsuhiko Fujii
+    </footer>
+  </div>
+
+  <script>
+    const host = location.hostname.replace(/^www\./, "");
+    const roles = {
+      "map-s.site": ["map-s.siteの役割", "このサイトは、観光記憶圏の入口として、場所を見つけるためのMAPを作ります。情報地図ではなく、地域の記憶へ向かう最初の発見面です。"],
+      "g-maps.shop": ["g-maps.shopの役割", "このサイトは、観光地のお店がGoogle Maps上で発見される状態を整えます。写真、口コミ、入口、駐車場、営業時間を、初めてのお客様の視点で診断します。"],
+      "okyakusa-ma.com": ["お客様.COMの役割", "このサイトは、お店の人格と世界観を言語化します。見え方診断から、公式ショップカード、公式air-sへつながる深掘りの場所です。"],
+      "air-s.jp": ["air-s.jpの役割", "このサイトは、場所の記憶を残します。Google Mapsの代替ではなく、その場所で感じた空気、気分、また行きたい理由を保存するLockerです。"],
+      "clip.air-s.jp": ["clip.air-s.jpの役割", "このサイトは、今日のお店の空気を15秒で漂わせます。動画編集ソフトではなく、店主さんが投稿完了まで進むための小さな撮影室です。"]
+    };
+    const current = roles[host] || ["AIRSシステムの役割", "AIRSは、場所を見つけ、整え、人格化し、記憶として残し、今日の空気を漂わせるための連携システムです。"];
+    document.querySelector("#current-title").textContent = current[0];
+    document.querySelector("#current-copy").textContent = current[1];
+    document.querySelector(`[data-service-role="${host}"]`)?.classList.add("current-role");
+    const home = document.querySelector("#home-link");
+    if (home && host) home.href = `https://${host}/`;
+  </script>
+</body>
+</html>
