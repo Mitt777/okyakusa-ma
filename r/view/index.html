@@ -3424,6 +3424,839 @@
         </div>
       </section>
 
+
+      <!--
+        okyakusa-ma.com 診断結果ページ追加セクション
+        診断比較表 + ワンコイン深掘り診断
+        既存UIの下に <section id="okm-comparison"> ごと貼り付けてください
+        依存JS：なし（最小限のインラインJSのみ）
+        フォント：既存のNoto Serif JP / Noto Sans JP / DM Mono を想定
+      -->
+
+      <style id="okm-comparison-styles">
+        /* ── CSS変数（既存と衝突しないよう okm- プレフィックス） */
+        :root {
+          --okm-ink:      #1C1917;
+          --okm-ink-soft: #44403C;
+          --okm-muted:    #78716C;
+          --okm-sage:     #3D6B5F;
+          --okm-sage-lt:  #6B9E90;
+          --okm-sage-xlt: #D4E9E4;
+          --okm-gold:     #B8945A;
+          --okm-gold-lt:  #F0E6D3;
+          --okm-cream:    #FAF8F4;
+          --okm-sand:     #F0EDE6;
+          --okm-white:    #FFFFFF;
+          --okm-border:   #E2DDD6;
+          --okm-radius:   6px;
+        }
+
+        /* ── セクション全体 */
+        #okm-comparison {
+          padding: 64px 20px 72px;
+          background: var(--okm-cream);
+          border-top: 1px solid var(--okm-border);
+          font-family: 'Noto Sans JP', sans-serif;
+          color: var(--okm-ink);
+          -webkit-font-smoothing: antialiased;
+        }
+
+        .okm-inner {
+          max-width: 760px;
+          margin: 0 auto;
+        }
+
+        /* ── セクション見出し */
+        .okm-section-eyebrow {
+          font-family: 'DM Mono', 'Courier New', monospace;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--okm-sage);
+          display: block;
+          margin-bottom: 10px;
+        }
+
+        .okm-section-title {
+          font-family: 'Noto Serif JP', serif;
+          font-size: clamp(18px, 3.5vw, 24px);
+          font-weight: 400;
+          color: var(--okm-ink);
+          line-height: 1.5;
+          margin-bottom: 16px;
+          letter-spacing: 0.01em;
+        }
+
+        .okm-section-lead {
+          font-size: 14px;
+          color: var(--okm-ink-soft);
+          line-height: 1.9;
+          margin-bottom: 40px;
+          max-width: 640px;
+        }
+
+        .okm-section-lead strong {
+          color: var(--okm-sage);
+          font-weight: 500;
+        }
+
+        /* ── 凡例 */
+        .okm-legend {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px 20px;
+          margin-bottom: 20px;
+        }
+
+        .okm-legend-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: var(--okm-muted);
+        }
+
+        .okm-legend-mark {
+          font-family: 'DM Mono', monospace;
+          font-size: 13px;
+          font-weight: 500;
+          width: 22px;
+          text-align: center;
+          color: var(--okm-ink-soft);
+        }
+
+        /* ── 比較表（PC: table / SP: カード） */
+        .okm-compare-table-wrap {
+          background: var(--okm-white);
+          border: 1px solid var(--okm-border);
+          border-radius: var(--okm-radius);
+          overflow: hidden;
+          margin-bottom: 48px;
+        }
+
+        /* PC table */
+        .okm-compare-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+        }
+
+        .okm-compare-table thead tr {
+          background: var(--okm-sand);
+        }
+
+        .okm-compare-table thead th {
+          padding: 12px 14px;
+          text-align: left;
+          font-size: 11px;
+          font-weight: 500;
+          color: var(--okm-muted);
+          letter-spacing: 0.04em;
+          border-bottom: 1px solid var(--okm-border);
+        }
+
+        .okm-compare-table thead th.okm-th-center {
+          text-align: center;
+        }
+
+        .okm-compare-table tbody tr {
+          border-bottom: 1px solid var(--okm-border);
+          transition: background 0.12s;
+        }
+
+        .okm-compare-table tbody tr:last-child {
+          border-bottom: none;
+        }
+
+        .okm-compare-table tbody tr:hover {
+          background: var(--okm-cream);
+        }
+
+        .okm-compare-table tbody td {
+          padding: 11px 14px;
+          vertical-align: top;
+          color: var(--okm-ink-soft);
+          line-height: 1.6;
+        }
+
+        .okm-compare-table .okm-td-label {
+          font-weight: 500;
+          color: var(--okm-ink);
+          white-space: nowrap;
+        }
+
+        .okm-compare-table .okm-td-desc {
+          font-size: 12px;
+          color: var(--okm-muted);
+        }
+
+        .okm-compare-table .okm-td-mark {
+          text-align: center;
+          font-family: 'DM Mono', monospace;
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--okm-ink-soft);
+          white-space: nowrap;
+        }
+
+        .okm-compare-table .okm-td-mark.mark-strong {
+          color: var(--okm-sage);
+        }
+
+        .okm-compare-table .okm-td-coin {
+          font-size: 12px;
+          color: var(--okm-muted);
+          line-height: 1.6;
+        }
+
+        .okm-coin-badge {
+          display: inline-block;
+          font-family: 'DM Mono', monospace;
+          font-size: 9px;
+          letter-spacing: 0.08em;
+          color: var(--okm-gold);
+          border: 1px solid var(--okm-gold);
+          border-radius: 3px;
+          padding: 1px 5px;
+          margin-right: 4px;
+          vertical-align: middle;
+          white-space: nowrap;
+        }
+
+        /* SP: カード型 */
+        .okm-compare-cards {
+          display: none;
+        }
+
+        .okm-compare-card {
+          background: var(--okm-white);
+          border: 1px solid var(--okm-border);
+          border-radius: var(--okm-radius);
+          padding: 16px;
+          margin-bottom: 10px;
+        }
+
+        .okm-compare-card-label {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--okm-ink);
+          margin-bottom: 4px;
+        }
+
+        .okm-compare-card-desc {
+          font-size: 12px;
+          color: var(--okm-muted);
+          margin-bottom: 12px;
+          line-height: 1.6;
+        }
+
+        .okm-compare-card-marks {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+
+        .okm-compare-card-mark-item {
+          background: var(--okm-sand);
+          border-radius: 4px;
+          padding: 8px 6px;
+          text-align: center;
+        }
+
+        .okm-compare-card-mark-service {
+          font-size: 10px;
+          color: var(--okm-muted);
+          margin-bottom: 3px;
+          line-height: 1.3;
+        }
+
+        .okm-compare-card-mark-value {
+          font-family: 'DM Mono', monospace;
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--okm-ink-soft);
+        }
+
+        .okm-compare-card-mark-value.mark-strong {
+          color: var(--okm-sage);
+        }
+
+        .okm-compare-card-coin {
+          margin-top: 10px;
+          font-size: 12px;
+          color: var(--okm-muted);
+          line-height: 1.6;
+          border-top: 1px solid var(--okm-border);
+          padding-top: 8px;
+        }
+
+        /* ── 区切り */
+        .okm-divider {
+          height: 1px;
+          background: var(--okm-border);
+          margin: 48px 0;
+        }
+
+        /* ── ワンコイン深掘りセクション */
+        .okm-deep-title {
+          font-family: 'Noto Serif JP', serif;
+          font-size: clamp(16px, 3vw, 20px);
+          font-weight: 400;
+          color: var(--okm-ink);
+          margin-bottom: 8px;
+          letter-spacing: 0.01em;
+        }
+
+        .okm-deep-lead {
+          font-size: 13px;
+          color: var(--okm-ink-soft);
+          line-height: 1.9;
+          margin-bottom: 28px;
+          max-width: 600px;
+        }
+
+        /* ワンコインメニューカード */
+        .okm-deep-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 36px;
+        }
+
+        .okm-deep-card {
+          background: var(--okm-white);
+          border: 1px solid var(--okm-border);
+          border-radius: var(--okm-radius);
+          padding: 18px 18px 16px;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 0 16px;
+          align-items: start;
+        }
+
+        .okm-deep-card-num {
+          font-family: 'DM Mono', monospace;
+          font-size: 11px;
+          color: var(--okm-gold);
+          letter-spacing: 0.08em;
+          padding-top: 2px;
+        }
+
+        .okm-deep-card-title {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--okm-ink);
+          margin-bottom: 5px;
+        }
+
+        .okm-deep-card-input {
+          font-size: 12px;
+          color: var(--okm-gold);
+          margin-bottom: 4px;
+        }
+
+        .okm-deep-card-output {
+          font-size: 12px;
+          color: var(--okm-muted);
+          line-height: 1.7;
+        }
+
+        /* ── CTAエリア */
+        .okm-cta-area {
+          background: var(--okm-sand);
+          border: 1px solid var(--okm-border);
+          border-radius: var(--okm-radius);
+          padding: 28px 24px;
+          text-align: center;
+        }
+
+        .okm-cta-note {
+          font-size: 12px;
+          color: var(--okm-muted);
+          margin-bottom: 20px;
+          line-height: 1.7;
+        }
+
+        .okm-cta-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+        }
+
+        .okm-btn-primary {
+          display: inline-block;
+          background: var(--okm-sage);
+          color: var(--okm-white);
+          font-size: 13px;
+          font-weight: 500;
+          padding: 11px 22px;
+          border-radius: 4px;
+          text-decoration: none;
+          border: none;
+          cursor: pointer;
+          font-family: 'Noto Sans JP', sans-serif;
+          transition: opacity 0.15s;
+        }
+
+        .okm-btn-primary:hover { opacity: 0.85; }
+
+        .okm-btn-ghost {
+          display: inline-block;
+          background: transparent;
+          color: var(--okm-ink-soft);
+          font-size: 13px;
+          padding: 11px 22px;
+          border-radius: 4px;
+          text-decoration: none;
+          border: 1px solid var(--okm-border);
+          cursor: pointer;
+          font-family: 'Noto Sans JP', sans-serif;
+          transition: border-color 0.15s, color 0.15s;
+        }
+
+        .okm-btn-ghost:hover {
+          border-color: var(--okm-sage-lt);
+          color: var(--okm-sage);
+        }
+
+        .okm-btn-link {
+          display: inline-block;
+          color: var(--okm-sage);
+          font-size: 13px;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+          padding: 11px 8px;
+          cursor: pointer;
+          background: none;
+          border: none;
+          font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* ── レスポンシブ */
+        @media (max-width: 600px) {
+          #okm-comparison { padding: 48px 16px 56px; }
+
+          /* テーブルを隠してカードを表示 */
+          .okm-compare-table-wrap { display: none; }
+          .okm-compare-cards { display: block; }
+
+          .okm-cta-area { padding: 24px 16px; }
+          .okm-cta-buttons { flex-direction: column; align-items: stretch; }
+          .okm-btn-primary, .okm-btn-ghost, .okm-btn-link { text-align: center; width: 100%; }
+
+          .okm-deep-card { grid-template-columns: 1fr; gap: 4px; }
+          .okm-deep-card-num { margin-bottom: 2px; }
+        }
+      </style>
+
+      <!-- =============================================
+           追加セクション ここから
+           ============================================= -->
+      <section id="okm-comparison" aria-label="診断サービス比較">
+        <div class="okm-inner">
+
+          <!-- ── 見出し＆リード -->
+          <span class="okm-section-eyebrow">Diagnosis Guide</span>
+          <h2 class="okm-section-title">無料で見えること。<br>必要な時だけ、深く見ること。</h2>
+          <p class="okm-section-lead">
+            <strong>g-maps.shop</strong> では、Google Maps上の公開情報を入口として確認できます。<br>
+            <strong>お客様.COM</strong> では、そこから一歩進んで、お店の世界観・入りやすさ・初めてのお客様にどう見えるかを診断します。<br>
+            ワンコイン深掘りでは、写真や店主さんの言葉を登録してもらい、Google Maps・公式カード・店頭QRなどに使える具体的な改善文を作ります。
+          </p>
+
+          <!-- 凡例 -->
+          <div class="okm-legend" aria-label="記号の説明">
+            <div class="okm-legend-item"><span class="okm-legend-mark">◎</span>しっかり診断</div>
+            <div class="okm-legend-item"><span class="okm-legend-mark">○</span>確認できます</div>
+            <div class="okm-legend-item"><span class="okm-legend-mark">△</span>一部参考にします</div>
+            <div class="okm-legend-item"><span class="okm-legend-mark">ー</span>対象外</div>
+            <div class="okm-legend-item"><span class="okm-legend-mark" style="color:var(--okm-gold);">¥</span>ワンコイン深掘り対象</div>
+          </div>
+
+          <!-- ── PC: テーブル -->
+          <div class="okm-compare-table-wrap">
+            <table class="okm-compare-table" role="table">
+              <thead>
+                <tr>
+                  <th style="width:18%;">診断項目</th>
+                  <th style="width:30%;">内容</th>
+                  <th class="okm-th-center" style="width:12%;">g-maps<br>.shop</th>
+                  <th class="okm-th-center" style="width:12%;">お客様.COM<br>無料</th>
+                  <th style="width:28%;">ワンコイン深掘り</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="okm-td-label">世界観診断</td>
+                  <td class="okm-td-desc">お店の人格・空気・理想のお客様像を言語化</td>
+                  <td class="okm-td-mark">ー</td>
+                  <td class="okm-td-mark mark-strong">◎</td>
+                  <td class="okm-td-coin"></td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">公式カード化</td>
+                  <td class="okm-td-desc">診断結果をお店の紹介カードとして表示</td>
+                  <td class="okm-td-mark">ー</td>
+                  <td class="okm-td-mark mark-strong">◎</td>
+                  <td class="okm-td-coin"></td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">Google Maps<br>基本情報</td>
+                  <td class="okm-td-desc">営業時間・住所・電話・Webサイトなどの確認</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-coin"></td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">見つけやすさ</td>
+                  <td class="okm-td-desc">地図や検索で正しく見つかるか</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-coin"></td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">たどり着きやすさ</td>
+                  <td class="okm-td-desc">道路・曲がり角・看板・駐車場・入口まで迷わないか</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>導線写真6枚を見て、迷いやすい場所を判定</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">入りやすさ</td>
+                  <td class="okm-td-desc">初めての人が「ここで合ってる」「入れそう」と感じるか</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-mark mark-strong">◎</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>外観・入口・店内写真から、入りにくさを具体診断</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">写真の伝わり方</td>
+                  <td class="okm-td-desc">外観・入口・席・商品・価格・駐車場が伝わるか</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-mark mark-strong">◎</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>足りない写真と、次に撮るべき写真を提案</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">観光客への<br>わかりやすさ</td>
+                  <td class="okm-td-desc">土地勘のない人が安心して行けるか</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>初めての方向け案内文を作成</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">AI検索での<br>読まれやすさ</td>
+                  <td class="okm-td-desc">AIがその店を正しく説明・推薦できるか</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>AI検索向けの店舗説明文・FAQを作成</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">保存されやすさ</td>
+                  <td class="okm-td-desc">「あとで行きたい」と思える情報があるか</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>保存されやすい写真テーマと言葉を提案</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">口コミの活かし方</td>
+                  <td class="okm-td-desc">良い口コミをお店の強みに変換できるか</td>
+                  <td class="okm-td-mark">△</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"><span class="okm-coin-badge">¥</span>紹介文・返信文・SNS文に変換</td>
+                </tr>
+                <tr>
+                  <td class="okm-td-label">今すぐ直す1点</td>
+                  <td class="okm-td-desc">今日すぐ改善できるポイントを出す</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-mark mark-strong">○</td>
+                  <td class="okm-td-coin"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ── SP: カード型 -->
+          <div class="okm-compare-cards" aria-hidden="false">
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">世界観診断</div>
+              <div class="okm-compare-card-desc">お店の人格・空気・理想のお客様像を言語化</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">◎</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">公式カード化</div>
+              <div class="okm-compare-card-desc">診断結果をお店の紹介カードとして表示</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">◎</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">Google Maps 基本情報</div>
+              <div class="okm-compare-card-desc">営業時間・住所・電話・Webサイトなどの確認</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value">△</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">たどり着きやすさ</div>
+              <div class="okm-compare-card-desc">道路・曲がり角・看板・駐車場・入口まで迷わないか</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">△</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value" style="color:var(--okm-gold);">¥</div>
+                </div>
+              </div>
+              <div class="okm-compare-card-coin"><span class="okm-coin-badge">¥</span>導線写真6枚を見て、迷いやすい場所を判定</div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">入りやすさ</div>
+              <div class="okm-compare-card-desc">初めての人が「ここで合ってる」「入れそう」と感じるか</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">△</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">◎</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value" style="color:var(--okm-gold);">¥</div>
+                </div>
+              </div>
+              <div class="okm-compare-card-coin"><span class="okm-coin-badge">¥</span>外観・入口・店内写真から、入りにくさを具体診断</div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">写真の伝わり方</div>
+              <div class="okm-compare-card-desc">外観・入口・席・商品・価格・駐車場が伝わるか</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">△</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">◎</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value" style="color:var(--okm-gold);">¥</div>
+                </div>
+              </div>
+              <div class="okm-compare-card-coin"><span class="okm-coin-badge">¥</span>足りない写真と、次に撮るべき写真を提案</div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">AI検索での読まれやすさ</div>
+              <div class="okm-compare-card-desc">AIがその店を正しく説明・推薦できるか</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value" style="color:var(--okm-gold);">¥</div>
+                </div>
+              </div>
+              <div class="okm-compare-card-coin"><span class="okm-coin-badge">¥</span>AI検索向けの店舗説明文・FAQを作成</div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">口コミの活かし方</div>
+              <div class="okm-compare-card-desc">良い口コミをお店の強みに変換できるか</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value">△</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value" style="color:var(--okm-gold);">¥</div>
+                </div>
+              </div>
+              <div class="okm-compare-card-coin"><span class="okm-coin-badge">¥</span>紹介文・返信文・SNS文に変換</div>
+            </div>
+
+            <div class="okm-compare-card">
+              <div class="okm-compare-card-label">今すぐ直す1点</div>
+              <div class="okm-compare-card-desc">今日すぐ改善できるポイントを出す</div>
+              <div class="okm-compare-card-marks">
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">g-maps.shop</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">お客様.COM 無料</div>
+                  <div class="okm-compare-card-mark-value mark-strong">○</div>
+                </div>
+                <div class="okm-compare-card-mark-item">
+                  <div class="okm-compare-card-mark-service">ワンコイン</div>
+                  <div class="okm-compare-card-mark-value">ー</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.okm-compare-cards -->
+
+          <div class="okm-divider"></div>
+
+          <!-- ── ワンコイン深掘りセクション -->
+          <h3 class="okm-deep-title">ワンコイン深掘りでできること</h3>
+          <p class="okm-deep-lead">
+            ワンコイン深掘りは、AIがもう一度点数をつけるだけの診断ではありません。<br>
+            お店の写真や店主さんの言葉を登録してもらい、Google Maps・公式カード・店頭QR・SNSにそのまま使える「具体的な改善物」を作ります。
+          </p>
+
+          <div class="okm-deep-cards">
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">01</div>
+              <div>
+                <div class="okm-deep-card-title">導線6枚診断</div>
+                <div class="okm-deep-card-input">登録するもの：道路・曲がり角・看板・駐車場・入口までの写真</div>
+                <div class="okm-deep-card-output">初めて来る人がどこで迷いそうかを判定し、案内文を作ります。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">02</div>
+              <div>
+                <div class="okm-deep-card-title">入りやすさ写真診断</div>
+                <div class="okm-deep-card-input">登録するもの：外観・入口・店内の写真</div>
+                <div class="okm-deep-card-output">「入れそう」「営業中だとわかる」「店内の雰囲気が伝わる」かを診断します。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">03</div>
+              <div>
+                <div class="okm-deep-card-title">写真設計診断</div>
+                <div class="okm-deep-card-input">登録するもの：代表写真5〜10枚</div>
+                <div class="okm-deep-card-output">Google Mapsに次に追加すべき写真リストを作ります。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">04</div>
+              <div>
+                <div class="okm-deep-card-title">初めての方向け案内文</div>
+                <div class="okm-deep-card-input">登録するもの：導線写真・入口写真・店主補足</div>
+                <div class="okm-deep-card-output">Google Maps投稿・公式カード・店頭QRに使える来店案内文を作ります。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">05</div>
+              <div>
+                <div class="okm-deep-card-title">GEO向け店舗説明文・FAQ</div>
+                <div class="okm-deep-card-input">登録するもの：Maps公開情報・店主の言葉・来てほしいお客様・名物・特徴</div>
+                <div class="okm-deep-card-output">AI検索に読まれやすい店舗説明文とFAQを作ります。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">06</div>
+              <div>
+                <div class="okm-deep-card-title">保存されやすい写真・言葉</div>
+                <div class="okm-deep-card-input">登録するもの：写真・店主コメント・診断結果</div>
+                <div class="okm-deep-card-output">「また行きたい」と思われやすい写真テーマや短い言葉を提案します。</div>
+              </div>
+            </div>
+
+            <div class="okm-deep-card">
+              <div class="okm-deep-card-num">07</div>
+              <div>
+                <div class="okm-deep-card-title">口コミの文章変換</div>
+                <div class="okm-deep-card-input">登録するもの：良い口コミ・店主コメント</div>
+                <div class="okm-deep-card-output">口コミの良い言葉を、紹介文・返信文・SNS文に変換します。</div>
+              </div>
+            </div>
+
+          </div><!-- /.okm-deep-cards -->
+
+          <!-- ── CTA -->
+          <div class="okm-cta-area">
+            <p class="okm-cta-note">
+              必要な項目だけ選んで深掘りできます。全部やる必要はありません。<br>
+              「ここだけ気になる」という部分から始めてください。
+            </p>
+            <div class="okm-cta-buttons">
+              <button class="okm-btn-primary" type="button" data-action="open-deep-diagnosis">
+                必要なところだけ、ワンコインで深掘りする
+              </button>
+              <button class="okm-btn-ghost" type="button" data-action="stay-free">
+                まずは無料診断のまま見る
+              </button>
+              <button class="okm-btn-link" type="button" data-action="register-photos">
+                写真を登録して深く見る →
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /.okm-inner -->
+      </section>
+      <!-- =============================================
+           追加セクション ここまで
+           ============================================= -->
+
       <section class="share">
         <button class="primary-lite" id="native-share" type="button">全結果を共有する</button>
         <a id="line-share" href="#">LINEで送る</a>
