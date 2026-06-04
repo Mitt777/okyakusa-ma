@@ -5013,6 +5013,91 @@
       box-shadow: 0 12px 24px rgba(31, 138, 112, .24);
     }
 
+    .research-background {
+      width: min(1120px, calc(100% - 40px));
+      margin: 32px auto 0;
+      padding: 34px;
+      border: 1px solid #e2ddd6;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(248, 245, 240, .98), rgba(240, 237, 230, .9)),
+        #f8f5f0;
+      box-shadow: 0 18px 48px rgba(39, 43, 54, .08);
+    }
+
+    .research-background-inner {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 26px;
+      align-items: start;
+    }
+
+    .research-background-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--green-dark);
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .research-background h2 {
+      margin: 0 0 12px;
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 500;
+      line-height: 1.28;
+    }
+
+    .research-background p {
+      margin: 0;
+      color: #44403c;
+      font-size: 14px;
+      line-height: 1.95;
+    }
+
+    .research-background p + p {
+      margin-top: 12px;
+    }
+
+    .research-background-card {
+      display: grid;
+      gap: 12px;
+      border: 1px solid rgba(61, 107, 95, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .74);
+      padding: 20px;
+    }
+
+    .research-background-card strong {
+      color: var(--green-dark);
+      font-size: 19px;
+      line-height: 1.55;
+    }
+
+    .research-background-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .research-background-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      border: 1px solid rgba(18, 97, 78, .28);
+      border-radius: 999px;
+      padding: 8px 15px;
+      color: var(--green-dark);
+      background: rgba(255, 255, 255, .68);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .living-card-lab {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
@@ -6389,6 +6474,7 @@
 
       .diagnosis-scope-head,
       .diagnosis-points,
+      .research-background-inner,
       .worldview-depth {
         grid-template-columns: 1fr;
       }
@@ -8543,6 +8629,34 @@
           </p>
         </div>
         <a href="#diagnosis-form">お店の健康診断（無料）を試す</a>
+      </div>
+    </section>
+
+    <section class="research-background" aria-labelledby="research-background-title">
+      <div class="research-background-inner">
+        <div>
+          <span class="research-background-kicker">Research Background</span>
+          <h2 id="research-background-title">なぜ「初めて客目線」なのか</h2>
+          <p>
+            那須エリアで約2年間、なすぱらTVの動画制作と地域店舗のフィールドワークを重ねる中で、
+            人がお店を見つけ、保存し、計画し、ふと来店するまでの流れを観察してきました。
+          </p>
+          <p>
+            明らかになってきたのは、良いお店かどうか以前に、初めての人が来店前に見る
+            Google Maps、写真、口コミ、入口、駐車場、SNSの情報が、安心感や再訪理由に大きく影響するということです。
+          </p>
+        </div>
+        <div class="research-background-card">
+          <strong>良い店が、ちゃんと良く見えているか。</strong>
+          <p>
+            お客様.COMは、観光記憶圏、Save → Plan → Impulse、Place Attachment の考え方を、
+            小さなお店でも使える診断UIに翻訳するための実践版です。
+          </p>
+          <div class="research-background-links">
+            <a href="https://kansei.info" target="_blank" rel="noopener">理論を読む</a>
+            <a href="https://xbrains.jp" target="_blank" rel="noopener">運営主体を見る</a>
+          </div>
+        </div>
       </div>
     </section>
 
