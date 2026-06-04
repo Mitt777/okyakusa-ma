@@ -2492,6 +2492,108 @@
       margin-top: 6px;
     }
 
+    .deep-menu-panel {
+      border-color: rgba(197, 154, 82, .5);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,250,241,.96)),
+        radial-gradient(circle at 100% 0%, rgba(197, 154, 82, .18), transparent 36%);
+    }
+
+    .deep-menu-panel .ai-lab-badge {
+      color: #7a4b10;
+      background: #fff4db;
+      border-color: rgba(197, 154, 82, .45);
+    }
+
+    .deep-menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .deep-menu-card {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      min-height: 188px;
+      border: 1px solid rgba(197, 154, 82, .3);
+      border-radius: 10px;
+      background: rgba(255,255,255,.94);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .deep-menu-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 44px;
+      background: linear-gradient(180deg, rgba(255,255,255,0), #fff);
+      pointer-events: none;
+    }
+
+    .deep-menu-card.is-featured {
+      grid-column: span 2;
+      border-color: rgba(31, 138, 112, .35);
+      background: linear-gradient(135deg, #fff, #f4fbf8);
+    }
+
+    .deep-menu-kicker {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: #7a4b10;
+      background: #fff4db;
+      border: 1px solid rgba(197, 154, 82, .4);
+      font-family: "DM Mono", monospace;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .deep-menu-card h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .deep-menu-card p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .deep-menu-list {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .deep-menu-list li::before {
+      content: "＋";
+      margin-right: 5px;
+      color: #c27a10;
+    }
+
+    .deep-menu-note {
+      margin-top: 14px;
+      border: 1px dashed rgba(197, 154, 82, .52);
+      border-radius: 10px;
+      background: rgba(255, 248, 235, .78);
+      padding: 14px;
+      color: #5f4522;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.75;
+    }
+
     .ai-lab-actions {
       display: flex;
       gap: 10px;
@@ -2930,6 +3032,8 @@
       .pre-entry-item p,
       .ai-lab-card p,
       .ai-lab-card li,
+      .deep-menu-card p,
+      .deep-menu-list,
       .ai-lab-result p,
       .deep-dive-section p {
         font-size: 16px;
@@ -2940,6 +3044,14 @@
       .worldview-card-banner strong,
       .pre-entry-head h2 {
         font-size: 21px;
+      }
+
+      .deep-menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .deep-menu-card.is-featured {
+        grid-column: auto;
       }
 
       .metric strong {
@@ -3394,32 +3506,85 @@
         <div class="panel full ai-lab-panel">
           <div class="ai-lab-head">
             <div>
-              <h2>今後の拡張メニュー β</h2>
-              <p>無料診断で見えた課題を、より実務向けの改善計画やマーケター向け分析へ広げるための候補です。</p>
+              <h2>お店深掘り診断 β</h2>
+              <p>無料診断とAI追加診断で見えた課題を、Google Maps・公式カード・店頭QR・SNSにそのまま使える具体物へ変換します。</p>
             </div>
-            <span class="ai-lab-badge">β検証中</span>
+            <span class="ai-lab-badge">続きの診断候補</span>
           </div>
-          <div class="ai-lab-grid">
-            <div class="ai-lab-card">
-              <h3>まとめ深掘り診断 β</h3>
-              <p>写真、Maps、口コミ、SEO/GEO、SNS動画ネタをまとめて、実行順に並べる追加診断の受け皿です。</p>
-              <ul>
-                <li>Google Mapsに載せる写真の順番</li>
-                <li>口コミ返信・不安ワードの整理</li>
-                <li>今月やる改善タスクの優先順位</li>
+          <div class="deep-menu-grid">
+            <div class="deep-menu-card is-featured">
+              <span class="deep-menu-kicker">Owner Type</span>
+              <h3>店主・運営タイプ診断</h3>
+              <p>12問ほどで、店主さん・店長さんが無理なく続けられる運営タイプを9パターンに整理します。世界観診断と重ね、接客距離・発信負荷・続けやすさの相性を見ます。</p>
+              <ul class="deep-menu-list">
+                <li>店主・店長・現場担当の役割差を見る</li>
+                <li>お店世界観との相性を言語化</li>
+                <li>無理なく続く改善順を提案</li>
               </ul>
-              <span class="ai-lab-note">価格や提供範囲はβテスト後に調整します。まずは、店主さんが実際に行動しやすい深掘り内容を検証します。</span>
             </div>
-            <div class="ai-lab-card">
-              <h3>WEBマーケター向け拡張</h3>
-              <p>SEOは今のβでは簡易診断に留め、ニーズが見えたらSearch Consoleやキーワード調査を月次レポートに追加します。</p>
-              <ul>
-                <li>複数店舗・複数サイトの比較</li>
-                <li>Search Console連携の実データ診断</li>
-                <li>地域SEO辞書・Keyword Planner連携</li>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">Route 6</span>
+              <h3>導線6枚診断</h3>
+              <p>道路、看板、駐車場、入口までの写真で、初めての人が迷いやすい場所を見ます。</p>
+              <ul class="deep-menu-list">
+                <li>撮る場所の指示</li>
+                <li>迷う地点の判定</li>
+                <li>案内文への変換</li>
               </ul>
-              <span class="ai-lab-note">個店向けは軽く、マーケター向けは深く。この切り分けで進めます。</span>
             </div>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">Photo Plan</span>
+              <h3>写真設計診断</h3>
+              <p>代表写真を見て、Google Mapsに次に追加すべき写真リストを作ります。</p>
+              <ul class="deep-menu-list">
+                <li>外観・入口・店内</li>
+                <li>席・メニュー・価格感</li>
+                <li>掲載順の提案</li>
+              </ul>
+            </div>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">Guide Copy</span>
+              <h3>初めての方向け案内文</h3>
+              <p>導線写真と店主補足から、Google Maps・公式カード・店頭QRに使える案内文を作ります。</p>
+              <ul class="deep-menu-list">
+                <li>駐車場案内</li>
+                <li>入口案内</li>
+                <li>初来店の不安軽減</li>
+              </ul>
+            </div>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">GEO</span>
+              <h3>AI検索向け説明文・FAQ</h3>
+              <p>店主さんの言葉とMaps情報から、AI検索に読まれやすい店舗説明文とFAQを作ります。</p>
+              <ul class="deep-menu-list">
+                <li>誰に向いているか</li>
+                <li>どんな時に良いか</li>
+                <li>FAQ化</li>
+              </ul>
+            </div>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">Save</span>
+              <h3>保存されやすい写真・言葉</h3>
+              <p>「また行きたい」と思われやすい写真テーマ、言葉、投稿テーマへ変換します。</p>
+              <ul class="deep-menu-list">
+                <li>Save / Plan / Impulse</li>
+                <li>写真テーマ</li>
+                <li>SNS文の方向性</li>
+              </ul>
+            </div>
+            <div class="deep-menu-card">
+              <span class="deep-menu-kicker">Reviews</span>
+              <h3>口コミの文章変換</h3>
+              <p>良い口コミと店主コメントを、紹介文・返信文・SNS文に変換します。</p>
+              <ul class="deep-menu-list">
+                <li>口コミ返信</li>
+                <li>紹介文</li>
+                <li>投稿文</li>
+              </ul>
+            </div>
+          </div>
+          <div class="deep-menu-note">
+            ここはまだ決済前の設計表示です。まずは「写真3枚の入りやすさ診断」と「AI de 店エゴサーチ」で価値を確認し、その先に必要なものだけを深掘りできる形にします。
           </div>
         </div>
       </section>
