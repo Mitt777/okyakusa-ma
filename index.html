@@ -4570,6 +4570,10 @@
       letter-spacing: 0;
     }
 
+    .title-accent {
+      color: var(--green-dark);
+    }
+
     .lead {
       max-width: 760px;
       margin: 0 auto 34px;
@@ -6182,6 +6186,23 @@
 
       .hero {
         padding-top: 28px;
+      }
+
+      .okm-domain .hero {
+        padding-top: 18px;
+      }
+
+      .okm-domain h1 {
+        font-size: clamp(30px, 10vw, 42px);
+      }
+
+      .okm-domain .lead {
+        margin-bottom: 20px;
+        font-size: 16px;
+      }
+
+      .okm-domain .worldview-card-teaser {
+        margin-top: 18px;
       }
 
       .search-box {
@@ -8079,7 +8100,7 @@
 
     <section class="hero" aria-labelledby="main-title">
       <div class="eyebrow" id="service-eyebrow">無料診断 β / 店舗向け</div>
-      <h1 id="main-title">未来を変える『初めて客』目線。</h1>
+      <h1 id="main-title"><span class="title-accent">未来を変える</span>『初めて客』目線。</h1>
       <div class="gmaps-hero-visual" aria-hidden="true">
         <img src="assets/gmaps/gmaps-hero-1.jpg" alt="">
         <img src="assets/gmaps/gmaps-hero-2.jpg" alt="">
@@ -8089,22 +8110,6 @@
         入りやすさ、世界観まで。初めてのお客様から見たあなたのお店を総合診断します。
         良いお店が、ちゃんと良く見えているか。
       </p>
-
-      <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
-        <div class="worldview-card-teaser-stack">
-          <div class="worldview-card-teaser-card back">
-            <img src="/assets/worldview-cards/worldview_immersion-night.jpg" alt="">
-          </div>
-          <div class="worldview-card-teaser-card">
-            <img src="/assets/worldview-cards/craft_trust-restaurant.jpg" alt="お客様.COMカードのイメージ">
-          </div>
-        </div>
-        <div class="worldview-card-teaser-copy">
-          <span id="service-teaser-kicker">お客様.COMカード β</span>
-          <strong id="service-teaser-title">診断後に、お店らしさを1枚にできます。</strong>
-          <p id="service-teaser-text">総合診断で見えた入りやすさ、世界観、また行きたい理由を、公式カードやair-s連動へつなげられます。</p>
-        </div>
-      </div>
 
       <div class="search-stage" aria-label="無料診断申込フォーム">
         <div class="gmaps-form-kicker">
@@ -8255,6 +8260,22 @@
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
+        <div class="worldview-card-teaser-stack">
+          <div class="worldview-card-teaser-card back">
+            <img src="/assets/worldview-cards/worldview_immersion-night.jpg" alt="">
+          </div>
+          <div class="worldview-card-teaser-card">
+            <img src="/assets/worldview-cards/craft_trust-restaurant.jpg" alt="お客様.COMカードのイメージ">
+          </div>
+        </div>
+        <div class="worldview-card-teaser-copy">
+          <span id="service-teaser-kicker">お客様.COMカード β</span>
+          <strong id="service-teaser-title">診断後に、お店らしさを1枚にできます。</strong>
+          <p id="service-teaser-text">総合診断で見えた入りやすさ、世界観、また行きたい理由を、公式カードやair-s連動へつなげられます。</p>
         </div>
       </div>
 
@@ -12597,6 +12618,11 @@
       if (element) element.textContent = value;
     }
 
+    function setHtml(selector, value) {
+      const element = document.querySelector(selector);
+      if (element) element.innerHTML = value;
+    }
+
     function applyServiceTopCopy() {
       const host = location.hostname.replace(/^www\./, "");
       const isGmaps = host === "g-maps.shop" || location.search.includes("gmaps-preview=1") || (location.protocol === "file:" && !location.search);
@@ -12629,7 +12655,7 @@
         setText("#service-brand-name", "お客様.COM");
         setText("#service-brand-subtitle", "初めて客目線のお店診断");
         setText("#service-eyebrow", "無料診断 β / お店の総合健康診断");
-        setText("#main-title", "未来を変える『初めて客』目線。");
+        setHtml("#main-title", '<span class="title-accent">未来を変える</span>『初めて客』目線。');
         setText("#service-lead", "お店目線でも、コンサル目線でもありません。Google Maps、口コミ、写真、SNS、入りやすさ、世界観まで。初めてのお客様から見たあなたのお店を総合診断します。良いお店が、ちゃんと良く見えているか。");
         setText("#service-teaser-kicker", "お客様.COMカード β");
         setText("#service-teaser-title", "診断後に、お店らしさを1枚にできます。");
