@@ -5671,10 +5671,42 @@
       grid-template-columns: 1fr auto;
       gap: 10px;
       align-items: center;
+      position: relative;
       border: 2px solid #b8c2d1;
       border-radius: 8px;
       padding: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(249, 252, 250, .95)),
+        #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 10px 24px rgba(23, 32, 44, .06);
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .search-box::before {
+      content: "→";
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      color: var(--green-dark);
+      font-size: 18px;
+      font-weight: 900;
+      opacity: .55;
+      transform: translateY(-50%);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+    }
+
+    .search-box:hover,
+    .search-box:focus-within {
+      border-color: rgba(31, 138, 112, .62);
       background: #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 14px 32px rgba(31, 138, 112, .12);
+    }
+
+    .search-box:hover::before,
+    .search-box:focus-within::before {
+      opacity: .95;
+      transform: translate(4px, -50%);
     }
 
     .search-box input {
@@ -5683,7 +5715,8 @@
       outline: 0;
       font: inherit;
       font-size: 19px;
-      padding: 13px 14px;
+      padding: 13px 14px 13px 42px;
+      background: transparent;
       color: var(--ink);
     }
 
@@ -6258,7 +6291,8 @@
       }
 
       .okm-domain h1 {
-        font-size: clamp(26px, 8.4vw, 36px);
+        font-size: clamp(24px, 7.8vw, 34px);
+        white-space: nowrap;
       }
 
       .okm-domain .lead {
@@ -8165,7 +8199,7 @@
 
     <section class="hero" aria-labelledby="main-title">
       <div class="eyebrow" id="service-eyebrow">無料診断 β / 店舗向け</div>
-      <h1 id="main-title"><span class="title-accent">未来を変える</span>『初めて客』目線。</h1>
+      <h1 id="main-title"><span class="title-accent">未来を変える</span>『初めて客』目線</h1>
       <div class="okm-hero-card-visual" aria-hidden="true">
         <div class="okm-hero-card-visual-back"></div>
         <img src="/assets/worldview-cards/craft_trust-restaurant.jpg" alt="">
@@ -12717,7 +12751,7 @@
         setText("#service-brand-name", "お客様.COM");
         setText("#service-brand-subtitle", "初めて客目線のお店診断");
         setText("#service-eyebrow", "無料診断 β / お店の総合健康診断");
-        setHtml("#main-title", '<span class="title-accent">未来を変える</span>『初めて客』目線。');
+        setHtml("#main-title", '<span class="title-accent">未来を変える</span>『初めて客』目線');
         setText("#service-lead", "お店目線でも、コンサル目線でもありません。Google Maps、口コミ、写真、SNS、入りやすさ、世界観まで。初めてのお客様から見たあなたのお店を総合診断します。良いお店が、ちゃんと良く見えているか。");
         setText("#service-teaser-kicker", "お客様.COMカード β");
         setText("#service-teaser-title", "診断後に、お店らしさを1枚にできます。");
