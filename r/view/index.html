@@ -3376,9 +3376,9 @@
             </div>
             <div class="ai-lab-card">
               <h3>THE お店入りやすさ診断</h3>
-              <p>外観・入口・駐車場・店内・メニュー写真から、初めてのお客様が「入って大丈夫そう」と思えるかを見ます。</p>
+              <p>外観・入口・駐車場・店内などの写真3枚から、初めてのお客様が「入って大丈夫そう」と思えるかを見ます。</p>
               <input class="ai-lab-file" id="photo-diagnosis-files" type="file" accept="image/*" multiple>
-              <span class="ai-lab-note">写真5枚までは無料想定。追加15枚・メニュー深掘りは将来の追加診断候補です。</span>
+              <span class="ai-lab-note">写真は3枚まで選べます。追加写真・メニュー深掘りは、今後のお店深掘り診断候補です。</span>
               <div class="ai-lab-actions">
                 <button class="ai-lab-button" id="photo-diagnosis-run" type="button">写真で入りやすさを見る</button>
                 <button class="ai-lab-button secondary" id="photo-diagnosis-clear" type="button">写真をクリア</button>
@@ -7018,16 +7018,16 @@
       const count = files.length;
       const { storeName, maps, ai } = shareContext || {};
       const base = Number(ai?.previsit_anxiety_score || maps?.maps_score || 60);
-      const photoBonus = Math.min(16, count * 3);
+      const photoBonus = Math.min(18, count * 6);
       const score = Math.max(35, Math.min(92, Math.round(base * 0.74 + photoBonus)));
-      const precision = count >= 10 ? "高精度入口" : count >= 5 ? "ライト診断" : "仮診断";
+      const precision = count >= 3 ? "3枚ライト診断" : "仮診断";
       return {
         generated_by: "local_fallback",
         title: `写真${count}枚から見る「入りやすさ」${precision}`,
-        summary: `${storeName}の写真を、初めてのお客様が見る来店前情報として整理します。AI Vision未実行時も、写真枚数と既存診断から入口・駐車場・席・メニューの優先度を示します。`,
+        summary: `${storeName}の写真を、初めてのお客様が見る来店前情報として整理します。AI Vision未実行時も、写真3枚と既存診断から入口・駐車場・席・メニューの優先度を示します。`,
         items: [
           { label: "入りやすさ", value: `${score}点`, note: "外観・入口・店内・メニューが揃うほど上がります。" },
-          { label: "診断段階", value: precision, note: count >= 10 ? "10枚以上あるため、導線・席・価格感まで見やすい段階です。" : "5枚以上でライト診断、10枚以上で高精度診断に近づきます。" },
+          { label: "診断段階", value: precision, note: count >= 3 ? "3枚あるため、入口まわりのライト診断として見られます。" : "3枚まで選ぶと、初来店前の不安をより見やすくなります。" },
           { label: "最優先写真", value: "入口・駐車場", note: "地方店では迷わないことが来店率に効きます。" },
           { label: "次に足す写真", value: "席・価格・人気商品", note: "一人客・子連れ・観光客の不安を減らします。" },
           { label: "メニュー見え方", value: count >= 8 ? "深掘り候補" : "追加余地あり", note: "価格と頼み方が見える写真が効きます。" },
@@ -7095,13 +7095,14 @@
 
     async function runPhotoDiagnosis() {
       const input = document.querySelector("#photo-diagnosis-files");
-      const files = Array.from(input.files || []).filter((file) => file.type.startsWith("image/")).slice(0, 20);
+      const selectedFiles = Array.from(input.files || []).filter((file) => file.type.startsWith("image/"));
+      const files = selectedFiles.slice(0, 3);
       const resultEl = document.querySelector("#photo-diagnosis-result");
       if (!files.length) {
         renderAiLabResult(
           "#photo-diagnosis-result",
           "写真がまだ選択されていません",
-          "外観、入口、駐車場、店内、メニューの写真を選ぶと、入りやすさ診断を表示できます。",
+          "外観、入口、駐車場、店内などから3枚まで選ぶと、入りやすさ診断を表示できます。",
           [
             { label: "おすすめ1", value: "外観", note: "初めての人が店を見つける写真です。" },
             { label: "おすすめ2", value: "入口", note: "入って大丈夫そうかを判断します。" },
@@ -7111,7 +7112,8 @@
         );
         return;
       }
-      resultEl.innerHTML = "<h4>写真を読み込んでいます...</h4><p>枚数が多い場合は少し時間がかかります。</p>";
+      const limitNote = selectedFiles.length > 3 ? `<p>選択された${selectedFiles.length}枚のうち、最初の3枚で診断します。</p>` : "";
+      resultEl.innerHTML = `<h4>写真を読み込んでいます...</h4>${limitNote}<p>外観・入口・店内/駐車場の見え方を確認します。</p>`;
       resultEl.classList.add("is-open");
       try {
         const images = await Promise.all(files.map(readImageFile));
@@ -7145,6 +7147,19 @@
       );
       updateWorldviewUrl();
       updateShareLinks();
+    }
+
+    function handlePhotoDiagnosisFileChange() {
+      const input = document.querySelector("#photo-diagnosis-files");
+      const files = Array.from(input.files || []).filter((file) => file.type.startsWith("image/"));
+      const resultEl = document.querySelector("#photo-diagnosis-result");
+      if (!files.length || !resultEl) return;
+      const usedCount = Math.min(files.length, 3);
+      resultEl.classList.add("is-open");
+      resultEl.innerHTML = `
+        <h4>写真${usedCount}枚で診断できます</h4>
+        <p>${files.length > 3 ? `選択された${files.length}枚のうち、最初の3枚だけを使います。` : "このまま「写真で入りやすさを見る」を押してください。"}</p>
+      `;
     }
 
     function clearPhotoDiagnosis() {
@@ -7625,6 +7640,7 @@ https://okyakusa-ma.com/
     document.querySelector("#worldview-submit").addEventListener("click", showWorldviewResult);
     document.querySelector("#worldview-deep-submit").addEventListener("click", runWorldviewDeepDive);
     document.querySelector("#ego-search-run").addEventListener("click", runEgoSearch);
+    document.querySelector("#photo-diagnosis-files").addEventListener("change", handlePhotoDiagnosisFileChange);
     document.querySelector("#photo-diagnosis-run").addEventListener("click", runPhotoDiagnosis);
     document.querySelector("#photo-diagnosis-clear").addEventListener("click", clearPhotoDiagnosis);
     window.setInterval(() => {

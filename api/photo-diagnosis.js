@@ -3,18 +3,18 @@ const { readJsonBody, sendJson } = require("./_lib/response");
 function fallbackPhotoDiagnosis(body) {
   const count = Array.isArray(body.images) ? body.images.length : 0;
   const storeName = body.storeName || "診断店舗";
-  const score = Math.max(45, Math.min(88, 55 + count * 4));
-  const precision = count >= 10 ? "高精度入口" : count >= 5 ? "ライト診断" : "仮診断";
+  const score = Math.max(45, Math.min(82, 55 + count * 6));
+  const precision = count >= 3 ? "3枚ライト診断" : "仮診断";
   return {
     generated_by: "fallback",
     title: `写真${count}枚から見る「入りやすさ」${precision}`,
-    summary: `${storeName}の写真を、初めてのお客様が来店前に見る情報として整理します。外観・入口・駐車場・店内・席・メニュー・価格感が揃うほど、入店前の不安は下がります。`,
+    summary: `${storeName}の写真を、初めてのお客様が来店前に見る情報として整理します。まずは外観・入口・店内または駐車場の3枚で、「入って大丈夫そうか」を見ます。`,
     items: [
       { label: "入りやすさ", value: `${score}点`, note: "写真枚数と来店前情報の揃い方から見た目安です。" },
-      { label: "診断段階", value: precision, note: count >= 10 ? "10枚以上あるため、導線・席・価格感まで見やすい段階です。" : "5枚以上でライト診断、10枚以上で高精度診断に近づきます。" },
+      { label: "診断段階", value: precision, note: count >= 3 ? "3枚あるため、外観・入口・店内または駐車場の基本的な入りやすさを見ます。" : "3枚まで選ぶと、初来店前の不安をより見やすくなります。" },
       { label: "優先写真", value: "外観・入口", note: "初めてのお客様の最初の迷いを消す写真です。" },
-      { label: "次に足す写真", value: "駐車場・席・メニュー", note: "Plan情報として来店前不安を下げます。" },
-      { label: "価格感", value: "要確認", note: "代表メニューと価格が読める写真があると、初回注文の不安が下がります。" },
+      { label: "3枚目候補", value: "駐車場・店内・メニュー", note: "お店の弱点に合わせて、初来店の不安を下げる1枚を選びます。" },
+      { label: "価格感", value: "深掘り候補", note: "代表メニューと価格が読める写真は、次の深掘り診断で扱う候補です。" },
       { label: "Maps掲載順", value: "外観→入口→席", note: "初来店客が順番に想像できる並びにします。" }
     ],
     missing_photos: [
@@ -24,8 +24,8 @@ function fallbackPhotoDiagnosis(body) {
     ],
     maps_order: ["外観", "入口", "店内/席", "代表メニュー", "駐車場"],
     photo_requirements: {
-      light_5: ["外観", "入口", "店内/席", "代表メニュー", "駐車場またはアクセス"],
-      deep_10: ["外観", "入口", "駐車場", "店内全体", "席", "代表メニュー", "価格表", "注文導線", "店主/スタッフの気配", "混雑しにくい時間の雰囲気"]
+      light_3: ["外観", "入口", "店内/席または駐車場"],
+      deep_candidate: ["駐車場", "店内全体", "席", "代表メニュー", "価格表", "注文導線", "店主/スタッフの気配", "混雑しにくい時間の雰囲気"]
     },
     actions: [
       "Google Mapsの先頭写真を入口/外観に寄せる",
@@ -53,8 +53,8 @@ function buildPrompt(body) {
 - 初見で迷わないか
 - Can I enter? と感じる人に安心材料があるか
 - Google Mapsに載せるならどの写真を優先すべきか
-- 5枚ライト診断の場合は、外観・入口・店内/席・代表メニュー・駐車場/アクセスが揃っているかを見る
-- 10枚以上の場合は、価格表、注文導線、席の距離感、店主/スタッフの気配、混雑しにくい時間の雰囲気まで見る
+- 今回のMVPは最大3枚のライト診断です。外観、入口、店内/席、駐車場/アクセスのうち、選ばれた写真から見える範囲だけを見る
+- メニュー、価格表、注文導線、店主/スタッフの気配、混雑しにくい時間の雰囲気は、見えている場合だけ触れ、見えない場合は深掘り候補にする
 
 重要:
 - 人物の属性や個人情報を推測しない
@@ -88,8 +88,8 @@ ${JSON.stringify({
   "missing_photos": ["string", "string", "string"],
   "maps_order": ["string", "string", "string", "string", "string"],
   "photo_requirements": {
-    "light_5": ["string", "string", "string", "string", "string"],
-    "deep_10": ["string", "string", "string", "string", "string", "string", "string", "string", "string", "string"]
+    "light_3": ["string", "string", "string"],
+    "deep_candidate": ["string", "string", "string", "string", "string"]
   },
   "actions": ["string", "string", "string"]
 }`;
@@ -97,7 +97,7 @@ ${JSON.stringify({
 
 async function generatePhotoDiagnosis(body) {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
-  const images = Array.isArray(body.images) ? body.images.slice(0, 20) : [];
+  const images = Array.isArray(body.images) ? body.images.slice(0, 3) : [];
   if (!apiKey || images.length === 0) {
     return { ok: true, vision: false, result: fallbackPhotoDiagnosis(body) };
   }
