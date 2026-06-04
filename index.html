@@ -4562,6 +4562,12 @@
       margin-bottom: 18px;
     }
 
+    .okm-domain .eyebrow {
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
     h1 {
       margin: 0 auto 12px;
       max-width: 820px;
@@ -4572,6 +4578,49 @@
 
     .title-accent {
       color: var(--green-dark);
+    }
+
+    .okm-domain #main-title {
+      max-width: 760px;
+      font-size: clamp(32px, 5.1vw, 54px);
+    }
+
+    .okm-hero-card-visual {
+      display: none;
+      position: relative;
+      width: min(860px, 100%);
+      aspect-ratio: 16 / 6.8;
+      margin: 14px auto 18px;
+    }
+
+    .okm-domain .okm-hero-card-visual {
+      display: block;
+    }
+
+    .okm-hero-card-visual img,
+    .okm-hero-card-visual-back {
+      position: absolute;
+      border-radius: 22px;
+      background: #efe7d7;
+      box-shadow: 0 20px 46px rgba(35, 42, 54, .16);
+    }
+
+    .okm-hero-card-visual img {
+      inset: 0 18px 18px 0;
+      width: calc(100% - 18px);
+      height: calc(100% - 18px);
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, .86);
+      z-index: 2;
+    }
+
+    .okm-hero-card-visual-back {
+      inset: 20px 0 0 24px;
+      background:
+        linear-gradient(135deg, rgba(70, 44, 37, .22), rgba(23, 32, 44, .36)),
+        #49332f;
+      transform: rotate(4deg);
+      z-index: 1;
     }
 
     .lead {
@@ -4748,13 +4797,10 @@
     }
 
     .worldview-card-teaser {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 18px;
-      align-items: center;
+      display: block;
       max-width: 900px;
       margin: 18px auto 0;
-      padding: 16px;
+      padding: 22px 26px;
       border: 1px solid #d9c7a8;
       border-radius: 8px;
       background:
@@ -5565,6 +5611,10 @@
       font-weight: 750;
     }
 
+    .okm-domain .search-stage .step-line {
+      display: none;
+    }
+
     .progress {
       width: 180px;
       height: 6px;
@@ -5587,6 +5637,21 @@
 
     .prompt {
       margin-bottom: 14px;
+    }
+
+    .prompt-mini {
+      display: none;
+      margin-bottom: 6px;
+      color: var(--green-dark);
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .okm-domain .prompt-mini {
+      display: block;
     }
 
     .prompt strong {
@@ -6193,7 +6258,7 @@
       }
 
       .okm-domain h1 {
-        font-size: clamp(30px, 10vw, 42px);
+        font-size: clamp(26px, 8.4vw, 36px);
       }
 
       .okm-domain .lead {
@@ -8101,6 +8166,10 @@
     <section class="hero" aria-labelledby="main-title">
       <div class="eyebrow" id="service-eyebrow">無料診断 β / 店舗向け</div>
       <h1 id="main-title"><span class="title-accent">未来を変える</span>『初めて客』目線。</h1>
+      <div class="okm-hero-card-visual" aria-hidden="true">
+        <div class="okm-hero-card-visual-back"></div>
+        <img src="/assets/worldview-cards/craft_trust-restaurant.jpg" alt="">
+      </div>
       <div class="gmaps-hero-visual" aria-hidden="true">
         <img src="assets/gmaps/gmaps-hero-1.jpg" alt="">
         <img src="assets/gmaps/gmaps-hero-2.jpg" alt="">
@@ -8123,6 +8192,7 @@
 
         <div class="search-main">
           <div class="prompt">
+            <em class="prompt-mini">AI問診入口 / まずは分かる範囲だけでお店を特定します</em>
             <strong><span id="service-form-title">診断したいお店を教えてください</span> <span class="field-required">必須</span></strong>
             <span id="service-form-help">まずは店名だけでも大丈夫です。地域名やURLがあると、候補確認がより正確になります。</span>
           </div>
@@ -8264,14 +8334,6 @@
       </div>
 
       <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
-        <div class="worldview-card-teaser-stack">
-          <div class="worldview-card-teaser-card back">
-            <img src="/assets/worldview-cards/worldview_immersion-night.jpg" alt="">
-          </div>
-          <div class="worldview-card-teaser-card">
-            <img src="/assets/worldview-cards/craft_trust-restaurant.jpg" alt="お客様.COMカードのイメージ">
-          </div>
-        </div>
         <div class="worldview-card-teaser-copy">
           <span id="service-teaser-kicker">お客様.COMカード β</span>
           <strong id="service-teaser-title">診断後に、お店らしさを1枚にできます。</strong>
