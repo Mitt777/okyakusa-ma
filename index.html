@@ -4541,6 +4541,49 @@
       align-items: center;
     }
 
+    .mobile-menu-toggle {
+      display: none;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(17, 24, 39, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .88);
+      color: var(--ink);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, .08);
+    }
+
+    .mobile-menu-toggle span,
+    .mobile-menu-toggle::before,
+    .mobile-menu-toggle::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    .mobile-menu-toggle {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .mobile-menu-toggle.is-open span {
+      opacity: 0;
+    }
+
+    .mobile-menu-toggle.is-open::before {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle.is-open::after {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
     .hero {
       width: min(1120px, calc(100% - 40px));
       margin: 0 auto;
@@ -6358,19 +6401,67 @@
 
     @media (max-width: 860px) {
       header,
-      nav,
       .step-line,
       .proof-title {
         align-items: flex-start;
       }
 
-      header,
       .step-line {
         flex-direction: column;
       }
 
-      nav {
+      header {
+        position: relative;
+        align-items: center;
+        padding: 18px 0 8px;
+      }
+
+      .brand {
+        max-width: calc(100% - 58px);
+      }
+
+      .brand strong {
+        font-size: 20px;
+      }
+
+      .brand span {
+        font-size: 12px;
+      }
+
+      .mobile-menu-toggle {
+        display: inline-flex;
+        margin-left: auto;
+      }
+
+      nav.site-nav {
         display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 30;
+        width: min(260px, calc(100vw - 40px));
+        padding: 10px;
+        border: 1px solid rgba(17, 24, 39, .1);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 22px 44px rgba(17, 24, 39, .14);
+      }
+
+      nav.site-nav.is-open {
+        display: grid;
+        gap: 4px;
+      }
+
+      nav.site-nav a {
+        display: block;
+        padding: 12px 14px;
+        border-radius: 12px;
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      nav.site-nav a:hover {
+        background: #eef7f3;
       }
 
       .hero {
@@ -8286,7 +8377,10 @@
         <strong id="service-brand-name">お客様.COM</strong>
         <span id="service-brand-subtitle">初めて客目線のお店診断</span>
       </div>
-      <nav aria-label="主要ナビゲーション">
+      <button class="mobile-menu-toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="主要ナビゲーション">
         <a href="#diagnosis-scope">診断でわかること</a>
         <a href="#living-shop-card">カードを見る</a>
         <a href="/airs-system/">AIRS憲章</a>
@@ -14711,6 +14805,36 @@
       updateClipCaption();
       syncStartButton();
       showClipStep(1);
+    })();
+  </script>
+  <script>
+    (() => {
+      const button = document.querySelector(".mobile-menu-toggle");
+      const nav = document.querySelector("#site-nav");
+      if (!button || !nav) return;
+
+      function closeMenu() {
+        button.classList.remove("is-open");
+        nav.classList.remove("is-open");
+        button.setAttribute("aria-expanded", "false");
+        button.setAttribute("aria-label", "メニューを開く");
+      }
+
+      button.addEventListener("click", () => {
+        const willOpen = !nav.classList.contains("is-open");
+        button.classList.toggle("is-open", willOpen);
+        nav.classList.toggle("is-open", willOpen);
+        button.setAttribute("aria-expanded", String(willOpen));
+        button.setAttribute("aria-label", willOpen ? "メニューを閉じる" : "メニューを開く");
+      });
+
+      nav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 860) closeMenu();
+      });
     })();
   </script>
 </body>
