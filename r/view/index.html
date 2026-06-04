@@ -2594,6 +2594,57 @@
       line-height: 1.75;
     }
 
+    .deep-menu-preview {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid rgba(197, 154, 82, .42);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .deep-menu-preview.is-open {
+      display: block;
+    }
+
+    .deep-menu-preview h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .deep-menu-preview p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .deep-menu-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .deep-menu-preview-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfaf7;
+      padding: 10px;
+    }
+
+    .deep-menu-preview-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .deep-menu-preview-box span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
     .ai-lab-actions {
       display: flex;
       gap: 10px;
@@ -2802,6 +2853,168 @@
       color: var(--muted);
       font-size: 11px;
       font-weight: 700;
+    }
+
+    .owner-type-panel {
+      border-color: rgba(31, 138, 112, .32);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,252,249,.96)),
+        radial-gradient(circle at 100% 0%, rgba(31, 138, 112, .16), transparent 36%);
+    }
+
+    .owner-type-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .owner-type-intro p {
+      margin: 8px 0 0;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.85;
+    }
+
+    .owner-type-image {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border: 1px solid rgba(31, 138, 112, .22);
+      border-radius: 10px;
+      background: #f4f2e9;
+      box-shadow: 0 18px 38px rgba(23, 32, 44, .12);
+    }
+
+    .owner-type-quiz {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .owner-type-quiz.is-open,
+    .owner-type-result.is-open {
+      display: block;
+    }
+
+    .owner-question {
+      display: grid;
+      gap: 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .owner-question + .owner-question {
+      margin-top: 10px;
+    }
+
+    .owner-question strong {
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .owner-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .owner-option {
+      display: grid;
+      align-items: center;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 9px 10px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .owner-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .owner-option:has(input:checked) {
+      border-color: #1f8a70;
+      background: #eaf7f1;
+      color: #12614e;
+      box-shadow: inset 0 0 0 1px rgba(31, 138, 112, .18);
+    }
+
+    .owner-type-result {
+      display: none;
+      margin-top: 16px;
+      border: 1px solid rgba(31, 138, 112, .24);
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .owner-type-lead {
+      display: grid;
+      grid-template-columns: 122px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .owner-type-lead img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(31, 138, 112, .22);
+    }
+
+    .owner-type-lead h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.4;
+    }
+
+    .owner-type-lead p {
+      margin: 0;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.85;
+    }
+
+    .owner-type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .owner-type-card {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #f9fbfa;
+      padding: 12px;
+    }
+
+    .owner-type-card span {
+      display: block;
+      color: #1f8a70;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .owner-type-card p {
+      margin: 0;
+      color: #344054;
+      font-size: 12px;
+      line-height: 1.65;
     }
 
     .grid {
@@ -3029,6 +3242,9 @@
       .worldview-result-card ul,
       .ok-card-note p,
       .ok-card-note ul,
+      .owner-type-intro p,
+      .owner-type-lead p,
+      .owner-type-card p,
       .pre-entry-item p,
       .ai-lab-card p,
       .ai-lab-card li,
@@ -3046,7 +3262,24 @@
         font-size: 21px;
       }
 
+      .owner-type-intro,
+      .owner-type-lead,
+      .owner-options,
+      .owner-type-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-type-image,
+      .owner-type-lead img {
+        width: min(100%, 220px);
+        justify-self: center;
+      }
+
       .deep-menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .deep-menu-preview-grid {
         grid-template-columns: 1fr;
       }
 
@@ -3431,6 +3664,27 @@
           <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
+        <div class="panel full owner-type-panel">
+          <div class="owner-type-intro">
+            <div>
+              <h2>店主・運営タイプ診断 β</h2>
+              <p>店主さん・店長さん・現場担当の「続けやすさ」を12問で見ます。世界観診断を済ませている場合は、お店の空気と運営タイプの相性も一緒に表示します。</p>
+              <div class="worldview-actions">
+                <button class="worldview-submit" id="owner-type-toggle" type="button">12問で運営タイプを見る</button>
+                <span class="worldview-message" id="owner-type-message"></span>
+              </div>
+            </div>
+            <img class="owner-type-image" src="/assets/operator-types/01-welcoming-person.jpg" alt="店主・運営タイプ診断のイメージ">
+          </div>
+          <div class="owner-type-quiz" id="owner-type-quiz">
+            <div id="owner-type-questions"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="owner-type-submit" type="button">運営タイプを診断する</button>
+              <span class="worldview-message" id="owner-type-submit-message"></span>
+            </div>
+          </div>
+          <div class="owner-type-result" id="owner-type-result"></div>
+        </div>
         <div class="panel full">
           <h2>スコアの見方</h2>
           <div class="score-explain-grid" id="score-explanations"></div>
@@ -3521,6 +3775,7 @@
                 <li>お店世界観との相性を言語化</li>
                 <li>無理なく続く改善順を提案</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="owner">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">Route 6</span>
@@ -3531,6 +3786,7 @@
                 <li>迷う地点の判定</li>
                 <li>案内文への変換</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="route">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">Photo Plan</span>
@@ -3541,6 +3797,7 @@
                 <li>席・メニュー・価格感</li>
                 <li>掲載順の提案</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="photo">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">Guide Copy</span>
@@ -3551,6 +3808,7 @@
                 <li>入口案内</li>
                 <li>初来店の不安軽減</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="guide">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">GEO</span>
@@ -3561,6 +3819,7 @@
                 <li>どんな時に良いか</li>
                 <li>FAQ化</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="geo">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">Save</span>
@@ -3571,6 +3830,7 @@
                 <li>写真テーマ</li>
                 <li>SNS文の方向性</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="save">内容を見る</button>
             </div>
             <div class="deep-menu-card">
               <span class="deep-menu-kicker">Reviews</span>
@@ -3581,8 +3841,10 @@
                 <li>紹介文</li>
                 <li>投稿文</li>
               </ul>
+              <button class="ai-lab-button secondary" type="button" data-deep-menu="reviews">内容を見る</button>
             </div>
           </div>
+          <div class="deep-menu-preview" id="deep-menu-preview"></div>
           <div class="deep-menu-note">
             ここはまだ決済前の設計表示です。まずは「写真3枚の入りやすさ診断」と「AI de 店エゴサーチ」で価値を確認し、その先に必要なものだけを深掘りできる形にします。
           </div>
@@ -4166,6 +4428,7 @@
     let shareContext = null;
     let worldviewShareResult = null;
     let worldviewDeepResult = null;
+    let ownerTypeResult = null;
     let egoSearchResult = null;
     let photoDiagnosisResult = null;
     let selectedWorldviewCardPersonaKey = "";
@@ -5454,6 +5717,107 @@
       `;
     }
 
+    const OWNER_TYPES = {
+      welcoming: {
+        name: "迎える人",
+        image: "/assets/operator-types/01-welcoming-person.jpg",
+        summary: "初めてのお客様を受け止め、安心して入れる空気を作るタイプです。",
+        strength: "入口の言葉、挨拶、案内、初来店の不安をほどく力があります。",
+        care: "全員に丁寧に対応しすぎると、忙しい時に疲れやすくなります。",
+        next: "初めての方向け案内文と、入口・駐車場・席の写真を整えると強みが伝わります。"
+      },
+      craft: {
+        name: "職人の人",
+        image: "/assets/operator-types/02-craft-person.jpg",
+        summary: "品質、技術、手仕事への信頼でお店を支えるタイプです。",
+        strength: "言葉よりも体験で納得してもらう力があります。",
+        care: "こだわりが見えないままだと、初めての人には普通のお店に見えることがあります。",
+        next: "素材、工程、選び方、こだわりを短い説明文と写真で見える化します。"
+      },
+      story: {
+        name: "物語を作る人",
+        image: "/assets/operator-types/03-story-person.jpg",
+        summary: "お店の背景や意味を編み、記憶に残る理由を作るタイプです。",
+        strength: "世界観、由来、店主の考えを言葉にすると強く響きます。",
+        care: "物語が長すぎると、初めての人には少し入りにくく見えることがあります。",
+        next: "Google Maps説明文、公式カード、SNSプロフィールへ短い物語を配置します。"
+      },
+      space: {
+        name: "場を整える人",
+        image: "/assets/operator-types/04-space-person.jpg",
+        summary: "空間、清潔感、導線、席の安心感を守るタイプです。",
+        strength: "お客様が無理なく過ごせる環境を作る力があります。",
+        care: "整っていることが当たり前に見え、良さが言葉になりにくいことがあります。",
+        next: "席、入口、店内全体、混雑しにくい時間を写真と言葉で伝えます。"
+      },
+      lively: {
+        name: "にぎわいを起こす人",
+        image: "/assets/operator-types/05-lively-person.jpg",
+        summary: "人を巻き込み、場に温度と動きを作るタイプです。",
+        strength: "イベント、常連さん、限定感、ライブ感を発信に変えやすいです。",
+        care: "にぎわいが強すぎると、静かに過ごしたい人には距離が出ることがあります。",
+        next: "混み具合、イベント日、ゆっくり過ごせる時間を分けて案内します。"
+      },
+      quiet: {
+        name: "静けさを守る人",
+        image: "/assets/operator-types/06-quiet-person.jpg",
+        summary: "余白、距離感、静かな居心地を大切にするタイプです。",
+        strength: "騒がず、落ち着いて過ごせる理由を作れます。",
+        care: "静けさが外から見えないと、営業中かどうか分かりにくくなる場合があります。",
+        next: "静かに過ごせる席、時間帯、過ごし方をやわらかく案内します。"
+      },
+      local: {
+        name: "地域につなぐ人",
+        image: "/assets/operator-types/07-local-person.jpg",
+        summary: "地域、人、観光、紹介の流れをお店につなぐタイプです。",
+        strength: "地元客と観光客の橋渡しができます。",
+        care: "地域の人には伝わっていても、初めて来る人には文脈が足りないことがあります。",
+        next: "地域名、近隣施設、回遊ルート、立ち寄り理由を説明文に入れます。"
+      },
+      challenge: {
+        name: "挑戦する人",
+        image: "/assets/operator-types/08-challenge-person.jpg",
+        summary: "新しい企画、商品、導線を試しながらお店を前に進めるタイプです。",
+        strength: "変化を作り、話題や来店理由を更新できます。",
+        care: "変化が多すぎると、初めての人には何のお店か分かりにくくなることがあります。",
+        next: "変わる部分と変わらない魅力を分け、今月の推しを固定します。"
+      },
+      support: {
+        name: "支える人",
+        image: "/assets/operator-types/09-support-person.jpg",
+        summary: "目立つよりも、お店が続く土台を静かに支えるタイプです。",
+        strength: "丁寧さ、安定感、スタッフやお客様を支える力があります。",
+        care: "自分の貢献が見えにくく、発信や改善が後回しになりがちです。",
+        next: "続いている理由、安心できる点、支えている工夫を短い言葉にします。"
+      }
+    };
+
+    const OWNER_TYPE_QUESTIONS = [
+      { id: "o1", text: "初めてのお客様への自然な接し方は？", options: [["先に安心してもらう", { welcoming: 3, support: 1 }], ["必要な時だけ静かに支える", { quiet: 2, space: 1 }], ["商品や体験で納得してもらう", { craft: 2, story: 1 }]] },
+      { id: "o2", text: "忙しい日に一番守りたいものは？", options: [["品質と手順", { craft: 3, space: 1 }], ["店内の落ち着き", { quiet: 2, space: 2 }], ["お客様との温度", { lively: 2, welcoming: 1 }]] },
+      { id: "o3", text: "SNSで一番出しやすいものは？", options: [["店の背景や考え", { story: 3 }], ["今日の動きやイベント", { lively: 3, challenge: 1 }], ["地域や人とのつながり", { local: 3, support: 1 }]] },
+      { id: "o4", text: "改善するなら、どこから始めたいですか？", options: [["写真と入口案内", { welcoming: 2, space: 1 }], ["商品説明とこだわり", { craft: 2, story: 1 }], ["新企画や新しい導線", { challenge: 3 }]] },
+      { id: "o5", text: "お客様に言われて一番うれしい言葉は？", options: [["安心して入れました", { welcoming: 3 }], ["丁寧でおいしかった/良かった", { craft: 2, support: 1 }], ["またここで過ごしたい", { quiet: 2, space: 1 }]] },
+      { id: "o6", text: "店主さん自身が疲れやすい場面は？", options: [["ずっと説明し続けること", { craft: 1, quiet: 2 }], ["場が乱れること", { space: 3, quiet: 1 }], ["変化が止まること", { challenge: 3, lively: 1 }]] },
+      { id: "o7", text: "増えると嬉しいお客様は？", options: [["初めてでも素直に楽しむ人", { welcoming: 2, lively: 1 }], ["こだわりを理解してくれる人", { craft: 3, story: 1 }], ["地元や旅の流れで通う人", { local: 3 }]] },
+      { id: "o8", text: "お店の強みを一言で出すなら？", options: [["安心できる入口", { welcoming: 2, space: 1 }], ["物語と世界観", { story: 3 }], ["支える丁寧さ", { support: 3 }]] },
+      { id: "o9", text: "発信で無理なく続けられそうなのは？", options: [["日々の小さな記録", { support: 2, quiet: 1 }], ["季節や地域の話", { local: 2, story: 1 }], ["新しい挑戦の共有", { challenge: 3 }]] },
+      { id: "o10", text: "店内づくりで大切にしていることは？", options: [["動線と清潔感", { space: 3 }], ["静かな余白", { quiet: 3 }], ["人が集まる温度", { lively: 3 }]] },
+      { id: "o11", text: "長く続けるために減らしたい負荷は？", options: [["接客で気を張りすぎること", { welcoming: 1, support: 2 }], ["発信を毎回考えること", { quiet: 1, craft: 1, support: 1 }], ["同じことの繰り返し", { challenge: 2, lively: 1 }]] },
+      { id: "o12", text: "お店の未来像に近いものは？", options: [["地域に自然に残る店", { local: 2, support: 1 }], ["世界観で記憶される店", { story: 2, quiet: 1 }], ["新しい楽しみが生まれる店", { challenge: 2, lively: 1 }]] }
+    ];
+
+    const WORLDVIEW_TO_OWNER_HINTS = {
+      quiet_resonance: "静かな共鳴型の世界観とは、静けさを守る人・場を整える人・支える人が特に噛み合いやすいです。",
+      craft_trust: "職人気質や場を整える運営タイプと合うと、信頼が来店前にも伝わりやすくなります。",
+      local_community: "地域につなぐ人・迎える人の運営傾向と重なると、地元客と旅の人の橋渡しがしやすくなります。",
+      live_impulse: "にぎわいを起こす人・挑戦する人と合うと、イベントや今日感の発信が強くなります。",
+      worldview_immersion: "物語を作る人・静けさを守る人と合うと、世界観が壊れにくく、記憶に残りやすくなります。",
+      daily_companion: "支える人・迎える人と合うと、日常的に通いやすい安心感が育ちます。",
+      tourism_destination: "地域につなぐ人・物語を作る人と合うと、旅先で選ばれる理由が明確になります。",
+      entry_anxiety_relief: "迎える人・場を整える人と合うと、初めての人の不安を下げる導線が作りやすくなります。"
+    };
+
     const WORLDVIEW_QUESTIONS = [
       {
         id: "q1",
@@ -5598,6 +5962,116 @@
           </div>
         </div>
       `).join("");
+    }
+
+    function renderOwnerTypeQuestions() {
+      const container = document.querySelector("#owner-type-questions");
+      if (!container) return;
+      container.innerHTML = OWNER_TYPE_QUESTIONS.map((question, index) => `
+        <div class="owner-question">
+          <strong>Q${index + 1}. ${escapeHtml(question.text)}</strong>
+          <div class="owner-options">
+            ${question.options.map(([label], optionIndex) => `
+              <label class="owner-option">
+                <input type="radio" name="${escapeHtml(question.id)}" value="${optionIndex}">
+                <span>${escapeHtml(label)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function calculateOwnerType() {
+      const scores = Object.fromEntries(Object.keys(OWNER_TYPES).map((key) => [key, 0]));
+      const answers = [];
+      for (const question of OWNER_TYPE_QUESTIONS) {
+        const selected = document.querySelector(`input[name="${question.id}"]:checked`);
+        if (!selected) return null;
+        const optionIndex = Number(selected.value);
+        const [, weights] = question.options[optionIndex];
+        answers.push(optionIndex);
+        Object.entries(weights).forEach(([type, point]) => {
+          scores[type] += point;
+        });
+      }
+      const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      return {
+        primaryKey: ranked[0][0],
+        secondaryKey: ranked[1][0],
+        scores,
+        ranked,
+        answerCode: answers.join("")
+      };
+    }
+
+    function ownerWorldviewFit(ownerType, secondaryType) {
+      if (!worldviewShareResult?.primaryKey) {
+        return "世界観診断を先に行うと、お店の空気と運営タイプの相性まで表示できます。";
+      }
+      const worldviewHint = WORLDVIEW_TO_OWNER_HINTS[worldviewShareResult.primaryKey] || "世界観診断の結果と合わせると、発信や接客距離の整え方が見えやすくなります。";
+      return `${worldviewShareResult.typeTitle}との相性: ${worldviewHint} 今回の運営タイプは「${ownerType.name}」なので、無理に別人格を演じるより、${ownerType.next}`;
+    }
+
+    function showOwnerTypeResult(options = {}) {
+      const message = document.querySelector("#owner-type-submit-message");
+      const result = calculateOwnerType();
+      if (!result) {
+        if (message) message.textContent = "12問すべてに回答してください。";
+        return;
+      }
+      if (message) message.textContent = "";
+      const primary = OWNER_TYPES[result.primaryKey];
+      const secondary = OWNER_TYPES[result.secondaryKey];
+      const fit = ownerWorldviewFit(primary, secondary);
+      ownerTypeResult = {
+        typeTitle: primary.name,
+        secondaryName: secondary.name,
+        primaryKey: result.primaryKey,
+        secondaryKey: result.secondaryKey,
+        scores: result.scores,
+        answerCode: result.answerCode,
+        createdAt: Date.now()
+      };
+      const resultEl = document.querySelector("#owner-type-result");
+      resultEl.innerHTML = `
+        <div class="owner-type-lead">
+          <img src="${escapeHtml(primary.image)}" alt="${escapeHtml(primary.name)}のイメージ">
+          <div>
+            <h3>${escapeHtml(primary.name)}タイプ</h3>
+            <p>${escapeHtml(primary.summary)}</p>
+          </div>
+        </div>
+        <div class="owner-type-grid">
+          <div class="owner-type-card">
+            <span>Strength</span>
+            <p>${escapeHtml(primary.strength)}</p>
+          </div>
+          <div class="owner-type-card">
+            <span>Care</span>
+            <p>${escapeHtml(primary.care)}</p>
+          </div>
+          <div class="owner-type-card">
+            <span>Next</span>
+            <p>${escapeHtml(primary.next)}</p>
+          </div>
+          <div class="owner-type-card">
+            <span>Sub Type</span>
+            <p>補助傾向は「${escapeHtml(secondary.name)}」。${escapeHtml(secondary.summary)}</p>
+          </div>
+          <div class="owner-type-card">
+            <span>Worldview Fit</span>
+            <p>${escapeHtml(fit)}</p>
+          </div>
+          <div class="owner-type-card">
+            <span>Deep Diagnosis</span>
+            <p>深掘りでは、役割負荷、発信負荷、接客距離、お店世界観とのズレを具体的な改善順にします。</p>
+          </div>
+        </div>
+      `;
+      resultEl.classList.add("is-open");
+      updateShareLinks();
+      if (!options.skipScroll) resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     function renderWorldviewDeepFields() {
@@ -6643,13 +7117,84 @@
       };
     }
 
+    const DEEP_MENU_DETAILS = {
+      owner: {
+        title: "店主・運営タイプ診断",
+        register: "12問の回答、役割、接客距離、発信負荷、続けやすさの感覚",
+        output: "9タイプ判定、世界観診断との相性、無理なく続く改善順",
+        note: "性格を決めつけず、店主さん・店長さん・現場担当それぞれの負担を軽くするための診断です。"
+      },
+      route: {
+        title: "導線6枚診断",
+        register: "道路、看板、駐車場、入口、店内入口、席までの写真",
+        output: "迷いやすい場所、撮り直すべき地点、Google Mapsや店頭QRに使える案内文",
+        note: "幹線道路から奥まった店舗、駐車場が分かりにくい店舗、初来店が多い観光地店舗に特に向きます。"
+      },
+      photo: {
+        title: "写真設計診断",
+        register: "代表写真5〜10枚、現在のGoogle Maps写真、店主さんの補足",
+        output: "次に撮るべき写真リスト、掲載順、保存されやすい写真テーマ",
+        note: "映えよりも、初めての人が不安なく来店できる写真設計を作ります。"
+      },
+      guide: {
+        title: "初めての方向け案内文",
+        register: "導線写真、入口写真、駐車場情報、店主さんの補足",
+        output: "Google Maps説明文、公式カード、店頭QRに使える案内文",
+        note: "『どこに停めるか』『どこから入るか』『初めてでも大丈夫か』を短く伝えます。"
+      },
+      geo: {
+        title: "AI検索向け説明文・FAQ",
+        register: "Maps情報、店主さんの言葉、特徴、名物、利用シーン",
+        output: "AI検索に読まれやすい店舗説明文、FAQ、推薦されやすい理由",
+        note: "AIが『誰に、どんな時に、なぜおすすめか』を読み取りやすくするための文章です。"
+      },
+      save: {
+        title: "保存されやすい写真・言葉",
+        register: "写真、口コミ傾向、世界観診断、店主コメント",
+        output: "Save / Plan / Impulse別の写真テーマ、投稿文、また行きたい理由",
+        note: "その場の反応だけでなく、あとから思い出して再訪するための言葉に変えます。"
+      },
+      reviews: {
+        title: "口コミの文章変換",
+        register: "良い口コミ、店主コメント、返信したい口コミの方向性",
+        output: "口コミ返信文、紹介文、SNS文、Google投稿の下書き",
+        note: "口コミを評価の数字で終わらせず、来店理由や信頼の言葉へ変換します。"
+      }
+    };
+
+    function showDeepMenuPreview(key) {
+      const detail = DEEP_MENU_DETAILS[key];
+      const preview = document.querySelector("#deep-menu-preview");
+      if (!detail || !preview) return;
+      const photoLine = photoDiagnosisResult
+        ? "写真3枚診断の結果を反映し、次に深掘りすべき写真や導線を優先して表示できます。"
+        : "写真3枚診断を先に行うと、入口・外観・駐車場の結果から自然に深掘りへつなげられます。";
+      preview.innerHTML = `
+        <h3>${escapeHtml(detail.title)}</h3>
+        <p>${escapeHtml(detail.note)} ${escapeHtml(photoLine)}</p>
+        <div class="deep-menu-preview-grid">
+          <div class="deep-menu-preview-box">
+            <strong>登録するもの</strong>
+            <span>${escapeHtml(detail.register)}</span>
+          </div>
+          <div class="deep-menu-preview-box">
+            <strong>返ってくるもの</strong>
+            <span>${escapeHtml(detail.output)}</span>
+          </div>
+        </div>
+      `;
+      preview.classList.add("is-open");
+      preview.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
     function buildShareText() {
       if (!shareContext) return "";
       const { storeName, totalScore, maps, ai } = shareContext;
       const worldviewLine = worldviewShareResult ? `\n世界観タイプ: ${worldviewShareResult.typeTitle}` : "";
+      const ownerLine = ownerTypeResult ? `\n運営タイプ: ${ownerTypeResult.typeTitle}` : "";
       const deepLine = worldviewDeepResult ? `\n深掘り: ${concise(worldviewDeepResult.positioning, 36)}` : "";
       const photoLine = isFreshSharedState(photoDiagnosisResult) ? `\n入りやすさ: ${concise(photoDiagnosisResult.title || "写真診断結果あり", 34)}` : "";
-      return `「${storeName}」のお店の見え方診断\n総合${text(totalScore || "")}点 / Maps ${text(ai.maps_score || maps.maps_score)} / 口コミ ${text(maps.rating)}(${text(maps.user_rating_count, "0")}件)${worldviewLine}${deepLine}${photoLine}\n${worldviewShareUrl()}`;
+      return `「${storeName}」のお店の見え方診断\n総合${text(totalScore || "")}点 / Maps ${text(ai.maps_score || maps.maps_score)} / 口コミ ${text(maps.rating)}(${text(maps.user_rating_count, "0")}件)${worldviewLine}${ownerLine}${deepLine}${photoLine}\n${worldviewShareUrl()}`;
     }
 
     function updateShareLinks() {
@@ -6802,6 +7347,7 @@
       loadEgoNoteShelf(storeName);
       document.querySelector(".worldview-panel")?.classList.add("has-worldview-result");
       renderPreEntryCheck();
+      if (ownerTypeResult) showOwnerTypeResult({ skipScroll: true });
       updateWorldviewUrl();
       updateShareLinks();
       if (!options.skipScroll && !options.noScroll) {
@@ -7300,7 +7846,12 @@
       }
       photoDiagnosisResult = {
         ...photoDiagnosisResult,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        actions: [
+          ...(photoDiagnosisResult.actions || []),
+          "さらに見るなら、導線6枚診断で道路・看板・駐車場・入口まで確認する",
+          "写真設計診断で、Google Mapsに次に載せる写真リストを作る"
+        ].filter(Boolean).slice(0, 5)
       };
       renderAiLabResult(
         "#photo-diagnosis-result",
@@ -7554,6 +8105,11 @@
 ・理想のお客様像：${worldviewDeep.idealCustomer}
 ・今月の行動：${worldviewDeep.monthlyActions.join(" / ")}
 ` : "";
+      const ownerTypeBlock = ownerTypeResult ? `
+店主・運営タイプ診断
+・${ownerTypeResult.typeTitle}
+・補助傾向：${ownerTypeResult.secondaryName}
+` : "";
 
       return `「${storeName}」の診断結果です。
 
@@ -7572,6 +8128,7 @@ ${reportUrl}
 ・検索スコア：SEO ${seoScore} / AI検索 ${geoScore}
 ・今月の重点：${shortFocus(focus)}
 ${worldviewBlock}
+${ownerTypeBlock}
 ${worldviewDeepBlock}
 
 短評
@@ -7797,6 +8354,7 @@ https://okyakusa-ma.com/
 
     renderWorldviewQuestions();
     renderWorldviewDeepFields();
+    renderOwnerTypeQuestions();
     document.querySelector("#worldview-toggle").addEventListener("click", () => {
       const quiz = document.querySelector("#worldview-quiz");
       const isOpen = quiz.classList.toggle("is-open");
@@ -7804,10 +8362,20 @@ https://okyakusa-ma.com/
     });
     document.querySelector("#worldview-submit").addEventListener("click", showWorldviewResult);
     document.querySelector("#worldview-deep-submit").addEventListener("click", runWorldviewDeepDive);
+    document.querySelector("#owner-type-toggle").addEventListener("click", () => {
+      const quiz = document.querySelector("#owner-type-quiz");
+      const isOpen = quiz.classList.toggle("is-open");
+      document.querySelector("#owner-type-toggle").textContent = isOpen ? "診断を閉じる" : "12問で運営タイプを見る";
+      document.querySelector("#owner-type-message").textContent = isOpen ? "直感で選んで大丈夫です。" : "";
+    });
+    document.querySelector("#owner-type-submit").addEventListener("click", showOwnerTypeResult);
     document.querySelector("#ego-search-run").addEventListener("click", runEgoSearch);
     document.querySelector("#photo-diagnosis-files").addEventListener("change", handlePhotoDiagnosisFileChange);
     document.querySelector("#photo-diagnosis-run").addEventListener("click", runPhotoDiagnosis);
     document.querySelector("#photo-diagnosis-clear").addEventListener("click", clearPhotoDiagnosis);
+    document.querySelectorAll("[data-deep-menu]").forEach((button) => {
+      button.addEventListener("click", () => showDeepMenuPreview(button.dataset.deepMenu));
+    });
     window.setInterval(() => {
       if (document.querySelector("#official-air-s-slot")) refreshOfficialAirsUi();
     }, 60000);
