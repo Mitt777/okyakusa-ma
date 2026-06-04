@@ -5685,12 +5685,13 @@
     .search-box::before {
       content: "→";
       position: absolute;
-      left: 20px;
+      left: 22px;
       top: 50%;
       color: var(--green-dark);
-      font-size: 18px;
+      font-size: 56px;
       font-weight: 900;
-      opacity: .55;
+      line-height: 1;
+      opacity: .92;
       transform: translateY(-50%);
       transition: opacity .18s ease, transform .18s ease;
       pointer-events: none;
@@ -5715,7 +5716,7 @@
       outline: 0;
       font: inherit;
       font-size: 19px;
-      padding: 13px 14px 13px 42px;
+      padding: 13px 14px 13px 76px;
       background: transparent;
       color: var(--ink);
     }
@@ -6291,7 +6292,8 @@
       }
 
       .okm-domain h1 {
-        font-size: clamp(24px, 7.8vw, 34px);
+        max-width: 100%;
+        font-size: clamp(19px, 5vw, 30px);
         white-space: nowrap;
       }
 
@@ -6306,6 +6308,10 @@
 
       .search-box {
         grid-template-columns: 1fr;
+      }
+
+      .search-box::before {
+        top: 42px;
       }
 
       .search-box button {
