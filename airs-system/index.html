@@ -175,11 +175,60 @@
       font-size: 14px;
     }
     .button.primary { background: var(--green); border-color: var(--green); color: #fff; }
+    .okm-reference {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .okm-reference-card {
+      display: grid;
+      gap: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.78);
+      padding: 24px;
+    }
+    .okm-reference-card .label {
+      color: var(--gold);
+    }
+    .okm-reference-card h3 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+    .okm-reference-card p {
+      line-height: 2;
+    }
+    .okm-point-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .okm-point {
+      border: 1px solid rgba(47,128,103,.16);
+      border-radius: 8px;
+      background: rgba(242,247,243,.62);
+      padding: 14px;
+    }
+    .okm-point b {
+      display: block;
+      color: var(--green);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .okm-point span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+    }
     footer { padding: 56px 0 36px; color: var(--muted); font-size: 12px; }
     @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr; }
       .role { grid-template-columns: 1fr; gap: 4px; }
       header { align-items: flex-start; flex-direction: column; }
+      .okm-point-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -351,6 +400,57 @@
           <div class="actions">
             <a class="button primary" href="https://kansei.info/books/tourism-memory-zone/chapter-7">50エリアの選定方法を見る</a>
             <a class="button" href="https://kansei.info/books/tourism-memory-zone">観光記憶圏試論を読む</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="okm-reference-title">
+        <div class="card">
+          <div class="label">okyakusa-ma.com Reference</div>
+          <h2 id="okm-reference-title">お客様.COMで扱う2つの入口</h2>
+          <p>
+            TOPページでは無料診断の入口を優先し、詳しい説明はAIRS憲章側に置きます。
+            お客様.COMは、AIRSシステムの中で「店の人格を言語化する」役割を担います。
+          </p>
+
+          <div class="okm-reference">
+            <section class="okm-reference-card" id="diagnosis-scope" aria-labelledby="diagnosis-scope-title">
+              <div class="label">Diagnosis Scope</div>
+              <h3 id="diagnosis-scope-title">お店の健康診断でわかること</h3>
+              <p>
+                店舗名、地域、URLを入れるだけで、Google Maps、口コミ、写真、SNS、AI検索での見え方、
+                そして入りやすさや世界観までまとめて確認します。初めてのお客様に、良いお店がちゃんと良く見えているかを見るための入口です。
+              </p>
+              <div class="okm-point-grid" aria-label="お店の健康診断で確認する主な項目">
+                <div class="okm-point"><b>Maps</b><span>店舗名、カテゴリ、住所、営業時間、写真、口コミ、Web導線を確認します。</span></div>
+                <div class="okm-point"><b>来店前不安</b><span>駐車場、入口、席、価格、予約、メニューなど、初来店の不安材料を見ます。</span></div>
+                <div class="okm-point"><b>検索 / AI</b><span>地域語、公式サイト、SNS、AI検索で拾われやすい特徴を整理します。</span></div>
+                <div class="okm-point"><b>世界観</b><span>7問の回答と診断値から、お店の滞在感や相性を読み解きます。</span></div>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="https://okyakusa-ma.com/#diagnosis-form">お店の健康診断を試す</a>
+              </div>
+            </section>
+
+            <section class="okm-reference-card" id="living-shop-card" aria-labelledby="living-card-title">
+              <div class="label">Living Shop Card β</div>
+              <h3 id="living-card-title">動く一枚ショップカードを、まず見てみる</h3>
+              <p>
+                Google Maps上の公開情報からお店を特定し、外観の見え方と短い世界観コピーを重ねて、
+                持ちたくなるカードの入口を作ります。診断後に見えた入りやすさ、世界観、また行きたい理由を、
+                公式カードやair-s連動へつなげるための表現レイヤーです。
+              </p>
+              <div class="okm-point-grid" aria-label="ショップカードが扱う主な要素">
+                <div class="okm-point"><b>外観</b><span>初めてのお客様が、入口や雰囲気を想像しやすいかを扱います。</span></div>
+                <div class="okm-point"><b>世界観コピー</b><span>お店の空気を短い言葉にして、SNSやカードに載せやすくします。</span></div>
+                <div class="okm-point"><b>公式air-s</b><span>公式カード化された店舗は、今日の空気を一時的に漂わせる導線へ接続できます。</span></div>
+                <div class="okm-point"><b>AIRS連携</b><span>g-maps、map-s、air-s、clip.air-sへつながる中間カードとして機能します。</span></div>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="https://okyakusa-ma.com/official/livingston/">公式カード例を見る</a>
+                <a class="button" href="https://okyakusa-ma.com/#diagnosis-form">自分のお店で試す</a>
+              </div>
+            </section>
           </div>
         </div>
       </section>

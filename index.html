@@ -5141,6 +5141,143 @@
       text-decoration: none;
     }
 
+    .okm-bridge-section {
+      display: grid;
+      gap: 18px;
+      margin-top: 24px;
+      padding: 24px;
+      border: 1px solid rgba(183, 197, 206, .88);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(31, 138, 112, .08), rgba(255, 255, 255, .94)),
+        #fff;
+    }
+
+    .okm-bridge-head {
+      max-width: 760px;
+      text-align: left;
+    }
+
+    .okm-bridge-head .eyebrow {
+      margin-bottom: 10px;
+    }
+
+    .okm-bridge-head h2 {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: clamp(24px, 3.5vw, 36px);
+      line-height: 1.22;
+    }
+
+    .okm-bridge-head p:not(.eyebrow) {
+      margin: 0;
+      color: #536172;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .okm-bridge-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .okm-bridge-legend b {
+      color: var(--green-dark);
+    }
+
+    .okm-bridge-table-wrap {
+      overflow: hidden;
+      border: 1px solid rgba(183, 197, 206, .88);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .okm-bridge-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .okm-bridge-table th,
+    .okm-bridge-table td {
+      border-bottom: 1px solid rgba(183, 197, 206, .72);
+      padding: 12px 14px;
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .okm-bridge-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .okm-bridge-table th {
+      background: #f5f8f6;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .okm-bridge-table th:first-child,
+    .okm-bridge-table td:first-child {
+      width: 48%;
+      color: var(--ink);
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .okm-bridge-table td:not(:first-child) {
+      text-align: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .okm-bridge-table .is-strong {
+      color: var(--green-dark);
+    }
+
+    .okm-bridge-table .is-none {
+      color: #b9b5ad;
+    }
+
+    .okm-bridge-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(183, 197, 206, .72);
+      padding-top: 14px;
+    }
+
+    .okm-bridge-cta p {
+      margin: 0;
+      color: #667085;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .okm-bridge-cta a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 24px rgba(31, 138, 112, .2);
+    }
+
     .living-card-lab {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
@@ -6590,6 +6727,43 @@
       .signal-list,
       .divider-section {
         grid-template-columns: 1fr;
+      }
+
+      .okm-bridge-section {
+        padding: 18px;
+      }
+
+      .okm-bridge-head h2 {
+        font-size: 22px;
+      }
+
+      .okm-bridge-legend {
+        gap: 7px 10px;
+        font-size: 10px;
+      }
+
+      .okm-bridge-table th,
+      .okm-bridge-table td {
+        padding: 9px 7px;
+        font-size: 11px;
+      }
+
+      .okm-bridge-table th:first-child,
+      .okm-bridge-table td:first-child {
+        width: 56%;
+      }
+
+      .okm-bridge-table td:not(:first-child) {
+        font-size: 13px;
+      }
+
+      .okm-bridge-cta {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .okm-bridge-cta a {
+        width: 100%;
       }
 
       .worldview-card-teaser {
@@ -8381,8 +8555,6 @@
         <span></span>
       </button>
       <nav id="site-nav" class="site-nav" aria-label="主要ナビゲーション">
-        <a href="#diagnosis-scope">診断でわかること</a>
-        <a href="#living-shop-card">カードを見る</a>
         <a href="/airs-system/">AIRS憲章</a>
         <a href="#">β版について</a>
         <a href="#">料金</a>
@@ -8519,211 +8691,55 @@
             </div>
             <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
           </form>
-          <div class="next-questions" aria-label="続く入力項目">
-            <span>次に行うこと:</span>
-            <span id="service-next-questions">店舗特定、Google Maps観測、口コミ、写真、SNS、AI検索/GEO、入りやすさ、世界観を順に確認します。</span>
-          </div>
         </div>
 
-        <div class="proof">
-          <div class="proof-title">
-            <strong>入力された情報から、静かに、しかし確実に見えるものを拾います</strong>
-            <span>ない媒体は未判定。ある情報だけを無理なく診断します</span>
+        <section class="okm-bridge-section" aria-label="g-maps.shopとお客様.COMの診断比較">
+          <div class="okm-bridge-head">
+            <p class="eyebrow">Service Comparison</p>
+            <h2>Google Maps基礎診断と、お客様.COMの違い</h2>
+            <p>
+              g-maps.shopは、Google Maps上の公開情報を確認する入口です。
+              お客様.COMは、初めて客目線で、世界観・入りやすさ・写真の伝わり方まで見ます。
+            </p>
           </div>
-          <div class="signal-list">
-            <div class="signal">
-              <b>店舗特定・Maps</b>
-              <ul>
-                <li>店舗名、住所、カテゴリ、電話、公式URLを照合</li>
-                <li>評価、口コミ件数、営業時間、写真、Web導線を取得</li>
-                <li>駐車場・入口・席・メニューなど来店前不安の材料を確認</li>
-              </ul>
-            </div>
-            <div class="signal">
-              <b>検索・AIでの見え方</b>
-              <ul>
-                <li>公式サイトがあれば簡易SEOと地域語の入り方を見る</li>
-                <li>AI検索/GEOで推薦文に使いやすい情報を確認</li>
-                <li>Instagram、YouTubeは入力がある場合だけ補助診断</li>
-              </ul>
-            </div>
-            <div class="signal">
-              <b>世界観・入りやすさ</b>
-              <ul>
-                <li>7問でお店世界観タイプを診断</li>
-                <li>入る前に怖くないか、初来店の安心材料を確認</li>
-                <li>写真を入れた場合はAI Visionで入口・外観・店内の伝わり方を見る</li>
-              </ul>
-            </div>
+          <div class="okm-bridge-legend" aria-label="比較表の凡例">
+            <span><b>◎</b> しっかり診断</span>
+            <span><b>○</b> 確認できる</span>
+            <span><b>△</b> 一部確認</span>
+            <span><b>ー</b> 対象外</span>
           </div>
-        </div>
+          <div class="okm-bridge-table-wrap">
+            <table class="okm-bridge-table">
+              <thead>
+                <tr>
+                  <th scope="col">診断項目</th>
+                  <th scope="col">g-maps.shop</th>
+                  <th scope="col">お客様.COM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>世界観診断</td><td class="is-none">ー</td><td class="is-strong">◎</td></tr>
+                <tr><td>公式カード化</td><td class="is-none">ー</td><td class="is-strong">◎</td></tr>
+                <tr><td>Google Maps基本情報</td><td>○</td><td>△</td></tr>
+                <tr><td>見つけやすさ</td><td>○</td><td>△</td></tr>
+                <tr><td>たどり着きやすさ</td><td>△</td><td>○</td></tr>
+                <tr><td>入りやすさ</td><td>△</td><td class="is-strong">◎</td></tr>
+                <tr><td>写真の伝わり方</td><td>△</td><td class="is-strong">◎</td></tr>
+                <tr><td>観光客へのわかりやすさ</td><td>○</td><td>○</td></tr>
+                <tr><td>AI検索での読まれやすさ</td><td>○</td><td>○</td></tr>
+                <tr><td>保存されやすさ</td><td>○</td><td>○</td></tr>
+                <tr><td>口コミの活かし方</td><td>△</td><td>○</td></tr>
+                <tr><td>今すぐ直す1点</td><td>○</td><td>○</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="okm-bridge-cta">
+            <p>Google Mapsだけを先に見たい場合は、基礎診断から始められます。</p>
+            <a href="https://g-maps.shop" target="_blank" rel="noopener">g-maps.shopを見る</a>
+          </div>
+        </section>
       </div>
 
-      <div class="worldview-card-teaser" aria-label="お客様.COMカード案内">
-        <div class="worldview-card-teaser-copy">
-          <span id="service-teaser-kicker">お客様.COMカード β</span>
-          <strong id="service-teaser-title">診断後に、お店らしさを1枚にできます。</strong>
-          <p id="service-teaser-text">総合診断で見えた入りやすさ、世界観、また行きたい理由を、公式カードやair-s連動へつなげられます。</p>
-        </div>
-      </div>
-
-      <section class="living-card-lab" id="living-shop-card" aria-labelledby="living-card-title">
-        <div class="living-card-copy">
-          <span class="living-card-kicker">Living Shop Card β</span>
-          <h2 id="living-card-title">動く一枚ショップカードを、まず見てみる。</h2>
-          <p>
-            写真も動画も用意しなくて大丈夫です。Google Maps上の公開情報からお店を特定し、
-            外観の見え方と短い世界観コピーを重ねて、持ちたくなるカードの入口を作ります。
-          </p>
-          <form class="living-card-form" id="living-card-form">
-            <label for="living-card-query">店名 + 地域、または Google Maps URL</label>
-            <div class="living-card-search">
-              <input id="living-card-query" name="card_query" placeholder="例: リビングストン 黒磯 / https://maps.google.com/..." autocomplete="off">
-              <button type="submit">自分のお店カードを見る</button>
-            </div>
-            <div class="living-card-message" id="living-card-message" role="status" aria-live="polite"></div>
-          </form>
-          <div class="living-seed-showroom" aria-labelledby="living-seed-title">
-            <div class="living-seed-head">
-              <div>
-                <strong id="living-seed-title">那須ショールーム β</strong>
-                <span>まずは主要店候補だけ。Google由来データは保存せず、開いた瞬間に仮カード化します。</span>
-              </div>
-              <span class="living-seed-badge">Seed DB prototype</span>
-            </div>
-            <div class="living-seed-grid" id="living-seed-grid"></div>
-          </div>
-          <div class="living-card-candidates" id="living-card-candidates" aria-live="polite"></div>
-          <div class="living-service-flow" aria-label="関連サービスの役割">
-            <a href="https://g-maps.shop/" target="_blank" rel="noopener"><b>g-maps.shop</b><span>気づく</span></a>
-            <a href="https://okyakusa-ma.com/" target="_blank" rel="noopener"><b>okyakusa-ma.com</b><span>欲しくなる</span></a>
-            <a href="https://map-s.site/" target="_blank" rel="noopener"><b>map-s.site</b><span>貼って使う</span></a>
-            <a href="https://air-s.jp/" target="_blank" rel="noopener"><b>air-s.jp</b><span>記憶になる</span></a>
-          </div>
-        </div>
-        <div class="living-card-preview-wrap">
-          <article class="living-card-preview is-idle" id="living-card-preview" aria-label="動く一枚ショップカード プレビュー">
-            <div class="living-card-bg" id="living-card-bg"></div>
-            <div class="living-card-shade"></div>
-            <video class="living-card-video" id="living-card-video" muted playsinline controls loop></video>
-            <div class="living-card-video-state" id="living-card-video-state">
-              <div>
-                <strong>Cinematic Shop Card</strong>
-                <p>対応するAerial View動画がある場合、ここに3D空撮動画を表示します。</p>
-              </div>
-            </div>
-          </article>
-          <div class="living-card-panel">
-            <span id="living-card-type">Living Shop Card</span>
-            <h3 id="living-card-name">あなたのお店</h3>
-            <p id="living-card-headline">Google Maps上の見え方から、お店らしさを一枚にします。</p>
-            <div class="living-card-meta" id="living-card-meta">
-              <b>公開情報から生成</b>
-              <small>Street View Static対応 / 取得できない場合は静かなカードに切替</small>
-            </div>
-            <div class="living-card-english" id="living-card-english" lang="en">
-              <strong>English mini card</strong>
-              <p>Short English copy will appear here after generation.</p>
-            </div>
-            <div class="living-card-tags" id="living-card-tags">
-              <span>外観</span><span>世界観</span><span>初来店</span>
-            </div>
-          </div>
-          <div class="living-card-attribution" id="living-card-attribution">Google Maps由来の画像を使う場合はGoogle Mapsの帰属表示を行います。</div>
-        </div>
-      </section>
-
-    </section>
-
-    <section class="diagnosis-scope" id="diagnosis-scope" aria-labelledby="diagnosis-scope-title">
-      <div class="diagnosis-scope-head">
-        <div>
-          <span class="diagnosis-scope-kicker" id="service-scope-kicker">無料 / だいたい1分 / でも奥は深い</span>
-          <h2 id="diagnosis-scope-title">お店の健康診断でわかること</h2>
-          <p class="diagnosis-scope-lead" id="service-scope-lead">
-            入り口はかんたん。店舗名、地域、URLを入れるだけで、Google Maps、口コミ、写真、SNS、AI検索での見え方、
-            そして入りやすさや世界観までまとめて確認します。初めてのお客様に、良いお店がちゃんと良く見えているかを見ます。
-          </p>
-        </div>
-        <div class="diagnosis-scope-images" aria-hidden="true">
-          <img src="/assets/worldview-cards/personas/08-1.webp" alt="">
-          <img src="/assets/worldview-cards/personas/34-1.webp" alt="">
-          <img src="/assets/worldview-cards/personas/30-1.webp" alt="">
-        </div>
-        <div class="gmaps-result-mock" aria-label="診断結果の縮小モック">
-          <div class="mock-score">78</div>
-          <span class="mock-label">Visibility Score</span>
-          <svg viewBox="0 0 120 120" role="img" aria-label="診断レーダーチャート">
-            <polygon points="60,12 105,38 105,86 60,112 15,86 15,38" fill="none" stroke="#dce5de" stroke-width="1.5"></polygon>
-            <polygon points="60,28 88,44 94,78 60,95 27,80 31,45" fill="rgba(31,138,112,.18)" stroke="#1f8a70" stroke-width="2"></polygon>
-            <circle cx="60" cy="28" r="3" fill="#1f8a70"></circle>
-            <circle cx="88" cy="44" r="3" fill="#1f8a70"></circle>
-            <circle cx="94" cy="78" r="3" fill="#1f8a70"></circle>
-            <circle cx="60" cy="95" r="3" fill="#1f8a70"></circle>
-            <circle cx="27" cy="80" r="3" fill="#1f8a70"></circle>
-            <circle cx="31" cy="45" r="3" fill="#1f8a70"></circle>
-          </svg>
-          <ul>
-            <li>Maps整備度: 良好</li>
-            <li>Tourist readiness: 要補強</li>
-            <li>AI readability: 文章追加</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="diagnosis-points" aria-label="診断できる主な指標">
-        <div class="diagnosis-point">
-          <span>Maps</span>
-          <strong>見つけてもらえる状態か</strong>
-          <p>店舗名、カテゴリ、住所、営業時間、写真、口コミ、Web導線などを確認します。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>口コミ</span>
-          <strong>初めての人が信頼できるか</strong>
-          <p>評価、件数、返信、来店理由になりそうな言葉を見ます。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>検索 / AI</span>
-          <strong>AIや検索で紹介されやすいか</strong>
-          <p>地域語、公式サイト、SNS、AI検索で拾われやすい特徴を整理します。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>来店前不安</span>
-          <strong>入る前に迷わせていないか</strong>
-          <p>駐車場、入口、席、価格、予約、メニューなど、初来店の不安材料を見ます。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>SNS</span>
-          <strong>発信の入口が整っているか</strong>
-          <p>Instagram、YouTube、外部リンクがある場合だけ、無理なく補助診断します。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>改善点</span>
-          <strong>今すぐ直すべき1点</strong>
-          <p>全部を頑張るのではなく、今月まず効きそうな改善点を出します。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>世界観</span>
-          <strong>どんな空気で選ばれているか</strong>
-          <p>7問の回答と診断値から、お店の滞在感や相性を読み解きます。</p>
-        </div>
-        <div class="diagnosis-point">
-          <span>カード</span>
-          <strong>お客様に渡せる世界観カード</strong>
-          <p>診断後、LINEやSNSでシェアしやすいカードを無料で発行できます。</p>
-        </div>
-      </div>
-
-      <div class="worldview-depth">
-        <div>
-          <strong>世界観診断βは、36種類の「お店の空気」に分類します。</strong>
-          <p>
-            表では軽く見えますが、裏側では、お店の信頼感、静けさ、熱量、入りやすさ、地域感、観光性、滞在感、
-            さらにAIが読み取る特徴を重ねて判定します。単なる業種分類ではなく、「どんなお客様に、どんな空気として届くか」を見る診断です。
-          </p>
-        </div>
-        <a href="#diagnosis-form">お店の健康診断（無料）を試す</a>
-      </div>
     </section>
 
     <section class="research-background" aria-labelledby="research-background-title">
@@ -8750,74 +8766,6 @@
             <a href="https://kansei.info" target="_blank" rel="noopener">理論を読む</a>
             <a href="https://xbrains.jp" target="_blank" rel="noopener">運営主体を見る</a>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="divider-section" aria-label="診断基準の説明">
-      <div class="explain">
-        <h2>数字で拾えるものと、空気として見えるものを分けて診断します。</h2>
-        <p>
-          Google Mapsの評価や口コミ件数のように取得できる数字と、来店前不安、世界観、入りやすさのように翻訳が必要な要素を分けて見ます。
-          公式サイトやSNSがない項目は未判定とし、ある情報から「今どこを直すと選ばれやすくなるか」を整理します。
-        </p>
-      </div>
-
-      <div class="two-lanes">
-        <div class="lane">
-          <div class="lane-label">特定判定</div>
-          <div>
-            <strong>そのお店で間違いないかを先に見る</strong>
-            <span>Google Maps、公式サイト、住所、電話番号、SNSを照合し、違う店舗を診断しないようにします。</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="lane-label">観測値</div>
-          <div>
-            <strong>数字と項目で確認できる評価</strong>
-            <span>口コミ件数、評価平均、営業時間、写真、Web導線、カテゴリ、SEO/GEOの基本情報など。素材がない場合は未判定。</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="lane-label">独自スコア</div>
-          <div>
-            <strong>来店に変わるかを見る評価</strong>
-            <span>Save/Plan/Impulse、来店前不安、世界観タイプ、入りやすさ、AI検索で推薦されやすい理由を見ます。</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sample-output">
-        <h2>診断結果で見える例</h2>
-        <div class="mini-result">
-          <div class="score">OK</div>
-          <div><strong>店舗特定</strong><span>Google Maps、公式サイト、住所、電話番号、Instagramが同一店舗として一致。</span></div>
-          <div class="status good">一致</div>
-        </div>
-        <div class="mini-result">
-          <div class="score">72</div>
-          <div><strong>Google Maps整備度</strong><span>営業時間・写真・口コミは良好。メニュー、予約、駐車場説明に改善余地。</span></div>
-          <div class="status warn">要改善</div>
-        </div>
-        <div class="mini-result">
-          <div class="score">SEO</div>
-          <div><strong>地域キーワード整備度</strong><span>「那須 ランチ」など、入力された重要語が公式サイトやSNSに自然に入っているかを確認。</span></div>
-          <div class="status warn">簡易判定</div>
-        </div>
-        <div class="mini-result">
-          <div class="score">--</div>
-          <div><strong>YouTube / X 簡易SEO</strong><span>公式アカウント未入力のため今回は未判定。総合点の減点対象にはしません。</span></div>
-          <div class="status warn">未判定</div>
-        </div>
-        <div class="mini-result">
-          <div class="score">38</div>
-          <div><strong>Google Maps口コミ返信率</strong><span>最近30件中11件返信。信頼形成とGEO素材に改善余地。</span></div>
-          <div class="status warn">要改善</div>
-        </div>
-        <div class="mini-result">
-          <div class="score">48</div>
-          <div><strong>Plan導線スコア</strong><span>駐車場・入口・席・価格が弱く、保存後の来店準備で離脱しやすい。</span></div>
-          <div class="status bad">弱点</div>
         </div>
       </div>
     </section>
