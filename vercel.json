@@ -56,6 +56,16 @@
       "has": [
         {
           "type": "host",
+          "value": "www.okyakusa-ma.com"
+        }
+      ],
+      "destination": "/sitemap-okyakusama.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
           "value": "air-s.jp"
         }
       ],
@@ -97,6 +107,16 @@
         {
           "type": "host",
           "value": "okyakusa-ma.com"
+        }
+      ],
+      "destination": "/robots-okyakusama.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.okyakusa-ma.com"
         }
       ],
       "destination": "/robots-okyakusama.txt"

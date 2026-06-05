@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://okyakusa-ma.com/sitemap.xml
+Sitemap: https://www.okyakusa-ma.com/sitemap.xml
