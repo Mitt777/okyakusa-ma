@@ -3017,6 +3017,49 @@
       line-height: 1.65;
     }
 
+    .owner-type-teaser {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 88px;
+      gap: 14px;
+      align-items: center;
+      border-color: rgba(197, 154, 82, .42);
+      background: linear-gradient(135deg, #fff, #fff9ec);
+    }
+
+    .owner-type-teaser h2 {
+      margin-bottom: 6px;
+      font-size: 20px;
+    }
+
+    .owner-type-teaser p {
+      margin: 0;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .owner-type-teaser strong {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 8px;
+      border: 1px solid rgba(197, 154, 82, .42);
+      border-radius: 999px;
+      background: #fff4db;
+      padding: 4px 10px;
+      color: #7a4b10;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .owner-type-teaser img {
+      width: 88px;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(197, 154, 82, .34);
+      background: #f4f2e9;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -3264,13 +3307,15 @@
 
       .owner-type-intro,
       .owner-type-lead,
+      .owner-type-teaser,
       .owner-options,
       .owner-type-grid {
         grid-template-columns: 1fr;
       }
 
       .owner-type-image,
-      .owner-type-lead img {
+      .owner-type-lead img,
+      .owner-type-teaser img {
         width: min(100%, 220px);
         justify-self: center;
       }
@@ -3664,26 +3709,13 @@
           <div class="worldview-result worldview-deep-result" id="worldview-deep-result"></div>
           <div class="worldview-disclaimer">本診断は、店舗UX、接客傾向、世界観マーケティング、行動心理を参考にした独自のお店タイプ診断です。医療・心理検査・占い鑑定ではありません。診断結果は、お店づくりや発信方針を考えるためのヒントとしてご利用ください。</div>
         </div>
-        <div class="panel full owner-type-panel">
-          <div class="owner-type-intro">
-            <div>
-              <h2>店主・運営タイプ診断 β</h2>
-              <p>店主さん・店長さん・現場担当の「続けやすさ」を12問で見ます。世界観診断を済ませている場合は、お店の空気と運営タイプの相性も一緒に表示します。</p>
-              <div class="worldview-actions">
-                <button class="worldview-submit" id="owner-type-toggle" type="button">12問で運営タイプを見る</button>
-                <span class="worldview-message" id="owner-type-message"></span>
-              </div>
-            </div>
-            <img class="owner-type-image" src="/assets/operator-types/01-welcoming-person.jpg" alt="店主・運営タイプ診断のイメージ">
+        <div class="panel full owner-type-teaser">
+          <div>
+            <strong>お店深掘り診断 β</strong>
+            <h2>店主・運営タイプ診断 β</h2>
+            <p>店主さん・店長さんの続けやすさと、お店の世界観との相性を見る診断です。ワンコイン診断でご確認いただけます。</p>
           </div>
-          <div class="owner-type-quiz" id="owner-type-quiz">
-            <div id="owner-type-questions"></div>
-            <div class="worldview-actions">
-              <button class="worldview-submit" id="owner-type-submit" type="button">運営タイプを診断する</button>
-              <span class="worldview-message" id="owner-type-submit-message"></span>
-            </div>
-          </div>
-          <div class="owner-type-result" id="owner-type-result"></div>
+          <img src="/assets/operator-types/01-welcoming-person.jpg" alt="店主・運営タイプ診断のイメージ">
         </div>
         <div class="panel full">
           <h2>スコアの見方</h2>
@@ -3753,9 +3785,26 @@
             </div>
           </div>
         </div>
-        <div class="panel full">
-          <h2>月次レポートβ</h2>
-          <ul class="list" id="monthly"></ul>
+        <div class="panel full owner-type-panel">
+          <div class="owner-type-intro">
+            <div>
+              <h2>店主・運営タイプ診断 β</h2>
+              <p>店主さん・店長さんが無理なく続けられる運営タイプを12問で見ます。お店世界観タイプと重ねることで、接客距離、発信負荷、続けやすい改善順を整理します。</p>
+              <div class="worldview-actions">
+                <button class="worldview-submit" id="owner-type-toggle" type="button">12問で運営タイプを見る</button>
+                <span class="worldview-message" id="owner-type-message">ワンコイン診断の核になるβ機能です。</span>
+              </div>
+            </div>
+            <img class="owner-type-image" src="/assets/operator-types/01-welcoming-person.jpg" alt="店主・運営タイプ診断のイメージ">
+          </div>
+          <div class="owner-type-quiz" id="owner-type-quiz">
+            <div id="owner-type-questions"></div>
+            <div class="worldview-actions">
+              <button class="worldview-submit" id="owner-type-submit" type="button">運営タイプを診断する</button>
+              <span class="worldview-message" id="owner-type-submit-message"></span>
+            </div>
+          </div>
+          <div class="owner-type-result" id="owner-type-result"></div>
         </div>
         <div class="panel full ai-lab-panel">
           <div class="ai-lab-head">
@@ -4495,6 +4544,7 @@
 
     function list(target, items) {
       const el = document.querySelector(target);
+      if (!el) return;
       el.innerHTML = "";
       (items || []).filter(Boolean).slice(0, 8).forEach((item) => {
         const li = document.createElement("li");
