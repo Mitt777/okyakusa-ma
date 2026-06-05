@@ -3344,12 +3344,19 @@
       }
 
       .owner-type-teaser-gallery {
-        grid-template-columns: repeat(3, 48px);
-        justify-content: center;
+        width: 100%;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        justify-content: stretch;
       }
 
       .owner-type-teaser-item img {
-        width: 48px;
+        width: 100%;
+        max-width: 120px;
+      }
+
+      .owner-type-teaser-item figcaption {
+        font-size: 11px;
       }
 
       .deep-menu-grid {
