@@ -3019,8 +3019,8 @@
 
     .owner-type-teaser {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 88px;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
       align-items: center;
       border-color: rgba(197, 154, 82, .42);
       background: linear-gradient(135deg, #fff, #fff9ec);
@@ -3051,13 +3051,37 @@
       font-weight: 900;
     }
 
-    .owner-type-teaser img {
-      width: 88px;
+    .owner-type-teaser-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      gap: 8px;
+      justify-content: end;
+    }
+
+    .owner-type-teaser-item {
+      margin: 0;
+      display: grid;
+      gap: 4px;
+      justify-items: center;
+    }
+
+    .owner-type-teaser-item img {
+      width: 44px;
       aspect-ratio: 3 / 4;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 6px;
       border: 1px solid rgba(197, 154, 82, .34);
       background: #f4f2e9;
+      box-shadow: 0 8px 16px rgba(23, 32, 44, .08);
+    }
+
+    .owner-type-teaser-item figcaption {
+      color: #7a4b10;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1.25;
+      text-align: center;
+      white-space: nowrap;
     }
 
     .grid {
@@ -3314,10 +3338,18 @@
       }
 
       .owner-type-image,
-      .owner-type-lead img,
-      .owner-type-teaser img {
+      .owner-type-lead img {
         width: min(100%, 220px);
         justify-self: center;
+      }
+
+      .owner-type-teaser-gallery {
+        grid-template-columns: repeat(3, 48px);
+        justify-content: center;
+      }
+
+      .owner-type-teaser-item img {
+        width: 48px;
       }
 
       .deep-menu-grid {
@@ -3715,7 +3747,44 @@
             <h2>店主・運営タイプ診断 β</h2>
             <p>店主さん・店長さんの続けやすさと、お店の世界観との相性を見る診断です。ワンコイン診断でご確認いただけます。</p>
           </div>
-          <img src="/assets/operator-types/01-welcoming-person.jpg" alt="店主・運営タイプ診断のイメージ">
+          <div class="owner-type-teaser-gallery" aria-label="店主・運営タイプ診断の9タイプ">
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/01-welcoming-person.jpg" alt="迎える人">
+              <figcaption>迎える人</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/02-craft-person.jpg" alt="職人の人">
+              <figcaption>職人の人</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/03-story-person.jpg" alt="物語を作る人">
+              <figcaption>物語</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/04-space-person.jpg" alt="場を整える人">
+              <figcaption>場を整える</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/05-lively-person.jpg" alt="にぎわいを起こす人">
+              <figcaption>にぎわい</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/06-quiet-person.jpg" alt="静けさを守る人">
+              <figcaption>静けさ</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/07-local-person.jpg" alt="地域につなぐ人">
+              <figcaption>地域</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/08-challenge-person.jpg" alt="挑戦する人">
+              <figcaption>挑戦</figcaption>
+            </figure>
+            <figure class="owner-type-teaser-item">
+              <img src="/assets/operator-types/09-support-person.jpg" alt="支える人">
+              <figcaption>支える人</figcaption>
+            </figure>
+          </div>
         </div>
         <div class="panel full">
           <h2>スコアの見方</h2>
