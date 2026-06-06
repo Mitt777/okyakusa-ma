@@ -46,6 +46,16 @@
       "has": [
         {
           "type": "host",
+          "value": "www.map-s.site"
+        }
+      ],
+      "destination": "/sitemap-maps.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
           "value": "okyakusa-ma.com"
         }
       ],
@@ -67,6 +77,16 @@
         {
           "type": "host",
           "value": "air-s.jp"
+        }
+      ],
+      "destination": "/sitemap-airs.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.air-s.jp"
         }
       ],
       "destination": "/sitemap-airs.xml"
@@ -106,6 +126,16 @@
       "has": [
         {
           "type": "host",
+          "value": "www.map-s.site"
+        }
+      ],
+      "destination": "/robots-maps.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
           "value": "okyakusa-ma.com"
         }
       ],
@@ -127,6 +157,16 @@
         {
           "type": "host",
           "value": "air-s.jp"
+        }
+      ],
+      "destination": "/robots-airs.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.air-s.jp"
         }
       ],
       "destination": "/robots-airs.txt"
