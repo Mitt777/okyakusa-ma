@@ -1,4 +1,8 @@
 {
+  "proxy": {
+    "entrypoint": "proxy.js",
+    "matcher": "/ishin-test/:path*"
+  },
   "headers": [
     {
       "source": "/(.*)",

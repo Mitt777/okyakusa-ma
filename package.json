@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@vercel/blob": "^2.3.3",
+    "@vercel/functions": "^3.9.11",
     "qrcode": "^1.5.4"
   }
 }
