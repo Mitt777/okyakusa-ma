@@ -1,3 +1,4 @@
 source_texts/
 extract_sources.py
 .DS_Store
+node_modules/
