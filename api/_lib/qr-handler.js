@@ -1,4 +1,4 @@
-const { readJsonBody, sendJson } = require("./_lib/response");
+const { readJsonBody, sendJson } = require("./response");
 
 const MAX_URL_LENGTH = 2200;
 

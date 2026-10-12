@@ -1,4 +1,4 @@
-const { readJsonBody, sendJson } = require("./_lib/response");
+const { readJsonBody, sendJson } = require("./response");
 
 const MAX_IMAGE_BYTES = 900 * 1024;
 

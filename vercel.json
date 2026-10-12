@@ -26,6 +26,14 @@
   ],
   "rewrites": [
     {
+      "source": "/api/qr",
+      "destination": "/api/media?handler=qr"
+    },
+    {
+      "source": "/api/worldview-card-image",
+      "destination": "/api/media?handler=worldview-card-image"
+    },
+    {
       "source": "/sitemap.xml",
       "has": [
         {
